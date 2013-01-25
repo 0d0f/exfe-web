@@ -71,8 +71,6 @@ class PhotosActions extends ActionController {
                 $album_id = isset($_POST['album_id']) && $_POST['album_id'] ? $_POST['album_id'] : '';
                 $albums = $modPhoto->getAlbumsFromDropbox($identity_id, $album_id);
                 break;
-            case 'instagram':
-                break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
         }
@@ -80,6 +78,57 @@ class PhotosActions extends ActionController {
             apiError(400, 'not_allow', 'Can not access photos, please reauthenticate this identity.');
         }
         apiResponse(['albums' => $albums]);
+    }
+
+
+    public function doGetPhotos() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get user
+        $modUser = $this->getModelByName('User');
+        $user    = $modUser->getUserById($user_id);
+        if (!$user) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // check identity
+        $identity_id = @ (int) $_POST['identity_id'];
+        if (!$identity_id) {
+            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
+        }
+        $objIdentity = null;
+        foreach ($user->identities as $identity) {
+            if ($identity->id === $identity_id) {
+                $objIdentity = $identity;
+                break;
+            }
+        }
+        if (!$objIdentity) {
+            apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
+        }
+        if ($objIdentity->status !== 'CONNECTED') {
+            apiError(400, 'can_not_be_verify', 'This identity is not connecting to current user.');
+        }
+        // get albums
+        $modPhoto = $this->getModelByName('Photo');
+        $photos   = null;
+        switch ($objIdentity->provider) {
+            case 'instagram':
+                $photos = $modPhoto->getPhotosFromInstagram($identity_id);
+                break;
+            default:
+                apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
+        }
+        if ($photos === null) {
+            apiError(400, 'not_allow', 'Can not access photos, please reauthenticate this identity.');
+        }
+        apiResponse($photos);
     }
 
 
@@ -106,21 +155,47 @@ class PhotosActions extends ActionController {
         if (!$identity || $identity->connected_user_id !== $user_id) {
             apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
         }
-        // check album id
-        $album_id    = @ (int) $_POST['album_id'];
-        if (!$album_id) {
-            apiError(400, 'no_album_id', '');
-        }
+        // check args
+        $album_id = @ $_POST['album_id'] ?: '';
+        $min_id   = @ $_POST['min_id']   ?: '';
+        $max_id   = @ $_POST['max_id']   ?: '';
         // add album to cross
         $modPhoto = $this->getModelByName('Photo');
         $result   = null;
         switch ($identity->provider) {
             case 'facebook':
+                if (!$album_id) {
+                    apiError(400, 'no_album_id', '');
+                }
                 $result = $modPhoto->addFacebookAlbumToCross($album_id, $cross_id, $identity_id);
                 break;
-            case 'instagram':
-                break;
             case 'dropbox':
+                if (!$album_id) {
+                    apiError(400, 'no_album_id', '');
+                }
+                // @todo by @leaskh
+                break;
+            case 'instagram':
+                if (!$min_id || !$max_id) {
+                    apiError(400, 'no_min_id_or_max_id', '');
+                }
+                $arr_min_id = explode('_', $min_id);
+                $arr_max_id = explode('_', $max_id);
+                $min_id = (int) array_shift($arr_min_id);
+                $max_id = (int) array_shift($arr_max_id);
+                $photos = $modPhoto->getPhotosFromInstagram($identity_id);
+                if ($photos) {
+                    foreach ($photos['photos'] as $i => $photo) {
+                        $arr_cur_id = explode('_', $photo->external_id);
+                        $cur_id = (int) array_shift($arr_cur_id);
+                        if ($min_id > $cur_id || $max_id < $cur_id) {
+                            unset($photos[$i]);
+                        }
+                    }
+                    $result = $modPhoto->addPhotosToCross(
+                        $cross_id, $photos['photos'], $identity_id
+                    );
+                }
                 break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');

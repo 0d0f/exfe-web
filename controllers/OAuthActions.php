@@ -180,7 +180,6 @@ class OAuthActions extends ActionController {
                       . "&external_id={$result['identity']->external_id}"
                       . "&provider={$result['identity']->provider}"
                       . "&identity_status={$result['identity_status']}"
-                      . "&twitter_following={$result['twitter_following']}"
                       . (isset($workflow['verification_token'])
                       ? "&verification_token={$workflow['verification_token']}"
                       : '')
@@ -290,20 +289,15 @@ class OAuthActions extends ActionController {
                 $modOauth->resetSession();
                 header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
             } else {
-                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'facebook']);
+                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'instagram']);
                 header('location: /');
             }
             return;
         }
         $profile = $modOauth->getInstagramProfile();
-        $oauthToken = $profile['oauth_token'];
-        if ($oauthToken) {
-            //////////////////////////
-            $feed = $modOauth->getInstagramUsersSelfFeed($oauthToken);
-            echo json_encode($feed);
-            return;
-            //////////////////////////
-            $rawIdentity = $modOauth->getFacebookProfile($oauthToken['oauth_token']);
+        if ($profile) {
+            $rawIdentity = $profile['identity'];
+            $oauthToken  = $profile['oauth_token'];
             if ($rawIdentity) {
                 $result = $modOauth->handleCallback($rawIdentity, $oauthIfo, $oauthToken);
                 if (!$result) {
@@ -311,7 +305,7 @@ class OAuthActions extends ActionController {
                         $modOauth->resetSession();
                         header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
                     } else {
-                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'facebook']);
+                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'instagram']);
                         header('location: /');
                     }
                     return;
@@ -325,7 +319,6 @@ class OAuthActions extends ActionController {
                       . "&external_id={$result['identity']->external_id}"
                       . "&provider={$result['identity']->provider}"
                       . "&identity_status={$result['identity_status']}"
-                      . "&twitter_following={$result['twitter_following']}"
                       . (isset($workflow['verification_token'])
                       ? "&verification_token={$workflow['verification_token']}"
                       : '')

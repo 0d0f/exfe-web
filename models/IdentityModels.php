@@ -285,6 +285,7 @@ class IdentityModels extends DataModel {
             case 'twitter':
             case 'facebook':
             case 'dropbox':
+            case 'instagram':
                 if (!$external_id && !$external_username) {
                     if ($user_id && $status = 2 && $withVerifyInfo) {
                         $identity = new stdClass;
@@ -349,7 +350,8 @@ class IdentityModels extends DataModel {
                     }
                     break;
                 case 'dropbox':
-                    //
+                case 'instagram':
+                    // @todo by @leaskh
                     break;
                 default:
                     return null;

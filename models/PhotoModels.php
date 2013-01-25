@@ -1,14 +1,23 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
+
+
 class PhotoModels extends DataModel {
 
     public function packPhoto($rawPhoto) {
         $hlpIdentity = $this->getHelperByName('Identity');
         $identity = $hlpIdentity->getIdentityById($rawPhoto['by_identity_id']);
         $location = $rawPhoto['location_lng'] &&  $rawPhoto['location_lat'] ? new Place(
-            0, '', '', $rawPhoto['location_lng'], $rawPhoto['location_lat'],
-            $rawPhoto['provider'],   $rawPhoto['external_id'],
-            $rawPhoto['created_at'], $rawPhoto['updated_at']
+            0,
+            $rawPhoto['location_title'],
+            $rawPhoto['location_description'],
+            $rawPhoto['location_lng'],
+            $rawPhoto['location_lat'],
+            $rawPhoto['provider'],
+            $rawPhoto['location_external_id'],
+            $rawPhoto['created_at'],
+            $rawPhoto['updated_at']
         ) : null;
         $images   = [
             'fullsize'  => [
@@ -47,19 +56,21 @@ class PhotoModels extends DataModel {
         if ($cross_id && is_array($photos) && $identity_id) {
             foreach ($photos as $photo) {
                 $strSql = "
-                    `caption`             = '{$photo->caption}',
-                    `by_identity_id`      =  {$identity_id},
-                    `updated_at`          =  NOW(),
-                    `external_created_at` = '" . date('Y-m-d H:i:s', strtotime($photo->created_at)) . "',
-                    `external_updated_at` = '" . date('Y-m-d H:i:s', strtotime($photo->updated_at)) . "',
-                    `location_lng`        = '" . ($photo->location ? $photo->location->lng  :  '')  . "',
-                    `location_lat`        = '" . ($photo->location ? $photo->location->lat  :  '')  . "',
-                    `fullsize_url`        = '{$photo->images['fullsize']['url']}',
-                    `fullsize_width`      =  {$photo->images['fullsize']['width']},
-                    `fullsize_height`     =  {$photo->images['fullsize']['height']},
-                    `thumbnail_url`       = '{$photo->images['thumbnail']['url']}',
-                    `thumbnail_width`     =  {$photo->images['thumbnail']['width']},
-                    `thumbnail_height`    =  {$photo->images['thumbnail']['height']}
+                    `caption`              = '{$photo->caption}',
+                    `updated_at`           =  NOW(),
+                    `external_created_at`  = '" . date('Y-m-d H:i:s', strtotime($photo->created_at))      . "',
+                    `external_updated_at`  = '" . date('Y-m-d H:i:s', strtotime($photo->updated_at))      . "',
+                    `location_title`       = '" . ($photo->location ? $photo->location->title       : '') . "',
+                    `location_description` = '" . ($photo->location ? $photo->location->description : '') . "',
+                    `location_external_id` = '" . ($photo->location ? $photo->location->external_id : '') . "',
+                    `location_lng`         = '" . ($photo->location ? $photo->location->lng         : '') . "',
+                    `location_lat`         = '" . ($photo->location ? $photo->location->lat         : '') . "',
+                    `fullsize_url`         = '{$photo->images['fullsize']['url']}',
+                    `fullsize_width`       =  {$photo->images['fullsize']['width']},
+                    `fullsize_height`      =  {$photo->images['fullsize']['height']},
+                    `thumbnail_url`        = '{$photo->images['thumbnail']['url']}',
+                    `thumbnail_width`      =  {$photo->images['thumbnail']['width']},
+                    `thumbnail_height`     =  {$photo->images['thumbnail']['height']}
                 ";
                 $curImg = $this->getRow(
                     "SELECT * FROM `photos`
@@ -80,6 +91,7 @@ class PhotoModels extends DataModel {
                          `cross_id`           =  {$cross_id},
                          `provider`           = 'facebook',
                          `external_id`        = '{$photo->external_id}',
+                         `by_identity_id`     =  {$identity_id},
                          `created_at`         =  NOW(), {$strSql}"
                     );
                 }
@@ -154,24 +166,27 @@ class PhotoModels extends DataModel {
                         $created_at = date('Y-m-d H:i:s', strtotime($photo['created_time']));
                         $updated_at = date('Y-m-d H:i:s', strtotime($photo['updated_time']));
                         $albums[]   = $this->packPhoto([
-                            'id'                  => 0,
-                            'cross_id'            => 0,
-                            'caption'             => $photo['name'],
-                            'by_identity_id'      => $identity_id,
-                            'created_at'          => $created_at,
-                            'updated_at'          => $updated_at,
-                            'external_created_at' => $created_at,
-                            'external_updated_at' => $updated_at,
-                            'provider'            => 'facebook',
-                            'external_id'         => $photo['id'],
-                            'location_lng'        => '',
-                            'location_lat'        => '',
-                            'fullsize_url'        => $photo['images'][0]['source'],
-                            'fullsize_width'      => $photo['images'][0]['width'],
-                            'fullsize_height'     => $photo['images'][0]['height'],
-                            'thumbnail_url'       => $photo['source'],
-                            'thumbnail_width'     => $photo['width'],
-                            'thumbnail_height'    => $photo['height'],
+                            'id'                   => 0,
+                            'cross_id'             => 0,
+                            'caption'              => $photo['name'],
+                            'by_identity_id'       => $identity_id,
+                            'created_at'           => $created_at,
+                            'updated_at'           => $updated_at,
+                            'external_created_at'  => $created_at,
+                            'external_updated_at'  => $updated_at,
+                            'provider'             => 'facebook',
+                            'external_id'          => $photo['id'],
+                            'location_title'       => '',
+                            'location_description' => '',
+                            'location_external_id' => '',
+                            'location_lng'         => '',
+                            'location_lat'         => '',
+                            'fullsize_url'         => $photo['images'][0]['source'],
+                            'fullsize_width'       => $photo['images'][0]['width'],
+                            'fullsize_height'      => $photo['images'][0]['height'],
+                            'thumbnail_url'        => $photo['source'],
+                            'thumbnail_width'      => $photo['width'],
+                            'thumbnail_height'     => $photo['height'],
                         ]);
                     }
                     return $albums;
@@ -252,8 +267,73 @@ class PhotoModels extends DataModel {
 
     // instagram {
 
-    public function getPhotosFromInstagram() {
+    public function getPhotosFromInstagram($identity_id) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $identity = $hlpIdentity->getIdentityById($identity_id);
+        if ($identity
+         && $identity->connected_user_id > 0
+         && $identity->provider === 'instagram') {
+            $token = $hlpIdentity->getOAuthTokenById($identity_id);
+            if ($token
+             && $token['oauth_token']) {
+                $rawPhotos = $this->getInstagramUsersMediaRecent(
+                    $identity->external_id, $token
+                );
+                if ($rawPhotos
+                 && isset($rawPhotos->meta)
+                 && $rawPhotos->meta->code === 200
+                 && isset($rawPhotos->data)
+                 && is_array($rawPhotos->data)) {
+                    $photos = [];
+                    foreach ($rawPhotos->data as $photo) {
+                        $updated_at = $created_at = date(
+                            'Y-m-d H:i:s', $photo->created_time
+                        );
+                        $photos[]   = $this->packPhoto([
+                            'id'                   => 0,
+                            'cross_id'             => 0,
+                            'caption'              => $photo->caption->text,
+                            'by_identity_id'       => $identity_id,
+                            'created_at'           => $created_at,
+                            'updated_at'           => $updated_at,
+                            'external_created_at'  => $created_at,
+                            'external_updated_at'  => $updated_at,
+                            'provider'             => 'instagram',
+                            'external_id'          => $photo->id,
+                            'location_title'       => $photo->location->name,
+                            'location_description' => '',
+                            'location_external_id' => $photo->location->id,
+                            'location_lng'         => $photo->location->longitude,
+                            'location_lat'         => $photo->location->latitude,
+                            'fullsize_url'         => $photo->images->standard_resolution->url,
+                            'fullsize_width'       => $photo->images->standard_resolution->width,
+                            'fullsize_height'      => $photo->images->standard_resolution->height,
+                            'thumbnail_url'        => $photo->images->standard_resolution->url,
+                            'thumbnail_width'      => $photo->images->standard_resolution->width,
+                            'thumbnail_height'     => $photo->images->standard_resolution->height,
+                        ]);
+                    }
+                    return ['photos' => $photos, 'next_max_id' => $rawPhotos->pagination->next_max_id];
+                }
+            }
+        }
+        return null;
+    }
 
+
+    public function getInstagramUsersSelfFeed($oauth_token) {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, $oauth_token['oauth_token']
+        );
+        return $instagram->get('users/self/feed');
+    }
+
+
+    public function getInstagramUsersMediaRecent($external_id, $oauth_token) {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, $oauth_token['oauth_token']
+        );
+        return $instagram->get("users/{$external_id}/media/recent");
     }
 
     // }
