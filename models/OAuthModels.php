@@ -470,15 +470,9 @@ class OAuthModels extends DataModel {
                 'oauth_token' => ['oauth_token' => $profile->access_token],
             ];
         }
+        return null;
     }
 
-
-    public function getInstagramUsersSelfFeed($oauth_token) {
-        $instagram = new Instagram(
-            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, $oauth_token['oauth_token']
-        );
-        return $instagram->get('users/self/feed');
-    }
 
     // }
 
@@ -550,6 +544,11 @@ class OAuthModels extends DataModel {
                 $oAuthToken = [
                     'oauth_token'        => $rawOAuthToken['oauth_token'],
                     'oauth_expires'      => $rawOAuthToken['oauth_expires'],
+                ];
+                break;
+            case 'instagram':
+                $oAuthToken = [
+                    'oauth_token'        => $rawOAuthToken['oauth_token'],
                 ];
         }
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);
