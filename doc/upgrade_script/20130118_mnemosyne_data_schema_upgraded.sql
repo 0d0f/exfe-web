@@ -5,6 +5,7 @@ CREATE TABLE `photos` (
   `by_identity_id`       bigint(20) unsigned NOT NULL,
   `created_at`           datetime NOT NULL,
   `updated_at`           datetime NOT NULL,
+  `external_album_id`    varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `external_created_at`  datetime NOT NULL,
   `external_updated_at`  datetime NOT NULL,
   `provider`             varchar(255) COLLATE utf8_unicode_ci NOT NULL,

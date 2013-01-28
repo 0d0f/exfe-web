@@ -19,23 +19,39 @@ class PhotoModels extends DataModel {
             $rawPhoto['created_at'],
             $rawPhoto['updated_at']
         ) : null;
+        $fullsize_expired_at  = (isset($rawPhoto['fullsize_expired_at'])
+                              && $rawPhoto['fullsize_expired_at']
+                               ? date('Y-m-d H:i:s', strtotime($rawPhoto['fullsize_expired_at']))
+                               : '0000-00-00 00:00:00') . ' +0000';
+        $thumbnail_expired_at = (isset($rawPhoto['thumbnail_expired_at'])
+                              && $rawPhoto['thumbnail_expired_at']
+                               ? date('Y-m-d H:i:s', strtotime($rawPhoto['thumbnail_expired_at']))
+                               : '0000-00-00 00:00:00') . ' +0000';
         $images   = [
             'fullsize'  => [
-                'height' => $rawPhoto['fullsize_height'],
-                'width'  => $rawPhoto['fullsize_width'],
-                'url'    => $rawPhoto['fullsize_url'],
+                'height'     => $rawPhoto['fullsize_height'],
+                'width'      => $rawPhoto['fullsize_width'],
+                'url'        => $rawPhoto['fullsize_url'],
+                'expired_at' => $rawPhoto['fullsize_expired_at'],
             ],
             'thumbnail' => [
-                'height' => $rawPhoto['thumbnail_height'],
-                'width'  => $rawPhoto['thumbnail_width'],
-                'url'    => $rawPhoto['thumbnail_url'],
+                'height'     => $rawPhoto['thumbnail_height'],
+                'width'      => $rawPhoto['thumbnail_width'],
+                'url'        => $rawPhoto['thumbnail_url'],
+                'expired_at' => $rawPhoto['thumbnail_expired_at'],
             ],
         ];
+        // if (isset($rawPhoto['fullsize_hash'])) {
+        //     $images['fullsize']['hash']  = $rawPhoto['fullsize_hash'];
+        // }
+        // if (isset($rawPhoto['thumbnail_hash'])) {
+        //     $images['thumbnail']['hash'] = $rawPhoto['thumbnail_hash'];
+        // }
         return new Photo(
             $rawPhoto['id'], $rawPhoto['caption'], $identity,
             $rawPhoto['created_at'], $rawPhoto['updated_at'],
             $rawPhoto['provider'],   $rawPhoto['external_id'],
-            $location, $images
+            $location, $images,      $rawPhoto['external_album_id']
         );
     }
 
@@ -74,25 +90,28 @@ class PhotoModels extends DataModel {
                 ";
                 $curImg = $this->getRow(
                     "SELECT * FROM `photos`
-                     WHERE `cross_id`     =  {$cross_id}
-                     AND   `provider`     = 'facebook'
-                     AND   `external_id`  = '{$photo->external_id}'"
+                     WHERE `cross_id`          =  {$cross_id}
+                     AND   `provider`          = 'facebook'
+                     AND   `external_album_id` = '{$photo->external_album_id}'
+                     AND   `external_id`       = '{$photo->external_id}'"
                 );
                 if ($curImg) {
                     $this->query(
-                        "UPDATE `photos` SET     {$strSql}
-                         WHERE  `cross_id`    =  {$cross_id}
-                         AND    `provider`    = 'facebook'
-                         AND    `external_id` = '{$photo->external_id}'"
+                        "UPDATE `photos` SET           {$strSql}
+                         WHERE  `cross_id`          =  {$cross_id}
+                         AND    `provider`          = 'facebook'
+                         AND    `external_album_id` = '{$photo->external_album_id}'
+                         AND    `external_id`       = '{$photo->external_id}'"
                     );
                 } else {
                     $this->query(
                         "INSERT INTO `photos` SET
-                         `cross_id`           =  {$cross_id},
-                         `provider`           = 'facebook',
-                         `external_id`        = '{$photo->external_id}',
-                         `by_identity_id`     =  {$identity_id},
-                         `created_at`         =  NOW(), {$strSql}"
+                         `cross_id`            =  {$cross_id},
+                         `provider`            = 'facebook',
+                         `external_album_id`   = '{$photo->external_album_id}'
+                         `external_id`         = '{$photo->external_id}',
+                         `by_identity_id`      =  {$identity_id},
+                         `created_at`          =  NOW(), {$strSql}"
                     );
                 }
             }
@@ -175,6 +194,7 @@ class PhotoModels extends DataModel {
                             'external_created_at'  => $created_at,
                             'external_updated_at'  => $updated_at,
                             'provider'             => 'facebook',
+                            'external_album_id'    => $album_id,
                             'external_id'          => $photo['id'],
                             'location_title'       => '',
                             'location_description' => '',
@@ -299,6 +319,7 @@ class PhotoModels extends DataModel {
                             'external_created_at'  => $created_at,
                             'external_updated_at'  => $updated_at,
                             'provider'             => 'instagram',
+                            'external_album_id'    => '',
                             'external_id'          => $photo->id,
                             'location_title'       => $photo->location->name,
                             'location_description' => '',
@@ -361,10 +382,10 @@ class PhotoModels extends DataModel {
                     );
                     $catched = [];
                     foreach ($photo['derivatives'] as $di => $derivative) {
-                        if (!isset($catched['fullsize'])) {
-                            $catched['fullsize']  = $di;
-                        } else if (!isset($catched['thumbnail'])) {
-                            $catched['thumbnail'] = $di;
+                        if (!isset($catched['thumbnail'])) {
+                            $catched['thumbnail']  = $di;
+                        } else if (!isset($catched['fullsize'])) {
+                            $catched['fullsize'] = $di;
                         }
                     }
                     $photos[] = $this->packPhoto([
@@ -377,6 +398,7 @@ class PhotoModels extends DataModel {
                         'external_created_at'  => $created_at,
                         'external_updated_at'  => $updated_at,
                         'provider'             => 'photostream',
+                        'external_album_id'    => '',
                         'external_id'          => $photo['photoGuid'],
                         'location_title'       => '',
                         'location_description' => '',
@@ -401,7 +423,21 @@ class PhotoModels extends DataModel {
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photoGuids]));
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
-                print_r($data);
+                if ($data && ($data = json_decode($data, true)) && isset($data['items'])) {
+                    $hosts = [
+                        "https://{$data['locations']['ms_ap_sin']['hosts'][0]}",
+                        "https://{$data['locations']['ms_ap_sin']['hosts'][1]}"
+                    ];
+                    foreach ($photos as $pI => $photo) {
+                        $objFullsize  = $data['items'][$photos[$pI]->images['fullsize']['url']];
+                        $objThumbnail = $data['items'][$photos[$pI]->images['thumbnail']['url']];
+                        $photos[$pI]->images['fullsize']['url']         = "{$hosts[0]}{$objFullsize['url_path']}";
+                        $photos[$pI]->images['thumbnail']['url']        = "{$hosts[1]}{$objThumbnail['url_path']}";
+                        $photos[$pI]->images['fullsize']['expired_at']  = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
+                        $photos[$pI]->images['thumbnail']['expired_at'] = date('Y-m-d H:i:s', strtotime($objThumbnail['url_expiry'])) . ' +0000';
+                    }
+                }
+                print_r($photos);
             }
             exit();
             //
