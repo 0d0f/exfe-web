@@ -1,0 +1,448 @@
+leask@Flora:~/Documents/Working/exfe/exfeweb:mnemosyne*> http -f post api.local.exfe.com/v2/photos/AddAlbumsToCross?token=aed684b1d8559a36cecf166cb366330187db2fe095c1906f57476755ee3a4729 identity_id=324 cross_id=100309 photostream_id='A1JtdOXmzpvGV'
+POST /v2/photos/AddAlbumsToCross?token=aed684b1d8559a36cecf166cb366330187db2fe095c1906f57476755ee3a4729 HTTP/1.1
+Accept: */*
+Accept-Encoding: gzip, deflate, compress
+Content-Type: application/x-www-form-urlencoded; charset=utf-8
+Host: api.local.exfe.com
+User-Agent: HTTPie/0.3.0
+
+identity_id=324&cross_id=100309&photostream_id=A1JtdOXmzpvGV
+
+HTTP/1.1 200 OK
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Content-Type: application/json; charset=UTF-8
+Date: Fri, 25 Jan 2013 08:32:57 GMT
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Pragma: no-cache
+Server: lighttpd/1.4.32
+Set-Cookie: PHPSESSID=0jtjml5qelll1461vd3282s672; path=/; domain=.exfe.com
+Transfer-Encoding: chunked
+X-Powered-By: PHP/5.4.11
+
+{
+    "items": {},
+    "itemsReturned": "0",
+    "locations": {},
+    "photos": [
+        {
+            "batchDateCreated": "2013-01-25T04:52:45Z",
+            "batchGuid": "CF15929F-9D8F-4875-A38D-78148B7DC72A",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2012-11-24T15:42:00Z",
+            "derivatives": {
+                "384": {
+                    "checksum": "010f733ecb765fc1dbd137d4572cece132d56907e1",
+                    "fileSize": "29142",
+                    "height": "384",
+                    "width": "256"
+                },
+                "960": {
+                    "checksum": "0173f38097247ca850481afcefc6b1df19a55572d5",
+                    "fileSize": "121401",
+                    "height": "960",
+                    "width": "640"
+                }
+            },
+            "height": "960",
+            "photoGuid": "5C9543A9-0680-447B-809A-EE773A393B99",
+            "width": "640"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:01:20Z",
+            "batchGuid": "8A1F225E-7FB2-4E15-A10C-8859209A66BF",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2012-06-26T17:04:15Z",
+            "derivatives": {
+                "2048": {
+                    "checksum": "01df2e9a41889761a8287ce46cafc93ee0f93037f2",
+                    "fileSize": "884845",
+                    "height": "1536",
+                    "width": "2048"
+                },
+                "341": {
+                    "checksum": "01607ed24acde6ba9a3daa5c3c4d67ba10253a8083",
+                    "fileSize": "34809",
+                    "height": "256",
+                    "width": "341"
+                }
+            },
+            "height": "256",
+            "photoGuid": "5E0026D6-3421-4B4A-AA5F-0815B77F0BFB",
+            "width": "341"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:06:13Z",
+            "batchGuid": "BA8D91C3-A7CC-4E80-94FD-691180A15A5B",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2011-10-23T13:13:33Z",
+            "derivatives": {
+                "1024": {
+                    "checksum": "01225319ebc167ac1673e22745b491b248e18f46cc",
+                    "fileSize": "298142",
+                    "height": "685",
+                    "width": "1024"
+                },
+                "382": {
+                    "checksum": "013bbfcae1d20c99b1ea83fecdaba79145642b22c3",
+                    "fileSize": "35760",
+                    "height": "255",
+                    "width": "382"
+                }
+            },
+            "height": "255",
+            "photoGuid": "12D73E26-4E3C-4987-A7D0-4DF13D38F21B",
+            "width": "382"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:06:06Z",
+            "batchGuid": "B4DC7F5A-8BF6-4891-9A31-7F6B966D251D",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2011-10-23T08:27:11Z",
+            "derivatives": {
+                "1024": {
+                    "checksum": "013a02f44d1492fc4a5fbab5130d4678a53dfec4e8",
+                    "fileSize": "168789",
+                    "height": "685",
+                    "width": "1024"
+                },
+                "382": {
+                    "checksum": "01d9a1b7e03406a1849f97b1b6150f9f773b499094",
+                    "fileSize": "33830",
+                    "height": "255",
+                    "width": "382"
+                }
+            },
+            "height": "255",
+            "photoGuid": "C06645EB-A302-4D62-B49F-3A761FB4F491",
+            "width": "382"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:05:52Z",
+            "batchGuid": "8BAC4740-4089-423F-86F4-A8B9E10154F5",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2011-09-08T14:38:03Z",
+            "derivatives": {
+                "332": {
+                    "checksum": "01e53e29546a19be22a6444a94a2e24e1e629438b2",
+                    "fileSize": "45180",
+                    "height": "332",
+                    "width": "332"
+                },
+                "612": {
+                    "checksum": "01c26dfe28ec85af4187c1d361fba109fabed5a92e",
+                    "fileSize": "121648",
+                    "height": "612",
+                    "width": "612"
+                }
+            },
+            "height": "332",
+            "photoGuid": "85650908-4801-475A-B2FA-57AFE8BBDCC7",
+            "width": "332"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:05:45Z",
+            "batchGuid": "62FAE38A-1C2B-4156-A86B-12B0FB826DC4",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2011-09-08T14:37:14Z",
+            "derivatives": {
+                "332": {
+                    "checksum": "01e1fa912aac3be181f1aaec82b2bfb16fcc8e8072",
+                    "fileSize": "56949",
+                    "height": "332",
+                    "width": "332"
+                },
+                "612": {
+                    "checksum": "014b3f363cb72da6d1f4616206c3b3446f44f10d2d",
+                    "fileSize": "149924",
+                    "height": "612",
+                    "width": "612"
+                }
+            },
+            "height": "332",
+            "photoGuid": "6883F6F6-0E2E-44EE-AA38-CD2AC777D7A4",
+            "width": "332"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:05:36Z",
+            "batchGuid": "BA96478A-FEA3-43E9-877D-92AD66B7B66A",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2011-09-08T14:35:30Z",
+            "derivatives": {
+                "332": {
+                    "checksum": "01dc1865db25d7eae460066e19aab917023c4803da",
+                    "fileSize": "50050",
+                    "height": "332",
+                    "width": "332"
+                },
+                "612": {
+                    "checksum": "01f59b696bea27ed943f23341fcc62d3f212d8205a",
+                    "fileSize": "133172",
+                    "height": "612",
+                    "width": "612"
+                }
+            },
+            "height": "332",
+            "photoGuid": "0A822DAE-8BDA-4C6E-8658-A599B6713566",
+            "width": "332"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:05:11Z",
+            "batchGuid": "3C3C9C53-8326-4597-8CA3-FA8F63BF5F93",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2011-04-30T05:39:17Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "010a03331d37e12459ad66221b81c2fe7f832bdf06",
+                    "fileSize": "945562",
+                    "height": "1535",
+                    "width": "2056"
+                },
+                "342": {
+                    "checksum": "01dba82bb6f339e87d116455524f0bf712b2affff3",
+                    "fileSize": "30236",
+                    "height": "255",
+                    "width": "342"
+                }
+            },
+            "height": "255",
+            "photoGuid": "847E0C47-CF1F-4C61-A495-40DCA1945869",
+            "width": "342"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:04:38Z",
+            "batchGuid": "AA9A9C41-A16E-4FEF-AD62-DB41506271E7",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-12-25T06:29:21Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "01f5c5a7afd40dbe629ea2bc33f1f93b0c4005c3aa",
+                    "fileSize": "748685",
+                    "height": "2056",
+                    "width": "1535"
+                },
+                "342": {
+                    "checksum": "01132f37525cb56576c18a96c846fc725f567e0353",
+                    "fileSize": "39336",
+                    "height": "342",
+                    "width": "255"
+                }
+            },
+            "height": "342",
+            "photoGuid": "0E32ABF8-16FB-4B30-8425-306D4229042B",
+            "width": "255"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:04:24Z",
+            "batchGuid": "5F78ABE1-32D5-4A06-B2DE-976CD07092C2",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-12-25T06:18:04Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "01183844e92011fb70b91a7f7793e44c6d2a5c27b5",
+                    "fileSize": "1080535",
+                    "height": "2056",
+                    "width": "1535"
+                },
+                "342": {
+                    "checksum": "01886ae3ccd43d2b015faaafbc2fe5ced1b4d5e630",
+                    "fileSize": "44868",
+                    "height": "342",
+                    "width": "255"
+                }
+            },
+            "height": "342",
+            "photoGuid": "A84E67FD-8F44-4E9D-A674-613C5C3EAABA",
+            "width": "255"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:04:08Z",
+            "batchGuid": "63C6E896-073C-4030-8C68-9610BF67E481",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-12-11T03:39:42Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "01c789e97d9e8b5d635579e09d2e33969afbede906",
+                    "fileSize": "1104771",
+                    "height": "2056",
+                    "width": "1535"
+                },
+                "342": {
+                    "checksum": "01bb453326b1ef3d315612d3441895470a435e7d39",
+                    "fileSize": "36005",
+                    "height": "342",
+                    "width": "255"
+                }
+            },
+            "height": "342",
+            "photoGuid": "ED6ACD91-22FF-428B-92F1-C227ABD0E906",
+            "width": "255"
+        },
+        {
+            "batchDateCreated": "2013-01-25T06:03:54Z",
+            "batchGuid": "49B53F71-D501-4D9A-BAB9-7955FA9EEA37",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-12-05T04:17:14Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "01308b9c1532c82e13a2873760d4b98af1571585ec",
+                    "fileSize": "946738",
+                    "height": "1535",
+                    "width": "2056"
+                },
+                "342": {
+                    "checksum": "01c02102243352d9b4d7565c09b9992fae7af7eca2",
+                    "fileSize": "36006",
+                    "height": "255",
+                    "width": "342"
+                }
+            },
+            "height": "255",
+            "photoGuid": "5D08F79F-F600-4BC9-B711-A4783795FFDC",
+            "width": "342"
+        },
+        {
+            "batchDateCreated": "2013-01-25T04:53:08Z",
+            "batchGuid": "FAE3E009-0437-4D30-B672-5E2D4E902FE6",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-09-17T13:20:48Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "016331384c9978b5fe33e31f6b595bdf235e6e2c6f",
+                    "fileSize": "1007847",
+                    "height": "1536",
+                    "width": "2056"
+                },
+                "343": {
+                    "checksum": "0109ad4a8b8c868a3bdb71ee223c2fa03e87c97a91",
+                    "fileSize": "33264",
+                    "height": "256",
+                    "width": "343"
+                }
+            },
+            "height": "1536",
+            "photoGuid": "DF8BABDD-1180-4F1F-9C87-8ADD341D3217",
+            "width": "2056"
+        },
+        {
+            "batchDateCreated": "2013-01-25T04:53:00Z",
+            "batchGuid": "19569BC7-37B9-495D-A72D-CD5FD8D0F2B8",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-09-17T13:20:10Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "018487d420a4086c2144fc3d8187c8469f5bcfb3ce",
+                    "fileSize": "1063859",
+                    "height": "2056",
+                    "width": "1536"
+                },
+                "343": {
+                    "checksum": "01aa02f1a58acf96b5c4b80f96daa6f53f300a1234",
+                    "fileSize": "30974",
+                    "height": "343",
+                    "width": "256"
+                }
+            },
+            "height": "2056",
+            "photoGuid": "1221FBF5-423C-43E6-9FD3-93D595676206",
+            "width": "1536"
+        },
+        {
+            "batchDateCreated": "2013-01-25T04:53:27Z",
+            "batchGuid": "BEB1F800-B6EC-4C95-82EB-7BB807E3334D",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-09-14T13:35:12Z",
+            "derivatives": {
+                "2056": {
+                    "checksum": "01acb91d2b2b0844046469ffa146d0a52ef76eb550",
+                    "fileSize": "1224581",
+                    "height": "1536",
+                    "width": "2056"
+                },
+                "343": {
+                    "checksum": "01549df688875b89ac10eddd344ea5bacdbada4d1a",
+                    "fileSize": "32390",
+                    "height": "256",
+                    "width": "343"
+                }
+            },
+            "height": "1536",
+            "photoGuid": "D23225C9-00D9-45BE-9B3F-688D350DE499",
+            "width": "2056"
+        },
+        {
+            "batchDateCreated": "2013-01-25T04:53:16Z",
+            "batchGuid": "B0D4AD23-7156-4A2A-9E1E-5830F62B3688",
+            "caption": "",
+            "contributorFirstName": "huo",
+            "contributorFullName": "huo ju",
+            "contributorLastName": "ju",
+            "dateCreated": "2010-08-13T17:14:59Z",
+            "derivatives": {
+                "2048": {
+                    "checksum": "0130d1db79fc679c921297459207e789f82a5fe001",
+                    "fileSize": "601188",
+                    "height": "1926",
+                    "width": "2048"
+                },
+                "332": {
+                    "checksum": "0136147d966fd45c1cdeaded9e9a0d0a8f012ad1c7",
+                    "fileSize": "20347",
+                    "height": "313",
+                    "width": "332"
+                }
+            },
+            "height": "1926",
+            "photoGuid": "DB3DBE86-0E86-4578-8CC0-126248E9DA4E",
+            "width": "2048"
+        }
+    ],
+    "streamCtag": "FT=-@RU=794ae15c-75f4-4699-8281-e2b28d7a415b@S=257",
+    "streamName": "Cats",
+    "userFirstName": "huo",
+    "userLastName": "ju"
+}
