@@ -61,6 +61,9 @@ define('INSTAGRAM_CLIENT_ID', '821a4ee86a0a4f80a5d0390a8180e08e');
 define('INSTAGRAM_CLIENT_SECRET', 'c63497820adf443c80e570a0d61fe163');
 define('INSTAGRAM_REDIRECT_URI', SITE_URL.'/OAuth/InstagramCallBack');
 
+define('FLICKR_KEY', '4d4b6607c002f1afd54f98e18491104e');
+define('FLICKR_SECRET', '4ece1ec373dfaab4');
+
 define('GOOGLE_MAP_KEY', 'AIzaSyAgYKtU2lpDg_HYH_rP2MIna0DFyIoEGMs');
 
 define('GOOGLE_CLIENT_ID', '968124746422.apps.googleusercontent.com');
