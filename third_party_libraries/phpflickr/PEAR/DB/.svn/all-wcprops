@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 31
+/svn/!svn/ver/126/trunk/PEAR/DB
+END
+storage.php
+K 25
+svn:wc:ra_dav:version-url
+V 43
+/svn/!svn/ver/126/trunk/PEAR/DB/storage.php
+END
+mysql.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/126/trunk/PEAR/DB/mysql.php
+END
+pgsql.php
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/126/trunk/PEAR/DB/pgsql.php
+END
+common.php
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/!svn/ver/126/trunk/PEAR/DB/common.php
+END
