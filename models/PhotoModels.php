@@ -69,7 +69,7 @@ class PhotoModels extends DataModel {
 
 
     public function getPhotoById($id) {
-        $rawPhoto = $this->getAll("SELECT * FROM `photos` WHERE `id` = {$id}");
+        $rawPhoto = $this->getRow("SELECT * FROM `photos` WHERE `id` = {$id}");
         return $rawPhoto ? $this->packPhoto($rawPhoto) : null;
     }
 
