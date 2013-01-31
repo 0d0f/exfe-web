@@ -68,6 +68,12 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function getPhotoById($id) {
+        $rawPhoto = $this->getAll("SELECT * FROM `photos` WHERE `id` = {$id}");
+        return $rawPhoto ? $this->packPhoto($rawPhoto) : null;
+    }
+
+
     public function addPhotosToCross($cross_id, $photos, $identity_id) {
         if ($cross_id && is_array($photos) && $identity_id) {
             foreach ($photos as $photo) {
@@ -91,7 +97,7 @@ class PhotoModels extends DataModel {
                 $curImg = $this->getRow(
                     "SELECT * FROM `photos`
                      WHERE `cross_id`          =  {$cross_id}
-                     AND   `provider`          = 'facebook'
+                     AND   `provider`          = '{$photo->provider}'
                      AND   `external_album_id` = '{$photo->external_album_id}'
                      AND   `external_id`       = '{$photo->external_id}'"
                 );
@@ -99,7 +105,7 @@ class PhotoModels extends DataModel {
                     $this->query(
                         "UPDATE `photos` SET           {$strSql}
                          WHERE  `cross_id`          =  {$cross_id}
-                         AND    `provider`          = 'facebook'
+                         AND    `provider`          = '{$photo->provider}'
                          AND    `external_album_id` = '{$photo->external_album_id}'
                          AND    `external_id`       = '{$photo->external_id}'"
                     );
@@ -107,7 +113,7 @@ class PhotoModels extends DataModel {
                     $this->query(
                         "INSERT INTO `photos` SET
                          `cross_id`            =  {$cross_id},
-                         `provider`            = 'facebook',
+                         `provider`            = '{$photo->provider}',
                          `external_album_id`   = '{$photo->external_album_id}',
                          `external_id`         = '{$photo->external_id}',
                          `by_identity_id`      =  {$identity_id},
@@ -475,6 +481,29 @@ class PhotoModels extends DataModel {
         return null;
     }
 
+
+    public function getPhotoFromFlickr($photo) {
+        $objCurl = curl_init(
+            'http://api.flickr.com/services/rest/?method=flickr.photos.getSizes&api_key='
+          . FLICKR_KEY . "&photo_id={$photo->external_id}&format=json&nojsoncallback=1"
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($data = json_decode($data, true)) && isset($data['sizes']) && isset($data['sizes']['size'])) {
+            foreach ($data['sizes']['size'] as $size) {
+                if ($size['label'] === 'Large') {
+                    $photo->images['fullsize']['url']    =       $size['url'];
+                    $photo->images['fullsize']['width']  = (int) $size['width'];
+                    $photo->images['fullsize']['height'] = (int) $size['height'];
+                    return $photo;
+                }
+            }
+        }
+        return null;
+    }
+
     // }
 
 
@@ -559,6 +588,34 @@ class PhotoModels extends DataModel {
             }
             exit();
             //
+        }
+        return null;
+    }
+
+
+    public function getPhotoFromPhotoStream($photo) {
+        if ($photo) {
+            $objCurl = curl_init(
+                "https://p01-sharedstreams.icloud.com/{$photo->external_album_id}/sharedstreams/webasseturls"
+            );
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_POST, 1);
+            curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photo->external_id]));
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            if ($data && ($data = json_decode($data, true)) && isset($data['items'])) {
+                $hosts = [
+                    "https://{$data['locations']['ms_ap_sin']['hosts'][0]}",
+                    "https://{$data['locations']['ms_ap_sin']['hosts'][1]}"
+                ];
+                $objFullsize = @ $data['items'][$photo->images['fullsize']['url']];
+                if ($objFullsize) {
+                    $photo->images['fullsize']['url']        = "{$hosts[0]}{$objFullsize['url_path']}";
+                    $photo->images['fullsize']['expired_at'] = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
+                    return $photo;
+                }
+            }
         }
         return null;
     }
