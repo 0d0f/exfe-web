@@ -71,6 +71,9 @@ class PhotosActions extends ActionController {
                 $album_id = isset($_POST['album_id']) && $_POST['album_id'] ? $_POST['album_id'] : '';
                 $albums = $modPhoto->getAlbumsFromDropbox($identity_id, $album_id);
                 break;
+            case 'flickr':
+                $albums = $modPhoto->getAlbumsFromFlickr($identity_id);
+                break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
         }
@@ -203,6 +206,9 @@ class PhotosActions extends ActionController {
                 break;
             case 'photostream':
                 $modPhoto->getPhotosFromPhotoStream($stream_id, $identity_id);
+                break;
+            case 'flickr':
+                $result = $modPhoto->addFlickrAlbumToCross($album_id, $cross_id, $identity_id);
                 break;
             default:
                 apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');

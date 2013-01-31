@@ -268,12 +268,18 @@ class IdentityModels extends DataModel {
         // collecting new identity informations
         $user_id           = (int) $user_id;
         $provider          = @mysql_real_escape_string(trim($identityDetail['provider']));
-        $external_id       = @mysql_real_escape_string(strtolower(trim($identityDetail['external_id'])));
+        $external_id       = @mysql_real_escape_string(trim($identityDetail['external_id']));
         $external_username = @mysql_real_escape_string(strtolower(trim($identityDetail['external_username'])));
         $name              = @mysql_real_escape_string(trim($identityDetail['name']));
         $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
         $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
         $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        switch ($provider) {
+            case 'flickr':
+                break;
+            default:
+                $external_id = strtolower($external_id);
+        }
         // basic check
         switch ($provider) {
             case 'email':
@@ -285,6 +291,7 @@ class IdentityModels extends DataModel {
             case 'twitter':
             case 'facebook':
             case 'dropbox':
+            case 'flickr':
             case 'instagram':
                 if (!$external_id && !$external_username) {
                     if ($user_id && $status = 2 && $withVerifyInfo) {
@@ -350,6 +357,7 @@ class IdentityModels extends DataModel {
                     }
                     break;
                 case 'dropbox':
+                case 'flickr':
                 case 'instagram':
                     // @todo by @leaskh
                     break;

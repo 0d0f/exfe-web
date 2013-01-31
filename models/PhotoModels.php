@@ -29,16 +29,16 @@ class PhotoModels extends DataModel {
                                : '0000-00-00 00:00:00') . ' +0000';
         $images   = [
             'fullsize'  => [
-                'height'     => $rawPhoto['fullsize_height'],
-                'width'      => $rawPhoto['fullsize_width'],
-                'url'        => $rawPhoto['fullsize_url'],
-                'expired_at' => $rawPhoto['fullsize_expired_at'],
+                'height'     => (int) $rawPhoto['fullsize_height'],
+                'width'      => (int) $rawPhoto['fullsize_width'],
+                'url'        =>       $rawPhoto['fullsize_url'],
+                'expired_at' =>       $rawPhoto['fullsize_expired_at'],
             ],
             'thumbnail' => [
-                'height'     => $rawPhoto['thumbnail_height'],
-                'width'      => $rawPhoto['thumbnail_width'],
-                'url'        => $rawPhoto['thumbnail_url'],
-                'expired_at' => $rawPhoto['thumbnail_expired_at'],
+                'height'     => (int) $rawPhoto['thumbnail_height'],
+                'width'      => (int) $rawPhoto['thumbnail_width'],
+                'url'        =>       $rawPhoto['thumbnail_url'],
+                'expired_at' =>       $rawPhoto['thumbnail_expired_at'],
             ],
         ];
         // if (isset($rawPhoto['fullsize_hash'])) {
@@ -108,7 +108,7 @@ class PhotoModels extends DataModel {
                         "INSERT INTO `photos` SET
                          `cross_id`            =  {$cross_id},
                          `provider`            = 'facebook',
-                         `external_album_id`   = '{$photo->external_album_id}'
+                         `external_album_id`   = '{$photo->external_album_id}',
                          `external_id`         = '{$photo->external_id}',
                          `by_identity_id`      =  {$identity_id},
                          `created_at`          =  NOW(), {$strSql}"
@@ -150,8 +150,8 @@ class PhotoModels extends DataModel {
                             'count'       => $album['count'],
                             'size'        => -1,
                             'by_identity' => $identity,
-                            'created_at'  => date('Y-m-d H:i:s', strtotime($album['created_time'])),
-                            'updated_at'  => date('Y-m-d H:i:s', strtotime($album['updated_time'])),
+                            'created_at'  => date('Y-m-d H:i:s', strtotime($album['created_time'])) . ' +0000',
+                            'updated_at'  => date('Y-m-d H:i:s', strtotime($album['updated_time'])) . ' +0000',
                         ];
                     }
                     return $albums;
@@ -270,8 +270,8 @@ class PhotoModels extends DataModel {
                                 'count'       => -1,
                                 'size'        => $album['size'],
                                 'by_identity' => $identity,
-                                'created_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])),
-                                'updated_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])),
+                                'created_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])) . ' +0000',
+                                'updated_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])) . ' +0000',
                             ];
                         }
                     }
@@ -355,6 +355,124 @@ class PhotoModels extends DataModel {
             INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, $oauth_token['oauth_token']
         );
         return $instagram->get("users/{$external_id}/media/recent");
+    }
+
+    // }
+
+
+    // Flickr {
+
+    public function getAlbumsFromFlickr($identity_id) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $identity    = $hlpIdentity->getIdentityById($identity_id);
+        if ($identity
+         && $identity->connected_user_id > 0
+         && $identity->provider === 'flickr') {
+            $token   = $hlpIdentity->getOAuthTokenById($identity_id);
+            if ($token
+             && $token['oauth_token']
+             && $token['oauth_token_secret']) {
+                $objCurl = curl_init(
+                    'http://api.flickr.com/services/rest/?method=flickr.photosets.getList&api_key='
+                  . FLICKR_KEY
+                  . "&user_id={$identity->external_id}&format=json&nojsoncallback=1"
+                );
+                curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                $data = curl_exec($objCurl);
+                curl_close($objCurl);
+                if ($data && ($data = json_decode($data, true)) && isset($data['photosets']) && isset($data['photosets']['photoset'])) {
+                    $albums = [];
+                    foreach ($data['photosets']['photoset'] as $album) {
+                        $albums[] = [
+                            'external_id' => $album['id'],
+                            'provider'    => 'flickr',
+                            'caption'     => $album['title']['_content'],
+                            'count'       => $album['photos'],
+                            'size'        => -1,
+                            'by_identity' => $identity,
+                            'created_at'  => date('Y-m-d H:i:s', $album['date_create']) . ' +0000',
+                            'updated_at'  => date('Y-m-d H:i:s', $album['date_update']) . ' +0000',
+                        ];
+                    }
+                    return $albums;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public function getPhotosFromFlickr($identity_id, $album_id) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $identity    = $hlpIdentity->getIdentityById($identity_id);
+        if ($identity
+         && $identity->connected_user_id > 0
+         && $identity->provider === 'flickr') {
+            $token   = $hlpIdentity->getOAuthTokenById($identity_id);
+            if ($token
+             && $token['oauth_token']
+             && $token['oauth_token_secret']) {
+                $objCurl = curl_init(
+                    'http://api.flickr.com/services/rest/?method=flickr.photosets.getPhotos&api_key='
+                  . FLICKR_KEY
+                  . "&photoset_id={$album_id}&extras=date_taken%2Clast_update%2Cgeo%2Curl_m%2Curl_o&format=json&nojsoncallback=1"
+                );
+                curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                $data = curl_exec($objCurl);
+                curl_close($objCurl);
+                if ($data && ($data = json_decode($data, true)) && isset($data['photoset']) && isset($data['photoset']['photo'])) {
+                    $albums = [];
+                    foreach ($data['photoset']['photo'] as $photo) {
+                        $created_at = date('Y-m-d H:i:s', strtotime($photo['datetaken']));
+                        $updated_at = date('Y-m-d H:i:s', $photo['lastupdate']);
+                        if ((int) $photo['longitude'] === 0
+                         && (int) $photo['latitude']  === 0) {
+                            $photo['longitude'] = '';
+                            $photo['latitude']  = '';
+                        }
+                        $albums[]   = $this->packPhoto([
+                            'id'                   => 0,
+                            'cross_id'             => 0,
+                            'caption'              => $photo['title'],
+                            'by_identity_id'       => $identity_id,
+                            'created_at'           => $created_at,
+                            'updated_at'           => $updated_at,
+                            'external_created_at'  => $created_at,
+                            'external_updated_at'  => $updated_at,
+                            'provider'             => 'flickr',
+                            'external_album_id'    => $album_id,
+                            'external_id'          => $photo['id'],
+                            'location_title'       => '',
+                            'location_description' => '',
+                            'location_external_id' => $photo['place_id'],
+                            'location_lng'         => "{$photo['longitude']}",
+                            'location_lat'         => "{$photo['latitude']}",
+                            'fullsize_url'         => isset($photo['url_o'])    ?       $photo['url_o']    : '',
+                            'fullsize_width'       => isset($photo['width_o'])  ? (int) $photo['width_o']  : 0,
+                            'fullsize_height'      => isset($photo['height_o']) ? (int) $photo['height_o'] : 0,
+                            'thumbnail_url'        => $photo['url_m'],
+                            'thumbnail_width'      => (int) $photo['width_m'],
+                            'thumbnail_height'     => (int) $photo['height_m'],
+                        ]);
+                    }
+                    return $albums;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public function addFlickrAlbumToCross($album_id, $cross_id, $identity_id) {
+        if ($album_id && $cross_id && $identity_id) {
+            $photos = $this->getPhotosFromFlickr($identity_id, $album_id);
+            if ($photos !== null) {
+                return $this->addPhotosToCross($cross_id, $photos, $identity_id);
+            }
+        }
+        return null;
     }
 
     // }
