@@ -149,7 +149,7 @@ class PhotosActions extends ActionController {
             apiError(403, 'not_authorized', "The X you're requesting is private.");
         }
         // check args
-        $id = @ $_POST['id'] ?: '';
+        $id = @ (int) $_POST['id'] ?: '';
         //
         $modPhoto = $this->getModelByName('Photo');
         $photo = $modPhoto->getPhotoById($id);
