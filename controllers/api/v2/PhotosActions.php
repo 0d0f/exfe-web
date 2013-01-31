@@ -135,6 +135,40 @@ class PhotosActions extends ActionController {
     }
 
 
+    public function doGetFullsizePhoto() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check');
+        $params   = $this->params;
+        $cross_id = @ (int) $_POST['cross_id'];
+        $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else if ($result['uid'] === 0) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        } else {
+            apiError(403, 'not_authorized', "The X you're requesting is private.");
+        }
+        // check args
+        $id = @ $_POST['id'] ?: '';
+        //
+        $modPhoto = $this->getModelByName('Photo');
+        $photo = $modPhoto->getPhotoById($id);
+        if ($photo) {
+            switch ($photo->provider) {
+                case 'photostream':
+                    $photo = $modPhoto->getPhotoFromPhotoStream($photo);
+                    break;
+                case 'flickr':
+                    $photo = $modPhoto->getPhotoFromFlickr($photo);
+            }
+        }
+        if ($photo) {
+            apiResponse(['photo' => $photo]);
+        }
+        apiError(400, 'error_getting_photo');
+    }
+
+
     public function doAddAlbumsToCross() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
