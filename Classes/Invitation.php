@@ -6,7 +6,9 @@ class Invitation extends EFObject {
 
     public $invited_by       = null;
 
-    public $by_identity      = null;
+    public $by_identity      = null; // @todo: to be removed in v3
+
+    public $updated_by       = null;
 
     public $rsvp_status      = null;
 
@@ -22,6 +24,8 @@ class Invitation extends EFObject {
 
     public $mates            = null;
 
+    public $remark           = null;
+
 
     public function __construct($id               = 0,
                                 $identity         = null,
@@ -33,7 +37,8 @@ class Invitation extends EFObject {
                                 $created_at       = '',
                                 $updated_at       = '',
                                 $host             = false,
-                                $mates            = 0) {
+                                $mates            = 0,
+                                $remark           = []) { // @todo: $by_identity to be changed in v3
         parent::__construct($id, 'invitation');
 
         $updated_at             = $updated_at
@@ -42,7 +47,8 @@ class Invitation extends EFObject {
 
         $this->identity         = $identity;
         $this->invited_by       = $invited_by;
-        $this->by_identity      = $by_identity;
+        $this->by_identity      = $by_identity; // @todo: to be removed in v3
+        $this->updated_by       = $by_identity;
         $this->rsvp_status      = $rsvp_status;
         $this->via              = $via;
         $this->token            = $token;
@@ -50,6 +56,7 @@ class Invitation extends EFObject {
         $this->updated_at       = $updated_at . ' +0000';
         $this->host             = !!intval($host);
         $this->mates            = (int) $mates;
+        $this->remark           = is_array($remark) ? $remark : [];
     }
 
 }

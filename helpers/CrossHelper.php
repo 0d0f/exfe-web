@@ -43,11 +43,10 @@ class CrossHelper extends ActionController {
 
                 $begin_at=new CrossTime($cross['date_word'], $cross['date'], $cross['time_word'], $cross['time'], $cross["timezone"], $cross['origin_begin_at'], intval($cross['outputformat']));
 
-                $attribute=array();
-                if($cross["state"]==1)
-                    $attribute["state"]="published";
-                else if($cross["state"]==0)
-                    $attribute["state"]="draft";
+                $attribute = [];
+                $status    = ['draft', 'published', 'deleted'];
+                $attribute['state']  = $status[$cross['state']];
+                $attribute['closed'] = !!$cross['closed'];
 
                 $created_at=$cross["created_at"];
 
@@ -55,7 +54,7 @@ class CrossHelper extends ActionController {
 
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
                 $conversation_count=$conversationData->getConversationCounter($cross["exfee_id"],$uid);
-                $cross=new Cross($cross["id"],$cross["title"], $cross["description"], $attribute,$exfee, array($background),$begin_at, $place,$conversation_count);
+                $cross=new Cross($cross['id'], $cross['title'], $cross['description'], $attribute, $exfee, [$background], $begin_at, $place, $conversation_count);
                 $cross->by_identity=$by_identity;
                 $cross->created_at=$created_at." +0000";
                 $relative_id=0;
@@ -98,17 +97,16 @@ class CrossHelper extends ActionController {
 
         $begin_at=new CrossTime($cross['date_word'], $cross['date'], $cross['time_word'], $cross['time'], $cross["timezone"], $cross['origin_begin_at'], intval($cross['outputformat']));
 
-        $attribute=array();
-        if($cross["state"]==1)
-            $attribute["state"]="published";
-        else if($cross["state"]==0)
-            $attribute["state"]="draft";
+        $attribute = [];
+        $status    = ['draft', 'published', 'deleted'];
+        $attribute['state']  = $status[$cross['state']];
+        $attribute['closed'] = !!$cross['closed'];
 
         $exfeeData=$this->getModelByName("exfee");
         $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), $withRemoved, $withToken);
         $created_at=$cross["created_at"];
 
-        $cross=new Cross($cross["id"],$cross["title"], $cross["description"],$attribute,$exfee, array($background),$begin_at, $place);
+        $cross=new Cross($cross['id'], $cross['title'], $cross['description'], $attribute, $exfee, [$background], $begin_at, $place);
         $cross->by_identity = $by_identity;
         $cross->created_at  = $created_at . ' +0000';
         $cross->updated_at  = $exfee->updated_at;
@@ -168,6 +166,11 @@ class CrossHelper extends ActionController {
         $exfeeData = $this->getModelByName('exfee');
         $exfeeData->updateExfeeTime($exfee_id);
         return $cross_id;
+    }
+
+
+    public function getRawCrossById($cross_id) {
+        return $this->modCross->getCross($cross_id);
     }
 
 }

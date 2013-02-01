@@ -43,7 +43,7 @@ class ExfeeActions extends ActionController {
         // get cross id
         $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
         // check rights
-        $result   = $hlpCheck->isAPIAllow('cross_edit', $params['token'], array('cross_id' => $cross_id, "by_identity_id"=>$by_identity_id));
+        $result   = $hlpCheck->isAPIAllow('cross_edit', $params['token'], ['cross_id' => $cross_id, 'by_identity_id' => $by_identity_id]);
         if (!$result['check']) {
             if ($result['uid']) {
                 apiError(403, 'not_authorized', 'You are not a member of this exfee.');
@@ -56,12 +56,13 @@ class ExfeeActions extends ActionController {
         if (DEBUG) {
             error_log($_POST['exfee']);
         }
-        if ($exfee && isset($exfee->invitations) && is_array($exfee->invitations)
-        && ($udResult = $modExfee->updateExfeeById($exfee_id, $exfee->invitations, $by_identity_id, $result['uid']))) {
+        if ($exfee && is_object($exfee)) {
+            $exfee->id = $exfee_id;
+            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid']);
             if ($cross_id && $udResult['changed']) {
                 saveUpdate(
                     $cross_id,
-                    array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
+                    ['exfee' => ['updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id]]
                 );
             }
             $rtResult = ['exfee' => $modExfee->getExfeeById($exfee_id)];
@@ -103,7 +104,7 @@ class ExfeeActions extends ActionController {
         // get cross id
         $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
         // check rights
-        $result   = $hlpCheck->isAPIAllow('cross_edit', $params['token'], array('cross_id' => $cross_id, "by_identity_id"=>$by_identity_id));
+        $result   = $hlpCheck->isAPIAllow('cross_edit', $params['token'], ['cross_id' => $cross_id, 'by_identity_id' => $by_identity_id]);
         if (!$result['check']) {
             if ($result['uid']) {
                 apiError(403, 'not_authorized', 'You are not a member of this exfee.');
@@ -115,10 +116,10 @@ class ExfeeActions extends ActionController {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
-                    array('exfee' => array('updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id))
+                    ['exfee' => ['updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id]]
                 );
             }
-            apiResponse(array('rsvp' => $actResult));
+            apiResponse(['rsvp' => $actResult]);
         }
         apiError(400, 'editing failed', '');
     }
