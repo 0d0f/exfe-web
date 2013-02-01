@@ -96,6 +96,9 @@ class PhotoModels extends DataModel {
     public function addPhotosToCross($cross_id, $photos, $identity_id) {
         if ($cross_id && is_array($photos) && $identity_id) {
             foreach ($photos as $photo) {
+                $photo->images              = (array) $photo->images;
+                $photo->images['fullsize']  = (array) $photo->images['fullsize'];
+                $photo->images['thumbnail'] = (array) $photo->images['thumbnail'];
                 $strSql = "
                     `caption`              = '{$photo->caption}',
                     `updated_at`           =  NOW(),
