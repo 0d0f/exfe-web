@@ -35,15 +35,15 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['humantime',     '0.0.4'],
-    ['api',           '0.0.7'],
+    ['humantime',     '0.0.5'],
+    ['api',           '0.0.8'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.2'],
     ['xdialog',       '0.1.10'],
     ['datepanel',     '0.1.2'],
-    ['mappanel',      '0.0.5'],
+    ['mappanel',      '0.0.6'],
     ['global',        '0.0.5'],
 ]);
 
@@ -64,23 +64,6 @@ addScript([
     ['routes',        '0.1.11'],
     ['app',           '0.1.6'],
 ]);
-
-// google map
-$GOOGLE_MAP_KEY = GOOGLE_MAP_KEY;
-echo <<<EOT
-  <script>
-    // https://developers.google.com/maps/documentation/javascript/tutorial#asynch
-    !function () {
-      var b = document.getElementsByTagName('body')[0], g = document.createElement('script');
-      window._gmap = function () { delete window._gmap; };
-      g.async = 'async';
-      //g.src = 'https://maps.googleapis.com/maps/api/js?v=3.10&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places';
-      g.src = 'https://maps.googleapis.com/maps/api/js?v=3.10&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places&callback=_gmap';
-      b.appendChild(g);
-    }();
-  </script>
-EOT;
-unset($GOOGLE_MAP_KEY);
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
