@@ -35,15 +35,15 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['humantime',     '0.0.3'],
-    ['api',           '0.0.7'],
+    ['humantime',     '0.0.5'],
+    ['api',           '0.0.8'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.1'],
     ['xidentity',     '0.0.2'],
     ['xdialog',       '0.1.10'],
     ['datepanel',     '0.1.2'],
-    ['mappanel',      '0.0.5'],
+    ['mappanel',      '0.0.6'],
     ['global',        '0.0.5'],
 ]);
 
@@ -65,19 +65,10 @@ addScript([
     ['app',           '0.1.6'],
 ]);
 
-// google map
-$GOOGLE_MAP_KEY = GOOGLE_MAP_KEY;
-echo <<<EOT
-<script type="text/javascript">
-document.write('<' + 'script src="' + 'https://maps.googleapis.com/maps/api/js?v=3.9&key=${GOOGLE_MAP_KEY}&sensor=false&libraries=places' + '"' + ' type="text/javascript"><' + '/script>');
-</script>
-EOT;
-unset($GOOGLE_MAP_KEY);
-
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
 echo <<<EOT
-<script type="text/javascript">
+<script>
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-31794223-2']);
   _gaq.push(['_trackPageview']);

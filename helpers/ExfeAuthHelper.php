@@ -10,51 +10,40 @@ class ExfeAuthHelper extends ActionController {
     }
 
 
-    public function generateToken($resource, $data, $expireAfterSeconds) {
+    public function generateToken($resource, $data, $expireAfterSeconds, $short = false) {
         return $this->modExfeAuth->generateToken(
-            $resource, $data, $expireAfterSeconds
+            $resource, $data, $expireAfterSeconds, $short
         );
     }
 
 
-    public function getToken($token) {
-        return $this->modExfeAuth->getToken($token);
+    public function getToken($token, $short = false) {
+        return $this->modExfeAuth->getToken($token, $short);
     }
 
 
-    public function findToken($resource) {
-        return $this->modExfeAuth->findToken(json_encode($resource));
+    public function findToken($resource, $short = false) {
+        return $this->modExfeAuth->findToken(json_encode($resource), $short);
     }
 
 
-    public function updateToken($token, $data) {
-        return $this->modExfeAuth->updateToken($token, $data);
+    public function updateToken($token, $data, $short = false) {
+        return $this->modExfeAuth->updateToken($token, $data, $short);
     }
 
 
-    public function verifyToken($token, $resource) {
-        return $this->modExfeAuth->verifyToken($token, $resource);
+    public function refreshToken($token, $expireAfterSeconds, $short = false) {
+        return $this->modExfeAuth->refreshToken($token, $expireAfterSeconds, $short);
     }
 
 
-    public function deleteToken($token) {
-        return $this->modExfeAuth->deleteToken($token);
+    public function expireToken($token, $short = false) {
+        return $this->modExfeAuth->expireToken($token, $short);
     }
 
 
-    public function refreshToken($token, $expireAfterSeconds) {
-        return $this->modExfeAuth->refreshToken($token, $expireAfterSeconds);
+    public function expireAllTokens($resource, $short = false) {
+        return $this->modExfeAuth->expireAllTokens($resource, $short);
     }
-
-
-    public function expireToken($token) {
-        return $this->modExfeAuth->expireToken($token);
-    }
-
-
-    public function expireAllTokens($resource) {
-        return $this->modExfeAuth->expireAllTokens($resource);
-    }
-
 
 }

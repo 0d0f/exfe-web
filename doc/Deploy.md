@@ -1,5 +1,42 @@
-部署记录
+# install
+sudo apt-get install python-software-properties
+apt-get update
+apt-get upgrade
+apt-get dist-upgrade
+apt-get install git lighttpd mysql-client mysql-server openssh-client openssh-server php5 php5-cgi php5-cli php5-gd php5-intl php5-curl php5-mysqlnd redis-server
+# clone source
+cd /
+mkdir 0d0f
+cd 0d0f
+git clone git@dlol.us:exfeweb.git
+git clone git@dlol.us:exfelight.git
+cd exfeweb
+ln -s ../exfelight/production static
+cd ..
+# config lighttpd.conf
+server.modules = (
+        "mod_access",
+        "mod_alias",
+        "mod_compress",
+        # Changed by @Leask {
+        "mod_fastcgi",
+        "mod_rewrite",
+        "mod_redirect",
+        # }
+)
+# init database
+source exfe_schema_1354600349.sql;
+grant all privileges on exfe_dev.* to 'exfe'@'%' identified by '135qetadg';
+FLUSH PRIVILEGES;
 
+
+
+
+old version:
+
+
+
+部署记录
 
 0 服务器
     lighttpd
@@ -9,35 +46,11 @@
     monit
 
     php需要安装 php-redis
-
 //linux
-apt-get update
-apt-get install build-essential
-apt-get install redis
-apt-get install redis-server
-apt-get install mysql-server
-apt-get install libxml2-dev
-apt-get install libssl-dev
-apt-get install libcurl4-openssl-dev
-apt-get install libjpeg62-dev
-apt-get install libpng12-dev
-apt-get install libmysqlclient-dev
-apt-get install libpcre3-dev
-apt-get install libbz2-dev
-apt-get install libcurl4-gnutls-dev libexpat1-dev gettext libz-dev libssl-dev
-apt-get install git-core gitosis
-apt-get install autoconf
-apt-get install libc-client2007e-dev
-wget http://us.php.net/distributions/php-5.3.8.tar.bz2
 #'./configure' '--with-mysql' '--enable-mbstring' '--with-curl' '--with-pdo-mysql' '--with-openssl' '--with-gd' '--with-jpeg-dir=/usr/lib' '--disable-fileinfo' '--with-iconv-dir=/usr/local/lib'
 './configure' '--with-mysql' '--enable-mbstring' '--with-curl' '--with-pdo-mysql' '--with-openssl' '--with-gd' '--with-jpeg-dir=/usr/lib' '--disable-fileinfo' '--with-iconv-dir=/usr/local/lib' --with-imap  --with-imap-ssl --with-kerberos
-wget http://download.lighttpd.net/lighttpd/releases-1.4.x/lighttpd-1.4.29.tar.gz
 
 git clone https://github.com/nicolasff/phpredis.git
-
-CREATE DATABASE exfe CHARACTER SET utf8 COLLATE utf8_general_ci;
-GRANT ALL PRIVILEGES ON exfe.* TO 'exfe'@'localhost' IDENTIFIED BY 'di5#vuaavF' WITH GRANT OPTION;
-FLUSH PRIVILEGES;
 
 //freebsd
 /usr/ports/textproc/php5-simplexml
@@ -83,7 +96,3 @@ session.cookie_domain = '.exfe.com'
 mysql 配置文件
 [mysqld]
 default-time-zone='+00:00'
-
-
-
-

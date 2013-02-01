@@ -72,7 +72,7 @@ class UserModels extends DataModel {
                             'token_type'  => 'verification_token',
                             'action'      => 'VERIFY',
                             'identity_id' => (int) $item['identityid'],
-                        ]);
+                        ], $item['provider'] === 'mobile');
                         if ($curTokens && is_array($curTokens)) {
                             foreach ($curTokens as $cI => $cItem) {
                                 $cItem['data'] = (array) json_decode($cItem['data']);
@@ -340,6 +340,7 @@ class UserModels extends DataModel {
             $rtResult = ['reason' => 'NO_USER'];
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -362,6 +363,7 @@ class UserModels extends DataModel {
             $rtResult['reason'] = 'NO_PASSWORD';
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -390,6 +392,7 @@ class UserModels extends DataModel {
             $rtResult = array('reason'  => 'REVOKED');
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -406,6 +409,7 @@ class UserModels extends DataModel {
             $rtResult = ['reason' => 'RELATED'];
             switch ($identity->provider) {
                 case 'email':
+                case 'mobile':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -436,6 +440,7 @@ class UserModels extends DataModel {
                 $user_id = $user_id ?: $this->addUser();
                 switch ($identity->provider) {
                     case 'email':
+                    case 'mobile':
                         if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
                             return null;
                         }
@@ -466,7 +471,8 @@ class UserModels extends DataModel {
         // get current token
         $expireSec = 60 * 60 * 24 * 2; // 2 days
         $result['token'] = '';
-        $curTokens = $hlpExfeAuth->findToken($resource);
+        $short = $identity->provider === 'mobile';
+        $curTokens = $hlpExfeAuth->findToken($resource, $short);
         if ($curTokens && is_array($curTokens)) {
             foreach ($curTokens as $cI => $cItem) {
                 $cItem['data'] = (array) json_decode($cItem['data']);
@@ -484,14 +490,16 @@ class UserModels extends DataModel {
         // case provider
         switch ($identity->provider) {
             case 'email':
-                // update database
+            case 'mobile':
+                // call token service
                 if ($result['token']) {
-                    $hlpExfeAuth->updateToken($result['token'], $data);       // update
-                    $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
+                    $hlpExfeAuth->updateToken($result['token'], $data, $short);       // update
+                    $hlpExfeAuth->refreshToken($result['token'], $expireSec, $short); // extension
                     $actResult = true;
                 } else {
-                    $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
-                        $resource, $data, $expireSec
+                    // make new token
+                    $actResult = $result['token'] = $hlpExfeAuth->generateToken(
+                        $resource, $data, $expireSec, $short
                     );
                 }
                 // return
@@ -547,9 +555,9 @@ class UserModels extends DataModel {
     }
 
 
-    public function resolveToken($token) {
+    public function resolveToken($token, $short = false) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
-        if (($curToken = $hlpExfeAuth->getToken($token))
+        if (($curToken = $hlpExfeAuth->getToken($token, $short))
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
@@ -606,17 +614,19 @@ class UserModels extends DataModel {
                                             'created_time'   => time(),
                                             'updated_time'   => time(),
                                         ];
-                                        $hlpExfeAuth->updateToken($token, $curToken['data']);
+                                        $hlpExfeAuth->updateToken(
+                                            $token, $curToken['data'], $short
+                                        );
                                         // }
                                     }
                                 }
                             }
                             // }
                             if ($siResult['password']) {
-                                $hlpExfeAuth->expireAllTokens($resource);
+                                $hlpExfeAuth->expireAllTokens($resource, $short);
                                 $rtResult['action'] = 'VERIFIED';
                             } else {
-                                $hlpExfeAuth->refreshToken($token, 233);
+                                $hlpExfeAuth->refreshToken($token, 233, $short);
                                 $rtResult['action'] = 'INPUT_NEW_PASSWORD';
                             }
                             return $rtResult;
@@ -629,7 +639,7 @@ class UserModels extends DataModel {
                         $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
-                        $hlpExfeAuth->refreshToken($token, 233);
+                        $hlpExfeAuth->refreshToken($token, 233, $short);
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );
