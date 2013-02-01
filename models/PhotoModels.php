@@ -57,12 +57,31 @@ class PhotoModels extends DataModel {
 
 
     public function getPhotosByCrossId($cross_id) {
+        //
+        $hlpExfee = $this->getHelperByName('Exfee');
+        $exfee_id = $hlpExfee->getExfeeIdByCrossId($cross_id);
+        $exfee    = $hlpExfee->getExfeeById($exfee_id);
+        $users    = [];
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->rsvp_status !== 'NOTIFICATION'
+             && $invitation->identity->connected_user_id >= 0) {
+                $users[$invitation->identity->connected_user_id] = $invitation->identity;
+            }
+        }
+        //
         $photos = [];
         $rawPhotos = $this->getAll(
             "SELECT * FROM `photos` WHERE `cross_id` = {$cross_id}"
         );
         foreach ($rawPhotos ?: [] as $rawPhoto) {
             $photos[] = $this->packPhoto($rawPhoto);
+        }
+        //
+        foreach ($photos as $i => $photo) {
+            $user_id = $photo->by_identity->connected_user_id;
+            if (isset($users[$user_id])) {
+                $photos[$i]->by_identity = $users[$user_id];
+            }
         }
         return $photos;
     }

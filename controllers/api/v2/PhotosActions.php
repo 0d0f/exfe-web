@@ -182,21 +182,43 @@ class PhotosActions extends ActionController {
         } else {
             apiError(403, 'not_authorized', "The X you're requesting is private.");
         }
-        // check identity
-        $identity_id = @ (int) $_POST['identity_id'];
-        if (!$identity_id) {
-            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        $modIdentity = $this->getModelByName('Identity');
-        $identity = $modIdentity->getIdentityById($identity_id);
-        if (!$identity || $identity->connected_user_id !== $user_id) {
-            apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
-        }
         // check args
-        $album_id  = @ $_POST['album_id']       ?: '';
-        $min_id    = @ $_POST['min_id']         ?: '';
-        $max_id    = @ $_POST['max_id']         ?: '';
-        $stream_id = @ $_POST['photostream_id'] ?: '';
+        $album_id     = @ $_POST['album_id']       ?: '';
+        $min_id       = @ $_POST['min_id']         ?: '';
+        $max_id       = @ $_POST['max_id']         ?: '';
+        $stream_id    = @ $_POST['photostream_id'] ?: '';
+        $identity_id  = 0;
+        // check identity
+        if ($stream_id) {
+            $modExfee = $this->getModelByName('Exfee');
+            $exfee_id = $modExfee->getExfeeIdByCrossId($cross_id);
+            $exfee    = $modExfee->getExfeeById($exfee_id);
+            $bak_id   = 0;
+            foreach ($exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $user_id) {
+                    if ($invitation->rsvp_status === 'NOTIFICATION') {
+                        $bak_id      = $invitation->identity->id;
+                    } else {
+                        $identity_id = $invitation->identity->id;
+                        break;
+                    }
+                }
+            }
+            $identity_id = $identity_id ?: $bak_id;
+            if (!$identity_id) {
+                apiError(400, 'server_error');
+            }
+        } else {
+            $identity_id = @ (int) $_POST['identity_id'];
+            if (!$identity_id) {
+                apiError(400, 'no_identity_id', ''); // 需要输入identity_id
+            }
+            $modIdentity = $this->getModelByName('Identity');
+            $identity = $modIdentity->getIdentityById($identity_id);
+            if (!$identity || $identity->connected_user_id !== $user_id) {
+                apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
+            }
+        }
         // add album to cross
         $modPhoto  = $this->getModelByName('Photo');
         $result    = null;
