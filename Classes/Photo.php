@@ -34,8 +34,8 @@ class Photo extends EFObject {
                                 $external_id       = '',
                                 $location          = null,
                                 $images            = [],
-                                $siblings          = [],
-                                $external_album_id = '') {
+                                $external_album_id = '',
+                                $siblings          = []) {
         parent::__construct(intval($id), 'Photo');
 
         $created_at              = $created_at  ?: date('Y-m-d H:i:s');
