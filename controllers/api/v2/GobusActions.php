@@ -330,6 +330,13 @@ class GobusActions extends ActionController {
 
 
     public function doAddPhotosToCross() {
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        if (!$cross_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'No Cross id!';
+            return;
+        }
         // get model
         $modPhoto = $this->getModelByName('Photo');
         // get raw data
@@ -339,16 +346,18 @@ class GobusActions extends ActionController {
             return;
         }
         // decode json
-        $args = json_decode($str_args);
-        if (isset($args['cross_id'])
-         && isset($args['photos'])
-         && is_array($args['photos'])
-         && isset($args['identity_id'])) {
-            $result = $modPhoto->addPhotosToCross(
-                (int) $args['cross_id'], $args['photos'], (int) $args['identity_id']
-            );
-            if ($result) {
-                return;
+        $photos = json_decode($str_args);
+        if (is_array($photos)) {
+            if ($photos) {
+                $identity_id = @ (int) $photos[0]->by_identity->id;
+                if ($identity_id) {
+                    $result = $modPhoto->addPhotosToCross(
+                        $cross_id, $photos, $identity_id
+                    );
+                    if ($result) {
+                        return;
+                    }
+                }
             }
         }
         header('HTTP/1.1 500 Internal Server Error');
