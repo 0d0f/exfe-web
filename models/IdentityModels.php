@@ -42,7 +42,6 @@ class IdentityModels extends DataModel {
                         $objParsed = Identity::parseEmail($rawIdentity['external_username']);
                         $rawIdentity['name'] = $objParsed['name'];
                         break;
-                    case 'twitter':
                     default:
                         $rawIdentity['name'] = $rawIdentity['external_username'];
                 }
@@ -62,6 +61,7 @@ class IdentityModels extends DataModel {
                 0,
                 $rawIdentity['unreachable']
             );
+            $objIdentity->order = $rawUserIdentity && isset($rawUserIdentity['order']) ? (int) $rawUserIdentity['order'] : 999;
             if ($status !== null) {
                 $objIdentity->status = $status;
             }
@@ -277,6 +277,7 @@ class IdentityModels extends DataModel {
         // basic check
         switch ($provider) {
             case 'email':
+            case 'mobile':
                 if (!$external_id && !$external_username) {
                     return null;
                 }
@@ -320,6 +321,9 @@ class IdentityModels extends DataModel {
                 case 'email':
                     $external_id = $external_username = $external_id ?: $external_username;
                     $avatar_filename = $this->getGravatarByExternalUsername($external_username);
+                    break;
+                case 'mobile':
+                    $external_id = $external_username = $external_id ?: $external_username;
                     break;
                 case 'twitter':
                     $rawIdentity = $hlpOAuth->getTwitterProfileByExternalUsername(
@@ -519,28 +523,3 @@ class IdentityModels extends DataModel {
     }
 
 }
-
-
-
-// public function getIdentityByIdFromCache($identity_id) {
-//     if ($identity_id) {
-//         $redis = new Redis();
-//         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-//         $identity = $redis->HGET('identities', "id:{$identity_id}");
-//         if ($identity) {
-//             $identity = json_decode($identity);
-//         } else {
-//             $identity = $this->getIdentityById($identity_id);
-//             if ($identity) {
-//                 $redis->HSET(
-//                     'identities', "id:{$identity_id}",
-//                     json_encode($identity) // @was: json_encode_nounicode
-//                 );
-//             }
-//         }
-//         if ($identity) {
-//             return $identity;
-//         }
-//     }
-//     return null;
-// }

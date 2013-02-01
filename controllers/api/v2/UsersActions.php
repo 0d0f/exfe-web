@@ -9,6 +9,10 @@ class UsersActions extends ActionController {
         if (!$params['id']) {
             apiError(400, 'no_user_id', 'user_id must be provided');
         }
+        $updated_at=$params["updated_at"];
+        if ($updated_at) {
+            $updated_at = strtotime($updated_at);
+        }
         $result = $checkHelper->isAPIAllow('user_self', $params['token'], array('user_id' => $params['id']));
         if (!$result['check']) {
             if ($result['uid']) {
@@ -20,6 +24,9 @@ class UsersActions extends ActionController {
         if ($objUser = $modUser->getUserById($params['id'], true, 0)) {
             $passwd  = $modUser->getUserPasswdByUserId($params['id']);
             $objUser->password = !!$passwd['encrypted_password'];
+            if ($updated_at && $updated_at >= strtotime($objUser->updated_at)) {
+                apiError(304, 'User Not Modified.');
+            }
             apiResponse(['user' => $objUser]);
         }
         apiError(404, 'user_not_found', 'user not found');
@@ -713,20 +720,59 @@ class UsersActions extends ActionController {
 
         $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
-        if($result["check"]!==true)
-        {
-            if($result["uid"]===0)
+        if ($result["check"] !== true) {
+            if ($result["uid"] === 0)
                 apiError(401,"invalid_auth","");
         }
 
-        $exfeeHelper= $this->getHelperByName('exfee');
-        $exfee_id_list=$exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
-        $crossHelper= $this->getHelperByName('cross');
-        if($updated_at!='')
-            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,true,$uid);
-        else
-            $cross_list=$crossHelper->getCrossesByExfeeIdList($exfee_id_list,null,null,false,$uid);
-        apiResponse(array("crosses"=>$cross_list));
+        $exfeeHelper = $this->getHelperByName('exfee');
+        $exfee_id_list = $exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
+        $crossHelper = $this->getHelperByName('cross');
+        $cross_list  = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, !!$updated_at, $uid);
+        foreach ($cross_list as $i => $cross) {
+            if ($cross->attribute['deleted']) {
+                unset($cross_list[$i]);
+            }
+        }
+        sort($cross_list);
+        apiResponse(['crosses' => $cross_list]);
+    }
+
+
+    public function doArchivedCrosses() {
+        // @todo: 此处为临时方案，应该直接从 invitations 开始筛选，才能取得更完整的结果。 by @leaskh
+        $params = $this->params;
+        $uid    = (int) $params['id'];
+
+        $checkHelper = $this->getHelperByName('check');
+        $result = $checkHelper->isAPIAllow('user_crosses', $params['token'], ['user_id' => $uid]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0)
+                apiError(401, 'invalid_auth', '');
+        }
+
+        $exfeeHelper = $this->getHelperByName('exfee');
+        $exfee_id_list = $exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
+        $crossHelper = $this->getHelperByName('cross');
+        $cross_list  = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, false, $uid);
+        foreach ($cross_list as $i => $cross) {
+            $archived = false;
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $uid
+                 && $invitation->rsvp_status                 !== 'REMOVED'
+                 && $invitation->rsvp_status                 !== 'NOTIFICATION') {
+                    if (in_array('ARCHIVED', $invitation->remark)) {
+                        $archived = true;
+                        break;
+                    }
+                }
+            }
+            if ($cross->attribute['deleted'] || !$archived) {
+                unset($cross_list[$i]);
+            }
+        }
+        sort($cross_list);
+        apiResponse(['crosses' => $cross_list]);
     }
 
 
@@ -737,8 +783,8 @@ class UsersActions extends ActionController {
         $hlpCross   = $this->getHelperByName('cross');
         // auth check
         $params     = $this->params;
-        $user_id    = (int)$params['id'];
-        $result     = $hlpCheck->isAPIAllow('user_crosses', $params['token'], array('user_id' => $user_id));
+        $user_id    = (int) $params['id'];
+        $result     = $hlpCheck->isAPIAllow('user_crosses', $params['token'], ['user_id' => $user_id]);
         if (!$result['check']) {
             apiError(401, 'invalid_auth');
         }
@@ -746,9 +792,9 @@ class UsersActions extends ActionController {
         $today      = strtotime(date('Y-m-d'));
         $upcoming   = $today + 60 * 60 * 24 * 3;
         $sevenDays  = $today + 60 * 60 * 24 * 7;
-        $categories = array('upcoming', 'sometime', 'sevendays', 'later', 'past');
-        $fetchIncl  = array();
-        $fetchFold  = array();
+        $categories = ['upcoming', 'sometime', 'sevendays', 'later', 'past'];
+        $fetchIncl  = [];
+        $fetchFold  = [];
         $more_pos   = 0;
         foreach ($categories as $cItem) {
             $fetchFold[$cItem] = !!intval($params["{$cItem}_folded"]);
@@ -768,19 +814,70 @@ class UsersActions extends ActionController {
         // get exfee_ids
         $exfee_ids  = $hlpExfee->getExfeeIdByUserid($user_id);
         // get crosses
-        $rawCrosses = array();
+        $rawCrosses = [];
         if ($fetchIncl['upcoming'] || $fetchIncl['sevendays'] || $fetchIncl['later']) {
             $rawCrosses['future']   = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'future', $today);
+            // clean archived {
+            foreach ($rawCrosses['future'] as $cI => $cross) {
+                $archived = false;
+                foreach ($cross->exfee->invitations as $iI => $invitation) {
+                    if ($invitation->identity->connected_user_id === $user_id
+                     && $invitation->rsvp_status                 !== 'REMOVED'
+                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
+                     && in_array('ARCHIVED', $invitation->remark)) {
+                        $archived = true;
+                        break;
+                    }
+                }
+                if ($archived) {
+                    unset($rawCrosses['future'][$cI]);
+                }
+            }
+            // }
         }
         if ($fetchIncl['past']) {
             $rawCrosses['past']     = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'past',   $today);
+            // clean archived {
+            foreach ($rawCrosses['past'] as $cI => $cross) {
+                $archived = false;
+                foreach ($cross->exfee->invitations as $iI => $invitation) {
+                    if ($invitation->identity->connected_user_id === $user_id
+                     && $invitation->rsvp_status                 !== 'REMOVED'
+                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
+                     && in_array('ARCHIVED', $invitation->remark)) {
+                        $archived = true;
+                        break;
+                    }
+                }
+                if ($archived) {
+                    unset($rawCrosses['past'][$cI]);
+                }
+            }
+            // }
         }
         if ($fetchIncl['sometime']) {
             $rawCrosses['sometime'] = $hlpCross->getCrossesByExfeeIdList($exfee_ids, 'sometime');
+            // clean archived {
+            foreach ($rawCrosses['sometime'] as $cI => $cross) {
+                $archived = false;
+                foreach ($cross->exfee->invitations as $iI => $invitation) {
+                    if ($invitation->identity->connected_user_id === $user_id
+                     && $invitation->rsvp_status                 !== 'REMOVED'
+                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
+                     && in_array('ARCHIVED', $invitation->remark)) {
+                        $archived = true;
+                        break;
+                    }
+                }
+                if ($archived) {
+                    unset($rawCrosses['sometime'][$cI]);
+                }
+            }
+            // }
         }
         // sort crosses
-        $crosses   = array();
-        $more      = array();
+        $crosses   = [];
+        $more      = [];
         $fetched   = 0;
         $maxCross  = 20;
         $minCross  = 3;
@@ -916,8 +1013,15 @@ class UsersActions extends ActionController {
         }
         // release memory
         unset($rawCrosses);
+        // clean deleted
+        foreach ($crosses as $i => $cross) {
+            if ($cross->attribute['deleted']) {
+                unset($crosses[$i]);
+            }
+        }
+        sort($crosses);
         // return
-        apiResponse(array('crosses' => $crosses, 'more' => $more));
+        apiResponse(['crosses' => $crosses, 'more' => $more]);
     }
 
 
