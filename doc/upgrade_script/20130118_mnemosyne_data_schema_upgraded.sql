@@ -18,8 +18,8 @@ CREATE TABLE `photos` (
   `fullsize_url`         varchar(255) COLLATE utf8_unicode_ci NOT NULL,
   `fullsize_width`       int(6) NOT NULL,
   `fullsize_height`      int(6) NOT NULL,
-  `thumbnail_url`        varchar(255) COLLATE utf8_unicode_ci NOT NULL,
-  `thumbnail_width`      int(6) NOT NULL,
-  `thumbnail_height`     int(6) NOT NULL,
+  `preview_url`          varchar(255) COLLATE utf8_unicode_ci NOT NULL,
+  `preview_width`        int(6) NOT NULL,
+  `preview_height`       int(6) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
