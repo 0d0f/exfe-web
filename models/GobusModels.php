@@ -11,14 +11,15 @@ class GobusModels extends DataModel {
                     }
                 }
             }
-            $strArgs = '';
-            foreach ($getArgs as $aI => $aItem) {
-                $strArgs .= "&{$aI}=" . (is_array($aItem) ? json_encode($aItem) : $aItem);
+            if ($method) {
+                $getArgs['method'] = $method;
             }
-            $url       = "{$server}/{$api}"
-                       . ($id     ? "/{$id}"            : '')
-                       . ($method ? "?method={$method}" : '')
-                       . $strArgs;
+            foreach ($getArgs as $aI => $aItem) {
+                if (is_array($aItem)) {
+                    $strArgs[$aI] = json_encode($aItem);
+                }
+            }
+            $url = "{$server}/{$api}" . ($getArgs ? '?' : '') . http_build_query($getArgs);
             if (DEBUG) {
                 error_log("URL: {$url}");
             }

@@ -1,6 +1,6 @@
 <?php
 
-class PhotosActions extends ActionController {
+class PhotoxActions extends ActionController {
 
     public function doIndex() {
         $params = $this->params;
@@ -26,7 +26,7 @@ class PhotosActions extends ActionController {
     }
 
 
-    public function doGetAlbums() {
+    public function doGetSouceAlbums() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -84,7 +84,7 @@ class PhotosActions extends ActionController {
     }
 
 
-    public function doGetPhotos() {
+    public function doGetSoucePhotos() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -135,11 +135,11 @@ class PhotosActions extends ActionController {
     }
 
 
-    public function doGetFullsizePhoto() {
+    public function doGetPhoto() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params   = $this->params;
-        $cross_id = @ (int) $_POST['cross_id'];
+        $cross_id = @ (int) $_POST['photox_id'];
         $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
         if ($result['check']) {
             $user_id = $result['uid'];
@@ -169,11 +169,11 @@ class PhotosActions extends ActionController {
     }
 
 
-    public function doAddAlbumsToCross() {
+    public function doAdd() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params   = $this->params;
-        $cross_id = @ (int) $_POST['cross_id'];
+        $cross_id = @ (int) $_POST['photox_id'];
         $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
         if ($result['check']) {
             $user_id = $result['uid'];
@@ -236,7 +236,7 @@ class PhotosActions extends ActionController {
                 if (!$album_id) {
                     apiError(400, 'no_album_id', '');
                 }
-                // @todo by @leaskh
+                $result = $modPhoto->addDropboxAlbumToCross($album_id, $cross_id, $identity_id);
                 break;
             case 'instagram':
                 if (!$min_id || !$max_id) {

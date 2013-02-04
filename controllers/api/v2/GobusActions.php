@@ -329,7 +329,7 @@ class GobusActions extends ActionController {
     }
 
 
-    public function doAddPhotosToCross() {
+    public function doAddPhotos() {
         $params   = $this->params;
         $cross_id = @ (int) $params['id'];
         if (!$cross_id) {
