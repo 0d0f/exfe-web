@@ -19,8 +19,8 @@ class PhotoxActions extends ActionController {
                 apiError(403, 'not_authorized', "The X you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
-            $photos = $modPhotos->getPhotosByCrossId($params['id']);
-            apiResponse(['photos' => $photos]);
+            $photox = $modPhotos->getPhotoxById($params['id']);
+            apiResponse(['photox' => $photox]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
     }
@@ -136,10 +136,17 @@ class PhotoxActions extends ActionController {
 
 
     public function doGetPhoto() {
-        // check signin
+        // get models
+        $modPhoto    = $this->getModelByName('Photo');
         $checkHelper = $this->getHelperByName('check');
+        // check args
         $params   = $this->params;
-        $cross_id = @ (int) $_POST['photox_id'];
+        $id       = @ (int) $_POST['id'] ?: '';
+        $cross_id = $modPhoto->getCrossIdByPhotoId($id);
+        if (!$id || !$cross_id) {
+            apiError(404, 'photo_not_found');
+        }
+        // check signin
         $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
         if ($result['check']) {
             $user_id = $result['uid'];
@@ -148,10 +155,7 @@ class PhotoxActions extends ActionController {
         } else {
             apiError(403, 'not_authorized', "The X you're requesting is private.");
         }
-        // check args
-        $id = @ (int) $_POST['id'] ?: '';
         //
-        $modPhoto = $this->getModelByName('Photo');
         $photo = $modPhoto->getPhotoById($id);
         if ($photo) {
             switch ($photo->provider) {
@@ -273,8 +277,8 @@ class PhotoxActions extends ActionController {
             apiError(400, 'not_allow', 'Can not access photos, please reauthenticate this identity.');
         }
         // get photos
-        $photos = $modPhoto->getPhotosByCrossId($cross_id);
-        apiResponse(['photos' => $photos]);
+        $photox = $modPhoto->getPhotoxById($cross_id);
+        apiResponse(['photox' => $photox]);
     }
 
 }
