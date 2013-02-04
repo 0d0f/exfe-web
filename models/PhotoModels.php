@@ -149,6 +149,20 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function addPhotosByGobus($photox_id, $album_id, $recipient) {
+        return $hlpQueue->pushToQueue(
+            '', '',
+            ['service'    => 'bus://exfe_service/thirdpart/photographers?album_id='
+                            . urlencode($album_id) . "&photox_id={$cross_id}",
+             'priority'   => 'instant',
+             'delay'      => 'instant',
+             'group_key'  => '',
+             'recipients' => [$recipient],
+             'data'       =>  $recipient]
+        ) ? true : null;
+    }
+
+
     // facebook {
 
     public function getAlbumsFromFacebook($identity_id) {
@@ -311,8 +325,8 @@ class PhotoModels extends DataModel {
     }
 
 
-    public function addDropboxAlbumToCross($album_id, $cross_id, $identity_id) {
-        if ($identity_id && $album_id && $cross_id) {
+    public function addDropboxAlbumToCross($album_id, $photox_id, $identity_id) {
+        if ($identity_id && $album_id && $photox_id) {
             $hlpIdentity = $this->getHelperByName('Identity');
             $identity = $hlpIdentity->getIdentityById($identity_id);
             if ($identity
@@ -335,15 +349,7 @@ class PhotoModels extends DataModel {
                         $identity->external_id,
                         $identity->external_username
                     );
-                    return $hlpQueue->pushToQueue(
-                        '', '',
-                        ['service'   => 'bus://exfe_service/thirdpart/photographers?album_id='
-                                      . urlencode($album_id) . "&photox_id={$cross_id}",
-                         'priority'  => 'instant',
-                         'delay'     => 'instant',
-                         'group_key' => '',
-                         'data'      => $recipient]
-                    ) ? true : null;
+                    return $this->addPhotosByGobus($photox_id, $album_id, $recipient);
                 }
             }
         }
@@ -646,10 +652,8 @@ class PhotoModels extends DataModel {
                         $photos[$pI]->images['thumbnail']['expired_at'] = date('Y-m-d H:i:s', strtotime($objThumbnail['url_expiry'])) . ' +0000';
                     }
                 }
-                print_r($photos);
+                return $photos;
             }
-            exit();
-            //
         }
         return null;
     }
@@ -676,6 +680,37 @@ class PhotoModels extends DataModel {
                     $photo->images['fullsize']['url']        = "{$hosts[0]}{$objFullsize['url_path']}";
                     $photo->images['fullsize']['expired_at'] = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
                     return $photo;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public function addPhotoStreamToCross($stream_id, $photox_id, $identity_id) {
+        if ($identity_id && $stream_id && $photox_id) {
+            $hlpIdentity = $this->getHelperByName('Identity');
+            $identity = $hlpIdentity->getIdentityById($identity_id);
+            if ($identity
+             && $identity->connected_user_id > 0) {
+                $token = $hlpIdentity->getOAuthTokenById($identity_id);
+                if ($token
+                 && $token['oauth_token']
+                 && $token['oauth_token_secret']) {
+                    $hlpQueue = $this->getHelperByName('Queue');
+                    $recipient = new Recipient(
+                        $identity->id,
+                        $identity->connected_user_id,
+                        $identity->name,
+                        json_encode($token),
+                        '',
+                        '',
+                        '',
+                        'photostream',
+                        $identity->external_id,
+                        $identity->external_username
+                    );
+                    return $this->addPhotosByGobus($photox_id, $stream_id, $recipient);
                 }
             }
         }

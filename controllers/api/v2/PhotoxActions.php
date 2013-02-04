@@ -261,7 +261,7 @@ class PhotoxActions extends ActionController {
                 }
                 break;
             case 'photostream':
-                $modPhoto->getPhotosFromPhotoStream($stream_id, $identity_id);
+                $result = $modPhoto->addPhotoStreamToCross($stream_id, $cross_id, $identity_id);
                 break;
             case 'flickr':
                 $result = $modPhoto->addFlickrAlbumToCross($album_id, $cross_id, $identity_id);
