@@ -310,6 +310,46 @@ class PhotoModels extends DataModel {
         return null;
     }
 
+
+    public function addDropboxAlbumToCross($album_id, $cross_id, $identity_id) {
+        if ($identity_id && $album_id && $cross_id) {
+            $hlpIdentity = $this->getHelperByName('Identity');
+            $identity = $hlpIdentity->getIdentityById($identity_id);
+            if ($identity
+             && $identity->connected_user_id > 0
+             && $identity->provider === 'dropbox') {
+                $token = $hlpIdentity->getOAuthTokenById($identity_id);
+                if ($token
+                 && $token['oauth_token']
+                 && $token['oauth_token_secret']) {
+                    $hlpQueue = $this->getHelperByName('Queue');
+                    $recipient = new Recipient(
+                        $identity->id,
+                        $identity->connected_user_id,
+                        $identity->name,
+                        json_encode($token),
+                        '',
+                        '',
+                        '',
+                        $identity->provider,
+                        $identity->external_id,
+                        $identity->external_username
+                    );
+                    return $hlpQueue->pushToQueue(
+                        '', '',
+                        ['service'   => 'bus://exfe_service/thirdpart/photographers?album_id='
+                                      . urlencode($album_id) . "&photox_id={$cross_id}",
+                         'priority'  => 'instant',
+                         'delay'     => 'instant',
+                         'group_key' => '',
+                         'data'      => $recipient]
+                    ) ? true : null;
+                }
+            }
+        }
+        return null;
+    }
+
     // }
 
 
