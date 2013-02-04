@@ -57,10 +57,10 @@ class PhotoModels extends DataModel {
     }
 
 
-    public function getPhotosByCrossId($cross_id) {
+    public function getPhotoxById($id) {
         //
         $hlpExfee = $this->getHelperByName('Exfee');
-        $exfee_id = $hlpExfee->getExfeeIdByCrossId($cross_id);
+        $exfee_id = $hlpExfee->getExfeeIdByCrossId($id);
         $exfee    = $hlpExfee->getExfeeById($exfee_id);
         $users    = [];
         foreach ($exfee->invitations as $invitation) {
@@ -72,9 +72,12 @@ class PhotoModels extends DataModel {
         //
         $photos = [];
         $rawPhotos = $this->getAll(
-            "SELECT * FROM `photos` WHERE `cross_id` = {$cross_id}"
+            "SELECT * FROM `photos` WHERE `cross_id` = {$id}"
         );
         foreach ($rawPhotos ?: [] as $rawPhoto) {
+            if ($rawPhoto['provider'] === 'photostream') {
+                $rawPhoto['fullsize_url'] = '';
+            }
             $photos[] = $this->packPhoto($rawPhoto);
         }
         //
@@ -84,13 +87,19 @@ class PhotoModels extends DataModel {
                 $photos[$i]->by_identity = $users[$user_id];
             }
         }
-        return $photos;
+        return new PhotoX($id, $photos);
     }
 
 
     public function getPhotoById($id) {
         $rawPhoto = $this->getRow("SELECT * FROM `photos` WHERE `id` = {$id}");
         return $rawPhoto ? $this->packPhoto($rawPhoto) : null;
+    }
+
+
+    public function getCrossIdByPhotoId($id) {
+        $rawPhoto = $this->getRow("SELECT `cross_id` FROM `photos` WHERE `id` = {$id}");
+        return $rawPhoto && isset($rawPhoto['cross_id']) ? (int) $rawPhoto['cross_id'] : null;
     }
 
 
@@ -151,10 +160,11 @@ class PhotoModels extends DataModel {
 
 
     public function addPhotosByGobus($photox_id, $album_id, $recipient) {
+        $hlpQueue = $this->getHelperByName('Queue');
         return $hlpQueue->pushToQueue(
             '', '',
             ['service'    => 'bus://exfe_service/thirdpart/photographers?album_id='
-                            . urlencode($album_id) . "&photox_id={$cross_id}",
+                            . urlencode($album_id) . "&photox_id={$photox_id}",
              'priority'   => 'instant',
              'delay'      => 'instant',
              'group_key'  => '',
@@ -337,7 +347,6 @@ class PhotoModels extends DataModel {
                 if ($token
                  && $token['oauth_token']
                  && $token['oauth_token_secret']) {
-                    $hlpQueue = $this->getHelperByName('Queue');
                     $recipient = new Recipient(
                         $identity->id,
                         $identity->connected_user_id,
@@ -527,9 +536,9 @@ class PhotoModels extends DataModel {
                             'fullsize_url'         => isset($photo['url_o'])    ?       $photo['url_o']    : '',
                             'fullsize_width'       => isset($photo['width_o'])  ? (int) $photo['width_o']  : 0,
                             'fullsize_height'      => isset($photo['height_o']) ? (int) $photo['height_o'] : 0,
-                            'preview_url'        => $photo['url_m'],
-                            'preview_width'      => (int) $photo['width_m'],
-                            'preview_height'     => (int) $photo['height_m'],
+                            'preview_url'          => $photo['url_m'],
+                            'preview_width'        => (int) $photo['width_m'],
+                            'preview_height'       => (int) $photo['height_m'],
                         ]);
                     }
                     return $albums;
@@ -647,10 +656,10 @@ class PhotoModels extends DataModel {
                     foreach ($photos as $pI => $photo) {
                         $objFullsize = $data['items'][$photos[$pI]->images['fullsize']['url']];
                         $objPreview  = $data['items'][$photos[$pI]->images['preview']['url']];
-                        $photos[$pI]->images['fullsize']['url']         = "{$hosts[0]}{$objFullsize['url_path']}";
-                        $photos[$pI]->images['preview']['url']        = "{$hosts[1]}{$objPreview['url_path']}";
-                        $photos[$pI]->images['fullsize']['expired_at']  = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
-                        $photos[$pI]->images['preview']['expired_at'] = date('Y-m-d H:i:s', strtotime($objPreview['url_expiry'])) . ' +0000';
+                        $photos[$pI]->images['fullsize']['url']        = "{$hosts[0]}{$objFullsize['url_path']}";
+                        $photos[$pI]->images['preview']['url']         = "{$hosts[1]}{$objPreview['url_path']}";
+                        $photos[$pI]->images['fullsize']['expired_at'] = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
+                        $photos[$pI]->images['preview']['expired_at']  = date('Y-m-d H:i:s', strtotime($objPreview['url_expiry'])) . ' +0000';
                     }
                 }
                 return $photos;
@@ -662,6 +671,9 @@ class PhotoModels extends DataModel {
 
     public function getPhotoFromPhotoStream($photo) {
         if ($photo) {
+            $url     = $photo->images['fullsize']['url'];
+            $arr_url = explode('/', $url);
+            $hash    = array_pop($arr_url);
             $objCurl = curl_init(
                 "https://p01-sharedstreams.icloud.com/{$photo->external_album_id}/sharedstreams/webasseturls"
             );
@@ -676,7 +688,7 @@ class PhotoModels extends DataModel {
                     "https://{$data['locations']['ms_ap_sin']['hosts'][0]}",
                     "https://{$data['locations']['ms_ap_sin']['hosts'][1]}"
                 ];
-                $objFullsize = @ $data['items'][$photo->images['fullsize']['url']];
+                $objFullsize = @ $data['items'][$hash];
                 if ($objFullsize) {
                     $photo->images['fullsize']['url']        = "{$hosts[0]}{$objFullsize['url_path']}";
                     $photo->images['fullsize']['expired_at'] = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
@@ -698,7 +710,6 @@ class PhotoModels extends DataModel {
                 if ($token
                  && $token['oauth_token']
                  && $token['oauth_token_secret']) {
-                    $hlpQueue = $this->getHelperByName('Queue');
                     $recipient = new Recipient(
                         $identity->id,
                         $identity->connected_user_id,
