@@ -23,29 +23,30 @@ class PhotoModels extends DataModel {
                               && $rawPhoto['fullsize_expired_at']
                                ? date('Y-m-d H:i:s', strtotime($rawPhoto['fullsize_expired_at']))
                                : '0000-00-00 00:00:00') . ' +0000';
-        $thumbnail_expired_at = (isset($rawPhoto['thumbnail_expired_at'])
-                              && $rawPhoto['thumbnail_expired_at']
-                               ? date('Y-m-d H:i:s', strtotime($rawPhoto['thumbnail_expired_at']))
+        $preview_expired_at   = (isset($rawPhoto['preview_expired_at'])
+                              && $rawPhoto['preview_expired_at']
+                               ? date('Y-m-d H:i:s', strtotime($rawPhoto['preview_expired_at']))
                                : '0000-00-00 00:00:00') . ' +0000';
         $images   = [
-            'fullsize'  => [
+            'fullsize' => [
                 'height'     => (int) $rawPhoto['fullsize_height'],
                 'width'      => (int) $rawPhoto['fullsize_width'],
                 'url'        =>       $rawPhoto['fullsize_url'],
                 'expired_at' =>       $rawPhoto['fullsize_expired_at'],
             ],
-            'thumbnail' => [
-                'height'     => (int) $rawPhoto['thumbnail_height'],
-                'width'      => (int) $rawPhoto['thumbnail_width'],
-                'url'        =>       $rawPhoto['thumbnail_url'],
-                'expired_at' =>       $rawPhoto['thumbnail_expired_at'],
+            'preview'  => [
+                'height'     => (int) $rawPhoto['preview_height'],
+                'width'      => (int) $rawPhoto['preview_width'],
+                'url'        =>       $rawPhoto['preview_url'],
+                'expired_at' =>       $rawPhoto['preview_expired_at'],
             ],
         ];
+        $images['original']  =  $images['fullsize'];
         // if (isset($rawPhoto['fullsize_hash'])) {
         //     $images['fullsize']['hash']  = $rawPhoto['fullsize_hash'];
         // }
-        // if (isset($rawPhoto['thumbnail_hash'])) {
-        //     $images['thumbnail']['hash'] = $rawPhoto['thumbnail_hash'];
+        // if (isset($rawPhoto['preview_hash'])) {
+        //     $images['preview']['hash'] = $rawPhoto['preview_hash'];
         // }
         return new Photo(
             $rawPhoto['id'], $rawPhoto['caption'], $identity,
@@ -96,9 +97,9 @@ class PhotoModels extends DataModel {
     public function addPhotosToCross($cross_id, $photos, $identity_id) {
         if ($cross_id && is_array($photos) && $identity_id) {
             foreach ($photos as $photo) {
-                $photo->images              = (array) $photo->images;
-                $photo->images['fullsize']  = (array) $photo->images['fullsize'];
-                $photo->images['thumbnail'] = (array) $photo->images['thumbnail'];
+                $photo->images             = (array) $photo->images;
+                $photo->images['fullsize'] = (array) $photo->images['fullsize'];
+                $photo->images['preview']  = (array) $photo->images['preview'];
                 $strSql = "
                     `caption`              = '{$photo->caption}',
                     `updated_at`           =  NOW(),
@@ -112,9 +113,9 @@ class PhotoModels extends DataModel {
                     `fullsize_url`         = '{$photo->images['fullsize']['url']}',
                     `fullsize_width`       =  {$photo->images['fullsize']['width']},
                     `fullsize_height`      =  {$photo->images['fullsize']['height']},
-                    `thumbnail_url`        = '{$photo->images['thumbnail']['url']}',
-                    `thumbnail_width`      =  {$photo->images['thumbnail']['width']},
-                    `thumbnail_height`     =  {$photo->images['thumbnail']['height']}
+                    `preview_url`          = '{$photo->images['preview']['url']}',
+                    `preview_width`        =  {$photo->images['preview']['width']},
+                    `preview_height`       =  {$photo->images['preview']['height']}
                 ";
                 $curImg = $this->getRow(
                     "SELECT * FROM `photos`
@@ -246,9 +247,9 @@ class PhotoModels extends DataModel {
                             'fullsize_url'         => $photo['images'][0]['source'],
                             'fullsize_width'       => $photo['images'][0]['width'],
                             'fullsize_height'      => $photo['images'][0]['height'],
-                            'thumbnail_url'        => $photo['source'],
-                            'thumbnail_width'      => $photo['width'],
-                            'thumbnail_height'     => $photo['height'],
+                            'preview_url'          => $photo['source'],
+                            'preview_width'        => $photo['width'],
+                            'preview_height'       => $photo['height'],
                         ]);
                     }
                     return $albums;
@@ -403,9 +404,9 @@ class PhotoModels extends DataModel {
                             'fullsize_url'         => $photo->images->standard_resolution->url,
                             'fullsize_width'       => $photo->images->standard_resolution->width,
                             'fullsize_height'      => $photo->images->standard_resolution->height,
-                            'thumbnail_url'        => $photo->images->standard_resolution->url,
-                            'thumbnail_width'      => $photo->images->standard_resolution->width,
-                            'thumbnail_height'     => $photo->images->standard_resolution->height,
+                            'preview_url'          => $photo->images->standard_resolution->url,
+                            'preview_width'        => $photo->images->standard_resolution->width,
+                            'preview_height'       => $photo->images->standard_resolution->height,
                         ]);
                     }
                     return ['photos' => $photos, 'next_max_id' => $rawPhotos->pagination->next_max_id];
@@ -526,9 +527,9 @@ class PhotoModels extends DataModel {
                             'fullsize_url'         => isset($photo['url_o'])    ?       $photo['url_o']    : '',
                             'fullsize_width'       => isset($photo['width_o'])  ? (int) $photo['width_o']  : 0,
                             'fullsize_height'      => isset($photo['height_o']) ? (int) $photo['height_o'] : 0,
-                            'thumbnail_url'        => $photo['url_m'],
-                            'thumbnail_width'      => (int) $photo['width_m'],
-                            'thumbnail_height'     => (int) $photo['height_m'],
+                            'preview_url'        => $photo['url_m'],
+                            'preview_width'      => (int) $photo['width_m'],
+                            'preview_height'     => (int) $photo['height_m'],
                         ]);
                     }
                     return $albums;
@@ -597,8 +598,8 @@ class PhotoModels extends DataModel {
                     );
                     $catched = [];
                     foreach ($photo['derivatives'] as $di => $derivative) {
-                        if (!isset($catched['thumbnail'])) {
-                            $catched['thumbnail']  = $di;
+                        if (!isset($catched['preview'])) {
+                            $catched['preview']  = $di;
                         } else if (!isset($catched['fullsize'])) {
                             $catched['fullsize'] = $di;
                         }
@@ -623,9 +624,9 @@ class PhotoModels extends DataModel {
                         'fullsize_url'         => $photo['derivatives'][$catched['fullsize']]['checksum'],
                         'fullsize_width'       => $photo['derivatives'][$catched['fullsize']]['width'],
                         'fullsize_height'      => $photo['derivatives'][$catched['fullsize']]['height'],
-                        'thumbnail_url'        => $photo['derivatives'][$catched['thumbnail']]['checksum'],
-                        'thumbnail_width'      => $photo['derivatives'][$catched['thumbnail']]['width'],
-                        'thumbnail_height'     => $photo['derivatives'][$catched['thumbnail']]['height'],
+                        'preview_url'          => $photo['derivatives'][$catched['preview']]['checksum'],
+                        'preview_width'        => $photo['derivatives'][$catched['preview']]['width'],
+                        'preview_height'       => $photo['derivatives'][$catched['preview']]['height'],
                     ]);
                     $photoGuids[] = $photo['photoGuid'];
                 }
@@ -644,12 +645,12 @@ class PhotoModels extends DataModel {
                         "https://{$data['locations']['ms_ap_sin']['hosts'][1]}"
                     ];
                     foreach ($photos as $pI => $photo) {
-                        $objFullsize  = $data['items'][$photos[$pI]->images['fullsize']['url']];
-                        $objThumbnail = $data['items'][$photos[$pI]->images['thumbnail']['url']];
+                        $objFullsize = $data['items'][$photos[$pI]->images['fullsize']['url']];
+                        $objPreview  = $data['items'][$photos[$pI]->images['preview']['url']];
                         $photos[$pI]->images['fullsize']['url']         = "{$hosts[0]}{$objFullsize['url_path']}";
-                        $photos[$pI]->images['thumbnail']['url']        = "{$hosts[1]}{$objThumbnail['url_path']}";
+                        $photos[$pI]->images['preview']['url']        = "{$hosts[1]}{$objPreview['url_path']}";
                         $photos[$pI]->images['fullsize']['expired_at']  = date('Y-m-d H:i:s', strtotime($objFullsize['url_expiry']))  . ' +0000';
-                        $photos[$pI]->images['thumbnail']['expired_at'] = date('Y-m-d H:i:s', strtotime($objThumbnail['url_expiry'])) . ' +0000';
+                        $photos[$pI]->images['preview']['expired_at'] = date('Y-m-d H:i:s', strtotime($objPreview['url_expiry'])) . ' +0000';
                     }
                 }
                 return $photos;
