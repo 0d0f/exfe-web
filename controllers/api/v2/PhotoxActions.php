@@ -10,19 +10,19 @@ class PhotoxActions extends ActionController {
             if ($result['uid'] === 0)
                 apiError(401, 'invalid_auth', '');
             else
-                apiError(403, 'not_authorized', "The X you're requesting is private.");
+                apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($params['id']);
         if ($cross) {
             if ($cross->attribute['deleted']) {
-                apiError(403, 'not_authorized', "The X you're requesting is private.");
+                apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
             $photox = $modPhotos->getPhotoxById($params['id']);
             apiResponse(['photox' => $photox]);
         }
-        apiError(400, 'param_error', "The X you're requesting is not found.");
+        apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
     }
 
 
@@ -153,7 +153,7 @@ class PhotoxActions extends ActionController {
         } else if ($result['uid'] === 0) {
             apiError(401, 'no_signin', ''); // 需要登录
         } else {
-            apiError(403, 'not_authorized', "The X you're requesting is private.");
+            apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         //
         $photo = $modPhoto->getPhotoById($id);
@@ -184,7 +184,7 @@ class PhotoxActions extends ActionController {
         } else if ($result['uid'] === 0) {
             apiError(401, 'no_signin', ''); // 需要登录
         } else {
-            apiError(403, 'not_authorized', "The X you're requesting is private.");
+            apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         // check args
         $album_id     = @ $_POST['album_id']       ?: '';
@@ -279,6 +279,79 @@ class PhotoxActions extends ActionController {
         // get photos
         $photox = $modPhoto->getPhotoxById($cross_id);
         apiResponse(['photox' => $photox]);
+    }
+
+
+    public doGetLikes() {
+        $params = $this->params;
+        $checkHelper = $this->getHelperByName('check');
+        $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0)
+                apiError(401, 'invalid_auth', '');
+            else
+                apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+        }
+        $crossHelper = $this->getHelperByName('cross');
+        $cross = $crossHelper->getCross($params['id']);
+        if ($cross) {
+            if ($cross->attribute['deleted']) {
+                apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+            }
+            $modPhotos = $this->getModelByName('Photo');
+            $responses = $modPhotos->getResponsesByPhotoxId($params['id']);
+            apiResponse(['responses' => $photox]);
+        }
+        apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
+    }
+
+
+    public doLike() {
+        // get models
+        $modPhoto    = $this->getModelByName('Photo');
+        $checkHelper = $this->getHelperByName('check');
+        // check args
+        $params   = $this->params;
+        $id       = @ (int) $_POST['id'] ?: '';
+        $cross_id = $modPhoto->getCrossIdByPhotoId($id);
+        if (!$id || !$cross_id) {
+            apiError(404, 'photo_not_found');
+        }
+        // check signin
+        $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else if ($result['uid'] === 0) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        } else {
+            apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+        }
+        //
+        $modExfee = $this->getModelByName('Exfee');
+        $exfee_id = $modExfee->getExfeeIdByCrossId($cross_id);
+        $exfee    = $modExfee->getExfeeById($exfee_id);
+        $bak_id   = 0;
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->connected_user_id === $user_id) {
+                if ($invitation->rsvp_status === 'NOTIFICATION') {
+                    $bak_id      = $invitation->identity->id;
+                } else {
+                    $identity_id = $invitation->identity->id;
+                    break;
+                }
+            }
+        }
+        $identity_id = $identity_id ?: $bak_id;
+        if (!$identity_id) {
+            apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+        }
+        //
+        $response = @ $_POST['LIKE'] === 'false' ? '' : 'LIKE';
+        $result   = $modPhoto->responseToPhoto($id, $identity_id, $response);
+        if ($result) {
+            apiResponse(['response' => $result]);
+        }
+        apiError(400, 'error_responsing_photo');
     }
 
 }

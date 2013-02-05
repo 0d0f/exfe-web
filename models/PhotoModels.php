@@ -174,6 +174,46 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function getResponsesByPhotoxId($id) {
+        //
+        $hlpExfee = $this->getHelperByName('Exfee');
+        $exfee_id = $hlpExfee->getExfeeIdByCrossId($id);
+        $exfee    = $hlpExfee->getExfeeById($exfee_id);
+        $users    = [];
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->rsvp_status !== 'NOTIFICATION'
+             && $invitation->identity->connected_user_id >= 0) {
+                $users[$invitation->identity->connected_user_id] = $invitation->identity;
+            }
+        }
+        //
+        $photo_ids = $this->getColumn(
+            "SELECT `id` FROM `photos` WHERE `cross_id` = {$id}"
+        );
+        //
+        $hlpResponse = $this->getHelperByName('Response');
+        $rawResponse = $hlpResponse->getResponsesByObjectTypeAndObjectIds('photo', $id);
+        if ($rawResponse) {
+            foreach ($rawResponse as $rgI => $rgItem) {
+                foreach ($rgItem as $rJ => $rJtem) {
+                    $user_id = $rJtem->by_identity->connected_user_id;
+                    if (isset($users[$user_id])) {
+                        $rawResponse[$rgI][$rJ]->by_identity = $users[$user_id];
+                    }
+                }
+            }
+            return $rawResponse;
+        }
+        return [];
+    }
+
+
+    public function responseToPhoto($id, $identity_id, $response) {
+        $hlpResponse = $this->getHelperByName('Response');
+        return $hlpResponse->responseToObject('photo', $id, $identity_id, $response);
+    }
+
+
     // facebook {
 
     public function getAlbumsFromFacebook($identity_id) {
