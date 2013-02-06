@@ -192,7 +192,7 @@ class PhotoModels extends DataModel {
         );
         //
         $hlpResponse = $this->getHelperByName('Response');
-        $rawResponse = $hlpResponse->getResponsesByObjectTypeAndObjectIds('photo', $id);
+        $rawResponse = $hlpResponse->getResponsesByObjectTypeAndObjectIds('photo', $photo_ids);
         if ($rawResponse) {
             foreach ($rawResponse as $rgI => $rgItem) {
                 foreach ($rgItem as $rJ => $rJtem) {
