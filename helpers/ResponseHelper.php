@@ -11,7 +11,12 @@ class ResponseHelper extends ActionController {
 
 
     public function getResponsesByObjectTypeAndObjectIds($object_type, $object_ids, $identity_id = 0) {
-        $this->modResponse->getResponsesByObjectTypeAndObjectIds($object_type, $object_ids, $identity_id);
+        return $this->modResponse->getResponsesByObjectTypeAndObjectIds($object_type, $object_ids, $identity_id);
+    }
+
+
+    public function responseToObject($object_type, $object_id, $identity_id, $response) {
+        return $this->modResponse->responseToObject($object_type, $object_id, $identity_id, $response);
     }
 
 }
