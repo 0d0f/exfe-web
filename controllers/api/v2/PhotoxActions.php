@@ -26,7 +26,7 @@ class PhotoxActions extends ActionController {
     }
 
 
-    public function doGetSouceAlbums() {
+    public function doGetSourceAlbums() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -84,7 +84,7 @@ class PhotoxActions extends ActionController {
     }
 
 
-    public function doGetSoucePhotos() {
+    public function doGetSourcePhotos() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -177,7 +177,7 @@ class PhotoxActions extends ActionController {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params   = $this->params;
-        $cross_id = @ (int) $_POST['photox_id'];
+        $cross_id = @ (int) $params['id'];
         $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
         if ($result['check']) {
             $user_id = $result['uid'];
@@ -282,10 +282,11 @@ class PhotoxActions extends ActionController {
     }
 
 
-    public doGetLikes() {
-        $params = $this->params;
+    public function doGetLikes() {
         $checkHelper = $this->getHelperByName('check');
-        $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
+        $params = $this->params;
+        $id     = @ (int) $params['id'];
+        $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $id]);
         if ($result['check'] !== true) {
             if ($result['uid'] === 0)
                 apiError(401, 'invalid_auth', '');
@@ -293,20 +294,20 @@ class PhotoxActions extends ActionController {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         $crossHelper = $this->getHelperByName('cross');
-        $cross = $crossHelper->getCross($params['id']);
+        $cross = $crossHelper->getCross($id);
         if ($cross) {
             if ($cross->attribute['deleted']) {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
-            $responses = $modPhotos->getResponsesByPhotoxId($params['id']);
-            apiResponse(['responses' => $photox]);
+            $responses = $modPhotos->getResponsesByPhotoxId($id);
+            apiResponse(['likes' => $responses]);
         }
         apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
     }
 
 
-    public doLike() {
+    public function doLike() {
         // get models
         $modPhoto    = $this->getModelByName('Photo');
         $checkHelper = $this->getHelperByName('check');
@@ -349,7 +350,7 @@ class PhotoxActions extends ActionController {
         $response = @ $_POST['LIKE'] === 'false' ? '' : 'LIKE';
         $result   = $modPhoto->responseToPhoto($id, $identity_id, $response);
         if ($result) {
-            apiResponse(['response' => $result]);
+            apiResponse(['like' => $result]);
         }
         apiError(400, 'error_responsing_photo');
     }

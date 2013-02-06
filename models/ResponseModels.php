@@ -25,7 +25,7 @@ class ResponseModels extends DataModel {
                             if (!isset($return[$item['object_id']])) {
                                 $return[$item['object_id']] = [];
                             }
-                            $return[$item['object_id']] = new Response(
+                            $return[$item['object_id']][] = new Response(
                                 $item['id'],
                                 $item['object_type'],
                                 $item['object_id'],
@@ -48,6 +48,7 @@ class ResponseModels extends DataModel {
         $result = $this->getResponsesByObjectTypeAndObjectIds(
             $object_type, [$object_id], $identity_id
         );
+        print_r($object_id);
         return $result && isset($result[$object_id]) ? $result[$object_id] : null;
     }
 
@@ -86,11 +87,11 @@ class ResponseModels extends DataModel {
                     }
                     $this->query(
                         "INSERT INTO `responses`
-                         SET `object_type`    = '{$object_type}'
-                             `object_id`      =  {$object_id}
-                             `response_id`    =  {$opt_idx}
-                             `by_identity_id` =  {$identity_id}
-                             `created_at`     =  NOW()
+                         SET `object_type`    = '{$object_type}',
+                             `object_id`      =  {$object_id},
+                             `response_id`    =  {$opt_idx},
+                             `by_identity_id` =  {$identity_id},
+                             `created_at`     =  NOW(),
                              `updated_at`     =  NOW()"
                     );
                     return $this->getResponseByObjectTypeAndObjectIdAndIdentityId(
