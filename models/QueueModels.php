@@ -17,17 +17,6 @@ class QueueModels extends DataModel {
     }
 
 
-    public function pushToMessage($ticket, $recipients, $data) {
-        $postData = [
-            'service'    => ['bus://streaming/conversation', 'bus://notifier/conversation'],
-            'ticket'     => $ticket,
-            'recipients' => $recipients,
-            'data'       => $data,
-        ];
-        return $this->hlpGobus->useGobusApi(EXFE_GOBUS_SERVER, 'v2/message', '', $postData);
-    }
-
-
     public function makeRecipientByInvitation($invitation) {
         return new Recipient(
             $invitation->identity->id,
@@ -70,17 +59,12 @@ class QueueModels extends DataModel {
                 $data['old_cross']->exfee->invitations
             );
         }
-        $ticket = "{$service}_{$method}" === 'Cross_Invite' ? '' : (string) $data['cross']->id;
-        $data   = $data ?: new stdClass;
-        if ($service === 'Conversation') {
-            return $this->pushToMessage($ticket, $tos, $data);
-        }
         $jobData = [
             'service'   => $service,
             'method'    => $method,
-            'merge_key' => $ticket,
+            'merge_key' => "{$service}_{$method}" === 'Cross_Invite' ? '' : (string) $data['cross']->id,
             'tos'       => $tos,
-            'data'      => $data,
+            'data'      => $data ?: new stdClass,
         ];
         if (DEBUG) {
             error_log('job: ' . json_encode($jobData));
