@@ -9,6 +9,9 @@ require_once 'Exfee.php';
 require_once 'Invitation.php';
 require_once 'Device.php';
 require_once 'Recipient.php';
+require_once 'Photo.php';
+require_once 'PhotoX.php';
+require_once 'Response.php';
 
 abstract class EFobject{
 
