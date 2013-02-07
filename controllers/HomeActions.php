@@ -17,6 +17,12 @@ class HomeActions extends ActionController {
         // return;
         // }
 
+        // $mod = $this->getModelByName('Photo');
+        // $pris = $mod->getAlbumsFromFacebook(391);
+        // //$pris = $mod->getPhotosFromFacebook(391, 10150805288363636);
+        // print_r($pris);
+        // return;
+
         // rsvp
         $modExfee = $this->getModelByName('Exfee');
         $modUser  = $this->getModelByName('User');

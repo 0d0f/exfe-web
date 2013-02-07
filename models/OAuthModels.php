@@ -3,8 +3,10 @@
 require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/facebook.php';
+require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
 require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
+// require_once dirname(dirname(__FILE__)) . '/lib/phpFlickr.php';
 
 
 class OAuthModels extends DataModel {
@@ -178,9 +180,11 @@ class OAuthModels extends DataModel {
 
     public function facebookRedirect($workflow) {
         $this->setSession('facebook', '', '', $workflow);
-        return 'https://graph.facebook.com/oauth/authorize?client_id='
-             . FACEBOOK_APP_ID         . '&redirect_uri='
-             . FACEBOOK_OAUTH_CALLBACK . '&type=web_server';
+        return 'https://graph.facebook.com/oauth/authorize'
+             . '?client_id='    . FACEBOOK_APP_ID
+             . '&redirect_uri=' . FACEBOOK_OAUTH_CALLBACK
+             . '&type=web_server'
+             . '&scope=user_photos,email,user_birthday,user_online_presence,status_update,photo_upload,video_upload,create_note,share_item,publish_stream';
     }
 
 
@@ -189,15 +193,37 @@ class OAuthModels extends DataModel {
     }
 
 
+    public function getFacebookPermissions($oauthToken) {
+        if (!$oauthToken) {
+            return null;
+        }
+        $objCurl = curl_init(
+            "https://graph.facebook.com/me/permissions?access_token={$oauthToken}"
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
+            $data = $data['data'];
+            if (sizeof($data) > 0) {
+                return array_keys((array) $data[0]);
+            }
+        }
+        return null;
+    }
+
+
     public function getFacebookOAuthToken($oauthCode) {
         if (!$oauthCode) {
             return null;
         }
         $objCurl = curl_init(
-            'https://graph.facebook.com/oauth/access_token?client_id='
-          . FACEBOOK_APP_ID         . '&redirect_uri='
-          . FACEBOOK_OAUTH_CALLBACK . '&client_secret='
-          . FACEBOOK_SECRET_KEY     . "&code={$oauthCode}"
+            'https://graph.facebook.com/oauth/access_token'
+          . '?client_id='     . FACEBOOK_APP_ID
+          . '&redirect_uri='  . FACEBOOK_OAUTH_CALLBACK
+          . '&client_secret=' . FACEBOOK_SECRET_KEY
+          . "&code={$oauthCode}"
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
@@ -237,7 +263,7 @@ class OAuthModels extends DataModel {
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
         $data = curl_exec($objCurl);
         curl_close($objCurl);
-        if ($data && ($rawIdentity = (array) json_decode($data))) {
+        if ($data && ($rawIdentity = json_decode($data, true))) {
             return new Identity(
                 0,
                 $rawIdentity['name'],
@@ -277,6 +303,297 @@ class OAuthModels extends DataModel {
             );
         }
         return null;
+    }
+
+    // }
+
+
+    // dropbox {
+
+    public function dropboxRedirect($workflow) {
+        // get oauth token
+        $objCurl = curl_init('https://api.dropbox.com/1/oauth/request_token');
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+            'Authorization: '
+          . 'OAuth oauth_version="1.0", '
+          . 'oauth_signature_method="PLAINTEXT", '
+          . 'oauth_consumer_key="' . DROPBOX_APP_KEY    . '", '
+          . 'oauth_signature="'    . DROPBOX_APP_SECRET . '&"'
+        ]);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        // oauth_token=<request-token>&oauth_token_secret=<request-token-secret>
+        if ($data) {
+            $data        = explode('&', $data);
+            $oauth_token = [];
+            if (sizeof($data) > 1) {
+                foreach ($data as $item) {
+                    $item = explode('=', $item);
+                    if (sizeof($item) === 2) {
+                        $oauth_token[$item[0]] = $item[1];
+                    } else {
+                        return false;
+                    }
+                }
+                // get oauth url
+                $this->setSession(
+                    'dropbox',
+                    $oauth_token['oauth_token'],
+                    $oauth_token['oauth_token_secret'],
+                    $workflow
+                );
+                return "https://www.dropbox.com/1/oauth/authorize?oauth_token={$oauth_token['oauth_token']}&oauth_callback=" . urlencode(DROPBOX_OAUTH_CALLBACK);
+            }
+        }
+        return false;
+    }
+
+
+    public function getDropboxOAuthToken() {
+        $requestToken = $this->getSession();
+        if ($requestToken
+         && $requestToken['external_service'] === 'dropbox'
+         && $requestToken['oauth_token']
+         && $requestToken['oauth_token_secret']) {
+            // get oauth token
+            $objCurl = curl_init('https://api.dropbox.com/1/oauth/access_token');
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                'Authorization: '
+              . 'OAuth oauth_version="1.0", '
+              . 'oauth_signature_method="PLAINTEXT", '
+              . 'oauth_consumer_key="' . DROPBOX_APP_KEY                     . '", '
+              . 'oauth_token="'        . $requestToken['oauth_token']        . '", '
+              . 'oauth_signature="'    . DROPBOX_APP_SECRET                  . '&'
+                                       . $requestToken['oauth_token_secret'] . '"'
+            ]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            // oauth_token=<access-token>&oauth_token_secret=<access-token-secret>&uid=<user-id>
+            if ($data) {
+                $data        = explode('&', $data);
+                $oauth_token = [];
+                if (sizeof($data) > 1) {
+                    foreach ($data as $item) {
+                        $item = explode('=', $item);
+                        if (sizeof($item) === 2) {
+                            $oauth_token[$item[0]] = $item[1];
+                        } else {
+                            return false;
+                        }
+                    }
+                    $this->addtoSession([
+                        'oauth_token'        => $oauth_token['oauth_token'],
+                        'oauth_token_secret' => $oauth_token['oauth_token_secret'],
+                    ]);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function getDropboxProfile($oauthToken, $oauthTokenSecret) {
+        if ($oauthToken && $oauthTokenSecret) {
+            // get oauth token
+            $objCurl = curl_init('https://api.dropbox.com/1/account/info');
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                'Authorization: '
+              . 'OAuth oauth_version="1.0", '
+              . 'oauth_signature_method="PLAINTEXT", '
+              . 'oauth_consumer_key="' . DROPBOX_APP_KEY    . '", '
+              . 'oauth_token="'        . $oauthToken        . '", '
+              . 'oauth_signature="'    . DROPBOX_APP_SECRET . '&'
+                                       . $oauthTokenSecret  . '"'
+            ]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            // pack identity
+            if ($data && ($data = json_decode($data, true))) {
+                return new Identity(
+                    0,
+                    $data['display_name'],
+                    '',
+                    '',
+                    'dropbox',
+                    0,
+                    $data['uid'],
+                    $data['email'],
+                    ''
+                );
+            }
+        }
+        return false;
+    }
+
+    // }
+
+
+    // instagram {
+
+    public function instagramRedirect($workflow) {
+        $this->setSession('instagram', '', '', $workflow);
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
+        );
+        return $instagram->authorizeUrl(
+            INSTAGRAM_REDIRECT_URI,
+            ['basic', 'comments', 'likes', 'relationships']
+        );
+    }
+
+
+    public function getInstagramProfile() {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
+        );
+        $profile = $instagram->getAccessToken(
+            $_GET['code'], INSTAGRAM_REDIRECT_URI
+        );
+        if ($profile && isset($profile->access_token) && isset($profile->user)) {
+            return [
+                'identity'    => new Identity(
+                    0,
+                    $profile->user->full_name,
+                    '',
+                    $profile->user->bio,
+                    'instagram',
+                    0,
+                    $profile->user->id,
+                    $profile->user->username,
+                    $profile->user->profile_picture
+                ),
+                'oauth_token' => ['oauth_token' => $profile->access_token],
+            ];
+        }
+        return null;
+    }
+
+    // }
+
+
+    // flickr {
+
+    public function requestFlickr($url, $args = [], $oauth_token_secret = '') {
+        if ($url) {
+            $args['oauth_nonce']            = crc32(time()); // rand(1, 99999999)
+            $args['oauth_timestamp']        = time();
+            $args['oauth_consumer_key']     = FLICKR_KEY;
+            $args['oauth_signature_method'] = 'HMAC-SHA1';
+            $args['oauth_version']          = '1.0';
+            $args['oauth_callback']         = FLICKR_OAUTH_CALLBACK;
+            ksort($args);
+            $signature = base64_encode(hash_hmac(
+                'sha1',
+                'GET&' . urlencode($url) . '&' . urlencode(http_build_query($args)),
+                urlencode(FLICKR_SECRET) . '&' . urlencode($oauth_token_secret ?: ''),
+                true
+            ));
+            $args['oauth_signature']        = urlencode($signature);
+            $header = ['Authorization: OAuth realm=""'];
+            foreach ($args as $name => $value) {
+                if (strncmp($name, 'oauth_', 6) === 0 || strncmp($name, 'xoauth_', 7) === 0) {
+                    $header[] = $name . '="' . $value . '"';
+                }
+            }
+            $objCurl = curl_init($url);
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [implode(', ', $header)]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            if ($data) {
+                return $data;
+            }
+        }
+        return null;
+    }
+
+
+    public function flickrRedirect($workflow) {
+        $rawResult = $this->requestFlickr(
+            'http://www.flickr.com/services/oauth/request_token'
+        );
+        if ($rawResult) {
+            $rawResult = explode('&', $rawResult);
+            $data      = [];
+            foreach ($rawResult as $rI => $rItem) {
+                $rItem = explode('=', $rItem);
+                $data[$rItem[0]] = urldecode($rItem[1]);
+            }
+            if (isset($data['oauth_callback_confirmed'])
+             && isset($data['oauth_token'])
+             && isset($data['oauth_token_secret'])) {
+                // get oauth url
+                $this->setSession(
+                    'flickr',
+                    $data['oauth_token'],
+                    $data['oauth_token_secret'],
+                    $workflow
+                );
+                return "http://www.flickr.com/services/oauth/authorize?oauth_token={$data['oauth_token']}";
+            }
+        }
+        return null;
+    }
+
+
+    public function getFlickrProfile($verifier) {
+        $requestToken = $this->getSession();
+        if ($verifier
+         && $requestToken
+         && $requestToken['external_service'] === 'flickr'
+         && $requestToken['oauth_token']
+         && $requestToken['oauth_token_secret']) {
+            $rawResult = $this->requestFlickr(
+                'http://www.flickr.com/services/oauth/access_token',
+                ['oauth_verifier' => $verifier,
+                 'oauth_token'    => $requestToken['oauth_token']],
+                $requestToken['oauth_token_secret']
+            );
+            if ($rawResult) {
+                $rawResult = explode('&', $rawResult);
+                $data = [];
+                foreach ($rawResult as $rI => $rItem) {
+                    $rItem = explode('=', $rItem);
+                    $data[$rItem[0]] = urldecode($rItem[1]);
+                }
+                if (isset($data['fullname'])
+                 && isset($data['oauth_token'])
+                 && isset($data['oauth_token_secret'])
+                 && isset($data['user_nsid'])
+                 && isset($data['username'])) {
+                    return [
+                        'identity'    => new Identity(
+                            0,
+                            $data['fullname'],
+                            '',
+                            '',
+                            'flickr',
+                            0,
+                            $data['user_nsid'],
+                            $data['username'],
+                            "http://www.flickr.com/buddyicons/{$data['user_nsid']}.jpg"
+                        ),
+                        'oauth_token' => [
+                            'oauth_token'        => $data['oauth_token'],
+                            'oauth_token_secret' => $data['oauth_token_secret'],
+                        ],
+                    ];
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public function get() {
+
     }
 
     // }
@@ -339,6 +656,8 @@ class OAuthModels extends DataModel {
         // 更新 OAuth Token
         switch ($objIdentity->provider) {
             case 'twitter':
+            case 'dropbox':
+            case 'flickr':
                 $oAuthToken = [
                     'oauth_token'        => $oauthIfo['oauth_token'],
                     'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
@@ -348,6 +667,11 @@ class OAuthModels extends DataModel {
                 $oAuthToken = [
                     'oauth_token'        => $rawOAuthToken['oauth_token'],
                     'oauth_expires'      => $rawOAuthToken['oauth_expires'],
+                ];
+                break;
+            case 'instagram':
+                $oAuthToken = [
+                    'oauth_token'        => $rawOAuthToken['oauth_token'],
                 ];
         }
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);
