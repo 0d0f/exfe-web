@@ -12,7 +12,7 @@
   <!-- Tmp -->
   <div class="tmp" id="app-tmp"></div>
 
-  <noscript>EXFE.com can't load if JavaScript is disabled</noscript>
+  <noscript>EXFE.COM can't load if JavaScript is disabled</noscript>
   <?php include 'share/footer.php'; ?>
 </body>
 </html>

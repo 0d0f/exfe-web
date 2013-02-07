@@ -9,7 +9,7 @@
   <!--/Container }}}-->
 
   <!-- Tmp -->
-  <noscript>EXFE.com can't load if JavaScript is disabled</noscript>
+  <noscript>EXFE.COM can't load if JavaScript is disabled</noscript>
   <?php include 'share/footer_mobile.php'; ?>
 </body>
 </html>
