@@ -6,7 +6,6 @@ require_once dirname(dirname(__FILE__)) . '/lib/facebook.php';
 require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
 require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
-// require_once dirname(dirname(__FILE__)) . '/lib/phpFlickr.php';
 
 
 class OAuthModels extends DataModel {
