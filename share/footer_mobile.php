@@ -13,7 +13,7 @@ addScript([
     ['zepto',         '1.0.0'],
     ['store',         '1.3.5'],
     ['moment',        '1.7.2'],
-    ['eftime',        '0.0.6'],
+    ['humantime',     '0.0.5'],
 ]);
 
 echo "  <script>\n";
