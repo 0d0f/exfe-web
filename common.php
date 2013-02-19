@@ -205,7 +205,7 @@ $redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
 
 function getCache($key) {
     global $redis_cache;
-    return $key ? unserialize($redis_cache->get($key)) : null;
+    return $key ? @unserialize($redis_cache->get($key)) : null;
 }
 
 function setCache($key, $value) {
