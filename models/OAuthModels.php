@@ -282,13 +282,299 @@ class OAuthModels extends DataModel {
     // }
 
 
+    // dropbox {
+
+    public function dropboxRedirect($workflow) {
+        // get oauth token
+        $objCurl = curl_init('https://api.dropbox.com/1/oauth/request_token');
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+            'Authorization: '
+          . 'OAuth oauth_version="1.0", '
+          . 'oauth_signature_method="PLAINTEXT", '
+          . 'oauth_consumer_key="' . DROPBOX_APP_KEY    . '", '
+          . 'oauth_signature="'    . DROPBOX_APP_SECRET . '&"'
+        ]);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        // oauth_token=<request-token>&oauth_token_secret=<request-token-secret>
+        if ($data) {
+            $data        = explode('&', $data);
+            $oauth_token = [];
+            if (sizeof($data) > 1) {
+                foreach ($data as $item) {
+                    $item = explode('=', $item);
+                    if (sizeof($item) === 2) {
+                        $oauth_token[$item[0]] = $item[1];
+                    } else {
+                        return false;
+                    }
+                }
+                // get oauth url
+                $this->setSession(
+                    'dropbox',
+                    $oauth_token['oauth_token'],
+                    $oauth_token['oauth_token_secret'],
+                    $workflow
+                );
+                return "https://www.dropbox.com/1/oauth/authorize?oauth_token={$oauth_token['oauth_token']}&oauth_callback=" . urlencode(DROPBOX_OAUTH_CALLBACK);
+            }
+        }
+        return false;
+    }
+
+
+    public function getDropboxOAuthToken() {
+        $requestToken = $this->getSession();
+        if ($requestToken
+         && $requestToken['external_service'] === 'dropbox'
+         && $requestToken['oauth_token']
+         && $requestToken['oauth_token_secret']) {
+            // get oauth token
+            $objCurl = curl_init('https://api.dropbox.com/1/oauth/access_token');
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                'Authorization: '
+              . 'OAuth oauth_version="1.0", '
+              . 'oauth_signature_method="PLAINTEXT", '
+              . 'oauth_consumer_key="' . DROPBOX_APP_KEY                     . '", '
+              . 'oauth_token="'        . $requestToken['oauth_token']        . '", '
+              . 'oauth_signature="'    . DROPBOX_APP_SECRET                  . '&'
+                                       . $requestToken['oauth_token_secret'] . '"'
+            ]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            // oauth_token=<access-token>&oauth_token_secret=<access-token-secret>&uid=<user-id>
+            if ($data) {
+                $data        = explode('&', $data);
+                $oauth_token = [];
+                if (sizeof($data) > 1) {
+                    foreach ($data as $item) {
+                        $item = explode('=', $item);
+                        if (sizeof($item) === 2) {
+                            $oauth_token[$item[0]] = $item[1];
+                        } else {
+                            return false;
+                        }
+                    }
+                    $this->addtoSession([
+                        'oauth_token'        => $oauth_token['oauth_token'],
+                        'oauth_token_secret' => $oauth_token['oauth_token_secret'],
+                    ]);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public function getDropboxProfile($oauthToken, $oauthTokenSecret) {
+        if ($oauthToken && $oauthTokenSecret) {
+            // get oauth token
+            $objCurl = curl_init('https://api.dropbox.com/1/account/info');
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
+                'Authorization: '
+              . 'OAuth oauth_version="1.0", '
+              . 'oauth_signature_method="PLAINTEXT", '
+              . 'oauth_consumer_key="' . DROPBOX_APP_KEY    . '", '
+              . 'oauth_token="'        . $oauthToken        . '", '
+              . 'oauth_signature="'    . DROPBOX_APP_SECRET . '&'
+                                       . $oauthTokenSecret  . '"'
+            ]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            // pack identity
+            if ($data && ($data = json_decode($data, true))) {
+                return new Identity(
+                    0,
+                    $data['display_name'],
+                    '',
+                    '',
+                    'dropbox',
+                    0,
+                    $data['uid'],
+                    $data['email'],
+                    ''
+                );
+            }
+        }
+        return false;
+    }
+
+    // }
+
+
+    // instagram {
+
+    public function instagramRedirect($workflow) {
+        $this->setSession('instagram', '', '', $workflow);
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
+        );
+        return $instagram->authorizeUrl(
+            INSTAGRAM_REDIRECT_URI,
+            ['basic', 'comments', 'likes', 'relationships']
+        );
+    }
+
+
+    public function getInstagramProfile() {
+        $instagram = new Instagram(
+            INSTAGRAM_CLIENT_ID, INSTAGRAM_CLIENT_SECRET, null
+        );
+        $profile = $instagram->getAccessToken(
+            $_GET['code'], INSTAGRAM_REDIRECT_URI
+        );
+        if ($profile && isset($profile->access_token) && isset($profile->user)) {
+            return [
+                'identity'    => new Identity(
+                    0,
+                    $profile->user->full_name,
+                    '',
+                    $profile->user->bio,
+                    'instagram',
+                    0,
+                    $profile->user->id,
+                    $profile->user->username,
+                    $profile->user->profile_picture
+                ),
+                'oauth_token' => ['oauth_token' => $profile->access_token],
+            ];
+        }
+        return null;
+    }
+
+    // }
+
+
+    // flickr {
+
+    public function requestFlickr($url, $args = [], $oauth_token_secret = '') {
+        if ($url) {
+            $args['oauth_nonce']            = crc32(time()); // rand(1, 99999999)
+            $args['oauth_timestamp']        = time();
+            $args['oauth_consumer_key']     = FLICKR_KEY;
+            $args['oauth_signature_method'] = 'HMAC-SHA1';
+            $args['oauth_version']          = '1.0';
+            $args['oauth_callback']         = FLICKR_OAUTH_CALLBACK;
+            ksort($args);
+            $signature = base64_encode(hash_hmac(
+                'sha1',
+                'GET&' . urlencode($url) . '&' . urlencode(http_build_query($args)),
+                urlencode(FLICKR_SECRET) . '&' . urlencode($oauth_token_secret ?: ''),
+                true
+            ));
+            $args['oauth_signature']        = urlencode($signature);
+            $header = ['Authorization: OAuth realm=""'];
+            foreach ($args as $name => $value) {
+                if (strncmp($name, 'oauth_', 6) === 0 || strncmp($name, 'xoauth_', 7) === 0) {
+                    $header[] = $name . '="' . $value . '"';
+                }
+            }
+            $objCurl = curl_init($url);
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_HTTPHEADER, [implode(', ', $header)]);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            if ($data) {
+                return $data;
+            }
+        }
+        return null;
+    }
+
+
+    public function flickrRedirect($workflow) {
+        $rawResult = $this->requestFlickr(
+            'http://www.flickr.com/services/oauth/request_token'
+        );
+        if ($rawResult) {
+            $rawResult = explode('&', $rawResult);
+            $data      = [];
+            foreach ($rawResult as $rI => $rItem) {
+                $rItem = explode('=', $rItem);
+                $data[$rItem[0]] = urldecode($rItem[1]);
+            }
+            if (isset($data['oauth_callback_confirmed'])
+             && isset($data['oauth_token'])
+             && isset($data['oauth_token_secret'])) {
+                // get oauth url
+                $this->setSession(
+                    'flickr',
+                    $data['oauth_token'],
+                    $data['oauth_token_secret'],
+                    $workflow
+                );
+                return "http://www.flickr.com/services/oauth/authorize?oauth_token={$data['oauth_token']}";
+            }
+        }
+        return null;
+    }
+
+
+    public function getFlickrProfile($verifier) {
+        $requestToken = $this->getSession();
+        if ($verifier
+         && $requestToken
+         && $requestToken['external_service'] === 'flickr'
+         && $requestToken['oauth_token']
+         && $requestToken['oauth_token_secret']) {
+            $rawResult = $this->requestFlickr(
+                'http://www.flickr.com/services/oauth/access_token',
+                ['oauth_verifier' => $verifier,
+                 'oauth_token'    => $requestToken['oauth_token']],
+                $requestToken['oauth_token_secret']
+            );
+            if ($rawResult) {
+                $rawResult = explode('&', $rawResult);
+                $data = [];
+                foreach ($rawResult as $rI => $rItem) {
+                    $rItem = explode('=', $rItem);
+                    $data[$rItem[0]] = urldecode($rItem[1]);
+                }
+                if (isset($data['fullname'])
+                 && isset($data['oauth_token'])
+                 && isset($data['oauth_token_secret'])
+                 && isset($data['user_nsid'])
+                 && isset($data['username'])) {
+                    return [
+                        'identity'    => new Identity(
+                            0,
+                            $data['fullname'],
+                            '',
+                            '',
+                            'flickr',
+                            0,
+                            $data['user_nsid'],
+                            $data['username'],
+                            "http://www.flickr.com/buddyicons/{$data['user_nsid']}.jpg"
+                        ),
+                        'oauth_token' => [
+                            'oauth_token'        => $data['oauth_token'],
+                            'oauth_token_secret' => $data['oauth_token_secret'],
+                        ],
+                    ];
+                }
+            }
+        }
+        return false;
+    }
+
+    // }
+
+
     public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
         // get models
         $hlpUser     = $this->getHelperByName('User');
         $hlpIdentity = $this->getHelperByName('Identity');
         // get identity object
         $objIdentity = $hlpIdentity->getIdentityByProviderAndExternalUsername(
-            $rawIdentity->provider, $rawIdentity->external_username, true
+            $rawIdentity->provider, $rawIdentity->external_username
         );
         // 身份不存在，创建新身份
         if (!$objIdentity) {
@@ -300,7 +586,7 @@ class OAuthModels extends DataModel {
                  'external_username' => $rawIdentity->external_username,
                  'avatar_filename'   => $rawIdentity->avatar_filename]
             );
-            $objIdentity = $hlpIdentity->getIdentityById($identity_id, null, true);
+            $objIdentity = $hlpIdentity->getIdentityById($identity_id);
         }
         if (!$objIdentity) {
             return null;
@@ -311,11 +597,10 @@ class OAuthModels extends DataModel {
         // verifying
         if (($user_id = @ (int) $oauthIfo['workflow']['user_id'])) {
             $identity_status = 'verifying';
-        // 身份被 revoked，重新连接用户
-        } else if (($user_id = $objIdentity->revoked_user_id)) {
-            $identity_status = 'revoked';
+        // 身份 connected 或者被 revoked，重新连接用户
         } else if (($user_id = $objIdentity->connected_user_id) > 0) {
-            $identity_status = 'connected';
+            $identity_status = isset($objIdentity->status) && $objIdentity->status === 'REVOKED'
+                             ? 'revoked' : 'connected';
         // 孤立身份，创建新用户并连接到该身份
         } else if (($user_id = $hlpUser->addUser(
             '', $rawIdentity->name ?: $rawIdentity->external_username
@@ -326,9 +611,7 @@ class OAuthModels extends DataModel {
             return null;
         }
         // connect user
-        if ($user_id === $objIdentity->connected_user_id) {
-            $identity_status = 'connected';
-        } else {
+        if ($user_id !== $objIdentity->connected_user_id || $identity_status !== 'connected') {
             if (!$hlpUser->setUserIdentityStatus(
                 $user_id, $objIdentity->id, 3
             )) {
