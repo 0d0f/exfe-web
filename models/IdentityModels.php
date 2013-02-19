@@ -5,23 +5,30 @@ class IdentityModels extends DataModel {
     private $salt = '_4f9g18t9VEdi2if';
 
 
-    protected function packageIdentity($rawIdentity, $user_id = null, $withRevoked = false) {
+    protected function packageIdentity($rawIdentity, $user_id = null) {
         $hlpUser = $this->getHelperByName('user');
         if ($rawIdentity) {
             $rawUserIdentity   = null;
             $status            = null;
             $connected_user_id = - (int) $rawIdentity['id'];
-            $revoked_user_id   = 0;
             if ($user_id) {
                 $chkUserIdentity = $this->getRow(
-                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = $user_id"
+                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `userid` = {$user_id}"
                 );
-                if (($chkUserIdentity['status'] = (int)$chkUserIdentity['status']) === 3) {
+                if (($chkUserIdentity['status'] = (int) $chkUserIdentity['status']) === 3) {
                     $rawUserIdentity = $chkUserIdentity;
                 }
                 $status = $hlpUser->getUserIdentityStatus($chkUserIdentity['status']);
             }
             $rawUserIdentity = $rawUserIdentity ?: $hlpUser->getRawUserIdentityStatusByIdentityId($rawIdentity['id']);
+            if (!$rawUserIdentity) {
+                $rawUserIdentity = $this->getRow(
+                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 4"
+                );
+                if ($rawUserIdentity) {
+                    $status = 'REVOKED';
+                }
+            }
             if ($rawUserIdentity && $rawUserIdentity['userid']) {
                 $rawUser = $hlpUser->getRawUserById($rawUserIdentity['userid']);
                 if ($rawUser) {
@@ -29,12 +36,6 @@ class IdentityModels extends DataModel {
                     $rawIdentity['avatar_file_name'] = $rawIdentity['avatar_file_name'] ?: $rawUser['avatar_file_name'];
                 }
                 $connected_user_id = $rawUserIdentity['userid'];
-            } else if ($withRevoke) {
-                $rawUserIdentity = $this->getRow(
-                    "SELECT * FROM `user_identity` WHERE `identityid` = {$rawIdentity['id']} AND `status` = 4"
-                );
-                $revoked_user_id = $rawUserIdentity && $rawUserIdentity['userid']
-                                 ? $rawUserIdentity['userid'] : 0;
             }
             if (!$rawIdentity['name']) {
                 switch ($rawIdentity['provider']) {
@@ -65,9 +66,6 @@ class IdentityModels extends DataModel {
             if ($status !== null) {
                 $objIdentity->status = $status;
             }
-            if ($withRevoked) {
-                $objIdentity->revoked_user_id = $revoked_user_id;
-            }
             return $objIdentity;
         } else {
             return null;
@@ -94,19 +92,19 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getIdentityById($id, $user_id = null, $withRevoked = false) {
+    public function getIdentityById($id, $user_id = null) {
         $rawIdentity = $this->getRawIdentityById($id);
-        return $this->packageIdentity($rawIdentity, $user_id, $withRevoked);
+        return $this->packageIdentity($rawIdentity, $user_id);
     }
 
 
-    public function getIdentityByProviderAndExternalUsername($provider, $external_username, $withRevoked = false, $get_id_only = false) {
+    public function getIdentityByProviderAndExternalUsername($provider, $external_username, $get_id_only = false) {
         $rawIdentity = $this->getRow(
             "SELECT * FROM `identities` WHERE
              `provider`          = '{$provider}' AND
              `external_username` = '{$external_username}'"
         );
-        return $get_id_only ? intval($rawIdentity['id']) : $this->packageIdentity($rawIdentity, null, $withRevoked);
+        return $get_id_only ? intval($rawIdentity['id']) : $this->packageIdentity($rawIdentity);
     }
 
 

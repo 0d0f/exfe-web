@@ -237,7 +237,7 @@ class GobusActions extends ActionController {
             case 'twitter':
             case 'facebook':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
-                    $objRecipient->provider, $objRecipient->external_username, false, true
+                    $objRecipient->provider, $objRecipient->external_username, true
                 );
                 if (!$identity_id) {
                     header('HTTP/1.1 500 Internal Server Error');
@@ -295,7 +295,7 @@ class GobusActions extends ActionController {
             if ($identity['provider'] && $identity['external_username']) {
                 // get identity id
                 $identity['id'] = $modIdentity->getIdentityByProviderAndExternalUsername(
-                    $identity['provider'], $identity['external_username'], false, true
+                    $identity['provider'], $identity['external_username'], true
                 );
             }
         }
