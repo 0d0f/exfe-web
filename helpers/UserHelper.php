@@ -21,7 +21,7 @@ class UserHelper extends ActionController {
 
 
     public function getUserIdentityStatus($status_index) {
-        return $this->modUser->arrUserIdentityStatus[$status_index];
+        return $this->modUser->arrUserIdentityStatus[(int) $status_index];
     }
 
 
