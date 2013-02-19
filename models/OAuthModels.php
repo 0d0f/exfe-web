@@ -590,11 +590,6 @@ class OAuthModels extends DataModel {
         return false;
     }
 
-
-    public function get() {
-
-    }
-
     // }
 
 
@@ -604,7 +599,7 @@ class OAuthModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('Identity');
         // get identity object
         $objIdentity = $hlpIdentity->getIdentityByProviderAndExternalUsername(
-            $rawIdentity->provider, $rawIdentity->external_username, true
+            $rawIdentity->provider, $rawIdentity->external_username
         );
         // 身份不存在，创建新身份
         if (!$objIdentity) {
@@ -616,7 +611,7 @@ class OAuthModels extends DataModel {
                  'external_username' => $rawIdentity->external_username,
                  'avatar_filename'   => $rawIdentity->avatar_filename]
             );
-            $objIdentity = $hlpIdentity->getIdentityById($identity_id, null, true);
+            $objIdentity = $hlpIdentity->getIdentityById($identity_id);
         }
         if (!$objIdentity) {
             return null;
@@ -627,11 +622,10 @@ class OAuthModels extends DataModel {
         // verifying
         if (($user_id = @ (int) $oauthIfo['workflow']['user_id'])) {
             $identity_status = 'verifying';
-        // 身份被 revoked，重新连接用户
-        } else if (($user_id = $objIdentity->revoked_user_id)) {
-            $identity_status = 'revoked';
+        // 身份 connected 或者被 revoked，重新连接用户
         } else if (($user_id = $objIdentity->connected_user_id) > 0) {
-            $identity_status = 'connected';
+            $identity_status = isset($objIdentity->status) && $objIdentity->status === 'REVOKED'
+                             ? 'revoked' : 'connected';
         // 孤立身份，创建新用户并连接到该身份
         } else if (($user_id = $hlpUser->addUser(
             '', $rawIdentity->name ?: $rawIdentity->external_username
@@ -642,9 +636,7 @@ class OAuthModels extends DataModel {
             return null;
         }
         // connect user
-        if ($user_id === $objIdentity->connected_user_id) {
-            $identity_status = 'connected';
-        } else {
+        if ($user_id !== $objIdentity->connected_user_id || $identity_status !== 'connected') {
             if (!$hlpUser->setUserIdentityStatus(
                 $user_id, $objIdentity->id, 3
             )) {
