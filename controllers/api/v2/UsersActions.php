@@ -620,7 +620,7 @@ class UsersActions extends ActionController {
         // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
         if (($name = formatName($_POST['name'])) !== ''
-        && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, false, true)) {
+        && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, true)) {
             if (!validatePassword($password)) {
                 apiError(400, 'weak_password', 'password must be longer than four');
             }
