@@ -125,7 +125,7 @@ class IdentitiesActions extends ActionController {
         // rebuild identities indexes
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $count=$redis->zCard("u:{$user_id}");
+        $count = $redis->zCard("u:{$user_id}");
         if (!$count) {
             $user = $modUser->getUserById($user_id);
             $modUser->buildIdentitiesIndexes($user_id);
@@ -133,7 +133,7 @@ class IdentitiesActions extends ActionController {
         // get identities from redis
         $arrResult = array();
         $start = $redis->zRank("u:{$user_id}", $key);
-        if(is_numeric($start)) {
+        if (is_numeric($start)) {
             $endflag = false;
             $shResult  = $redis->zRange(
                 "u:{$user_id}", $start + 1, $start + $rangelen
