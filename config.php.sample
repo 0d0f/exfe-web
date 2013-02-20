@@ -63,6 +63,7 @@ define('INSTAGRAM_REDIRECT_URI', SITE_URL.'/OAuth/InstagramCallBack');
 
 define('FLICKR_KEY', '4d4b6607c002f1afd54f98e18491104e');
 define('FLICKR_SECRET', '4ece1ec373dfaab4');
+define('FLICKR_OAUTH_CALLBACK', SITE_URL.'/OAuth/flickrCallBack');
 
 define('GOOGLE_MAP_KEY', 'AIzaSyAgYKtU2lpDg_HYH_rP2MIna0DFyIoEGMs');
 
