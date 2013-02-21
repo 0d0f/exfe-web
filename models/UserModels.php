@@ -72,7 +72,7 @@ class UserModels extends DataModel {
                             'token_type'  => 'verification_token',
                             'action'      => 'VERIFY',
                             'identity_id' => (int) $item['identityid'],
-                        ], $item['provider'] === 'mobile');
+                        ], $item['provider'] === 'phone');
                         if ($curTokens && is_array($curTokens)) {
                             foreach ($curTokens as $cI => $cItem) {
                                 $cItem['data'] = (array) json_decode($cItem['data']);
@@ -340,7 +340,7 @@ class UserModels extends DataModel {
             $rtResult = ['reason' => 'NO_USER'];
             switch ($identity->provider) {
                 case 'email':
-                case 'mobile':
+                case 'phone':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -363,7 +363,7 @@ class UserModels extends DataModel {
             $rtResult['reason'] = 'NO_PASSWORD';
             switch ($identity->provider) {
                 case 'email':
-                case 'mobile':
+                case 'phone':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -392,7 +392,7 @@ class UserModels extends DataModel {
             $rtResult = array('reason'  => 'REVOKED');
             switch ($identity->provider) {
                 case 'email':
-                case 'mobile':
+                case 'phone':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -409,7 +409,7 @@ class UserModels extends DataModel {
             $rtResult = ['reason' => 'RELATED'];
             switch ($identity->provider) {
                 case 'email':
-                case 'mobile':
+                case 'phone':
                     $rtResult['flag'] = 'VERIFY';
                     break;
                 case 'twitter':
@@ -440,7 +440,7 @@ class UserModels extends DataModel {
                 $user_id = $user_id ?: $this->addUser();
                 switch ($identity->provider) {
                     case 'email':
-                    case 'mobile':
+                    case 'phone':
                         if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
                             return null;
                         }
@@ -471,7 +471,7 @@ class UserModels extends DataModel {
         // get current token
         $expireSec = 60 * 60 * 24 * 2; // 2 days
         $result['token'] = '';
-        $short = $identity->provider === 'mobile';
+        $short = $identity->provider === 'phone';
         $curTokens = $hlpExfeAuth->findToken($resource, $short);
         if ($curTokens && is_array($curTokens)) {
             foreach ($curTokens as $cI => $cItem) {
@@ -490,7 +490,7 @@ class UserModels extends DataModel {
         // case provider
         switch ($identity->provider) {
             case 'email':
-            case 'mobile':
+            case 'phone':
                 // call token service
                 if ($result['token']) {
                     $hlpExfeAuth->updateToken($result['token'], $data, $short);       // update
