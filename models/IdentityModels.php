@@ -275,7 +275,7 @@ class IdentityModels extends DataModel {
         // basic check
         switch ($provider) {
             case 'email':
-            case 'mobile':
+            case 'phone':
                 if (!$external_id && !$external_username) {
                     return null;
                 }
@@ -320,7 +320,7 @@ class IdentityModels extends DataModel {
                     $external_id = $external_username = $external_id ?: $external_username;
                     $avatar_filename = $this->getGravatarByExternalUsername($external_username);
                     break;
-                case 'mobile':
+                case 'phone':
                     $external_id = $external_username = $external_id ?: $external_username;
                     break;
                 case 'twitter':
