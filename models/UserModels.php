@@ -91,7 +91,7 @@ class UserModels extends DataModel {
                         $identity = new Identity(
                             $item['id'],
                             $item['name'],
-                            '', // $item['nickname'], // @todo;
+                            '', // $item['nickname'], // @todo by @leaskh;
                             $item['bio'],
                             $item['provider'],
                             $identity_infos[$item['id']]['status'] === 'CONNECTED' || $identity_infos[$item['id']]['status'] === 'REMOVED' ? $rawUser['id'] : - $item['id'],
@@ -120,7 +120,7 @@ class UserModels extends DataModel {
                                     if ($cItem['data']['token_type'] === 'verification_token'
                                      && $cItem['data']['user_id']    === $id
                                      && !$cItem['is_expire']) {
-                                        $timeout    = false;
+                                        $timeout   = false;
                                         $identity->expired_time = date(
                                             'Y-m-d H:i:s',
                                             isset($cItem['data']['expired_time'])
