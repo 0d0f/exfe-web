@@ -80,6 +80,12 @@ class Identity extends EFObject {
                     $objParsed  = $this->parseEmail($this->external_username);
                     $this->name = $objParsed['name'];
                     break;
+                case 'phone':
+                    $this->name = preg_replace(
+                        '/^\+.*(.{4})$/', '$1',
+                        $this->external_id ?: $this->external_username
+                    );
+                    break;
                 case 'twitter':
                 case 'facebook':
                 default:
