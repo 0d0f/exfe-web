@@ -20,11 +20,14 @@ class ExfeAuthModels extends DataModel {
 
 
     public function generateToken($resource, $data, $expireAfterSeconds, $short = false) {
-        return $this->useTokenApi($short ? '' : 'Generate', [
+        $rawResult = $this->useTokenApi($short ? '' : 'Generate', [
             'resource'             => $resource,
             'data'                 => $data,
             'expire_after_seconds' => $expireAfterSeconds,
         ], $short);
+        return $rawResult
+             ? ($short ? $rawResult['token']['key'] : $rawResult)
+             : null;
     }
 
 
