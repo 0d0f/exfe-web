@@ -323,3 +323,7 @@ function formatDescription($string, $length = 233) {
 function validatePassword($string) {
     return mb_strlen($string, 'utf8') >= 4;
 }
+
+function validatePhoneNumber($string) {
+    return preg_match('/^\+[0-9]{5,15}$/', $string);
+}
