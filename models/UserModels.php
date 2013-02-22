@@ -66,41 +66,11 @@ class UserModels extends DataModel {
                 $identity_infos = [];
                 foreach ($rawIdentityIds as $i => $item) {
                     $intStatus  = (int) $item['status'];
-                    if ($intStatus === 2) {
-                        $timeout   = true;
-                        $curTokens = $hlpExfeAuth->findToken([
-                            'token_type'  => 'verification_token',
-                            'action'      => 'VERIFY',
-                            'identity_id' => (int) $item['identityid'],
-                        ], $item['provider'] === 'phone');
-                        if ($curTokens && is_array($curTokens)) {
-                            foreach ($curTokens as $cI => $cItem) {
-                                $cItem['data'] = (array) json_decode($cItem['data']);
-                                if ($cItem['data']['token_type'] === 'verification_token'
-                                 && $cItem['data']['user_id']    === $id
-                                 && !$cItem['is_expire']) {
-                                    $timeout    = false;
-                                    $expireTime = date(
-                                        'Y-m-d H:i:s',
-                                        isset($cItem['data']['expired_time'])
-                                      ? $cItem['data']['expired_time']
-                                      : (time() + 60 * 60 * 12)
-                                    ) . ' +0000';
-                                    break;
-                                }
-                            }
-                        }
-                        if ($timeout) {
-                            $this->setUserIdentityStatus($id, $item['identityid'], 1);
-                            unset($rawIdentityIds[$i]);
-                            contionue;
-                        }
-                    }
                     $identity_infos[(int) $item['identityid']] = [
                         'status'     => $this->arrUserIdentityStatus[$intStatus],
                         'order'      => (int) $item['order'],
                         'updated_at' => strtotime($item['updated_at']),
-                    ] + ($intStatus === 2 ? ['expired_time' => $expireTime] : []);
+                    ];
                 }
                 $identityIds = implode(array_keys($identity_infos), ', ');
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds}) ORDER BY `id`");
@@ -124,7 +94,7 @@ class UserModels extends DataModel {
                             '', // $item['nickname'], // @todo;
                             $item['bio'],
                             $item['provider'],
-                            $identity_infos[$item['id']]['status'] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
+                            $identity_infos[$item['id']]['status'] === 'CONNECTED' || $identity_infos[$item['id']]['status'] === 'REMOVED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
@@ -138,7 +108,34 @@ class UserModels extends DataModel {
                                                   ?: getDefaultAvatarUrl($identity->name));
                         $identity->status  = $identity_infos[$identity->id]['status'];
                         if ($identity->status === 'VERIFYING') {
-                            $identity->expired_time = $identity_infos[$identity->id]['expired_time'];
+                            // remove timeout verifying {
+                            $curTokens = $hlpExfeAuth->findToken([
+                                'token_type'  => 'verification_token',
+                                'action'      => 'VERIFY',
+                                'identity_id' => $item['id'],
+                            ], $item['provider'] === 'phone');
+                            if ($curTokens && is_array($curTokens)) {
+                                foreach ($curTokens as $cI => $cItem) {
+                                    $cItem['data'] = (array) json_decode($cItem['data']);
+                                    if ($cItem['data']['token_type'] === 'verification_token'
+                                     && $cItem['data']['user_id']    === $id
+                                     && !$cItem['is_expire']) {
+                                        $timeout    = false;
+                                        $identity->expired_time = date(
+                                            'Y-m-d H:i:s',
+                                            isset($cItem['data']['expired_time'])
+                                          ? $cItem['data']['expired_time']
+                                          : (time() + 60 * 60 * 12)
+                                        ) . ' +0000';
+                                        break;
+                                    }
+                                }
+                            }
+                            if ($timeout) {
+                                $this->setUserIdentityStatus($id, $item['identityid'], 1);
+                                contionue;
+                            }
+                            // }
                         }
                         if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
                             $sorting_identities[$identity_infos[$identity->id]['order']] = [];
