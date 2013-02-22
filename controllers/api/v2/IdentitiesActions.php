@@ -69,6 +69,22 @@ class IdentitiesActions extends ActionController {
                                 );
                             }
                             break;
+                        case 'phone':
+                            if (validatePhoneNumber($id_str)) {
+                                $name = $identityItem->name ?: preg_replace('/^\+.*(.{4})$/', '$1', $id_str);
+                                $objIdentities[] = new Identity(
+                                    0,
+                                    $name,
+                                    '',
+                                    '',
+                                    'phone',
+                                    0,
+                                    $id_str,
+                                    $id_str,
+                                    getDefaultAvatarUrl($name)
+                                );
+                            }
+                            break;
                         case 'twitter':
                             if ($identityItem->external_username) {
                                 $rawIdentity = $modOAuth->getTwitterProfileByExternalUsername(
