@@ -284,6 +284,7 @@ class UsersActions extends ActionController {
         if (!$identity) {
             switch ($provider) {
                 case 'email':
+                case 'phone':
                     apiResponse(['registration_flag' => 'SIGN_UP']);
                     break;
                 case 'twitter':
