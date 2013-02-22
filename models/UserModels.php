@@ -220,14 +220,14 @@ class UserModels extends DataModel {
 
     public function addUser($password = '', $name = '') {
         $passwordSql = '';
-        if ($password) {
+        if (strlen($password)) {
             $passwordSalt = md5(createToken());
             $passwordInDb = $this->encryptPassword($password, $passwordSalt);
             $passwordSql  = "`encrypted_password` = '{$passwordInDb}',
                              `password_salt`      = '{$passwordSalt}',";
         }
         $nameSql = '';
-        if ($name) {
+        if (strlen($name)) {
             $nameSql      = "`name` = '{$name}',";
         }
         $dbResult = $this->query(
