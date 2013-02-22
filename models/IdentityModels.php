@@ -281,8 +281,15 @@ class IdentityModels extends DataModel {
         // basic check
         switch ($provider) {
             case 'email':
+                if (!$external_id && !$external_username) {
+                    return null;
+                }
+                break;
             case 'phone':
                 if (!$external_id && !$external_username) {
+                    return null;
+                }
+                if (!validatePhoneNumber($external_id ?: $external_username)) {
                     return null;
                 }
                 break;
