@@ -35,7 +35,7 @@ class ExfeAuthModels extends DataModel {
         if ($short) {
             $result = $this->useTokenApi('GET', [], true, ['key' => $token]);
             if ($result && is_array($result)) {
-                $result = $result[0];
+                $result = ['token' => $result[0]['key'], 'data'  => $result[0]['data']];
             }
         } else {
             $result = $this->useTokenApi('Get', $token);
@@ -45,9 +45,16 @@ class ExfeAuthModels extends DataModel {
 
 
     public function findToken($resource, $short = false) {
-        return $short
-             ? $this->useTokenApi('GET', null, true, ['resource' => $resource])
-             : $this->useTokenApi('Find', $resource);
+        if ($short) {
+            $rawResult = $this->useTokenApi('GET', null, true, ['resource' => $resource]);
+            $result = [];
+            foreach ($rawResult && is_array($rawResult) ? $rawResult : [] as $item) {
+                $result[] = ['token' => $item['key'], 'data' => $item['data']];
+            }
+        } else {
+            $result = $this->useTokenApi('Find', $resource);
+        }
+        return $result;
     }
 
 
