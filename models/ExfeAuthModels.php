@@ -26,7 +26,7 @@ class ExfeAuthModels extends DataModel {
             'expire_after_seconds' => $expireAfterSeconds,
         ], $short);
         return $rawResult
-             ? ($short ? $rawResult['token']['key'] : $rawResult)
+             ? ($short ? $rawResult['key'] : $rawResult)
              : null;
     }
 
