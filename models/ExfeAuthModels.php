@@ -46,7 +46,7 @@ class ExfeAuthModels extends DataModel {
 
     public function findToken($resource, $short = false) {
         return $short
-             ? $this->useTokenApi('GET', [], true, ['resource' => $resource])
+             ? $this->useTokenApi('GET', null, true, ['resource' => $resource])
              : $this->useTokenApi('Find', $resource);
     }
 

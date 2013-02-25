@@ -20,18 +20,24 @@ class GobusModels extends DataModel {
                 }
             }
             $url = "{$server}/{$api}" . ($getArgs ? '?' : '') . http_build_query($getArgs);
-            $postArgs = json_encode($postArgs ?: '');
             if (DEBUG) {
                 error_log("URL: {$url}");
-                error_log("POST: {$postArgs}");
+            }
+            if ($postArgs !== null) {
+                $postArgs = json_encode($postArgs ?: '');
+                if (DEBUG) {
+                    error_log("POST: {$postArgs}");
+                }
             }
             $objCurl   = curl_init();
             curl_setopt($objCurl, CURLOPT_URL, $url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($objCurl, CURLOPT_HEADER, false);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
-            curl_setopt($objCurl, CURLOPT_POST, 1);
-            curl_setopt($objCurl, CURLOPT_POSTFIELDS, $postArgs);
+            if ($postArgs !== null) {
+                curl_setopt($objCurl, CURLOPT_POST, 1);
+                curl_setopt($objCurl, CURLOPT_POSTFIELDS, $postArgs);
+            }
             $rawResult = @curl_exec($objCurl);
             $httpCode  = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
