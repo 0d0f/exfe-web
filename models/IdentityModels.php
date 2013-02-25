@@ -474,9 +474,6 @@ class IdentityModels extends DataModel {
             default:
                 return false;
         }
-        if (DEBUG) {
-            error_log('job: ' . json_encode($data));
-        }
         $modGobus = $this->getHelperByName('Gobus');
         return $modGobus->useGobusApi(EXFE_GOBUS_SERVER, 'Instant', 'Push', $data);
     }
