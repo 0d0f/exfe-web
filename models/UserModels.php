@@ -922,27 +922,29 @@ class UserModels extends DataModel {
     public function makeDefaultAvatar($name, $asimage = false) {
         // image config
         $specification = [
-            'width'      => 80,
-            'height'     => 80,
-            'font-width' => 62,
+            'width'      => 160,
+            'height'     => 160,
+            'font-width' => 110,
         ];
         $backgrounds = [
             'blue',
+            'cyan',
             'green',
-            'magenta',
-            'yellow',
             'khaki',
+            'magenta',
             'purple',
+            'red',
         ];
         $colors = [
-            [135, 174, 198],
-            [156, 189, 129],
-            [178, 148, 173],
-            [184, 129,  96],
-            [189, 150, 128],
-            [156, 155, 183],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
         ];
-        $ftSize = 36;
+        $ftSize = 100;
         $strHsh = md5($name);
         $intHsh = 0;
         for ($i = 0; $i < 3; $i++) {
@@ -951,7 +953,7 @@ class UserModels extends DataModel {
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../default_avatar_portrait/";
-        $fLatin = "{$resDir}Museo500-Regular.otf";
+        $fLatin = "{$resDir}OpenSans-Bold.ttf";
         $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
         $bgIdx  = fmod($intHsh, count($backgrounds));
