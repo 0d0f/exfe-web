@@ -10,6 +10,11 @@ class QueueHelper extends ActionController {
     }
 
 
+    public function pushToQueue($queue, $method, $data) {
+        return $this->modQueue->pushToQueue($queue, $method, $data);
+    }
+
+
     public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
         return $this->modQueue->despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id);
     }

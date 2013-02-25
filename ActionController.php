@@ -128,6 +128,7 @@ abstract class ActionController {
     {
         $actionMethod = "do" . ucfirst($action);
         if (!method_exists($this, $actionMethod)) {
+            header('HTTP/1.1 404 Not Found');
             exit("Action not found:".$actionMethod);
         }
         $this->action=$action;
@@ -137,6 +138,7 @@ abstract class ActionController {
     public function dispatchAction($action) {
         $actionMethod = "do" . ucfirst($action);
         if (!method_exists($this, $actionMethod)) {
+            header('HTTP/1.1 404 Not Found');
             exit("Action not found:".$actionMethod);
         }
         $this->action=$action;
