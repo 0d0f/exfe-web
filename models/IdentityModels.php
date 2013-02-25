@@ -452,7 +452,7 @@ class IdentityModels extends DataModel {
                 $identity->name,
                 $identity->auth_data ?: '',
                 '',
-                $token,
+                "$token",
                 '',
                 $identity->provider,
                 $identity->external_id,
