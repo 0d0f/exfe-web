@@ -66,9 +66,6 @@ class QueueModels extends DataModel {
             'tos'       => $tos,
             'data'      => $data ?: new stdClass,
         ];
-        if (DEBUG) {
-            error_log('job: ' . json_encode($jobData));
-        }
         return $this->pushToQueue($queue, 'Push', $jobData);
     }
 
