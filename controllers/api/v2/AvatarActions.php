@@ -154,7 +154,7 @@ class AvatarActions extends ActionController {
         if (strpos($params['url'], API_URL) !== false) {
             $arr_url = explode('=', $params['url']);
             $image   = isset($arr_url[1]) && $arr_url[1]
-                     ? $modUser->makeDefaultAvatar($arr_url[1], true) : null;
+                     ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true) : null;
         } else {
             if (DEBUG) {
                 error_log("Start loading image: {$params['url']}");
