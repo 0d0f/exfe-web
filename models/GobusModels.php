@@ -16,7 +16,7 @@ class GobusModels extends DataModel {
             }
             foreach ($getArgs as $aI => $aItem) {
                 if (is_array($aItem)) {
-                    $strArgs[$aI] = json_encode($aItem);
+                    $getArgs[$aI] = json_encode($aItem);
                 }
             }
             $url = "{$server}/{$api}" . ($getArgs ? '?' : '') . http_build_query($getArgs);
