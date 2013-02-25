@@ -676,7 +676,7 @@ class UserModels extends DataModel {
             return null;
         }
         // change password
-        if (($curToken = $hlpExfeAuth->getToken($token))
+        if (($curToken = $hlpExfeAuth->getToken($token, strlen($token) <= 5))   // is sms_token
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
