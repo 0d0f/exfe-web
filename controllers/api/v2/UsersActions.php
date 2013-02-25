@@ -49,6 +49,7 @@ class UsersActions extends ActionController {
         // collecting post data
         switch ($provider = @trim($_POST['provider'])) {
             case 'email':
+            case 'phone':
                 if (!($external_username = trim($_POST['external_username']))) {
                     apiError(400, 'no_external_username', '');
                 }
@@ -284,6 +285,7 @@ class UsersActions extends ActionController {
         if (!$identity) {
             switch ($provider) {
                 case 'email':
+                case 'phone':
                     apiResponse(['registration_flag' => 'SIGN_UP']);
                     break;
                 case 'twitter':

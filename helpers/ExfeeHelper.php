@@ -20,6 +20,11 @@ class ExfeeHelper extends ActionController {
     }
 
 
+    public function getExfeeIdByCrossId($cross_id) {
+        return $this->modExfee->getExfeeIdByCrossId($cross_id);
+    }
+
+
     public function getHostIdentityIdsByExfeeId($exfee_id) {
         return $this->modExfee->getHostIdentityIdsByExfeeId($exfee_id);
     }
@@ -27,6 +32,11 @@ class ExfeeHelper extends ActionController {
 
     public function updateInvitationRemarkById($id, $remark) {
         return $this->modExfee->updateInvitationRemarkById($id, $remark);
+    }
+
+
+    public function getExfeeById($id, $withRemoved = false, $withToken = false) {
+        return $this->modExfee->getExfeeById($id, $withRemoved, $withToken);
     }
 
 }

@@ -3,6 +3,7 @@
 require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/facebook.php';
+require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
 require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
 require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
 
@@ -178,9 +179,11 @@ class OAuthModels extends DataModel {
 
     public function facebookRedirect($workflow) {
         $this->setSession('facebook', '', '', $workflow);
-        return 'https://graph.facebook.com/oauth/authorize?client_id='
-             . FACEBOOK_APP_ID         . '&redirect_uri='
-             . FACEBOOK_OAUTH_CALLBACK . '&type=web_server';
+        return 'https://graph.facebook.com/oauth/authorize'
+             . '?client_id='    . FACEBOOK_APP_ID
+             . '&redirect_uri=' . FACEBOOK_OAUTH_CALLBACK
+             . '&type=web_server'
+             . '&scope=user_photos,email,user_birthday,user_online_presence,status_update,photo_upload,video_upload,create_note,share_item,publish_stream';
     }
 
 
@@ -189,15 +192,37 @@ class OAuthModels extends DataModel {
     }
 
 
+    public function getFacebookPermissions($oauthToken) {
+        if (!$oauthToken) {
+            return null;
+        }
+        $objCurl = curl_init(
+            "https://graph.facebook.com/me/permissions?access_token={$oauthToken}"
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
+            $data = $data['data'];
+            if (sizeof($data) > 0) {
+                return array_keys((array) $data[0]);
+            }
+        }
+        return null;
+    }
+
+
     public function getFacebookOAuthToken($oauthCode) {
         if (!$oauthCode) {
             return null;
         }
         $objCurl = curl_init(
-            'https://graph.facebook.com/oauth/access_token?client_id='
-          . FACEBOOK_APP_ID         . '&redirect_uri='
-          . FACEBOOK_OAUTH_CALLBACK . '&client_secret='
-          . FACEBOOK_SECRET_KEY     . "&code={$oauthCode}"
+            'https://graph.facebook.com/oauth/access_token'
+          . '?client_id='     . FACEBOOK_APP_ID
+          . '&redirect_uri='  . FACEBOOK_OAUTH_CALLBACK
+          . '&client_secret=' . FACEBOOK_SECRET_KEY
+          . "&code={$oauthCode}"
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
@@ -237,7 +262,7 @@ class OAuthModels extends DataModel {
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
         $data = curl_exec($objCurl);
         curl_close($objCurl);
-        if ($data && ($rawIdentity = (array) json_decode($data))) {
+        if ($data && ($rawIdentity = json_decode($data, true))) {
             return new Identity(
                 0,
                 $rawIdentity['name'],
@@ -622,6 +647,8 @@ class OAuthModels extends DataModel {
         // 更新 OAuth Token
         switch ($objIdentity->provider) {
             case 'twitter':
+            case 'dropbox':
+            case 'flickr':
                 $oAuthToken = [
                     'oauth_token'        => $oauthIfo['oauth_token'],
                     'oauth_token_secret' => $oauthIfo['oauth_token_secret'],
@@ -631,6 +658,11 @@ class OAuthModels extends DataModel {
                 $oAuthToken = [
                     'oauth_token'        => $rawOAuthToken['oauth_token'],
                     'oauth_expires'      => $rawOAuthToken['oauth_expires'],
+                ];
+                break;
+            case 'instagram':
+                $oAuthToken = [
+                    'oauth_token'        => $rawOAuthToken['oauth_token'],
                 ];
         }
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);

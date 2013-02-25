@@ -66,41 +66,11 @@ class UserModels extends DataModel {
                 $identity_infos = [];
                 foreach ($rawIdentityIds as $i => $item) {
                     $intStatus  = (int) $item['status'];
-                    if ($intStatus === 2) {
-                        $timeout   = true;
-                        $curTokens = $hlpExfeAuth->findToken([
-                            'token_type'  => 'verification_token',
-                            'action'      => 'VERIFY',
-                            'identity_id' => (int) $item['identityid'],
-                        ], $item['provider'] === 'phone');
-                        if ($curTokens && is_array($curTokens)) {
-                            foreach ($curTokens as $cI => $cItem) {
-                                $cItem['data'] = (array) json_decode($cItem['data']);
-                                if ($cItem['data']['token_type'] === 'verification_token'
-                                 && $cItem['data']['user_id']    === $id
-                                 && !$cItem['is_expire']) {
-                                    $timeout    = false;
-                                    $expireTime = date(
-                                        'Y-m-d H:i:s',
-                                        isset($cItem['data']['expired_time'])
-                                      ? $cItem['data']['expired_time']
-                                      : (time() + 60 * 60 * 12)
-                                    ) . ' +0000';
-                                    break;
-                                }
-                            }
-                        }
-                        if ($timeout) {
-                            $this->setUserIdentityStatus($id, $item['identityid'], 1);
-                            unset($rawIdentityIds[$i]);
-                            contionue;
-                        }
-                    }
                     $identity_infos[(int) $item['identityid']] = [
                         'status'     => $this->arrUserIdentityStatus[$intStatus],
                         'order'      => (int) $item['order'],
                         'updated_at' => strtotime($item['updated_at']),
-                    ] + ($intStatus === 2 ? ['expired_time' => $expireTime] : []);
+                    ];
                 }
                 $identityIds = implode(array_keys($identity_infos), ', ');
                 $identities  = $this->getAll("SELECT * FROM `identities` WHERE `id` IN ({$identityIds}) ORDER BY `id`");
@@ -121,10 +91,10 @@ class UserModels extends DataModel {
                         $identity = new Identity(
                             $item['id'],
                             $item['name'],
-                            '', // $item['nickname'], // @todo;
+                            '', // $item['nickname'], // @todo by @leaskh;
                             $item['bio'],
                             $item['provider'],
-                            $identity_infos[$item['id']]['status'] === 'CONNECTED' ? $rawUser['id'] : - $item['id'],
+                            $identity_infos[$item['id']]['status'] === 'CONNECTED' || $identity_infos[$item['id']]['status'] === 'REMOVED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
                             $item['avatar_file_name'],
@@ -138,7 +108,34 @@ class UserModels extends DataModel {
                                                   ?: getDefaultAvatarUrl($identity->name));
                         $identity->status  = $identity_infos[$identity->id]['status'];
                         if ($identity->status === 'VERIFYING') {
-                            $identity->expired_time = $identity_infos[$identity->id]['expired_time'];
+                            // remove timeout verifying {
+                            $curTokens = $hlpExfeAuth->findToken([
+                                'token_type'  => 'verification_token',
+                                'action'      => 'VERIFY',
+                                'identity_id' => $item['id'],
+                            ], $item['provider'] === 'phone');
+                            if ($curTokens && is_array($curTokens)) {
+                                foreach ($curTokens as $cI => $cItem) {
+                                    $cItem['data'] = (array) json_decode($cItem['data']);
+                                    if ($cItem['data']['token_type'] === 'verification_token'
+                                     && $cItem['data']['user_id']    === $id
+                                     && !$cItem['is_expire']) {
+                                        $timeout   = false;
+                                        $identity->expired_time = date(
+                                            'Y-m-d H:i:s',
+                                            isset($cItem['data']['expired_time'])
+                                          ? $cItem['data']['expired_time']
+                                          : (time() + 60 * 60 * 12)
+                                        ) . ' +0000';
+                                        break;
+                                    }
+                                }
+                            }
+                            if ($timeout) {
+                                $this->setUserIdentityStatus($id, $item['identityid'], 1);
+                                contionue;
+                            }
+                            // }
                         }
                         if (!isset($sorting_identities[$identity_infos[$identity->id]['order']])) {
                             $sorting_identities[$identity_infos[$identity->id]['order']] = [];
@@ -220,14 +217,14 @@ class UserModels extends DataModel {
 
     public function addUser($password = '', $name = '') {
         $passwordSql = '';
-        if ($password) {
+        if (strlen($password)) {
             $passwordSalt = md5(createToken());
             $passwordInDb = $this->encryptPassword($password, $passwordSalt);
             $passwordSql  = "`encrypted_password` = '{$passwordInDb}',
                              `password_salt`      = '{$passwordSalt}',";
         }
         $nameSql = '';
-        if ($name) {
+        if (strlen($name)) {
             $nameSql      = "`name` = '{$name}',";
         }
         $dbResult = $this->query(
@@ -509,6 +506,9 @@ class UserModels extends DataModel {
                 break;
             case 'twitter':
             case 'facebook':
+            case 'dropbox':
+            case 'flickr':
+            case 'instagram':
                 $hlpOAuth = $this->getHelperByName('OAuth');
                 $workflow = ['user_id' => $user_id];
                 if ($device && $device_callback) {
@@ -542,6 +542,15 @@ class UserModels extends DataModel {
                         break;
                     case 'facebook':
                         $urlOauth = $hlpOAuth->facebookRedirect($workflow);
+                        break;
+                    case 'dropbox':
+                        $urlOauth = $hlpOAuth->dropboxRedirect($workflow);
+                        break;
+                    case 'flickr':
+                        $urlOauth = $hlpOAuth->flickrRedirect($workflow);
+                        break;
+                    case 'instagram':
+                        $urlOauth = $hlpOAuth->instagramRedirect($workflow);
                 }
 
                 if ($urlOauth) {
@@ -667,7 +676,7 @@ class UserModels extends DataModel {
             return null;
         }
         // change password
-        if (($curToken = $hlpExfeAuth->getToken($token))
+        if (($curToken = $hlpExfeAuth->getToken($token, strlen($token) <= 5))   // is sms_token
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
@@ -913,27 +922,29 @@ class UserModels extends DataModel {
     public function makeDefaultAvatar($name, $asimage = false) {
         // image config
         $specification = [
-            'width'      => 80,
-            'height'     => 80,
-            'font-width' => 62,
+            'width'      => 160,
+            'height'     => 160,
+            'font-width' => 110,
         ];
         $backgrounds = [
             'blue',
+            'cyan',
             'green',
-            'magenta',
-            'yellow',
             'khaki',
+            'magenta',
             'purple',
+            'red',
         ];
         $colors = [
-            [135, 174, 198],
-            [156, 189, 129],
-            [178, 148, 173],
-            [184, 129,  96],
-            [189, 150, 128],
-            [156, 155, 183],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
+            [255, 255, 255],
         ];
-        $ftSize = 36;
+        $ftSize = 100;
         $strHsh = md5($name);
         $intHsh = 0;
         for ($i = 0; $i < 3; $i++) {
@@ -942,7 +953,7 @@ class UserModels extends DataModel {
         // init path
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../default_avatar_portrait/";
-        $fLatin = "{$resDir}Museo500-Regular.otf";
+        $fLatin = "{$resDir}OpenSans-Bold.ttf";
         $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
         // get image
         $bgIdx  = fmod($intHsh, count($backgrounds));

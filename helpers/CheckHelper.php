@@ -58,24 +58,31 @@ class CheckHelper extends ActionController {
         switch ($api) {
             case 'cross':
             case 'cross_edit':
-                $exfee_id = $crossData->getExfeeByCrossId($args["cross_id"]);
+                $exfee_id = $crossData->getExfeeByCrossId($args['cross_id']);
                 $userids  = $exfeeData->getUserIdsByExfeeId($exfee_id, true);
                 if (in_array($uid, $userids)) {
-                    if ($api == "cross_edit") {
-                        $by_identity_id = $args["by_identity_id"];
+                    if ($api == 'cross_edit') {
+                        $by_identity_id = $args['by_identity_id'];
                         if (intval($by_identity_id)>0) {
                             // @todo maybe 安全漏洞！ by @leaskh
                             $r = $identityData->isIdentityBelongsUser($by_identity_id, $uid, false);
                             if ($r === true) {
-                                return array("check" => true, "uid"=>$uid, "exfee_id" => $exfee_id, "by_identity_id" => $by_identity_id);
+                                return array('check' => true, 'uid' => $uid, 'exfee_id' => $exfee_id, 'by_identity_id' => $by_identity_id);
                             } else {
-                                return array("check" => false);
+                                return array('check' => false);
                             }
                         } else {
-                            return array("check" => false);
+                            return array('check' => false);
                         }
                     }
-                    return array("check" => true, "uid" => $uid, "exfee_id" => $exfee_id);
+                    return array('check' => true, 'uid' => $uid, 'exfee_id' => $exfee_id);
+                }
+                break;
+            case 'cross_edit_by_user':
+                $exfee_id = $crossData->getExfeeByCrossId($args['cross_id']);
+                $userids  = $exfeeData->getUserIdsByExfeeId($exfee_id, true);
+                if (in_array($uid, $userids)) {
+                    return array('check' => true, 'uid' => $uid);
                 }
                 break;
             case 'cross_add':
