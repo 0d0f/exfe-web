@@ -234,6 +234,7 @@ class GobusActions extends ActionController {
         // rawjob
         switch ($objRecipient->provider) {
             case 'email':
+            case 'phone':
             case 'twitter':
             case 'facebook':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
