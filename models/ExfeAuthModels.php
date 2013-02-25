@@ -33,7 +33,7 @@ class ExfeAuthModels extends DataModel {
 
     public function getToken($token, $short = false) {
         if ($short) {
-            $result = $this->useTokenApi('GET', [], true, ['key' => $token]);
+            $result = $this->useTokenApi('GET', null, true, ['key' => $token]);
             if ($result && is_array($result)) {
                 $result = ['token' => $result[0]['key'], 'data'  => $result[0]['data']];
             }
