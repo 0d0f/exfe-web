@@ -205,7 +205,8 @@ $redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
 
 function getCache($key) {
     global $redis_cache;
-    return $key ? unserialize($redis_cache->get($key)) : null;
+    $value = $redis_cache->get($key);
+    return $key && $value ? unserialize($value) : null;
 }
 
 function setCache($key, $value) {
@@ -323,6 +324,7 @@ function formatDescription($string, $length = 233) {
 function validatePassword($string) {
     return mb_strlen($string, 'utf8') >= 4;
 }
+
 
 function validatePhoneNumber($string) {
     return preg_match('/^\+[0-9]{5,15}$/', $string);

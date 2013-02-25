@@ -234,6 +234,7 @@ class GobusActions extends ActionController {
         // rawjob
         switch ($objRecipient->provider) {
             case 'email':
+            case 'phone':
             case 'twitter':
             case 'facebook':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
@@ -326,6 +327,42 @@ class GobusActions extends ActionController {
             }
         }
         header('HTTP/1.1 404 Not Found');
+    }
+
+
+    public function doAddPhotos() {
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        if (!$cross_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'No Cross id!';
+            return;
+        }
+        // get model
+        $modPhoto = $this->getModelByName('Photo');
+        // get raw data
+        if (!($str_args = @file_get_contents('php://input'))) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo 'No input!';
+            return;
+        }
+        // decode json
+        $photos = json_decode($str_args);
+        if (is_array($photos)) {
+            if ($photos) {
+                $identity_id = @ (int) $photos[0]->by_identity->id;
+                if ($identity_id) {
+                    $result = $modPhoto->addPhotosToCross(
+                        $cross_id, $photos, $identity_id
+                    );
+                    if ($result) {
+                        return;
+                    }
+                }
+            }
+        }
+        header('HTTP/1.1 500 Internal Server Error');
+        echo 'Error input!';
     }
 
 }
