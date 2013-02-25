@@ -19,6 +19,11 @@ class ExfeAuthModels extends DataModel {
     }
 
 
+    protected function fixShortToken($strToken) {
+        return strlen($strToken) === 3 ? "0{$strToken}" : "{$strToken}";
+    }
+
+
     public function generateToken($resource, $data, $expireAfterSeconds, $short = false) {
         $rawResult = $this->useTokenApi($short ? '' : 'Generate', [
             'resource'             => $resource,
@@ -26,7 +31,7 @@ class ExfeAuthModels extends DataModel {
             'expire_after_seconds' => $expireAfterSeconds,
         ], $short);
         return $rawResult
-             ? ($short ? $rawResult['key'] : $rawResult)
+             ? ($short ? $this->fixShortToken($rawResult['key']) : $rawResult)
              : null;
     }
 
@@ -35,7 +40,7 @@ class ExfeAuthModels extends DataModel {
         if ($short) {
             $result = $this->useTokenApi('GET', null, true, ['key' => $token]);
             if ($result && is_array($result)) {
-                $result = ['token' => $result[0]['key'],
+                $result = ['token' => $this->fixShortToken($result[0]['key']),
                            'data'  => json_decode($result[0]['data'], true)];
             }
         } else {
@@ -50,7 +55,8 @@ class ExfeAuthModels extends DataModel {
             $rawResult = $this->useTokenApi('GET', null, true, ['resource' => $resource]);
             $result = [];
             foreach ($rawResult && is_array($rawResult) ? $rawResult : [] as $item) {
-                $result[] = ['token' => $item['key'], 'data' => $item['data']];
+                $result[] = ['token' => $this->fixShortToken($item['key']),
+                             'data'  => $item['data']];
             }
         } else {
             $result = $this->useTokenApi('Find', $resource);
