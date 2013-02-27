@@ -55,17 +55,18 @@ class IdentitiesActions extends ActionController {
                         case 'email':
                             $objEmail = Identity::parseEmail($id_str);
                             if ($objEmail) {
+                                $name = $identityItem->name ?: $objEmail['name'];
                                 $objIdentities[] = new Identity(
                                     0,
-                                    $identityItem->name ?: $objEmail['name'],
+                                    $name,
                                     '',
                                     '',
                                     'email',
                                     0,
                                     $objEmail['email'],
                                     $objEmail['email'],
-                                    $modIdentity->getGravatarByExternalUsername($objEmail['email'])
-                                 ?: getDefaultAvatarUrl($objEmail['name'])
+                                    $modIdentity->getGravatarByExternalUsername($name)
+                                 ?: getDefaultAvatarUrl($name)
                                 );
                             }
                             break;

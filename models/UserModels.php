@@ -944,7 +944,7 @@ class UserModels extends DataModel {
             [255, 255, 255],
             [255, 255, 255],
         ];
-        $ftSize = 100;
+        $ftSize = 64;
         $strHsh = md5($name);
         $intHsh = 0;
         for ($i = 0; $i < 3; $i++) {
@@ -954,7 +954,7 @@ class UserModels extends DataModel {
         $curDir = dirname(__FILE__);
         $resDir = "{$curDir}/../default_avatar_portrait/";
         $fLatin = "{$resDir}OpenSans-Bold.ttf";
-        $fCjk   = "{$resDir}wqy-microhei-lite.ttc";
+        $fCjk   = "{$resDir}wqy-microhei.ttc";
         // get image
         $bgIdx  = fmod($intHsh, count($backgrounds));
         $image  = ImageCreateFromPNG("{$resDir}portrait_default_{$backgrounds[$bgIdx]}.png");
@@ -967,14 +967,15 @@ class UserModels extends DataModel {
             $leftPd = 0;
         } else {
             $ftFile = $fLatin;
-            $leftPd = 1;
+            $leftPd = 0;
         }
-        $name   = mb_convert_encoding($name, 'html-entities', 'utf-8');
+        $name    = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
+        $ftSize += 1;
         do {
+            $ftSize--;
             $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
-            $ftSize--;
         } while ($fWidth > $specification['font-width']);
         $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, 'x');
         imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2 + $leftPd, ($specification['height'] + $posArr[1] - $posArr[7]) / 2, $fColor, $ftFile, $name);
