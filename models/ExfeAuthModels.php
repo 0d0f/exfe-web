@@ -40,8 +40,9 @@ class ExfeAuthModels extends DataModel {
         if ($short) {
             $result = $this->useTokenApi('GET', null, true, ['key' => $token]);
             if ($result && is_array($result)) {
-                $result = ['token' => $this->fixShortToken($result[0]['key']),
-                           'data'  => json_decode($result[0]['data'], true)];
+                $result = ['token'     => $this->fixShortToken($result[0]['key']),
+                           'data'      => json_decode($result[0]['data'], true),
+                           'is_expire' => false];
             }
         } else {
             $result = $this->useTokenApi('Get', $token);
@@ -55,8 +56,9 @@ class ExfeAuthModels extends DataModel {
             $rawResult = $this->useTokenApi('GET', null, true, ['resource' => $resource]);
             $result = [];
             foreach ($rawResult && is_array($rawResult) ? $rawResult : [] as $item) {
-                $result[] = ['token' => $this->fixShortToken($item['key']),
-                             'data'  => $item['data']];
+                $result[] = ['token'     => $this->fixShortToken($item['key']),
+                             'data'      => $item['data'],
+                             'is_expire' => false];
             }
         } else {
             $result = $this->useTokenApi('Find', $resource);
@@ -88,7 +90,7 @@ class ExfeAuthModels extends DataModel {
 
     public function expireAllTokens($resource, $short = false) {
         return $short
-             ? $this->useTokenApi('Expire', null, true, ['resource' => $resource], 'resource')
+             ? $this->useTokenApi(null, 0, true, ['resource' => $resource], 'resource')
              : $this->useTokenApi('ExpireAll', json_encode($resource));
     }
 
