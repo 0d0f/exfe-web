@@ -670,13 +670,14 @@ class UserModels extends DataModel {
 
 
     public function resetPasswordByToken($token, $password, $name = '') {
-        $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
+        $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         // basic check
         if (!$token || !$password) {
             return null;
         }
+        $short = strlen($token) <= 5;
         // change password
-        if (($curToken = $hlpExfeAuth->getToken($token, strlen($token) <= 5))   // is sms_token
+        if (($curToken = $hlpExfeAuth->getToken($token, $short))   // is sms_token
           && $curToken['data']['token_type'] === 'verification_token'
           && !$curToken['is_expire']) {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
@@ -686,7 +687,7 @@ class UserModels extends DataModel {
                 $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $hlpExfeAuth->expireAllTokens($resource);
+                $hlpExfeAuth->expireAllTokens($resource, $short);
                 $siResult = $this->rawSignin($curToken['data']['user_id']);
                 if ($siResult) {
                     return [

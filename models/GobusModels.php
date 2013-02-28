@@ -19,12 +19,15 @@ class GobusModels extends DataModel {
                     $getArgs[$aI] = json_encode($aItem);
                 }
             }
-            $url = "{$server}/{$api}" . ($getArgs ? '?' : '') . http_build_query($getArgs);
+            $url = "{$server}/{$api}"
+                 . ($id      ? "/{$id}" : '')
+                 . ($getArgs ? '?'      : '')
+                 . http_build_query($getArgs);
             if (DEBUG) {
                 error_log("URL: {$url}");
             }
             if ($postArgs !== null) {
-                $postArgs = json_encode($postArgs ?: '');
+                $postArgs = json_encode($postArgs !== null ? $postArgs : '');
                 if (DEBUG) {
                     error_log("POST: {$postArgs}");
                 }
