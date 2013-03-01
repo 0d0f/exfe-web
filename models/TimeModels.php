@@ -7,8 +7,10 @@ class TimeModels extends DataModel {
         if (preg_match('/^[+-][0-9]{2}:[0-9]{2}(\ [a-z]{1,5})?$/i', $timezone)) {
         } else if (preg_match('/^[a-z]{1,5}\ ([+-][0-9]{2}:[0-9]{2})$/i', $timezone)) {
             $timezone = preg_replace('/^[a-z]{1,5}\ ([+-][0-9]{2}:[0-9]{2})$/i', '$1', $timezone);
-        } else {
+        } else if (strlen($origin_string) > 0) {
             return 'timezone_error';
+        } else {
+            return new CrossTime('', '', '', '', '', '', 0);
         }
         switch (strtotime($timezone)) {
             case 'z':
