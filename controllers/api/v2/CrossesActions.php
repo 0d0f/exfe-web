@@ -46,8 +46,9 @@ class CrossesActions extends ActionController {
         $signinStat  = $hlpCheck->isAPIAllow('user_edit', trim($params['token']));
         $user_id     = $signinStat['check'] ? (int) $signinStat['uid'] : 0;
         // get invitation data
-        $acsToken    = trim($_POST['cross_access_token']);
-        $invToken    = trim($_POST['invitation_token']);
+        $acsToken    = trim(@$_POST['cross_access_token']);
+        $invToken    = trim(@$_POST['invitation_token']);
+        $cross_id    = (int)@$_POST['cross_id'];
         $invitation  = null;
         $usInvToken  = false;
         if ($acsToken) {
@@ -63,7 +64,13 @@ class CrossesActions extends ActionController {
             }
         }
         if (!$invitation && $invToken) {
-            $invitation = $modExfee->getRawInvitationByToken($invToken);
+            if ($cross_id && strlen($invToken) === 4) {
+                $exfee_id   = $modExfee->getExfeeIdByCrossId($cross_id);
+                $invitation = getRawInvitationByExfeeIdAndToken($exfee_id, $invToken);
+                $invToken   = $invitation['token'];
+            } else {
+                $invitation = $modExfee->getRawInvitationByToken($invToken);
+            }
             $usInvToken = !!$invitation;
         }
         // 受邀 token 存在
