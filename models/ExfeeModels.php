@@ -152,33 +152,64 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getInvitationByExfeeIdAndToken($exfee_id, $token) {
+    public function getRawInvitationByExfeeIdAndToken($exfee_id, $token) {
         if ($exfee_id && $token) {
+            switch (strlen($token)) {
+                case 3:
+                    $token = "_{$token}____________________________";
+                    break;
+                case 4:
+                    $token = "_{$token}___________________________";
+                    break;
+                default:
+                    return null;
+            }
             $rawInvitation = $this->getRow(
                 "SELECT * FROM `invitations`
                  WHERE `cross_id` = $exfee_id
-                 AND   `token` LIKE '_{$token}____________________________'"
+                 AND   `token` LIKE '{$token}'"
             );
             if ($rawInvitation) {
-                $hlpIdentity = $this->getHelperByName('identity');
-                $objIdentity = $hlpIdentity->getIdentityById($rawInvitation['identity_id']);
-                $oivIdentity = $hlpIdentity->getIdentityById($rawInvitation['invited_by']);
-                $oByIdentity = $hlpIdentity->getIdentityById($rawInvitation['by_identity_id']);
-                return new Invitation(
-                    $rawInvitation['id'],
-                    $objIdentity,
-                    $oivIdentity,
-                    $oByIdentity,
-                    $this->rsvp_status[$rawInvitation['state']],
-                    $rawInvitation['via'],
-                    '',
-                    $rawInvitation['created_at'],
-                    $rawInvitation['updated_at'],
-                    $rawInvitation['host'],
-                    $rawInvitation['mates'],
-                    $rawInvitation['remark'] ? explode(';', $rawInvitation['remark']) : []
-                );
+                $rawInvitation['id']             = (int) $rawInvitation['id'];
+                $rawInvitation['identity_id']    = (int) $rawInvitation['identity_id'];
+                $rawInvitation['state']          = (int) $rawInvitation['state'];
+                $rawInvitation['invited_by']     = (int) $rawInvitation['invited_by'];
+                $rawInvitation['by_identity_id'] = (int) $rawInvitation['by_identity_id'];
+                $rawInvitation['host']           = (int) $rawInvitation['host'];
+                $rawInvitation['mates']          = (int) $rawInvitation['mates'];
+                $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
+                $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
+                $rawInvitation['valid']          = $rawInvitation['state'] !== 4
+                                                && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
+                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30)); // 23 min 30 secs
+                return $rawInvitation;
             }
+        }
+        return null;
+    }
+
+
+    public function getInvitationByExfeeIdAndToken($exfee_id, $token) {
+        $rawInvitation = $this->getRawInvitationByExfeeIdAndToken($exfee_id, $token);
+        if ($rawInvitation) {
+            $hlpIdentity = $this->getHelperByName('identity');
+            $objIdentity = $hlpIdentity->getIdentityById($rawInvitation['identity_id']);
+            $oivIdentity = $hlpIdentity->getIdentityById($rawInvitation['invited_by']);
+            $oByIdentity = $hlpIdentity->getIdentityById($rawInvitation['by_identity_id']);
+            return new Invitation(
+                $rawInvitation['id'],
+                $objIdentity,
+                $oivIdentity,
+                $oByIdentity,
+                $this->rsvp_status[$rawInvitation['state']],
+                $rawInvitation['via'],
+                '',
+                $rawInvitation['created_at'],
+                $rawInvitation['updated_at'],
+                $rawInvitation['host'],
+                $rawInvitation['mates'],
+                $rawInvitation['remark'] ? explode(';', $rawInvitation['remark']) : []
+            );
         }
         return null;
     }
