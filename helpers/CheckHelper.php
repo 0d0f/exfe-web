@@ -116,7 +116,6 @@ class CheckHelper extends ActionController {
                 break;
             case 'user':
                 return array('check' => true, 'uid' => $uid);
-                return;
                 break;
             case 'user_self':
                 return array('check' => $uid == $args['user_id'], 'uid' => $uid);
