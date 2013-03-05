@@ -66,7 +66,7 @@ class CrossesActions extends ActionController {
         if (!$invitation && $invToken) {
             if ($cross_id && strlen($invToken) === 4) {
                 $exfee_id   = $modExfee->getExfeeIdByCrossId($cross_id);
-                $invitation = getRawInvitationByExfeeIdAndToken($exfee_id, $invToken);
+                $invitation = $modExfee->getRawInvitationByExfeeIdAndToken($exfee_id, $invToken);
                 $invToken   = $invitation['token'];
             } else {
                 $invitation = $modExfee->getRawInvitationByToken($invToken);
