@@ -72,7 +72,7 @@ class IdentitiesActions extends ActionController {
                             break;
                         case 'phone':
                             if (validatePhoneNumber($id_str)) {
-                                $name = $identityItem->name ?: preg_replace('/^\+.*(.{4})$/', '$1', $id_str);
+                                $name = $identityItem->name ?: preg_replace('/^\+.*(.{3})$/', '$1', $id_str);
                                 $objIdentities[] = new Identity(
                                     0,
                                     $name,
