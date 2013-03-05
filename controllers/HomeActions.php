@@ -56,6 +56,7 @@ class HomeActions extends ActionController {
         }
         // case USER_AGENT
         if (!isset($_GET['ipad'])
+         && !isset($_COOKIE['ipad'])
          && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod'))) {
@@ -90,6 +91,9 @@ class HomeActions extends ActionController {
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'Fennec')) {
             // @todo
             // return;
+        }
+        if (isset($_GET['ipad'])) {
+            setcookie('ipad', true, time() + 60 * 60 * 24);
         }
         // load models
         $modOauth      = $this->getModelByName('OAuth');
