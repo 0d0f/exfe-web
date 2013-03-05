@@ -35,7 +35,7 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['humantime',     '0.0.6'],
+    ['humantime',     '0.0.7'],
     ['api',           '0.0.8'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
@@ -61,8 +61,8 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 addScript([
     ['lightsaber',    '0.0.4'],
     ['middleware',    '0.0.9'],
-    ['routes',        '0.1.11'],
-    ['app',           '0.1.6'],
+    ['routes',        '0.1.12'],
+    ['app',           '0.2.6'],
 ]);
 
 // Google Analytics
