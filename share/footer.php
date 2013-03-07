@@ -45,6 +45,7 @@ addScript([
     ['datepanel',     '0.1.2'],
     ['mappanel',      '0.0.7'],
     ['global',        '0.0.5'],
+    ['photox',        '0.0.1']
 ]);
 
 // profile
