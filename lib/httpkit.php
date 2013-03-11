@@ -45,12 +45,31 @@ class httpKit {
                 curl_setopt($objCurl, CURLOPT_POST,       1);
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, $argsPost);
             }
+            if (DEBUG) {
+                error_log(
+                    "httpKit fetching {\n"
+                  . "URL: {$url}\n"
+                  . 'POST: ' . ($argsPost !== null ? $argsPost : '') . "\n"
+                );
+            }
             $rawData     = @curl_exec($objCurl);
             $intHttpCode = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
             $result = ['data' => $rawData, 'http_code' => "{$intHttpCode}"];
             if ($jsonDecode) {
                 $result['json'] = @json_decode($rawData, $decoAsArray);
+            }
+            if (DEBUG) {
+                $strLog = 'RETURN: ';
+                if ($binaryMode) {
+                    $strLog .= $rawData ? '[binary data]' : '[null]';
+                } else {
+                    $strLog .= $rawData;
+                }
+                error_log(
+                    "{$strLog}\n"
+                  . "httpKit fetching }"
+                );
             }
             return $result;
         }

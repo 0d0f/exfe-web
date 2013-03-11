@@ -160,7 +160,7 @@ class AvatarActions extends ActionController {
             if (DEBUG) {
                 error_log("Start loading image: {$params['url']}");
             }
-            $image   = $objLibImage->loadImageByUrl($params['url']);
+            $image   = httpKit::fetchImageExpress($params['url']);
             if (DEBUG) {
                 error_log("Finished loading image: {$params['url']}");
             }
