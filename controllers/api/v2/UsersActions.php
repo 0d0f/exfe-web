@@ -1020,7 +1020,7 @@ class UsersActions extends ActionController {
                 unset($crosses[$i]);
             }
         }
-        sort($crosses);
+        // sort($crosses); @todo BUG HERE!
         // return
         apiResponse(['crosses' => $crosses, 'more' => $more]);
     }
