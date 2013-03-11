@@ -157,13 +157,7 @@ class AvatarActions extends ActionController {
             $image   = isset($arr_url[1]) && $arr_url[1]
                      ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true) : null;
         } else {
-            if (DEBUG) {
-                error_log("Start loading image: {$params['url']}");
-            }
             $image   = httpKit::fetchImageExpress($params['url']);
-            if (DEBUG) {
-                error_log("Finished loading image: {$params['url']}");
-            }
         }
         // get fall back image
         if (!$image) {
