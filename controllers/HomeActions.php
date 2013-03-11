@@ -4,18 +4,17 @@ class HomeActions extends ActionController {
 
     public function doIndex() {
 
-        // shorttoken debuging {
+        // token debuging {
         // $modAuth = $this->getModelByName('ExfeAuth');
-        // $a = $modAuth->generateToken(['a' => 1, 'b' => 2], ['c' => 3, 'd' => 4], 1000, true);
-        // $a = $modAuth->getToken('8439', true);
-        // $a = $modAuth->updateToken('8439', ['e' => 5, 'f' => 6], true);
-        // $a = $modAuth->refreshToken('8439', 10000, true);
-        // $a = $modAuth->findToken(['a' => 1, 'b' => 2], true);
-        // $a = $modAuth->expireToken('4456', true);
-        // $a = $modAuth->expireAllTokens(['a' => 1, 'b' => 2], true);
-        // var_dump($a);
+        // $a = $modAuth->create(['a' => 1, 'b' => 2], ['c' => 3, 'd' => 4], 10000, true);
+        // $a = $modAuth->keyGet('8602');
+        // $a = $modAuth->resourceGet(['a' => 1, 'b' => 2]);
+        // $a = $modAuth->keyUpdate('8602', ['xxx' => 1, 'yyyyy' => 2], 44444444);
+        // $a = $modAuth->resourceUpdate(['a' => 1, 'b' => 2], ['xxx' => 1, 'KKKKKKKKKKK' => 2], 44444444);
+        // $a = $modAuth->keyExpire('8602');
+        // $a = $modAuth->resourceExpire(['a' => 1, 'b' => 2]);
         // return;
-        // }
+        // token debuging }
 
         // $mod = $this->getModelByName('Photo');
         // $pris = $mod->getAlbumsFromFacebook(391);
@@ -49,7 +48,7 @@ class HomeActions extends ActionController {
         $this->setVar('sms_token', null);
         if (isset($_GET['t'])) {
             $t = mysql_real_escape_string($_GET['t']);
-            if (($objToken = $modUser->resolveToken($t, true))) {
+            if (($objToken = $modUser->resolveToken($t))) {
                 $objToken['origin_token'] = $t;
             }
             $this->setVar('sms_token', $objToken ?: false);

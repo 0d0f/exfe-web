@@ -55,12 +55,11 @@ class CrossesActions extends ActionController {
             $crossToken = $modCross->getCrossAccessToken($acsToken);
             if ($crossToken
              && $crossToken['data']
-             && $crossToken['data']['token_type'] === 'cross_access_token'
-             && !$crossToken['is_expire']) {
+             && $crossToken['data']['token_type'] === 'cross_access_token') {
                 $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
                     $crossToken['data']['cross_id'], $crossToken['data']['identity_id']
                 );
-                $modExfeAuth->refreshToken($acsToken, 60 * 60 * 24 * 7); // for 1 week
+                $modExfeAuth->keyUpdate($acsToken, null, 60 * 60 * 24 * 7); // for 1 week
             }
         }
         if (!$invitation && $invToken) {
