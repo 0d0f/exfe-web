@@ -14,7 +14,7 @@ class httpKit {
         $binaryMode  = false,
         $timeout     = 3,
         $maxRedirs   = 3,
-        $postByForm  = false,
+        $postType    = 'txt',
         $jsonDecode  = false,
         $decoAsArray = true
     ) {
@@ -32,25 +32,22 @@ class httpKit {
                       . http_build_query($argsGet);
             }
             if ($argsPost !== null) {
-                if (is_array($argsPost)) {
-                    foreach ($argsPost as $i => $item) {
-                        if (is_array($item)) {
-                            $argsPost[$i] = json_encode($item);
-                        }
-                    }
+                switch ($postType) {
+                    case 'json':
+                        $argsPost = json_encode($argsPost);
+                        break;
+                    case 'form':
+                        $argsPost = http_build_query($argsPost);
                 }
-                $argsPost = $postByForm
-                          ? http_build_query($argsPost)
-                          : json_encode($argsPost);
                 curl_setopt($objCurl, CURLOPT_POST,       1);
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, $argsPost);
             }
             if (DEBUG) {
-                error_log(
-                    "httpKit fetching {\n"
-                  . "URL: {$url}\n"
-                  . 'POST: ' . ($argsPost !== null ? $argsPost : '') . "\n"
-                );
+                error_log('httpKit fetching {');
+                error_log("URL: {$url}");
+                if ($argsPost !== null) {
+                    error_log("POST: {$argsPost}");
+                }
             }
             $rawData     = @curl_exec($objCurl);
             $intHttpCode = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
@@ -62,14 +59,13 @@ class httpKit {
             if (DEBUG) {
                 $strLog = 'RETURN: ';
                 if ($binaryMode) {
-                    $strLog .= $rawData ? '[binary data]' : '[null]';
+                    $strLog .= $rawData ? '"[binary data]"' : '"[null]"';
                 } else {
                     $strLog .= $rawData;
                 }
-                error_log(
-                    "{$strLog}\n"
-                  . "httpKit fetching }"
-                );
+                error_log("HTTP-CODE: {$intHttpCode}");
+                error_log("{$strLog}");
+                error_log('httpKit fetching }');
             }
             return $result;
         }
@@ -77,7 +73,7 @@ class httpKit {
     }
 
 
-    public function fetchImageExpress($url) {
+    public static function fetchImageExpress($url) {
         $rawResult = self::request($url, null, null, false, true);
         if ($rawResult
          && $rawResult['data']

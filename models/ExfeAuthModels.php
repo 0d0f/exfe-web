@@ -1,97 +1,115 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+
+
 class ExfeAuthModels extends DataModel {
 
-    public $hlpGobus = null;
-
-
-    public function __construct() {
-        $this->hlpGobus = $this->getHelperByName('Gobus');
+    protected function packToken($rawToken) {
+        return $rawToken ? [
+            'key'        => "{$rawToken['key']}",
+            'data'       => json_decode($rawToken['data'], true),
+            'touched_at' => (int) strtotime($rawToken['touched_at']),
+            'expire_at'  => (int) $rawToken['expire_at'],
+        ] : null;
     }
 
 
-    protected function useTokenApi($method, $postArgs = [], $short = false, $getArgs = [], $id = '') {
-        return $this->hlpGobus->useGobusApi(
-            EXFE_AUTH_SERVER,
-            $short ? 'shorttoken' : 'TokenManager',
-            $method, $postArgs, true, $getArgs, $id
-        );
-    }
-
-
-    protected function fixShortToken($strToken) {
-        return strlen($strToken) === 3 ? "0{$strToken}" : "{$strToken}";
-    }
-
-
-    public function generateToken($resource, $data, $expireAfterSeconds, $short = false) {
-        $rawResult = $this->useTokenApi($short ? '' : 'Generate', [
-            'resource'             => $resource,
-            'data'                 => $data,
-            'expire_after_seconds' => $expireAfterSeconds,
-        ], $short);
-        return $rawResult
-             ? ($short ? $this->fixShortToken($rawResult['key']) : $rawResult)
-             : null;
-    }
-
-
-    public function getToken($token, $short = false) {
-        if ($short) {
-            $result = $this->useTokenApi('GET', null, true, ['key' => $token]);
-            if ($result && is_array($result)) {
-                $result = ['token'     => $this->fixShortToken($result[0]['key']),
-                           'data'      => json_decode($result[0]['data'], true),
-                           'is_expire' => false];
+    public function create(
+        $resource, $data, $expireAfterSeconds, $short = false
+    ) {
+        if ($resource && $data && $expireAfterSeconds) {
+            $rawResult = httpkit::request(
+                EXFE_AUTH_SERVER . '/v3/tokens/' . ($short ? 'short' : 'long'),
+                null, [
+                    'resource'             => json_encode($resource),
+                    'data'                 => json_encode($data),
+                    'expire_after_seconds' => (int) $expireAfterSeconds,
+                ], false, false, 3, 3, 'json', true
+            );
+            if ($rawResult && $rawResult['http_code'] === '200') {
+                $ipvResult = $this->packToken($rawResult['json']);
+                if ($ipvResult
+                 && isset($ipvResult['key'])
+                 && $ipvResult['key']) {
+                    return $ipvResult['key'];
+                }
             }
-        } else {
-            $result = $this->useTokenApi('Get', $token);
         }
-        return $result;
+        return null;
     }
 
 
-    public function findToken($resource, $short = false) {
-        if ($short) {
-            $rawResult = $this->useTokenApi('GET', null, true, ['resource' => $resource]);
-            $result = [];
-            foreach ($rawResult && is_array($rawResult) ? $rawResult : [] as $item) {
-                $result[] = ['token'     => $this->fixShortToken($item['key']),
-                             'data'      => $item['data'],
-                             'is_expire' => false];
+    public function keyGet($key) {
+        if ($key) {
+            $rawResult = httpkit::request(
+                EXFE_AUTH_SERVER . "/v3/tokens/key/{$key}",
+                null, null, false, false, 3, 3, 'json', true
+            );
+            if ($rawResult && $rawResult['http_code'] === '200') {
+                return $this->packToken($rawResult['json'][0]);
             }
-        } else {
-            $result = $this->useTokenApi('Find', $resource);
         }
-        return $result;
+        return null;
     }
 
 
-    public function updateToken($token, $data, $short = false) {
-        return $short
-             ? $this->useTokenApi('PUT', ['data' => $data], true, [], $token)
-             : $this->useTokenApi('Update', ['Token' => $token, 'Data' => $data]);
+    public function resourceGet($resource) {
+        if ($resource) {
+            $rawResult = httpkit::request(
+                EXFE_AUTH_SERVER . "/v3/tokens/resources",
+                null, json_encode($resource),
+                false, false, 3, 3, 'json', true
+            );
+            if ($rawResult && $rawResult['http_code'] === '200') {
+                $rtnResult = [];
+                foreach ($rawResult['json'] as $rI => $rItem) {
+                    $rtnResult[] = $this->packToken($rItem);
+                }
+                return $rtnResult;
+            }
+        }
+        return null;
     }
 
 
-    public function refreshToken($token, $expireAfterSeconds, $short = false) {
-        return $short
-             ? $this->useTokenApi('PUT', ['expire_after_seconds' => $expireAfterSeconds], true, [], $token)
-             : $this->useTokenApi('Refresh', ['token' => $token, 'expire_after_seconds' => $expireAfterSeconds]);
+    public function keyUpdate($key, $data = null, $expireAfterSeconds = null) {
+        $postArgs = [];
+        if ($data !== null) {
+            $postArgs['data'] = json_encode($data);
+        }
+        if ($expireAfterSeconds !== null) {
+            $postArgs['expire_after_seconds'] = $expireAfterSeconds;
+        }
+        if ($key && $postArgs) {
+            $rawResult = httpkit::request(
+                EXFE_AUTH_SERVER . "/v3/tokens/key/{$key}",
+                null, $postArgs, false, false, 3, 3, 'json', true
+            );
+            if ($rawResult && $rawResult['http_code'] === '200') {
+                return true;
+            }
+        }
+        return false;
     }
 
 
-    public function expireToken($token, $short = false) {
-        return $short
-             ? $this->refreshToken($token, 0, true)
-             : $this->useTokenApi('Expire', $token);
-    }
-
-
-    public function expireAllTokens($resource, $short = false) {
-        return $short
-             ? $this->useTokenApi(null, 0, true, ['resource' => $resource], 'resource')
-             : $this->useTokenApi('ExpireAll', json_encode($resource));
+    public function resourceUpdate($resource, $expireAfterSeconds = null) {
+        $postArgs = [];
+        if ($expireAfterSeconds !== null) {
+            $postArgs['expire_after_seconds'] = $expireAfterSeconds;
+        }
+        if ($resource && $postArgs) {
+            $postArgs['resource'] = json_encode($resource);
+            $rawResult = httpkit::request(
+                EXFE_AUTH_SERVER . "/v3/tokens/resource",
+                null, $postArgs, false, false, 3, 3, 'json', true
+            );
+            if ($rawResult && $rawResult['http_code'] === '200') {
+                return true;
+            }
+        }
+        return false;
     }
 
 }
