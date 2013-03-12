@@ -241,6 +241,7 @@ class IdentitiesActions extends ActionController {
             if ($iItem->id === $identity_id) {
                 switch ($iItem->provider) {
                     case 'email':
+                    case 'phone':
                         if ($identity && !$modIdentity->updateIdentityById($identity_id, $identity)) {
                             apiError(500, 'update_failed');
                         }
