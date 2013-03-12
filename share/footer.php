@@ -52,7 +52,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.4'],
+    ['profile',       '0.1.14'],
     ['user',          '0.0.7'],
 ]);
 
