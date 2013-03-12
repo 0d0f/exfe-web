@@ -220,6 +220,9 @@ class CrossesActions extends ActionController {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
+        if ($cross && is_object($cross) && isset($cross->cross)) {
+            $cross = $cross->cross;
+        }
         $by_identity_id=$cross->by_identity->id;
         $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("by_identity_id"=>$by_identity_id));
@@ -259,6 +262,9 @@ class CrossesActions extends ActionController {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
+        if ($cross && is_object($cross) && isset($cross->cross)) {
+            $cross = $cross->cross;
+        }
         $by_identity_id=$cross->by_identity->id;
         $checkHelper = $this->getHelperByName('check');
         $crossHelper = $this->getHelperByName('cross');
