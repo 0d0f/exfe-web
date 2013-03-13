@@ -43,6 +43,12 @@ class IdentityModels extends DataModel {
                         $objParsed = Identity::parseEmail($rawIdentity['external_username']);
                         $rawIdentity['name'] = $objParsed['name'];
                         break;
+                    case 'phone':
+                        $rawIdentity['name'] = preg_replace(
+                            '/^\+.*(.{3})$/', '$1',
+                            $rawIdentity['external_username']
+                        );
+                        break;
                     default:
                         $rawIdentity['name'] = $rawIdentity['external_username'];
                 }
