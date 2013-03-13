@@ -23,9 +23,14 @@ class IdentitiesActions extends ActionController {
         $modIdentity   = $this->getModelByName('Identity');
         $modOAuth      = $this->getModelByName('OAuth');
         // get inputs
-        $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : [];
-        if ($arrIdentities && is_object($arrIdentities) && $arrIdentities->identities) {
-            $arrIdentities = $arrIdentities->identities;
+        $arrIdentities = [];
+        if (isset($_POST['identities'])) {
+            $arrIdentities = @json_decode($_POST['identities']);
+        } else {
+            $rawIdentities = @json_decode(file_get_contents('php://input'));
+            if ($rawIdentities && isset($rawIdentities->identities)) {
+                $arrIdentities = $rawIdentities->identities;
+            }
         }
         // ready
         $objIdentities = [];
