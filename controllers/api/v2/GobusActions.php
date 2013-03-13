@@ -37,6 +37,11 @@ class GobusActions extends ActionController {
     }
 
 
+    public function doGather() {
+
+    }
+
+
     public function doPostConversation() {
         // get model
         $modUser         = $this->getModelByName('User');
