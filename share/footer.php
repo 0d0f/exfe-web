@@ -19,7 +19,6 @@ addScript([
     ['util',          '0.0.5'],
     ['widget',        '0.0.3'],
     ['jquery',        '1.8.2'],
-    ['moment',        '1.7.2'],
     ['store',         '1.3.5'],
     ['marked',        '0.2.5'],
     ['handlebars',    '1.0.7'],
@@ -52,7 +51,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.14'],
+    ['profile',       '0.1.15'],
     ['user',          '0.0.7'],
 ]);
 
