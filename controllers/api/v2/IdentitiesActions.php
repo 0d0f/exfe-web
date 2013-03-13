@@ -24,6 +24,9 @@ class IdentitiesActions extends ActionController {
         $modOAuth      = $this->getModelByName('OAuth');
         // get inputs
         $arrIdentities = trim($_POST['identities']) ? json_decode($_POST['identities']) : [];
+        if ($arrIdentities && is_object($arrIdentities) && $arrIdentities->identities) {
+            $arrIdentities = $arrIdentities->identities;
+        }
         // ready
         $objIdentities = [];
         // get
@@ -241,6 +244,7 @@ class IdentitiesActions extends ActionController {
             if ($iItem->id === $identity_id) {
                 switch ($iItem->provider) {
                     case 'email':
+                    case 'phone':
                         if ($identity && !$modIdentity->updateIdentityById($identity_id, $identity)) {
                             apiError(500, 'update_failed');
                         }

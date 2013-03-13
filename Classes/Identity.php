@@ -82,7 +82,7 @@ class Identity extends EFObject {
                     break;
                 case 'phone':
                     $this->name = preg_replace(
-                        '/^\+.*(.{4})$/', '$1',
+                        '/^\+.*(.{3})$/', '$1',
                         $this->external_id ?: $this->external_username
                     );
                     break;

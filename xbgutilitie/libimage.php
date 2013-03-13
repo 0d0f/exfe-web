@@ -145,26 +145,6 @@ class libImage {
     }
 
 
-    function loadImageByUrl($url) {
-        if ($url) {
-            $objCurl = curl_init();
-            curl_setopt($objCurl, CURLOPT_URL, $url);
-            curl_setopt($objCurl, CURLOPT_BINARYTRANSFER, true);
-            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($objCurl, CURLOPT_HEADER, false);
-            curl_setopt($objCurl, CURLOPT_MAXREDIRS, 3);
-            curl_setopt($objCurl, CURLOPT_FOLLOWLOCATION, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
-            $rawData = curl_exec($objCurl);
-            $image   = $rawData ? @imagecreatefromstring($rawData) : null;
-            curl_close($objCurl);
-        } else {
-            $image   = null;
-        }
-        return $image;
-    }
-
-
     public function imagetextouter(&$im, $size, $x, $y, $color, $fontfile, $text, $outer) {
         if (!function_exists('ImageColorAllocateHEX'))
         {

@@ -127,6 +127,7 @@ class AvatarActions extends ActionController {
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../../default_avatar_portrait/";
+        require_once "{$curDir}/../../../lib/httpKit.php";
         require_once "{$curDir}/../../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
@@ -156,13 +157,7 @@ class AvatarActions extends ActionController {
             $image   = isset($arr_url[1]) && $arr_url[1]
                      ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true) : null;
         } else {
-            if (DEBUG) {
-                error_log("Start loading image: {$params['url']}");
-            }
-            $image   = $objLibImage->loadImageByUrl($params['url']);
-            if (DEBUG) {
-                error_log("Finished loading image: {$params['url']}");
-            }
+            $image   = httpKit::fetchImageExpress($params['url']);
         }
         // get fall back image
         if (!$image) {

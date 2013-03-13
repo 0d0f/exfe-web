@@ -16,8 +16,7 @@ class CheckHelper extends ActionController {
             $invToken = $crossData->getCrossAccessToken($token);
             if ($invToken
              && $invToken['data']
-             && $invToken['data']['token_type'] === 'cross_access_token'
-             && !$invToken['is_expire']) {
+             && $invToken['data']['token_type'] === 'cross_access_token') {
                 $invitation = $exfeeData->getRawInvitationByCrossIdAndIdentityId(
                     $invToken['data']['cross_id'], $invToken['data']['identity_id']
                 );

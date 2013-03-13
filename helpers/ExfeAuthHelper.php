@@ -10,40 +10,34 @@ class ExfeAuthHelper extends ActionController {
     }
 
 
-    public function generateToken($resource, $data, $expireAfterSeconds, $short = false) {
-        return $this->modExfeAuth->generateToken(
+    public function create(
+        $resource, $data, $expireAfterSeconds, $short = false
+    ) {
+        return $this->modExfeAuth->create(
             $resource, $data, $expireAfterSeconds, $short
         );
     }
 
 
-    public function getToken($token, $short = false) {
-        return $this->modExfeAuth->getToken($token, $short);
+    public function keyGet($key) {
+        return $this->modExfeAuth->keyGet($key);
     }
 
 
-    public function findToken($resource, $short = false) {
-        return $this->modExfeAuth->findToken(json_encode($resource), $short);
+    public function resourceGet($resource) {
+        return $this->modExfeAuth->resourceGet($resource);
     }
 
 
-    public function updateToken($token, $data, $short = false) {
-        return $this->modExfeAuth->updateToken($token, $data, $short);
+    public function keyUpdate($key, $data = null, $expireAfterSeconds = null) {
+        return $this->modExfeAuth->keyUpdate($key, $data, $expireAfterSeconds);
     }
 
 
-    public function refreshToken($token, $expireAfterSeconds, $short = false) {
-        return $this->modExfeAuth->refreshToken($token, $expireAfterSeconds, $short);
-    }
-
-
-    public function expireToken($token, $short = false) {
-        return $this->modExfeAuth->expireToken($token, $short);
-    }
-
-
-    public function expireAllTokens($resource, $short = false) {
-        return $this->modExfeAuth->expireAllTokens($resource, $short);
+    public function resourceUpdate($resource, $expireAfterSeconds = null) {
+        return $this->modExfeAuth->resourceUpdate(
+            $resource, $expireAfterSeconds
+        );
     }
 
 }

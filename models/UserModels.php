@@ -109,17 +109,15 @@ class UserModels extends DataModel {
                         $identity->status  = $identity_infos[$identity->id]['status'];
                         if ($identity->status === 'VERIFYING') {
                             // remove timeout verifying {
-                            $curTokens = $hlpExfeAuth->findToken([
+                            $curTokens = $hlpExfeAuth->resourceGet([
                                 'token_type'  => 'verification_token',
                                 'action'      => 'VERIFY',
                                 'identity_id' => $item['id'],
-                            ], $item['provider'] === 'phone');
+                            ]);
                             if ($curTokens && is_array($curTokens)) {
                                 foreach ($curTokens as $cI => $cItem) {
-                                    $cItem['data'] = (array) json_decode($cItem['data']);
                                     if ($cItem['data']['token_type'] === 'verification_token'
-                                     && $cItem['data']['user_id']    === $id
-                                     && !$cItem['is_expire']) {
+                                     && $cItem['data']['user_id']    === $id) {
                                         $timeout   = false;
                                         $identity->expired_time = date(
                                             'Y-m-d H:i:s',
@@ -468,14 +466,11 @@ class UserModels extends DataModel {
         // get current token
         $expireSec = 60 * 60 * 24 * 2; // 2 days
         $result['token'] = '';
-        $short = $identity->provider === 'phone';
-        $curTokens = $hlpExfeAuth->findToken($resource, $short);
+        $curTokens = $hlpExfeAuth->resourceGet($resource);
         if ($curTokens && is_array($curTokens)) {
             foreach ($curTokens as $cI => $cItem) {
-                $cItem['data'] = (array) json_decode($cItem['data']);
                 if ($cItem['data']['token_type'] === 'verification_token'
-                 && $cItem['data']['user_id']    === $user_id
-                 && !$cItem['is_expire']) {
+                 && $cItem['data']['user_id']    === $user_id) {
                     $result['token'] = $cItem['token'];
                     $data            = $cItem['data'];
                     break;
@@ -485,18 +480,19 @@ class UserModels extends DataModel {
         $data['updated_time'] = time();
         $data['expired_time'] = time() + $expireSec;
         // case provider
+        $short = $identity->provider === 'phone';
         switch ($identity->provider) {
             case 'email':
             case 'phone':
                 // call token service
                 if ($result['token']) {
-                    $hlpExfeAuth->updateToken($result['token'], $data, $short);       // update
-                    $hlpExfeAuth->refreshToken($result['token'], $expireSec, $short); // extension
+                    $hlpExfeAuth->keyUpdate($result['token'], $data, $expireSec); // update && extension
                     $actResult = true;
                 } else {
                     // make new token
-                    $actResult = $result['token'] = $hlpExfeAuth->generateToken(
+                    $actResult = $result['token'] = $hlpExfeAuth->create(
                         $resource, $data, $expireSec, $short
+
                     );
                 }
                 // return
@@ -521,11 +517,10 @@ class UserModels extends DataModel {
                     case 'SET_PASSWORD':
                         // update database
                         if ($result['token']) {
-                            $hlpExfeAuth->updateToken($result['token'], $data);       // update
-                            $hlpExfeAuth->refreshToken($result['token'], $expireSec); // extension
+                            $hlpExfeAuth->keyUpdate($result['token'], $data, $expireSec); // update && extension
                             $actResult = true;
                         } else {
-                            $actResult = $result['token'] = $hlpExfeAuth->generateToken( // make new token
+                            $actResult = $result['token'] = $hlpExfeAuth->create( // make new token
                                 $resource, $data, $expireSec
                             );
                         }
@@ -564,11 +559,10 @@ class UserModels extends DataModel {
     }
 
 
-    public function resolveToken($token, $short = false) {
+    public function resolveToken($token) {
         $hlpExfeAuth   = $this->getHelperByName('ExfeAuth');
-        if (($curToken = $hlpExfeAuth->getToken($token, $short))
-          && $curToken['data']['token_type'] === 'verification_token'
-          && !$curToken['is_expire']) {
+        if (($curToken = $hlpExfeAuth->keyGet($token))
+          && $curToken['data']['token_type'] === 'verification_token') {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
                           'action'      => $curToken['data']['action'],
                           'identity_id' => $curToken['data']['identity_id']];
@@ -623,8 +617,8 @@ class UserModels extends DataModel {
                                             'created_time'   => time(),
                                             'updated_time'   => time(),
                                         ];
-                                        $hlpExfeAuth->updateToken(
-                                            $token, $curToken['data'], $short
+                                        $hlpExfeAuth->keyUpdate(
+                                            $token, $curToken['data']
                                         );
                                         // }
                                     }
@@ -632,10 +626,10 @@ class UserModels extends DataModel {
                             }
                             // }
                             if ($siResult['password']) {
-                                $hlpExfeAuth->expireAllTokens($resource, $short);
+                                $hlpExfeAuth->resourceUpdate($resource, 0);
                                 $rtResult['action'] = 'VERIFIED';
                             } else {
-                                $hlpExfeAuth->refreshToken($token, 233, $short);
+                                $hlpExfeAuth->keyUpdate($token, null, 233);
                                 $rtResult['action'] = 'INPUT_NEW_PASSWORD';
                             }
                             return $rtResult;
@@ -648,7 +642,7 @@ class UserModels extends DataModel {
                         $curToken['data']['identity_id'], 3
                     );
                     if ($stResult) {
-                        $hlpExfeAuth->refreshToken($token, 233, $short);
+                        $hlpExfeAuth->keyUpdate($token, null, 233);
                         $siResult = $this->rawSignin(
                             $curToken['data']['user_id']
                         );
@@ -675,11 +669,9 @@ class UserModels extends DataModel {
         if (!$token || !$password) {
             return null;
         }
-        $short = strlen($token) <= 5;
         // change password
-        if (($curToken = $hlpExfeAuth->getToken($token, $short))   // is sms_token
-          && $curToken['data']['token_type'] === 'verification_token'
-          && !$curToken['is_expire']) {
+        if (($curToken = $hlpExfeAuth->keyGet($token))
+          && $curToken['data']['token_type'] === 'verification_token') {
             $resource  = ['token_type'  => $curToken['data']['token_type'],
                           'action'      => $curToken['data']['action'],
                           'identity_id' => $curToken['data']['identity_id']];
@@ -687,7 +679,7 @@ class UserModels extends DataModel {
                 $curToken['data']['user_id'], $password, $name
             );
             if ($cpResult) {
-                $hlpExfeAuth->expireAllTokens($resource, $short);
+                $hlpExfeAuth->resourceUpdate($resource, 0);
                 $siResult = $this->rawSignin($curToken['data']['user_id']);
                 if ($siResult) {
                     return [
@@ -749,7 +741,7 @@ class UserModels extends DataModel {
                 $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
                 $resource = ['token_type' => 'user_token',
                              'user_id'    => $user_id];
-                $token = $hlpExfeAuth->generateToken(
+                $token = $hlpExfeAuth->create(
                     $resource, $resource
                   + ['signin_time'        => time(),
                      'last_authenticate'  => time()], 31536000 // 1 year
@@ -771,10 +763,9 @@ class UserModels extends DataModel {
     public function getUserToken($token) {
         if ($token) {
             $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
-            $result = $hlpExfeAuth->getToken($token);
+            $result = $hlpExfeAuth->keyGet($token);
             if ($result
-             && $result['data']['token_type'] === 'user_token'
-             && !$result['is_expire']) {
+             && $result['data']['token_type'] === 'user_token') {
                 return $result;
             }
         }

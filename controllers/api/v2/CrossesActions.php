@@ -51,16 +51,16 @@ class CrossesActions extends ActionController {
         $cross_id    = (int)@$_POST['cross_id'];
         $invitation  = null;
         $usInvToken  = false;
+        $bySmsToken  = false;
         if ($acsToken) {
             $crossToken = $modCross->getCrossAccessToken($acsToken);
             if ($crossToken
              && $crossToken['data']
-             && $crossToken['data']['token_type'] === 'cross_access_token'
-             && !$crossToken['is_expire']) {
+             && $crossToken['data']['token_type'] === 'cross_access_token') {
                 $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
                     $crossToken['data']['cross_id'], $crossToken['data']['identity_id']
                 );
-                $modExfeAuth->refreshToken($acsToken, 60 * 60 * 24 * 7); // for 1 week
+                $modExfeAuth->keyUpdate($acsToken, null, 60 * 60 * 24 * 7); // for 1 week
             }
         }
         if (!$invitation && $invToken) {
@@ -68,6 +68,7 @@ class CrossesActions extends ActionController {
                 $exfee_id   = $modExfee->getExfeeIdByCrossId($cross_id);
                 $invitation = $modExfee->getRawInvitationByExfeeIdAndToken($exfee_id, $invToken);
                 $invToken   = $invitation['token'];
+                $bySmsToken = !!$invitation;
             } else {
                 $invitation = $modExfee->getRawInvitationByToken($invToken);
             }
@@ -128,6 +129,35 @@ class CrossesActions extends ActionController {
                 );
                 $result['read_only'] = false;
                 $result['action'] = 'setup';
+
+                // setup user by sms {
+                if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
+                    // clear verify token
+                    if (isset($user_infos['VERIFYING'])) {
+                        $modExfeAuth->resourceUpdate([
+                            'token_type'   => 'verification_token',
+                            'action'       => 'VERIFY',
+                            'identity_id'  => $invitation['identity_id'],
+                        ], 0);
+                    }
+                    // add new user
+                    $user_id = $modUser->addUser();
+                    // connect identity to new user
+                    $modUser->setUserIdentityStatus(
+                        $user_id, $invitation['identity_id'], 3
+                    );
+                    // send welcome sms
+                    $objIdentity = $modIdentity->getIdentityById(
+                        $invitation['identity_id']
+                    );
+                    $modIdentity->sendVerification(
+                        'Welcome', $objIdentity, '', false, $objIdentity->name ?: ''
+                    );
+                    // signin
+                    $result['authorization'] = $modUser->rawSignin($user_id);
+                }
+                // setup user by sms }
+
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -159,6 +189,35 @@ class CrossesActions extends ActionController {
                 );
                 $result['read_only'] = false;
                 $result['action'] = 'setup';
+
+                // setup user by sms {
+                if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
+                    // clear verify token
+                    if (isset($user_infos['VERIFYING'])) {
+                        $modExfeAuth->resourceUpdate([
+                            'token_type'   => 'verification_token',
+                            'action'       => 'VERIFY',
+                            'identity_id'  => $invitation['identity_id'],
+                        ], 0);
+                    }
+                    // add new user
+                    $user_id = $modUser->addUser();
+                    // connect identity to new user
+                    $modUser->setUserIdentityStatus(
+                        $user_id, $invitation['identity_id'], 3
+                    );
+                    // send welcome sms
+                    $objIdentity = $modIdentity->getIdentityById(
+                        $invitation['identity_id']
+                    );
+                    $modIdentity->sendVerification(
+                        'Welcome', $objIdentity, '', false, $objIdentity->name ?: ''
+                    );
+                    // signin
+                    $result['authorization'] = $modUser->rawSignin($user_id);
+                }
+                // setup user by sms }
+
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -186,6 +245,35 @@ class CrossesActions extends ActionController {
                 );
                 $result['read_only'] = false;
                 $result['action'] = 'setup';
+
+                // setup user by sms {
+                if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
+                    // clear verify token
+                    if (isset($user_infos['VERIFYING'])) {
+                        $modExfeAuth->resourceUpdate([
+                            'token_type'   => 'verification_token',
+                            'action'       => 'VERIFY',
+                            'identity_id'  => $invitation['identity_id'],
+                        ], 0);
+                    }
+                    // add new user
+                    $user_id = $modUser->addUser();
+                    // connect identity to new user
+                    $modUser->setUserIdentityStatus(
+                        $user_id, $invitation['identity_id'], 3
+                    );
+                    // send welcome sms
+                    $objIdentity = $modIdentity->getIdentityById(
+                        $invitation['identity_id']
+                    );
+                    $modIdentity->sendVerification(
+                        'Welcome', $objIdentity, '', false, $objIdentity->name ?: ''
+                    );
+                    // signin
+                    $result['authorization'] = $modUser->rawSignin($user_id);
+                }
+                // setup user by sms }
+
                 apiResponse($result);
             }
         }
@@ -221,6 +309,9 @@ class CrossesActions extends ActionController {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
+        if ($cross && is_object($cross) && isset($cross->cross)) {
+            $cross = $cross->cross;
+        }
         $by_identity_id=$cross->by_identity->id;
         $checkHelper=$this->getHelperByName('check');
         $result=$checkHelper->isAPIAllow("cross_add",$params["token"],array("by_identity_id"=>$by_identity_id));
@@ -260,6 +351,9 @@ class CrossesActions extends ActionController {
         $params=$this->params;
         $cross_str=@file_get_contents('php://input');
         $cross=json_decode($cross_str);
+        if ($cross && is_object($cross) && isset($cross->cross)) {
+            $cross = $cross->cross;
+        }
         $by_identity_id=$cross->by_identity->id;
         $checkHelper = $this->getHelperByName('check');
         $crossHelper = $this->getHelperByName('cross');

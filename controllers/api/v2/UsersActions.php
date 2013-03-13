@@ -110,8 +110,7 @@ class UsersActions extends ActionController {
             }
             $user_id = $result['uid'];
             // get browsing token
-            if (!($objBsToken = $modExfeAuth->getToken($strBsToken))
-             || $objBsToken['is_expire']) {
+            if (!($objBsToken = $modExfeAuth->keyGet($strBsToken))) {
                 apiError(400, 'error_browsing_identity_token', '');
             }
             // check fresh
@@ -131,7 +130,7 @@ class UsersActions extends ActionController {
             $fromUserId = $objBsToken['data']['user_id'];
         // 提交一个 Token 的时候，需要保证该 Token 是新鲜的
         // get verify token
-        } else if (($verifyToken = $modExfeAuth->getToken(@$params['token']))
+        } else if (($verifyToken = $modExfeAuth->keyGet(@$params['token']))
                 && isset($verifyToken['data']['merger_info'])
                 && time() - $verifyToken['data']['merger_info']['updated_time'] < 60 * 15) { // in 15 mins
             $user_id    = $verifyToken['data']['user_id'];
@@ -573,11 +572,11 @@ class UsersActions extends ActionController {
             if (!isset($user_infos['CONNECTED'])) {
                 // clear verify token
                 if (isset($user_infos['VERIFYING'])) {
-                    $modExfeAuth->expireAllTokens([
+                    $modExfeAuth->resourceUpdate([
                         'token_type'   => 'verification_token',
                         'action'       => 'VERIFY',
                         'identity_id'  => $invitation['identity_id'],
-                    ]);
+                    ], 0);
                 }
                 // add new user
                 $user_id = $modUser->addUser($passwd, $name);
@@ -658,8 +657,8 @@ class UsersActions extends ActionController {
         }
         // ready
         $rtResult  = ['user_id' => $user_id];
-        // expireToken
-        $modExfeAuth->expireToken($params['token']);
+        // expire token
+        $modExfeAuth->keyUpdate($params['token'], null, 0);
         // disconnect
         $rtResult += $udid && $os_name && $modDevice->disconnectDeviceByUseridAndUdid($user_id, $udid, $os_name)
                    ? ['udid'    => $udid, 'os_name' => $os_name] : [];
@@ -1021,7 +1020,7 @@ class UsersActions extends ActionController {
                 unset($crosses[$i]);
             }
         }
-        sort($crosses);
+        ksort($crosses);
         // return
         apiResponse(['crosses' => $crosses, 'more' => $more]);
     }
@@ -1086,7 +1085,7 @@ class UsersActions extends ActionController {
         // set password
         if ($modUser->setUserPassword($user_id, $newPassword)) {
             // expire token
-            $modExfeAuth->expireToken($params['token']);
+            $modExfeAuth->keyUpdate($params['token'], null, 0);
             // get new token
             $siResult = $modUser->rawSignin($user_id);
             // return

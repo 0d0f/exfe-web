@@ -45,13 +45,14 @@ addScript([
     ['datepanel',     '0.1.2'],
     ['mappanel',      '0.0.7'],
     ['global',        '0.0.5'],
+    ['photox',        '0.0.1']
 ]);
 
 // profile
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.4'],
+    ['profile',       '0.1.14'],
     ['user',          '0.0.7'],
 ]);
 
