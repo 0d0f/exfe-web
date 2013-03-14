@@ -106,7 +106,12 @@ class GobusActions extends ActionController {
     }
 
 
-    public function doInvite() {
+    public function doXUpdate() {
+
+    }
+
+
+    public function doExfeeUpdate() {
         // grep inputs
         $args_str = @file_get_contents('php://input');
         $args = json_decode($args_str);
