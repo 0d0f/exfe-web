@@ -56,31 +56,20 @@ class GobusActions extends ActionController {
         // get host identity
         $identity_id = 0;
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
-            $iItem->identity->provider,
-            $iItem->identity->external_username
+            $cross->by_identity->provider,
+            $cross->by_identity->external_username
         );
-        foreach ($cross->exfee->invitations as $iI => $iItem) {
-            if ($iItem->host
-             && $iItem->identity
-             && $iItem->identity->provider
-             && $iItem->identity->external_username) {
-                
-                if ($identity) {
-                    $cross->exfee->invitations[$iI]->identity = $identity;
-                    $identity_id = $cross->exfee->invitations[$iI]->identity->id;
-                } else {
-                    $identity_id = $modIdentity->addIdentity([
-                        'provider'          => $iItem->identity->provider,
-                        'external_id'       => $iItem->identity->external_id,
-                        'name'              => $iItem->identity->name,
-                        'external_username' => $iItem->identity->external_username,
-                        'avatar_filename'   => $iItem->identity->avatar_filename
-                    ]);
-                    $cross->exfee->invitations[$iI]->identity->id = $identity_id;
-                } 
-                break;
-            }
-        }
+        if ($identity) {
+            $identity_id = $identity->id;
+        } else {
+            $identity_id = $modIdentity->addIdentity([
+                'provider'          => $cross->by_identity->provider,
+                'external_id'       => $cross->by_identity->external_id,
+                'name'              => $cross->by_identity->name,
+                'external_username' => $cross->by_identity->external_username,
+                'avatar_filename'   => $cross->by_identity->avatar_filename
+            ]);
+        } 
         if (!$identity_id) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'error_identity', 'error_identity');
@@ -89,7 +78,6 @@ class GobusActions extends ActionController {
         // check user
         $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
         $user_id    = 0;
-var_dump($user_infos);
         if (isset($user_infos['CONNECTED'])) {
             $user_id = $user_infos['CONNECTED'][0]['user_id'];
         } else if (isset($user_infos['REVOKED'])) {
@@ -97,7 +85,6 @@ var_dump($user_infos);
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
         } else {
             $user_id  = $modUser->addUser();
-var_dump($user_id);
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
             $identity = $modIdentity->getIdentityById($identity_id);
             $modIdentity->sendVerification(

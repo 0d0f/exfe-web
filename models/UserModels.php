@@ -225,8 +225,6 @@ class UserModels extends DataModel {
         if (strlen($name)) {
             $nameSql      = "`name` = '{$name}',";
         }
-        echo "INSERT INTO `users` SET {$passwordSql} {$nameSql}
-             `created_at` = NOW(), `updated_at` = NOW()";
         $dbResult = $this->query(
             "INSERT INTO `users` SET {$passwordSql} {$nameSql}
              `created_at` = NOW(), `updated_at` = NOW()"
