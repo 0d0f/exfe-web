@@ -87,7 +87,7 @@ class ExfeeActions extends ActionController {
         if (isset($_POST['rsvp'])) {
             $rsvp = json_decode($_POST['rsvp']);    
         } else {
-            $rsvp = @file_get_contents('php://input');
+            $rsvp = json_decode(@file_get_contents('php://input'));
         }
         if ($rsvp && is_object($rsvp) && isset($rsvp->rsvps)) {
             $rsvp = $rsvp->rsvps;
