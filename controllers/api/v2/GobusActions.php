@@ -38,7 +38,173 @@ class GobusActions extends ActionController {
 
 
     public function doGather() {
+        // init models
+        $modIdentity = $this->getModelByName('identity');
+        $modUser     = $this->getModelByName('User');
+        $crossHelper = $this->getHelperByName('cross');
+        
+        // grep inputs
+        $cross_str = @file_get_contents('php://input');
+        $cross = json_decode($cross_str);
+        $chkCross = $crossHelper->validateCross($cross);
+        if ($chkCross['error']) {
+            header('HTTP/1.1 400 Bad Request');
+            apiError(400, 'error_cross', $chkCross['error'][0]);
+        }
+        $cross = $chkCross['cross'];
 
+        // get host identity
+        $identity_id = 0;
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $iItem->identity->provider,
+            $iItem->identity->external_username
+        );
+        foreach ($cross->exfee->invitations as $iI => $iItem) {
+            if ($iItem->host
+             && $iItem->identity
+             && $iItem->identity->provider
+             && $iItem->identity->external_username) {
+                
+                if ($identity) {
+                    $cross->exfee->invitations[$iI]->identity = $identity;
+                    $identity_id = $cross->exfee->invitations[$iI]->identity->id;
+                } else {
+                    $identity_id = $modIdentity->addIdentity([
+                        'provider'          => $iItem->identity->provider,
+                        'external_id'       => $iItem->identity->external_id,
+                        'name'              => $iItem->identity->name,
+                        'external_username' => $iItem->identity->external_username,
+                        'avatar_filename'   => $iItem->identity->avatar_filename
+                    ]);
+                    $cross->exfee->invitations[$iI]->identity->id = $identity_id;
+                } 
+                break;
+            }
+        }
+        if (!$identity_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            apiError(500, 'error_identity', 'error_identity');
+        }
+
+        // check user
+        $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
+        $user_id    = 0;
+var_dump($user_infos);
+        if (isset($user_infos['CONNECTED'])) {
+            $user_id = $user_infos['CONNECTED'][0]['user_id'];
+        } else if (isset($user_infos['REVOKED'])) {
+            $user_id = $user_infos['REVOKED'][0]['user_id'];
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+        } else {
+            $user_id  = $modUser->addUser();
+var_dump($user_id);
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+            $identity = $modIdentity->getIdentityById($identity_id);
+            $modIdentity->sendVerification(
+                'Welcome', $identity, '', false, $identity->name ?: ''
+            );
+        }
+        if (!$user_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            apiError(500, 'error_user', 'error_user');
+        }
+
+        // gather
+        $cross_id = $crossHelper->gatherCross($cross, $identity_id, $user_id);
+        if (!$cross_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            apiError(500, 'gather_error', "Can't gather this Cross.");        
+        }
+        apiResponse(['cross_id' => $cross_id]);
+    }
+
+
+    public function doInvite() {
+        // grep inputs
+        $args_str = @file_get_contents('php://input');
+        $args = json_decode($args_str);
+        if (DEBUG) {
+            error_log($cross_str);
+        }
+
+        // init models
+        $modExfee    = $this->getModelByName('Exfee');
+        $modIdentity = $this->getModelByName('Identity');
+
+        // basic check
+        if (!$args
+         || !is_object($args)
+         || (!isset($args->cross_id) && !isset($args->exfee_id))
+         || !isset($args->identities)
+         || !isset($args->by_identity)
+         || !isset($args->by_identity->provider)
+         || !isset($args->by_identity->external_username)
+         || !is_array($args->identities)
+         || !$args->identities) {
+            // input error
+        }
+
+        // get exfee
+        if (isset($args->cross_id)) {
+            $args->exfee_id = $modExfee->getExfeeIdByCrossId($args->cross_id);
+        }
+        $exfee = $modExfee->getExfeeById($args->exfee_id);
+        if (!$exfee) {
+            // exfee is not exist
+        }
+
+        // get identity
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $args->by_identity->provider,
+            $args->by_identity->external_username
+        );
+        if (!$identity) {
+            // identity is not exists
+        }
+
+        // check user
+        $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
+        $user_id    = 0;
+        if (isset($user_infos['CONNECTED'])) {
+            $user_id = $user_infos['CONNECTED'][0]['user_id'];
+        } else if (isset($user_infos['REVOKED'])) {
+            $user_id = $user_infos['REVOKED'][0]['user_id'];
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+        } else {
+            $user_id  = $modUser->addUser();
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+            $identity = $modIdentity->getIdentityById($identity_id);
+            $modIdentity->sendVerification(
+                'Welcome', $identity, '', false, $identity->name ?: ''
+            );
+       
+        }
+        if (!$user_id) {
+            apiError(400, 'error_host', 'error_host_info');   
+        }
+
+        // check identity is in exfee
+        $myInvId = 0;
+        foreach ($exfee->invitations as $iI => $iItem) {
+            if ($iItem->identity->id === $identity->id) {
+                $myInvId = $iItem->id;
+                break;
+            }
+        }
+        if (!$myInvId) {
+            // error permition
+        }
+
+        $newExfee = new stdClass;
+        $newExfee->id = $args->exfee_id;
+        $newExfee->invitations = [];
+        foreach ($args->identities as $idItem) {
+            $newExfee->invitations[] = new Invitation(
+                0, $idItem, $identity, $identity,
+                'NORESPONSE', '', '', '', '', false
+            );
+        }
+        $rawResult = $exfee->updateExfee($newExfee, $identity->id, $user_id, true);         
     }
 
 
@@ -72,7 +238,7 @@ class GobusActions extends ActionController {
         if ($raw_by_identity->connected_user_id <= 0) {
             $user_status = $modUser->getUserIdentityInfoByIdentityId($raw_by_identity->id);
             if ($user_status) {
-                header('HTTP/1.1 400 Internal Server Error');
+                header('HTTP/1.1 400 Bad Request');
                 echo json_encode(['code' => 233, 'error' => 'User not connected.']);
                 return;
             }
