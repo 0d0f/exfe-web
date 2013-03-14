@@ -84,7 +84,11 @@ class ExfeeActions extends ActionController {
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
-        $rsvp = json_decode($_POST['rsvp']);
+        if (isset($_POST['rsvp'])) {
+            $rsvp = json_decode($_POST['rsvp']);    
+        } else {
+            $rsvp = @file_get_contents('php://input');
+        }
         if ($rsvp && is_object($rsvp) && isset($rsvp->rsvps)) {
             $rsvp = $rsvp->rsvps;
         }
