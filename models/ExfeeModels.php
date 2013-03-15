@@ -411,7 +411,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $invite_only = false) {
+    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false) {
         // get helper
         $hlpIdentity = $this->getHelperByName('identity');
         // base check
@@ -475,7 +475,14 @@ class ExfeeModels extends DataModel {
                         } else {
                             $updateToken = false;
                         }
-                        if (!$invite_only) {
+                        if ($rsvp_only) {
+                            if ($fmItem->rsvp_status  !== $toItem->rsvp_status) {
+                                $toItem->host  = (bool) $fmItem->host;
+                                $toItem->mates = (int)  $fmItem->mates;
+                                $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                                $changed = true;
+                            }
+                        } else {
                             if ($fmItem->rsvp_status  !== $toItem->rsvp_status
                              || (bool) $fmItem->host  !== (bool) $toItem->host
                              || (int)  $fmItem->mates !== (int)  $toItem->mates) {
