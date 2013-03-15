@@ -940,7 +940,7 @@ class UserModels extends DataModel {
         $strHsh = md5($name);
         $intHsh = 0;
         for ($i = 0; $i < 3; $i++) {
-            $intHsh += ord(substr($strHsh, $i, 1));
+            $intHsh += ord(mb_substr($strHsh, $i, 1, 'UTF-8'));
         }
         // init path
         $curDir = dirname(__FILE__);
@@ -953,6 +953,24 @@ class UserModels extends DataModel {
         // get color
         $fColor = imagecolorallocate($image, $colors[$bgIdx][0], $colors[$bgIdx][1], $colors[$bgIdx][2]);
         // get name & check CJK
+        $name   = trim($name);
+        $arName = explode(' ', $name);
+        switch (sizeof($arName)) {
+            case 0:
+                $name = '';
+                break;
+            case 1:
+                $name = ucfirst(mb_substr($arName[0], 0, 3, 'UTF-8'));
+                break;
+            case 2:
+                $name = ucfirst(mb_substr($arName[0], 0, 2, 'UTF-8'))
+                      . ucfirst(mb_substr($arName[1], 0, 1, 'UTF-8'));
+                break;
+            default:
+                $name = ucfirst(mb_substr($arName[0], 0, 1, 'UTF-8')
+                              . mb_substr($arName[1], 0, 1, 'UTF-8')
+                              . mb_substr($arName[2], 0, 1, 'UTF-8'));
+        }
         if (checkCjk($name = mb_substr($name, 0, 3, 'UTF-8'))
          && checkCjk($name = mb_substr($name, 0, 2, 'UTF-8'))) {
             $ftFile = $fCjk;
