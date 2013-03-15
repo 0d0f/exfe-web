@@ -310,7 +310,7 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
-        //----------------------------------
+
         // check user identities in cross
         $rsvp_priority = array(
             'ACCEPTED', 'INTERESTED', 'NORESPONSE', 'DECLINED', 'NOTIFICATION'

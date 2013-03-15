@@ -56,6 +56,9 @@ class UsersActions extends ActionController {
                 break;
             case 'twitter':
             case 'facebook':
+            case 'flickr':
+            case 'dropbox':
+            case 'instagram':
                 $external_username = '';
                 break;
             default:
