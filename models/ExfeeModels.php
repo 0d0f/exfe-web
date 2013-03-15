@@ -389,10 +389,10 @@ class ExfeeModels extends DataModel {
                     continue;
                 }
             }
-            $strId = (isset($iItem->identity->id)                ? $iItem->identity->id                : '') + '_'
-                   + (isset($iItem->identity->provider)          ? $iItem->identity->provider          : '') + '_'
-                   + (isset($iItem->identity->external_id)       ? $iItem->identity->external_id       : '') + '_'
-                   + (isset($iItem->identity->external_username) ? $iItem->identity->external_username : '');
+            $strId = (isset($iItem->identity->id)                ? $iItem->identity->id                : '') . '_'
+                   . (isset($iItem->identity->provider)          ? $iItem->identity->provider          : '') . '_'
+                   . (isset($iItem->identity->external_id)       ? $iItem->identity->external_id       : '') . '_'
+                   . (isset($iItem->identity->external_username) ? $iItem->identity->external_username : '');
             if (!isset($added[$strId])) {
                 $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
                 $added[$strId] = true;

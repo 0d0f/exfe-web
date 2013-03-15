@@ -234,57 +234,69 @@ class GobusActions extends ActionController {
 
 
     public function doPostConversation() {
-        // get model
+        // init model
         $modUser         = $this->getModelByName('User');
-        $modDevice       = $this->getModelByName('Device');
         $modIdentity     = $this->getModelByName('Identity');
         $modCnvrstn      = $this->getModelByName('Conversation');
         $hlpCross        = $this->getHelperByName('Cross');
-        // get raw data
+
+        // grep input
         $cross_id        = (int)$_POST['cross_id'];
         $iom             = trim($_POST['iom']);
         $provider        = trim($_POST['provider']);
         $external_id     = trim($_POST['external_id']);
         $content         = trim($_POST['content']);
         $time            = strtotime($_POST['time']);
-        // check data
         if ((!$cross_id && !$iom) || !$provider || !$external_id || !$content || !$time) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
-        // get raw identity object
-        $raw_by_identity = $modIdentity->getIdentityByProviderExternalId(
+
+        // get identity
+        $identity_id = 0;
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
             $provider, $external_id
         );
-        if (!$raw_by_identity) {
+        if ($identity) {
+            $identity_id = $identity->id;
+        } else {
+            $identity_id = $modIdentity->addIdentity([
+                'provider'          => $provider,
+                'external_id'       => $external_id,
+                'external_username' => $external_id,
+            ]);
+            $identity    = $modIdentity->getIdentityById($identity_id);
+        } 
+        if (!$identity) {
             header('HTTP/1.1 500 Internal Server Error');
-            return;
+            apiError(500, 'error_identity', 'error_identity');
         }
-        if ($raw_by_identity->connected_user_id <= 0) {
-            $user_status = $modUser->getUserIdentityInfoByIdentityId($raw_by_identity->id);
-            if ($user_status) {
-                header('HTTP/1.1 400 Bad Request');
-                echo json_encode(['code' => 233, 'error' => 'User not connected.']);
-                return;
-            }
-            // add new user
-            $user_id = $modUser->addUser('', $raw_by_identity->name);
-            // connect identity to new user
-            $modUser->setUserIdentityStatus(
-                $user_id, $raw_by_identity->id, 3
+
+        // check user
+        $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
+        $user_id    = 0;
+        if (isset($user_infos['CONNECTED'])) {
+            $user_id = $user_infos['CONNECTED'][0]['user_id'];
+        } else if (isset($user_infos['REVOKED'])) {
+            $user_id = $user_infos['REVOKED'][0]['user_id'];
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+        } else {
+            $user_id  = $modUser->addUser();
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+            $identity = $modIdentity->getIdentityById($identity_id);
+            $modIdentity->sendVerification(
+                'Welcome', $identity, '', false, $identity->name ?: ''
             );
-            $raw_by_identity->connected_user_id = $user_id;
         }
-        // get user object
-        $user = $modUser->getUserById($raw_by_identity->connected_user_id);
-        if (!$user) {
+        if (!$user_id) {
             header('HTTP/1.1 500 Internal Server Error');
-            return;
+            apiError(500, 'error_user', 'error_user');
         }
+
         // get cross id by iom
         if (!$cross_id) {
             $objCurl = curl_init();
-            curl_setopt($objCurl, CURLOPT_URL, IOM_URL . "/iom/{$raw_by_identity->connected_user_id}/{$iom}");
+            curl_setopt($objCurl, CURLOPT_URL, IOM_URL . "/iom/{$user_id}/{$iom}");
             curl_setopt($objCurl, CURLOPT_HEADER, 0);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
@@ -292,16 +304,13 @@ class GobusActions extends ActionController {
             curl_close($objCurl);
             $cross_id = (int) $curlResult;
         }
-        if (!$cross_id) {
-            header('HTTP/1.1 500 Internal Server Error');
-            return;
-        }
         // get cross
         $cross = $hlpCross->getCross($cross_id);
         if (!$cross) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
+        //----------------------------------
         // check user identities in cross
         $rsvp_priority = array(
             'ACCEPTED', 'INTERESTED', 'NORESPONSE', 'DECLINED', 'NOTIFICATION'
@@ -312,9 +321,9 @@ class GobusActions extends ActionController {
                 break;
             }
             foreach ($cross->exfee->invitations as $invitation) {
-                if ($invitation->identity->connected_user_id
-                === $raw_by_identity->connected_user_id
-                 && $invitation->rsvp_status == $priority) {
+                if ($invitation->rsvp_status === $priority
+                 && ($invitation->identity->connected_user_id === $user_id
+                  || $invitation->identity->id                === $identity_id)) {
                     $by_identity = $invitation->identity;
                     break;
                 }
@@ -324,6 +333,7 @@ class GobusActions extends ActionController {
             header('HTTP/1.1 500 Internal Server Error');
             return;
         }
+
         // add post to conversation
         $post     = new Post(0, null, $content, $cross->exfee->id, 'exfee');
         $post->by_identity_id = $by_identity->id;
