@@ -20,6 +20,11 @@ class OAuthHelper extends ActionController {
     }
 
 
+    public function dropboxRedirect($workflow = []) {
+        return $this->modOAuth->dropboxRedirect($workflow);
+    }
+
+
     public function resetSession() {
         return $this->modOAuth->resetSession();
     }
