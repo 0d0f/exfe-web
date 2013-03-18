@@ -53,8 +53,8 @@ class CrossModels extends DataModel {
         }
 
         $cross_time->outputformat        = (int) $cross_time->outputformat;
-        $cross->title                    = mysql_real_escape_string($cross->title);
-        $cross->description              = mysql_real_escape_string($cross->description);
+        $cross->title                    = mysql_real_escape_string(isset($cross->title)       ? $cross->title       : '');
+        $cross->description              = mysql_real_escape_string(isset($cross->description) ? $cross->description : '');
         $cross_time->origin              = mysql_real_escape_string($cross_time->origin);
         $cross_time->begin_at->timezone  = mysql_real_escape_string($cross_time->begin_at->timezone);
         $cross_time->begin_at->date_word = mysql_real_escape_string($cross_time->begin_at->date_word);
@@ -244,8 +244,6 @@ class CrossModels extends DataModel {
             if (strlen($result['cross']->title) === 0) {
                 $result['error'][] = 'empty_cross_title';
             }
-        } else {
-            $result['error'][] = 'no_cross_title';
         }
         // check description
         if (isset($result['cross']->description)) {
