@@ -378,14 +378,19 @@ class ExfeeModels extends DataModel {
         }
         // init
         $items      = 0;
-        $over_quota = false;
+        $soft_quota = false;
+        $hard_quota = false;
         $added      = [];
         // add invitations
         foreach ($invitations as $iI => $iItem) {
             if ($iItem->rsvp_status !== 'REMOVED'
              && $iItem->rsvp_status !== 'NOTIFICATION') {
-                if (++$items > EXFEE_QUOTA_SOFT_LIMIT) {
-                    $over_quota = true;
+                $items++;
+                if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
+                    $soft_quota = true;
+                }
+                if ($items > EXFEE_QUOTA_HARD_LIMIT) {
+                    $hard_quota = true;
                     continue;
                 }
             }
@@ -407,7 +412,11 @@ class ExfeeModels extends DataModel {
         $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id, $by_identity_id);
         // }
         // return
-        return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
+        return [
+            'exfee_id'   => $exfee_id,
+            'soft_quota' => $soft_quota,
+            'hard_quota' => $hard_quota,
+        ];
     }
 
 
@@ -423,7 +432,8 @@ class ExfeeModels extends DataModel {
         $cross_id   = $this->getCrossIdByExfeeId($exfee->id);
         $old_cross  = $hlpCross->getCross($cross_id, true, true);
         $items      = $old_cross->exfee->items;
-        $over_quota = false;
+        $soft_quota = false;
+        $hard_quota = false;
         $changed    = false;
         // raw actions
         $newInvId = [];
@@ -496,8 +506,12 @@ class ExfeeModels extends DataModel {
                 if (!$exists) {
                     if ($toItem->rsvp_status !== 'REMOVED'
                      && $toItem->rsvp_status !== 'NOTIFICATION') {
-                        if (++$items > EXFEE_QUOTA_SOFT_LIMIT) {
-                            $over_quota = true;
+                        $items++;
+                        if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
+                            $soft_quota = true;
+                        }
+                        if ($items > EXFEE_QUOTA_HARD_LIMIT) {
+                            $hard_quota = true;
                             continue;
                         }
                     }
@@ -530,7 +544,12 @@ class ExfeeModels extends DataModel {
         }
         // }
         // return
-        return ['exfee_id' => $exfee->id, 'over_quota' => $over_quota, 'changed' => $changed];
+        return [
+            'exfee_id'   => $exfee->id,
+            'soft_quota' => $soft_quota,
+            'hard_quota' => $hard_quota,
+            'changed'    => $changed
+        ];
     }
 
 
