@@ -114,7 +114,7 @@ class PhotoxActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // check identity
-        $identity_id = @ (int) $_POST['identity_id'];
+        $identity_id = @ (int) $_GET['identity_id'];
         if (!$identity_id) {
             apiError(400, 'no_identity_id', ''); // 需要输入identity_id
         }
@@ -154,7 +154,7 @@ class PhotoxActions extends ActionController {
         $checkHelper = $this->getHelperByName('check');
         // check args
         $params   = $this->params;
-        $id       = @ (int) $_POST['id'] ?: '';
+        $id       = @ (int) $_GET['photo_id'] ?: '';
         $cross_id = $modPhoto->getCrossIdByPhotoId($id);
         if (!$id || !$cross_id) {
             apiError(404, 'photo_not_found');
