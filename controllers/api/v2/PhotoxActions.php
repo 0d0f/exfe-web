@@ -79,11 +79,20 @@ class PhotoxActions extends ActionController {
                     $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
             }
             if ($rawResult) {
-                $rawAlbums = array_merge($rawAlbums, $rawResult);
+                foreach ($rawResult as $album) {
+                    if (($key = strtotime($album['updated_at']))
+                     && !isset($rawAlbums[$key])) {
+                        $rawAlbums[$key] = $album;                        
+                    } else {
+                        $rawAlbums[]     = $album;
+                    }
+                }
             } else if ($rawResult === null) {
                 $failed[]  = $objIdentity;
             }
         }
+        ksort($rawAlbums);
+        $rawAlbums = array_reverse(array_values($rawAlbums));
         apiResponse(['albums' => $rawAlbums, 'failed_identities' => $failed]);
     }
 
