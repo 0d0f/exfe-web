@@ -82,7 +82,7 @@ class PhotoxActions extends ActionController {
                 foreach ($rawResult as $album) {
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
-                        $rawAlbums[$key] = $album;                        
+                        $rawAlbums[$key] = $album;
                     } else {
                         $rawAlbums[]     = $album;
                     }

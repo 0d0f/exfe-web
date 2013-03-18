@@ -217,6 +217,7 @@ class PhotoModels extends DataModel {
     // facebook {
 
     public function getAlbumsFromFacebook($identity_id) {
+        require_once(dirname(dirname(__FILE__)) . '/lib/httpkit.php');
         $hlpIdentity = $this->getHelperByName('Identity');
         $identity = $hlpIdentity->getIdentityById($identity_id);
         if ($identity
@@ -236,10 +237,21 @@ class PhotoModels extends DataModel {
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
                     $albums = [];
                     foreach ($data['data'] as $album) {
+                        $cover_photo = httpKit::request(
+                            "https://graph.facebook.com/{$album['cover_photo']}?fields=picture&access_token={$token['oauth_token']}",
+                            null, null, false, false, 3, 3, 'txt', true
+                        );
+                        // @todo @leaskh
+                        $cover_photo = ($cover_photo
+                                     && $cover_photo['http_code'] === '200'
+                                     && isset($cover_photo['json']['picture'])
+                                     && $cover_photo['json']['picture'])
+                                     ? $cover_photo['json']['picture'] : '';
                         $albums[] = [
                             'external_id' => $album['id'],
                             'provider'    => 'facebook',
                             'caption'     => $album['name'],
+                            'artwork'     => $cover_photo,
                             'count'       => $album['count'],
                             'size'        => -1,
                             'by_identity' => $identity,
