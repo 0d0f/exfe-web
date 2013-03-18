@@ -43,7 +43,7 @@ class PhotoxActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // check identity
-        $identity_id     = @ (int) $_POST['identity_id'];
+        $identity_id     = @ (int) $_GETs['identity_id'];
         $objIdentities   = []; 
         $photo_providers = ['facebook', 'dropbox', 'flickr'];
         foreach ($user->identities as $identity) {
@@ -72,7 +72,7 @@ class PhotoxActions extends ActionController {
                     $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);
                     break;
                 case 'dropbox':
-                    $album_id  = isset($_POST['album_id']) && $_POST['album_id'] ? $_POST['album_id'] : '';
+                    $album_id  = isset($_GET['album_id']) && $_GET['album_id'] ? $_GET['album_id'] : '';
                     $rawResult = $modPhoto->getAlbumsFromDropbox($objIdentity->id, $album_id);
                     break;
                 case 'flickr':
