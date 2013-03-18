@@ -53,8 +53,8 @@ class CrossModels extends DataModel {
         }
 
         $cross_time->outputformat        = (int) $cross_time->outputformat;
-        $cross->title                    = mysql_real_escape_string($cross->title);
-        $cross->description              = mysql_real_escape_string($cross->description);
+        $cross->title                    = mysql_real_escape_string(isset($cross->title)       ? $cross->title       : '');
+        $cross->description              = mysql_real_escape_string(isset($cross->description) ? $cross->description : '');
         $cross_time->origin              = mysql_real_escape_string($cross_time->origin);
         $cross_time->begin_at->timezone  = mysql_real_escape_string($cross_time->begin_at->timezone);
         $cross_time->begin_at->date_word = mysql_real_escape_string($cross_time->begin_at->date_word);
@@ -102,7 +102,7 @@ class CrossModels extends DataModel {
                 $cross_updated['place']       = $updated;
             }
 
-            if ($cross->title && $old_cross && mysql_real_escape_string($old_cross->title) !== $cross->title) {
+            if (isset($cross->title) && $cross->title && $old_cross && mysql_real_escape_string($old_cross->title) !== $cross->title) {
                 array_push($updatefields, "`title`           = '{$cross->title}'");
                 $cross_updated['title']       = $updated;
             }
@@ -244,14 +244,10 @@ class CrossModels extends DataModel {
             if (strlen($result['cross']->title) === 0) {
                 $result['error'][] = 'empty_cross_title';
             }
-        } else {
-            $result['error'][] = 'no_cross_title';
         }
         // check description
         if (isset($result['cross']->description)) {
             $result['cross']->description = formatDescription($result['cross']->description, 0);
-        } else {
-            $result['error'][] = 'no_cross_description';
         }
         // check time
         if (isset($result['cross']->time)) {

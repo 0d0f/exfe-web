@@ -56,22 +56,13 @@ class UsersActions extends ActionController {
                 break;
             case 'twitter':
             case 'facebook':
+            case 'flickr':
+            case 'dropbox':
+            case 'instagram':
                 $external_username = '';
                 break;
             default:
                 apiError(400, 'unknow_provider', '');
-        }
-        // check user
-        $user = $modUser->getUserById($user_id);
-        $past = false;
-        foreach ($user->identities as $identity) {
-            if ($identity->status === 'CONNECTED') {
-                $past = true;
-                break;
-            }
-        }
-        if (!$past) {
-            apiError(400, 'no_connected_identity', '');
         }
         // adding
         if (($adResult = $modIdentity->addIdentity(

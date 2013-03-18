@@ -217,6 +217,7 @@ class PhotoModels extends DataModel {
     // facebook {
 
     public function getAlbumsFromFacebook($identity_id) {
+        require_once(dirname(dirname(__FILE__)) . '/lib/httpkit.php');
         $hlpIdentity = $this->getHelperByName('Identity');
         $identity = $hlpIdentity->getIdentityById($identity_id);
         if ($identity
@@ -230,16 +231,27 @@ class PhotoModels extends DataModel {
                     "https://graph.facebook.com/me/albums?access_token={$token['oauth_token']}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
                     $albums = [];
                     foreach ($data['data'] as $album) {
+                        $cover_photo = httpKit::request(
+                            "https://graph.facebook.com/{$album['cover_photo']}?fields=picture&access_token={$token['oauth_token']}",
+                            null, null, false, false, 3, 3, 'txt', true
+                        );
+                        // @todo @leaskh
+                        $cover_photo = ($cover_photo
+                                     && $cover_photo['http_code'] === '200'
+                                     && isset($cover_photo['json']['picture'])
+                                     && $cover_photo['json']['picture'])
+                                     ? $cover_photo['json']['picture'] : '';
                         $albums[] = [
                             'external_id' => $album['id'],
                             'provider'    => 'facebook',
                             'caption'     => $album['name'],
+                            'artwork'     => $cover_photo,
                             'count'       => $album['count'],
                             'size'        => -1,
                             'by_identity' => $identity,
@@ -269,7 +281,7 @@ class PhotoModels extends DataModel {
                     "https://graph.facebook.com/{$album_id}/photos?access_token={$token['oauth_token']}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
@@ -339,7 +351,7 @@ class PhotoModels extends DataModel {
                     "https://api.dropbox.com/1/metadata/dropbox{$album_id}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                     'Authorization: '
                   . 'OAuth oauth_version="1.0", '
@@ -360,6 +372,7 @@ class PhotoModels extends DataModel {
                                 'external_id' => implode('/', array_map('rawurlencode', explode('/', $album['path']))),
                                 'provider'    => 'dropbox',
                                 'caption'     => array_pop($path),
+                                'artwork'     => '',
                                 'count'       => -1,
                                 'size'        => $album['size'],
                                 'by_identity' => $identity,
@@ -502,7 +515,7 @@ class PhotoModels extends DataModel {
                   . "&user_id={$identity->external_id}&format=json&nojsoncallback=1"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['photosets']) && isset($data['photosets']['photoset'])) {
@@ -512,6 +525,7 @@ class PhotoModels extends DataModel {
                             'external_id' => $album['id'],
                             'provider'    => 'flickr',
                             'caption'     => $album['title']['_content'],
+                            'artwork'     => "http://farm{$album['farm']}.staticflickr.com/{$album['server']}/{$album['primary']}_{$album['secret']}_s.jpg",
                             'count'       => $album['photos'],
                             'size'        => -1,
                             'by_identity' => $identity,
@@ -543,7 +557,7 @@ class PhotoModels extends DataModel {
                   . "&photoset_id={$album_id}&extras=date_taken%2Clast_update%2Cgeo%2Curl_m%2Curl_o&format=json&nojsoncallback=1"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['photoset']) && isset($data['photoset']['photo'])) {
@@ -606,7 +620,7 @@ class PhotoModels extends DataModel {
           . FLICKR_KEY . "&photo_id={$photo->external_id}&format=json&nojsoncallback=1"
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($data = json_decode($data, true)) && isset($data['sizes']) && isset($data['sizes']['size'])) {
@@ -633,7 +647,7 @@ class PhotoModels extends DataModel {
                 "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webstream"
             );
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($objCurl, CURLOPT_POST, 1);
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['streamCtag' => null]));
             $data = curl_exec($objCurl);
@@ -683,7 +697,7 @@ class PhotoModels extends DataModel {
                     "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webasseturls"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 curl_setopt($objCurl, CURLOPT_POST, 1);
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photoGuids]));
                 $data = curl_exec($objCurl);
@@ -718,7 +732,7 @@ class PhotoModels extends DataModel {
                 "https://p01-sharedstreams.icloud.com/{$photo->external_album_id}/sharedstreams/webasseturls"
             );
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($objCurl, CURLOPT_POST, 1);
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photo->external_id]));
             $data = curl_exec($objCurl);

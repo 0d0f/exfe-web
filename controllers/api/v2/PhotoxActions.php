@@ -43,44 +43,57 @@ class PhotoxActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // check identity
-        $identity_id = @ (int) $_POST['identity_id'];
-        if (!$identity_id) {
-            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        $objIdentity = null;
+        $identity_id     = @ (int) $_POST['identity_id'];
+        $objIdentities   = []; 
+        $photo_providers = ['facebook', 'dropbox', 'flickr'];
         foreach ($user->identities as $identity) {
-            if ($identity->id === $identity_id) {
-                $objIdentity = $identity;
-                break;
+            if ($identity->status === 'CONNECTED'
+             && in_array($identity->provider, $photo_providers)) {
+                if ($identity_id) {
+                    if ($identity->id === $identity_id) {
+                        $objIdentities[] = $identity;
+                        break;
+                    }
+                } else {
+                    $objIdentities[] = $identity;
+                }
             }
         }
-        if (!$objIdentity) {
-            apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
-        }
-        if ($objIdentity->status !== 'CONNECTED') {
-            apiError(400, 'can_not_be_verify', 'This identity is not connecting to current user.');
+        if (!$objIdentities) {
+            apiError(400, 'no_supported_identities', ''); // 需要输入identity_id
         }
         // get albums
-        $modPhoto = $this->getModelByName('Photo');
-        $albums   = null;
-        switch ($objIdentity->provider) {
-            case 'facebook':
-                $albums = $modPhoto->getAlbumsFromFacebook($identity_id);
-                break;
-            case 'dropbox':
-                $album_id = isset($_POST['album_id']) && $_POST['album_id'] ? $_POST['album_id'] : '';
-                $albums = $modPhoto->getAlbumsFromDropbox($identity_id, $album_id);
-                break;
-            case 'flickr':
-                $albums = $modPhoto->getAlbumsFromFlickr($identity_id);
-                break;
-            default:
-                apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
+        $modPhoto  = $this->getModelByName('Photo');
+        $rawAlbums = [];
+        $failed    = [];
+        foreach ($objIdentities as $objIdentity) {
+            switch ($objIdentity->provider) {
+                case 'facebook':
+                    $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);
+                    break;
+                case 'dropbox':
+                    $album_id  = isset($_POST['album_id']) && $_POST['album_id'] ? $_POST['album_id'] : '';
+                    $rawResult = $modPhoto->getAlbumsFromDropbox($objIdentity->id, $album_id);
+                    break;
+                case 'flickr':
+                    $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
+            }
+            if ($rawResult) {
+                foreach ($rawResult as $album) {
+                    if (($key = strtotime($album['updated_at']))
+                     && !isset($rawAlbums[$key])) {
+                        $rawAlbums[$key] = $album;
+                    } else {
+                        $rawAlbums[]     = $album;
+                    }
+                }
+            } else if ($rawResult === null) {
+                $failed[]  = $objIdentity;
+            }
         }
-        if ($albums === null) {
-            apiError(400, 'not_allow', 'Can not access photos, please reauthenticate this identity.');
-        }
-        apiResponse(['albums' => $albums]);
+        ksort($rawAlbums);
+        $rawAlbums = array_reverse(array_values($rawAlbums));
+        apiResponse(['albums' => $rawAlbums, 'failed_identities' => $failed]);
     }
 
 

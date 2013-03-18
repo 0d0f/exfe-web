@@ -378,21 +378,26 @@ class ExfeeModels extends DataModel {
         }
         // init
         $items      = 0;
-        $over_quota = false;
+        $soft_quota = false;
+        $hard_quota = false;
         $added      = [];
         // add invitations
         foreach ($invitations as $iI => $iItem) {
             if ($iItem->rsvp_status !== 'REMOVED'
              && $iItem->rsvp_status !== 'NOTIFICATION') {
-                if (++$items > EXFEE_QUOTA_SOFT_LIMIT) {
-                    $over_quota = true;
+                $items++;
+                if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
+                    $soft_quota = true;
+                }
+                if ($items > EXFEE_QUOTA_HARD_LIMIT) {
+                    $hard_quota = true;
                     continue;
                 }
             }
-            $strId = (isset($iItem->identity->id)                ? $iItem->identity->id                : '') + '_'
-                   + (isset($iItem->identity->provider)          ? $iItem->identity->provider          : '') + '_'
-                   + (isset($iItem->identity->external_id)       ? $iItem->identity->external_id       : '') + '_'
-                   + (isset($iItem->identity->external_username) ? $iItem->identity->external_username : '');
+            $strId = (isset($iItem->identity->id)                ? $iItem->identity->id                : '') . '_'
+                   . (isset($iItem->identity->provider)          ? $iItem->identity->provider          : '') . '_'
+                   . (isset($iItem->identity->external_id)       ? $iItem->identity->external_id       : '') . '_'
+                   . (isset($iItem->identity->external_username) ? $iItem->identity->external_username : '');
             if (!isset($added[$strId])) {
                 $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
                 $added[$strId] = true;
@@ -407,11 +412,15 @@ class ExfeeModels extends DataModel {
         $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id, $by_identity_id);
         // }
         // return
-        return ['exfee_id' => $exfee_id, 'over_quota' => $over_quota];
+        return [
+            'exfee_id'   => $exfee_id,
+            'soft_quota' => $soft_quota,
+            'hard_quota' => $hard_quota,
+        ];
     }
 
 
-    public function updateExfee($exfee, $by_identity_id, $user_id = 0) {
+    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false) {
         // get helper
         $hlpIdentity = $this->getHelperByName('identity');
         // base check
@@ -423,7 +432,8 @@ class ExfeeModels extends DataModel {
         $cross_id   = $this->getCrossIdByExfeeId($exfee->id);
         $old_cross  = $hlpCross->getCross($cross_id, true, true);
         $items      = $old_cross->exfee->items;
-        $over_quota = false;
+        $soft_quota = false;
+        $hard_quota = false;
         $changed    = false;
         // raw actions
         $newInvId = [];
@@ -475,11 +485,20 @@ class ExfeeModels extends DataModel {
                         } else {
                             $updateToken = false;
                         }
-                        if ($fmItem->rsvp_status  !== $toItem->rsvp_status
-                         || (bool) $fmItem->host  !== (bool) $toItem->host
-                         || (int)  $fmItem->mates !== (int)  $toItem->mates) {
-                            $this->updateInvitation($toItem, $by_identity_id, $updateToken);
-                            $changed = true;
+                        if ($rsvp_only) {
+                            if ($fmItem->rsvp_status  !== $toItem->rsvp_status) {
+                                $toItem->host  = (bool) $fmItem->host;
+                                $toItem->mates = (int)  $fmItem->mates;
+                                $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                                $changed = true;
+                            }
+                        } else {
+                            if ($fmItem->rsvp_status  !== $toItem->rsvp_status
+                             || (bool) $fmItem->host  !== (bool) $toItem->host
+                             || (int)  $fmItem->mates !== (int)  $toItem->mates) {
+                                $this->updateInvitation($toItem, $by_identity_id, $updateToken);
+                                $changed = true;
+                            }
                         }
                     }
                 }
@@ -487,8 +506,12 @@ class ExfeeModels extends DataModel {
                 if (!$exists) {
                     if ($toItem->rsvp_status !== 'REMOVED'
                      && $toItem->rsvp_status !== 'NOTIFICATION') {
-                        if (++$items > EXFEE_QUOTA_SOFT_LIMIT) {
-                            $over_quota = true;
+                        $items++;
+                        if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
+                            $soft_quota = true;
+                        }
+                        if ($items > EXFEE_QUOTA_HARD_LIMIT) {
+                            $hard_quota = true;
                             continue;
                         }
                     }
@@ -521,7 +544,12 @@ class ExfeeModels extends DataModel {
         }
         // }
         // return
-        return ['exfee_id' => $exfee->id, 'over_quota' => $over_quota, 'changed' => $changed];
+        return [
+            'exfee_id'   => $exfee->id,
+            'soft_quota' => $soft_quota,
+            'hard_quota' => $hard_quota,
+            'changed'    => $changed
+        ];
     }
 
 
