@@ -51,7 +51,7 @@ addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
     ['profile',       '0.1.16'],
-    ['user',          '0.0.7'],
+    ['user',          '0.0.8'],
 ]);
 
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
