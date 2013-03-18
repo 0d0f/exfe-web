@@ -230,7 +230,7 @@ class PhotoModels extends DataModel {
                     "https://graph.facebook.com/me/albums?access_token={$token['oauth_token']}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
@@ -269,7 +269,7 @@ class PhotoModels extends DataModel {
                     "https://graph.facebook.com/{$album_id}/photos?access_token={$token['oauth_token']}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
@@ -339,7 +339,7 @@ class PhotoModels extends DataModel {
                     "https://api.dropbox.com/1/metadata/dropbox{$album_id}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                     'Authorization: '
                   . 'OAuth oauth_version="1.0", '
@@ -502,7 +502,7 @@ class PhotoModels extends DataModel {
                   . "&user_id={$identity->external_id}&format=json&nojsoncallback=1"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['photosets']) && isset($data['photosets']['photoset'])) {
@@ -543,7 +543,7 @@ class PhotoModels extends DataModel {
                   . "&photoset_id={$album_id}&extras=date_taken%2Clast_update%2Cgeo%2Curl_m%2Curl_o&format=json&nojsoncallback=1"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['photoset']) && isset($data['photoset']['photo'])) {
@@ -606,7 +606,7 @@ class PhotoModels extends DataModel {
           . FLICKR_KEY . "&photo_id={$photo->external_id}&format=json&nojsoncallback=1"
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($data = json_decode($data, true)) && isset($data['sizes']) && isset($data['sizes']['size'])) {
@@ -633,7 +633,7 @@ class PhotoModels extends DataModel {
                 "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webstream"
             );
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($objCurl, CURLOPT_POST, 1);
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['streamCtag' => null]));
             $data = curl_exec($objCurl);
@@ -683,7 +683,7 @@ class PhotoModels extends DataModel {
                     "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webasseturls"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
                 curl_setopt($objCurl, CURLOPT_POST, 1);
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photoGuids]));
                 $data = curl_exec($objCurl);
@@ -718,7 +718,7 @@ class PhotoModels extends DataModel {
                 "https://p01-sharedstreams.icloud.com/{$photo->external_album_id}/sharedstreams/webasseturls"
             );
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($objCurl, CURLOPT_POST, 1);
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photo->external_id]));
             $data = curl_exec($objCurl);
