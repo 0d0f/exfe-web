@@ -250,8 +250,6 @@ class CrossModels extends DataModel {
         // check description
         if (isset($result['cross']->description)) {
             $result['cross']->description = formatDescription($result['cross']->description, 0);
-        } else {
-            $result['error'][] = 'no_cross_description';
         }
         // check time
         if (isset($result['cross']->time)) {
