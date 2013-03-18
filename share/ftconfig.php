@@ -9,7 +9,7 @@
       timestamp: <?php echo STATIC_CODE_TIMESTAMP; ?>,
       backgrounds: <?php echo json_encode($this->getVar('backgrounds')); ?>,
       location: <?php echo json_encode($this->getVar('location')); ?>,
-      photo_providers: <?php echo json_encode(['facebook', 'dropbox', 'flickr']); ?>,
+      photo_providers: <?php echo json_encode(['facebook', 'dropbox', 'flickr', 'instagram']); ?>,
       timevalid: Math.abs(Math.round(+new Date() / 1000) - <?php echo Time(); ?>) < 15 * 60
     };
   });
