@@ -66,7 +66,7 @@ class ExfeeActions extends ActionController {
                 );
             }
             $rtResult = ['exfee' => $modExfee->getExfeeById($exfee_id)];
-            if ($udResult['over_quota']) {
+            if ($udResult['soft_quota'] || $udResult['hard_quota']) {
                 $rtResult['over_quota'] = true;
             }
             apiResponse($rtResult);
