@@ -43,7 +43,7 @@ class PhotoxActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // check identity
-        $identity_id     = @ (int) $_GETs['identity_id'];
+        $identity_id     = @ (int) $_GET['identity_id'];
         $objIdentities   = []; 
         $photo_providers = ['facebook', 'dropbox', 'flickr'];
         foreach ($user->identities as $identity) {
