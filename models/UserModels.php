@@ -422,7 +422,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '') {
+    public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '', $workflow = []) {
         // basic check
         if (!$identity || !$action) {
             return null;
@@ -506,12 +506,13 @@ class UserModels extends DataModel {
             case 'flickr':
             case 'instagram':
                 $hlpOAuth = $this->getHelperByName('OAuth');
-                $workflow = ['user_id' => $user_id];
+                $workflow['user_id'] = $user_id;
                 if ($device && $device_callback) {
-                    $workflow['callback'] = [
-                        'oauth_device'          => $device,
-                        'oauth_device_callback' => $device_callback,
-                    ];
+                    if (!isset($workflow['callback'])) {
+                        $workflow['callback'] = [];    
+                    }
+                    $workflow['callback']['oauth_device']          = $device;
+                    $workflow['callback']['oauth_device_callback'] = $device_callback;
                 }
                 switch ($action) {
                     case 'SET_PASSWORD':
@@ -529,7 +530,10 @@ class UserModels extends DataModel {
                         }
                 }
                 if ($args) {
-                    $workflow['callback'] = ['args' => $args];
+                    if (!isset($workflow['callback'])) {
+                        $workflow['callback'] = [];    
+                    }
+                    $workflow['callback']['args'] = $args;
                 }
                 switch ($identity->provider) {
                     case 'twitter':
