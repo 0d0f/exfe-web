@@ -104,7 +104,7 @@ class PhotoxActions extends ActionController {
                         }
                     } else {
                         $rawResult = ['albums' => [[
-                            'external_id' => $objIdentity->id,
+                            'external_id' => "{$objIdentity->id}",
                             'provider'    => 'instagram',
                             'caption'     => $objIdentity->external_username,
                             'artwork'     => '',
