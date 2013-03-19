@@ -259,7 +259,7 @@ class PhotoModels extends DataModel {
                             'updated_at'  => date('Y-m-d H:i:s', strtotime($album['updated_time'])) . ' +0000',
                         ];
                     }
-                    return $albums;
+                    return ['albums' => $albums, 'photos' => []];
                 }
             }
         }
@@ -365,6 +365,7 @@ class PhotoModels extends DataModel {
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['contents'])) {
                     $albums = [];
+                    $photos = [];
                     foreach ($data['contents'] as $album) {
                         if ($album['is_dir']) {
                             $path = explode('/', $album['path']);
@@ -379,9 +380,11 @@ class PhotoModels extends DataModel {
                                 'created_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])) . ' +0000',
                                 'updated_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])) . ' +0000',
                             ];
+                        } else if ($album['mime_type'] === 'image/jpeg') {
+                            //$photos[] = 
                         }
                     }
-                    return $albums;
+                    return ['albums' => $albums, 'photos' => []];
                 }
             }
         }
@@ -533,7 +536,7 @@ class PhotoModels extends DataModel {
                             'updated_at'  => date('Y-m-d H:i:s', $album['date_update']) . ' +0000',
                         ];
                     }
-                    return $albums;
+                    return ['albums' => $albums, 'photos' => []];
                 }
             }
         }
