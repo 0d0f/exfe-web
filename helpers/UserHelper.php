@@ -25,8 +25,24 @@ class UserHelper extends ActionController {
     }
 
 
-    public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '') {
-        return $this->modUser->verifyIdentity($identity, $action, $user_id, $args, $device, $device_callback);
+    public function verifyIdentity(
+        $identity,
+        $action,
+        $user_id = 0,
+        $args = null,
+        $device = '',
+        $device_callback = '',
+        $workflow = []
+    ) {
+        return $this->modUser->verifyIdentity(
+            $identity,
+            $action,
+            $user_id,
+            $args,
+            $device,
+            $device_callback,
+            $workflow
+        );
     }
 
 

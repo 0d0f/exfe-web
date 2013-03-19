@@ -266,7 +266,7 @@ class IdentityModels extends DataModel {
      * }
      * if ($user_id === 0) without adding it to a user
      */
-    public function addIdentity($identityDetail = [], $user_id = 0, $status = 2, $withVerifyInfo = false, $newUser = true, $device = '', $device_callback = '') {
+    public function addIdentity($identityDetail = [], $user_id = 0, $status = 2, $withVerifyInfo = false, $newUser = true, $device = '', $device_callback = '', $workflow = []) {
         // load models
         $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
@@ -310,7 +310,7 @@ class IdentityModels extends DataModel {
                         $identity->provider = $provider;
                         $vfyResult = $hlpUder->verifyIdentity(
                             $identity, 'VERIFY', $user_id, null,
-                            $device, $device_callback
+                            $device, $device_callback, $workflow
                         );
                         if ($vfyResult && isset($vfyResult['url'])) {
                             return [
