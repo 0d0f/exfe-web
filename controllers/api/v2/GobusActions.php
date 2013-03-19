@@ -351,12 +351,13 @@ class GobusActions extends ActionController {
             $arrExclude = [];
             foreach (explode(',', $exclude) ?: [] as $rawIdentity) {
                 $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $rawIdentity);
-                $provider          = preg_replace('/^.*@([^@])*$/', '$1', $rawIdentity);
+                $provider          = preg_replace('/^.*@([^@]*)$/', '$1', $rawIdentity);
                 if ($external_username && $provider) {
-                    $excIdentity   = new stdClass();
-                    $excIdentity->external_username = strtolower($external_username);
-                    $excIdentity->provider          = strtolower($provider);
-                    $arrExclude[]                   = $excIdentity;
+                    $excInvitation = new stdClass(); 
+                    $excInvitation->identity = new stdClass();
+                    $excInvitation->identity->external_username = strtolower($external_username);
+                    $excInvitation->identity->provider          = strtolower($provider);
+                    $arrExclude[]  = $excInvitation;
                 }
             }
         }
