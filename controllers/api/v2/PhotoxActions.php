@@ -96,7 +96,7 @@ class PhotoxActions extends ActionController {
                 case 'instagram':
                     if ($album_id) {
                         $rawResult = null;
-                        if ($album_id === $objIdentity->id) {
+                        if ($album_id === "{$objIdentity->id}") {
                             $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);    
                         }
                         if ($rawResult !== null) {
