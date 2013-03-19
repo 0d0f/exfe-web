@@ -246,7 +246,7 @@ class GobusActions extends ActionController {
         $provider        = trim($_POST['provider']);
         $external_id     = trim($_POST['external_id']);
         $content         = trim($_POST['content']);
-        $exclude         = @$_POST['exclude'] ?; '';
+        $exclude         = @$_POST['exclude'] ?: '';
         $time            = strtotime($_POST['time']);
         if ((!$cross_id && !$iom) || !$provider || !$external_id || !$content || !$time) {
             header('HTTP/1.1 500 Internal Server Error');
@@ -347,17 +347,22 @@ class GobusActions extends ActionController {
         $post     = $modCnvrstn->getPostById($post_id);
         // call Gobus {
         $modQueue = $this->getModelByName('Queue');
-        //if ($exclude) {
-        //    $arrExclude = [];
-          //  foreach (explode(',', $exclude) as $rawIdentity) {
-            //    $arrExclude[] = 
-           // }
-            
-        //}
-        // =googollee@163.com@email,x@0d0f.com@email,googollee@hotmail.com@email
-        
+        if ($exclude) {
+            $arrExclude = [];
+            foreach (explode(',', $exclude) ?: [] as $rawIdentity) {
+                $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $rawIdentity);
+                $provider          = preg_replace('/^.*@([^@])*$/', '$1', $rawIdentity);
+                if ($external_username && $provider) {
+                    $excIdentity   = new stdClass();
+                    $excIdentity->external_username = strtolower($external_username);
+                    $excIdentity->provider          = strtolower($provider);
+                    $arrExclude[]                   = $excIdentity;
+                }
+            }
+        }
         $modQueue->despatchConversation(
-            $cross, $post, $by_identity->connected_user_id, $post->by_identity_id
+            $cross, $post, $by_identity->connected_user_id,
+            $post->by_identity_id, $arrExclude
         );
         // }
         $modExfee = $this->getModelByName('exfee');
