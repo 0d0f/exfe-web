@@ -30,6 +30,11 @@ class OAuthHelper extends ActionController {
     }
 
 
+    public function instagramRedirect($workflow = []) {
+        return $this->modOAuth->instagramRedirect($workflow);
+    }
+
+
     public function resetSession() {
         return $this->modOAuth->resetSession();
     }
