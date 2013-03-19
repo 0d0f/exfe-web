@@ -66,16 +66,23 @@ class UsersActions extends ActionController {
         }
         $workflow = [];
         if (isset($_POST['refere'])) {
+            if (!isset($workflow['callback'])) {
+                $workflow['callback'] = [];
+            }
             $workflow['callback']['url']  = trim($_POST['refere']);
         }
         if (isset($_POST['event'])) {
+            if (!isset($workflow['callback'])) {
+                $workflow['callback'] = [];
+            }
             $workflow['callback']['args'] = trim($_POST['event']);
         }
         // adding
         if (($adResult = $modIdentity->addIdentity(
             ['provider' => $provider, 'external_username' => $external_username],
             $user_id, 2, true, false,
-            strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback'])
+            strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback']),
+            $workflow
         ))) {
             $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
             if ($adResult['identity_id'] > 0) {
