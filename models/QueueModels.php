@@ -90,6 +90,8 @@ class QueueModels extends DataModel {
             // exclude {
             $bolContinue = false;
             foreach ($excExfee as $eI => $eItem) {
+                //if () {
+                //}
                 if ($invitation->id === $eItem->id) {
                     $bolContinue = true;
                     break;
@@ -176,13 +178,19 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchConversation($cross, $post, $by_user_id, $by_identity_id) {
+    public function despatchConversation(
+        $cross,
+        $post,
+        $by_user_id,
+        $by_identity_id,
+        $exclude_identities = []
+    ) {
         $service     = 'Conversation';
         $method      = 'Update';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
-            $cross, $by_user_id, "{$service}_{$method}"
+            $cross, $by_user_id, "{$service}_{$method}", [], $exclude_identities
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
