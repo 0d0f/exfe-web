@@ -25,6 +25,11 @@ class OAuthHelper extends ActionController {
     }
 
 
+    public function flickrRedirect($workflow = []) {
+        return $this->modOAuth->flickrRedirect($workflow);
+    }
+
+
     public function resetSession() {
         return $this->modOAuth->resetSession();
     }
