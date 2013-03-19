@@ -64,6 +64,13 @@ class UsersActions extends ActionController {
             default:
                 apiError(400, 'unknow_provider', '');
         }
+        $workflow = [];
+        if (isset($_POST['refere'])) {
+            $workflow['callback']['url']  = trim($_POST['refere']);
+        }
+        if (isset($_POST['event'])) {
+            $workflow['callback']['args'] = trim($_POST['event']);
+        }
         // adding
         if (($adResult = $modIdentity->addIdentity(
             ['provider' => $provider, 'external_username' => $external_username],
