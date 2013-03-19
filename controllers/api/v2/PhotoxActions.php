@@ -132,7 +132,11 @@ class PhotoxActions extends ActionController {
         }
         ksort($rawAlbums);
         $rawAlbums = array_reverse(array_values($rawAlbums));
-        apiResponse(['albums' => $rawAlbums, 'failed_identities' => $failed]);
+        apiResponse([
+            'albums'            => $rawAlbums,
+            'photos'            => $rawPhotos,
+            'failed_identities' => $failed,
+        ]);
     }
 
 
