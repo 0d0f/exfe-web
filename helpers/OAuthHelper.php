@@ -25,6 +25,16 @@ class OAuthHelper extends ActionController {
     }
 
 
+    public function flickrRedirect($workflow = []) {
+        return $this->modOAuth->flickrRedirect($workflow);
+    }
+
+
+    public function instagramRedirect($workflow = []) {
+        return $this->modOAuth->instagramRedirect($workflow);
+    }
+
+
     public function resetSession() {
         return $this->modOAuth->resetSession();
     }

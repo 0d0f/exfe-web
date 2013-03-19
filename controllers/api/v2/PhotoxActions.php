@@ -96,24 +96,24 @@ class PhotoxActions extends ActionController {
                 case 'instagram':
                     if ($album_id) {
                         $rawResult = null;
-                        if ($album_id === $objIdentity->id) {
+                        if ($album_id === "{$objIdentity->id}") {
                             $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);    
                         }
                         if ($rawResult !== null) {
-                            $rawResult = ['albums' => [], 'photos' => $rawResult];
+                            $rawResult = ['albums' => [], 'photos' => $rawResult['photos']];
                         }
                     } else {
-                        $albums[] = [
-                            'external_id' => $objIdentity->id,
+                        $rawResult = ['albums' => [[
+                            'external_id' => "{$objIdentity->id}",
                             'provider'    => 'instagram',
                             'caption'     => $objIdentity->external_username,
                             'artwork'     => '',
                             'count'       => -1,
                             'size'        => -1,
-                            'by_identity' => $identity,
+                            'by_identity' => $objIdentity,
                             'created_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
                             'updated_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
-                        ];
+                        ]], 'photos' => []];
                     }
             }
             if ($rawResult) {
@@ -125,14 +125,18 @@ class PhotoxActions extends ActionController {
                         $rawAlbums[]     = $album;
                     }
                 }
-                $rawPhotos[] = $rawResult['photos'];
+                $rawPhotos = $rawResult['photos'];
             } else if ($rawResult === null) {
-                $failed[]    = $objIdentity;
+                $failed[]  = $objIdentity;
             }
         }
         ksort($rawAlbums);
         $rawAlbums = array_reverse(array_values($rawAlbums));
-        apiResponse(['albums' => $rawAlbums, 'failed_identities' => $failed]);
+        apiResponse([
+            'albums'            => $rawAlbums,
+            'photos'            => $rawPhotos,
+            'failed_identities' => $failed,
+        ]);
     }
 
 

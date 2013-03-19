@@ -246,6 +246,7 @@ class GobusActions extends ActionController {
         $provider        = trim($_POST['provider']);
         $external_id     = trim($_POST['external_id']);
         $content         = trim($_POST['content']);
+        $exclude         = @$_POST['exclude'] ?; '';
         $time            = strtotime($_POST['time']);
         if ((!$cross_id && !$iom) || !$provider || !$external_id || !$content || !$time) {
             header('HTTP/1.1 500 Internal Server Error');
@@ -305,7 +306,7 @@ class GobusActions extends ActionController {
             $cross_id = (int) $curlResult;
         }
         // get cross
-        $cross = $hlpCross->getCross($cross_id);
+        $cross = $hlpCross->getCross($cross_id, true);
         if (!$cross) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
@@ -346,6 +347,15 @@ class GobusActions extends ActionController {
         $post     = $modCnvrstn->getPostById($post_id);
         // call Gobus {
         $modQueue = $this->getModelByName('Queue');
+        if ($exclude) {
+        //    $arrExclude = [];
+          //  foreach (explode(',', $exclude) as $rawIdentity) {
+            //    $arrExclude[] = 
+           // }
+            
+        }
+        // =googollee@163.com@email,x@0d0f.com@email,googollee@hotmail.com@email
+        
         $modQueue->despatchConversation(
             $cross, $post, $by_identity->connected_user_id, $post->by_identity_id
         );
