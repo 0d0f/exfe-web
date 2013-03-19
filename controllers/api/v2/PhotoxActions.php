@@ -103,7 +103,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        $albums[] = [
+                        $rawResult = ['albums' => [
                             'external_id' => $objIdentity->id,
                             'provider'    => 'instagram',
                             'caption'     => $objIdentity->external_username,
@@ -113,7 +113,7 @@ class PhotoxActions extends ActionController {
                             'by_identity' => $identity,
                             'created_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
                             'updated_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
-                        ];
+                        ], 'photos' => []];
                     }
             }
             if ($rawResult) {
