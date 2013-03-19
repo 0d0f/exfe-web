@@ -100,7 +100,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);    
                         }
                         if ($rawResult !== null) {
-                            $rawResult = ['albums' => [], 'photos' => $rawResult];
+                            $rawResult = ['albums' => [], 'photos' => $rawResult['photos']];
                         }
                     } else {
                         $rawResult = ['albums' => [[
