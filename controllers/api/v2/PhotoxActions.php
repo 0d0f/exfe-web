@@ -26,7 +26,7 @@ class PhotoxActions extends ActionController {
     }
 
 
-    public function doGetSourceAlbums() {
+    public function doBrowseSource() {
         // check signin
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -45,7 +45,7 @@ class PhotoxActions extends ActionController {
         // check identity
         $identity_id     = @ (int) $_GET['identity_id'];
         $objIdentities   = []; 
-        $photo_providers = ['facebook', 'dropbox', 'flickr'];
+        $photo_providers = ['facebook', 'dropbox', 'flickr', 'instagram'];
         foreach ($user->identities as $identity) {
             if ($identity->status === 'CONNECTED'
              && in_array($identity->provider, $photo_providers)) {
@@ -65,21 +65,59 @@ class PhotoxActions extends ActionController {
         // get albums
         $modPhoto  = $this->getModelByName('Photo');
         $rawAlbums = [];
+        $rawPhotos = [];
         $failed    = [];
+        $album_id  = isset($_GET['album_id']) && $_GET['album_id'] ? $_GET['album_id'] : '';
         foreach ($objIdentities as $objIdentity) {
             switch ($objIdentity->provider) {
                 case 'facebook':
-                    $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);
+                    if ($album_id) {
+                        $rawResult = $modPhoto->getPhotosFromFacebook($objIdentity->id, $album_id);
+                        if ($rawResult !== null) {
+                            $rawResult = ['albums' => [], 'photos' => $rawResult];
+                        }
+                    } else {
+                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
+                    }
                     break;
                 case 'dropbox':
-                    $album_id  = isset($_GET['album_id']) && $_GET['album_id'] ? $_GET['album_id'] : '';
                     $rawResult = $modPhoto->getAlbumsFromDropbox($objIdentity->id, $album_id);
                     break;
                 case 'flickr':
-                    $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
+                    if ($album_id) {
+                        $rawResult = $modPhoto->getPhotosFromFlickr($objIdentity->id, $album_id);
+                        if ($rawResult !== null) {
+                            $rawResult = ['albums' => [], 'photos' => $rawResult];
+                        }
+                    } else {
+                        $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
+                    }
+                    break;
+                case 'instagram':
+                    if ($album_id) {
+                        $rawResult = null;
+                        if ($album_id === $objIdentity->id) {
+                            $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);    
+                        }
+                        if ($rawResult !== null) {
+                            $rawResult = ['albums' => [], 'photos' => $rawResult];
+                        }
+                    } else {
+                        $albums[] = [
+                            'external_id' => $objIdentity->id,
+                            'provider'    => 'instagram',
+                            'caption'     => $objIdentity->external_username,
+                            'artwork'     => '',
+                            'count'       => -1,
+                            'size'        => -1,
+                            'by_identity' => $identity,
+                            'created_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
+                            'updated_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
+                        ];
+                    }
             }
             if ($rawResult) {
-                foreach ($rawResult as $album) {
+                foreach ($rawResult['albums'] as $album) {
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
                         $rawAlbums[$key] = $album;
@@ -87,64 +125,14 @@ class PhotoxActions extends ActionController {
                         $rawAlbums[]     = $album;
                     }
                 }
+                $rawPhotos[] = $rawResult['photos'];
             } else if ($rawResult === null) {
-                $failed[]  = $objIdentity;
+                $failed[]    = $objIdentity;
             }
         }
         ksort($rawAlbums);
         $rawAlbums = array_reverse(array_values($rawAlbums));
         apiResponse(['albums' => $rawAlbums, 'failed_identities' => $failed]);
-    }
-
-
-    public function doGetSourcePhotos() {
-        // check signin
-        $checkHelper = $this->getHelperByName('check');
-        $params = $this->params;
-        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
-        if ($result['check']) {
-            $user_id = $result['uid'];
-        } else {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
-        // get user
-        $modUser = $this->getModelByName('User');
-        $user    = $modUser->getUserById($user_id);
-        if (!$user) {
-            apiError(401, 'no_signin', ''); // 需要登录
-        }
-        // check identity
-        $identity_id = @ (int) $_GET['identity_id'];
-        if (!$identity_id) {
-            apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-        }
-        $objIdentity = null;
-        foreach ($user->identities as $identity) {
-            if ($identity->id === $identity_id) {
-                $objIdentity = $identity;
-                break;
-            }
-        }
-        if (!$objIdentity) {
-            apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
-        }
-        if ($objIdentity->status !== 'CONNECTED') {
-            apiError(400, 'can_not_be_verify', 'This identity is not connecting to current user.');
-        }
-        // get albums
-        $modPhoto = $this->getModelByName('Photo');
-        $photos   = null;
-        switch ($objIdentity->provider) {
-            case 'instagram':
-                $photos = $modPhoto->getPhotosFromInstagram($identity_id);
-                break;
-            default:
-                apiError(400, 'unsupported_provider', 'This photo provider is not supported currently.');
-        }
-        if ($photos === null) {
-            apiError(400, 'not_allow', 'Can not access photos, please reauthenticate this identity.');
-        }
-        apiResponse($photos);
     }
 
 
