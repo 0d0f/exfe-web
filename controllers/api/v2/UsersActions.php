@@ -294,6 +294,9 @@ class UsersActions extends ActionController {
                     break;
                 case 'twitter':
                 case 'facebook':
+                case 'flickr':
+                case 'dropbox':
+                case 'instagram':
                     apiResponse(['registration_flag' => 'AUTHENTICATE']);
                     break;
                 default:
