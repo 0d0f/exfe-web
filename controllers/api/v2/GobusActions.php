@@ -347,13 +347,13 @@ class GobusActions extends ActionController {
         $post     = $modCnvrstn->getPostById($post_id);
         // call Gobus {
         $modQueue = $this->getModelByName('Queue');
-        if ($exclude) {
+        //if ($exclude) {
         //    $arrExclude = [];
           //  foreach (explode(',', $exclude) as $rawIdentity) {
             //    $arrExclude[] = 
            // }
             
-        }
+        //}
         // =googollee@163.com@email,x@0d0f.com@email,googollee@hotmail.com@email
         
         $modQueue->despatchConversation(
