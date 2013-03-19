@@ -305,7 +305,7 @@ class IdentityModels extends DataModel {
             case 'flickr':
             case 'instagram':
                 if (!$external_id && !$external_username) {
-                    if ($user_id && $status = 2 && $withVerifyInfo) {
+                    if ($user_id && $status === 2 && $withVerifyInfo) {
                         $identity = new stdClass;
                         $identity->provider = $provider;
                         $vfyResult = $hlpUder->verifyIdentity(
