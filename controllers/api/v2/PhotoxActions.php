@@ -125,9 +125,9 @@ class PhotoxActions extends ActionController {
                         $rawAlbums[]     = $album;
                     }
                 }
-                $rawPhotos[] = $rawResult['photos'];
+                $rawPhotos = $rawResult['photos'];
             } else if ($rawResult === null) {
-                $failed[]    = $objIdentity;
+                $failed[]  = $objIdentity;
             }
         }
         ksort($rawAlbums);
