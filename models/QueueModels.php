@@ -90,11 +90,17 @@ class QueueModels extends DataModel {
             // exclude {
             $bolContinue = false;
             foreach ($excExfee as $eI => $eItem) {
-                //if () {
-                //}
-                if ($invitation->id === $eItem->id) {
-                    $bolContinue = true;
-                    break;
+                if (isset($eItem->id)) {
+                    if ($invitation->id === $eItem->id) {
+                        $bolContinue = true;
+                        break;
+                    }
+                } else {
+                    if ($invitation->identity->provider          === $eItem->identity->provider
+                     && $invitation->identity->external_username === $eItem->identity->external_username) {
+                        $bolContinue = true;
+                        break;
+                    }
                 }
             }
             if ($bolContinue) {
