@@ -46,9 +46,7 @@ class OAuthActions extends ActionController {
                 apiError(400, 'no_provider', '');
         }
         if ($urlOauth) {
-            // if ($webResponse) {
-            // @todo: recovery this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            if ($webResponse || $provider === 'dropbox' || $provider === 'instagram' || $provider === 'flickr') {
+            if ($webResponse) {
                 header("Location: {$urlOauth}");
                 return;
             }
