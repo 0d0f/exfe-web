@@ -110,7 +110,7 @@ class PhotoxActions extends ActionController {
                             'artwork'     => '',
                             'count'       => -1,
                             'size'        => -1,
-                            'by_identity' => $identity,
+                            'by_identity' => $objIdentity,
                             'created_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
                             'updated_at'  => date('Y-m-d H:i:s', time()) . ' +0000',
                         ]], 'photos' => []];
