@@ -344,6 +344,7 @@ class IdentityModels extends DataModel {
                     break;
                 case 'phone':
                     $external_id = $external_username = $external_id ?: $external_username;
+                    $avatar_filename = '';
                     break;
                 case 'twitter':
                     $rawIdentity = $hlpOAuth->getTwitterProfileByExternalUsername(
