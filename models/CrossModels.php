@@ -33,6 +33,7 @@ class CrossModels extends DataModel {
 
 
     public function addCross($cross, $place_id = 0, $exfee_id = 0, $by_identity_id = 0, $old_cross = null) {
+        $setTime    = isset($cross->time);
         $cross_time = $cross->time ?: new CrossTime('', '', '', '', '', '', '');
         $widgets    = $cross->widget;
         $background = '';
@@ -112,7 +113,8 @@ class CrossModels extends DataModel {
                 $cross_updated['description'] = $updated;
             }
 
-            if ($cross_time
+            if ($setTime
+             && $cross_time
              && $old_cross
              && (mysql_real_escape_string($old_cross->time->origin) !== $cross->time->origin
               || $old_cross->time->begin_at->date !== $cross->time->begin_at->date
