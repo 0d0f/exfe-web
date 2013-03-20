@@ -37,6 +37,7 @@ class AvatarActions extends ActionController {
             }
             switch ($identity->provider) {
                 case 'email':
+                case 'phone':
                     break;
                 default:
                     apiError(400, 'provider_error', 'Can not update avatars of this kind of identities.');
