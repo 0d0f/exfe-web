@@ -42,7 +42,7 @@ addScript([
     ['xidentity',     '0.0.3'],
     ['xdialog',       '0.1.12'],
     ['datepanel',     '0.1.2'],
-    ['mappanel',      '0.0.7'],
+    ['mappanel',      '0.0.8'],
     ['global',        '0.0.5'],
 ]);
 
