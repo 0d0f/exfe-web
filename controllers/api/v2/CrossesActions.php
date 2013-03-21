@@ -20,7 +20,7 @@ class CrossesActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($params["id"]);
         if ($cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The X you're requesting is private.");
             }
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
@@ -82,7 +82,7 @@ class CrossesActions extends ActionController {
                 'read_only' => true,
             ];
             // check cross status
-            if ($result['cross']->attribute['deleted']) {
+            if ($result['cross']->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The X you're requesting is private.");
             }
             // used token
@@ -402,7 +402,7 @@ class CrossesActions extends ActionController {
         $cross_id = @ (int) $params['id'];
         $archive  = isset($_POST['archive']) && strtolower($_POST['archive']) === 'false' ? false : true;
         if (!$cross_id) {
-            apiError(403, 'not_authorized', "The X you're requesting is private.");
+            apiError(400, 'no_cross_id', "cross_id must be provided.");
         }
 
         $checkHelper = $this->getHelperByName('check');
@@ -425,6 +425,38 @@ class CrossesActions extends ActionController {
             }
         }
         apiError(500, 'server_error', "Can't Edit this Cross.");
+    }
+
+
+    public function doDelete() {
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        if (!$cross_id) {
+            apiError(400, 'no_cross_id', "cross_id must be provided.");
+        }
+
+        $checkHelper = $this->getHelperByName('check');
+        $hlpCross    = $this->getHelperByName('Cross');
+        $modCross    = $this->getModelByName('Cross');
+
+        $result = $checkHelper->isAPIAllow('user', $params['token']);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+        }
+
+        $result = $modCross->deleteCrossByCrossIdAndUserId($cross_id, $result['uid']);
+
+        if ($result) {
+           apiResponse(['cross_id' => $cross_id]); 
+        } else if ($result === false) {
+            apiError(400, 'param_error', "Can't Edit this Cross.");
+        }
+
+        apiError(403, 'not_authorized', 'You can not delete this cross.');
     }
 
 }
