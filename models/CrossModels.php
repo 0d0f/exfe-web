@@ -233,6 +233,37 @@ class CrossModels extends DataModel {
     }
 
 
+    public function deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete = true) {
+        if (!$cross_id || !$user_id) {
+            return null;
+        }
+        $hlpCross = $this->getHelperByName('Cross');
+        $hlpExfee = $this->getHelperByName('Exfee');
+        $cross    = $hlpCross->getCross($cross_id);
+        if ($cross) {
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $user_id
+                 && $invitation->rsvp_status                 !== 'REMOVED'
+                 && $invitation->host) {
+                    if ($cross->attribute['state'] !== 'deleted' && $delete) {
+                        $sql = "UPDATE `crosses` SET `updated_at` = NOW(), `state` = 2 WHERE `id` = {$cross->id}";
+                        if ($this->query($sql) > 0) {
+                            return true;
+                        }
+                    } else if ($cross->attribute['state'] === 'deleted' && !$delete) {
+                        $sql = "UPDATE `crosses` SET `updated_at` = NOW(), `state` = 1 WHERE `id` = {$cross->id}";
+                        if ($this->query($sql) > 0) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
+        }
+        return null;
+    }
+
+
     public function validateCross($cross, $old_cross = null) {
         // init
         $result = ['cross' => $cross, 'error' => []];
