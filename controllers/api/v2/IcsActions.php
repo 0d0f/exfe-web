@@ -1,4 +1,5 @@
 <?php
+// @todo: 过滤需要删除的cross
 
 class IcsActions extends ActionController {
 

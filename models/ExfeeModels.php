@@ -120,7 +120,8 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
                 $rawInvitation['valid']          = $rawInvitation['state'] !== 4
                                                 && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
-                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30)); // 23 min 30 secs
+                                                 || time() - strtotime($rawInvitation['token_used_at']) < (60 * 23 + 30))     // 23 min 30 secs
+                                                && (time() - strtotime($rawInvitation['created_at']))   < (60 * 60 * 24 * 7); // 7 days
                 return $rawInvitation;
             }
         }
