@@ -626,7 +626,6 @@ class UsersActions extends ActionController {
         if (strlen($password = $_POST['password']) === 0) {
             apiError(403, 'no_password', 'password must be provided');
         }
-        // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
         if (($name = formatName($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, true)) {
@@ -643,7 +642,10 @@ class UsersActions extends ActionController {
         if ($siResult) {
             apiResponse(['user_id' => $siResult['user_id'], 'token' => $siResult['token']]);
         }
-        apiError(403, 'failed', '');
+        // error handle
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
+        $raw_flag = $modUser->getRegistrationFlag($identity);        
+        apiError(403, 'failed', ['flag' => @$raw_flag['flag']]);
     }
 
 
