@@ -98,11 +98,20 @@ class GobusActions extends ActionController {
         }
 
         // gather
-        $cross_id = $crossHelper->gatherCross($cross, $identity_id, $user_id);
+        $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
+        $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'gather_error', "Can't gather this Cross.");        
         }
+
+        if (@$gthResult['over_quota']) {
+            apiResponse([
+                'cross_id'         => $cross_id,
+                'exfee_over_quota' => EXFEE_QUOTA_SOFT_LIMIT,
+            ], '206');    
+        }
+
         apiResponse(['cross_id' => $cross_id]);
     }
 
@@ -225,11 +234,17 @@ class GobusActions extends ActionController {
             apiError(500, 'update_error', "Can't update this Cross.");
         }
         $hlpCross = $this->getHelperByName('Cross');
-        apiResponse([
+        $rtResult = [
             'cross_id' => $cross_id,
             'exfee_id' => $rawResult['exfee_id'],
             'cross'    => $hlpCross->getCross($cross_id)
-        ]);  
+        ];
+        $code = 200;
+        if ($rawResult['soft_quota'] || $rawResult['hard_quota']) {
+            $rtResult['exfee_over_quota'] = EXFEE_QUOTA_SOFT_LIMIT;
+            $code = 206;
+        }
+        apiResponse($rtResult, $code);
     }
 
 

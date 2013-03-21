@@ -333,12 +333,19 @@ class CrossesActions extends ActionController {
             apiError(400, 'cross_error', $chkCross['error'][0]);
         }
         $cross = $chkCross['cross'];
-        $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
+        $gthResult = $crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
+        $cross_id = @$gthResult['cross_id'];
 
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName('cross');
             $cross=$crossHelper->getCross($cross_id);
+            if (@$gthResult['over_quota']) {
+                apiResponse([
+                    'cross'            => $cross,
+                    'exfee_over_quota' => EXFEE_QUOTA_SOFT_LIMIT,
+                ], '206');    
+            }
             apiResponse(array("cross"=>$cross));
         }
         else
