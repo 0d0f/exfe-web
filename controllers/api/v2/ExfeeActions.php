@@ -66,10 +66,12 @@ class ExfeeActions extends ActionController {
                 );
             }
             $rtResult = ['exfee' => $modExfee->getExfeeById($exfee_id)];
+            $code = 200;
             if ($udResult['soft_quota'] || $udResult['hard_quota']) {
-                $rtResult['over_quota'] = true;
+                $rtResult['exfee_over_quota'] = EXFEE_QUOTA_SOFT_LIMIT;
+                $code = 206;
             }
-            apiResponse($rtResult);
+            apiResponse($rtResult, $code);
         }
         apiError(400, 'editing failed', '');
     }
