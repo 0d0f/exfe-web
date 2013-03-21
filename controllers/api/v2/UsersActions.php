@@ -741,11 +741,11 @@ class UsersActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross_list  = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, !!$updated_at, $uid);
         foreach ($cross_list as $i => $cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 unset($cross_list[$i]);
             }
         }
-        sort($cross_list);
+        $cross_list = array_values($cross_list);
         apiResponse(['crosses' => $cross_list]);
     }
 
@@ -778,11 +778,11 @@ class UsersActions extends ActionController {
                     }
                 }
             }
-            if ($cross->attribute['deleted'] || !$archived) {
+            if ($cross->attribute['state'] === 'deleted' || !$archived) {
                 unset($cross_list[$i]);
             }
         }
-        sort($cross_list);
+        $cross_list = array_values($cross_list);
         apiResponse(['crosses' => $cross_list]);
     }
 
@@ -1026,11 +1026,12 @@ class UsersActions extends ActionController {
         unset($rawCrosses);
         // clean deleted
         foreach ($crosses as $i => $cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 unset($crosses[$i]);
             }
         }
         ksort($crosses);
+        $crosses = array_values($crosses);
         // return
         apiResponse(['crosses' => $crosses, 'more' => $more]);
     }
