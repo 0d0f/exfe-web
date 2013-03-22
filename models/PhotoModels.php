@@ -231,7 +231,7 @@ class PhotoModels extends DataModel {
                     "https://graph.facebook.com/me/albums?access_token={$token['oauth_token']}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
@@ -239,7 +239,7 @@ class PhotoModels extends DataModel {
                     foreach ($data['data'] as $album) {
                         $cover_photo = httpKit::request(
                             "https://graph.facebook.com/{$album['cover_photo']}?fields=picture&access_token={$token['oauth_token']}",
-                            null, null, false, false, 3, 3, 'txt', true
+                            null, null, false, false, 10, 3, 'txt', true
                         );
                         // @todo @leaskh
                         $cover_photo = ($cover_photo
@@ -281,7 +281,7 @@ class PhotoModels extends DataModel {
                     "https://graph.facebook.com/{$album_id}/photos?access_token={$token['oauth_token']}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['data'])) {
@@ -351,7 +351,7 @@ class PhotoModels extends DataModel {
                     "https://api.dropbox.com/1/metadata/dropbox{$album_id}"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
                 curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                     'Authorization: '
                   . 'OAuth oauth_version="1.0", '
@@ -366,11 +366,13 @@ class PhotoModels extends DataModel {
                 if ($data && ($data = json_decode($data, true)) && isset($data['contents'])) {
                     $albums = [];
                     $photos = [];
+                    $rawPto = [];
                     foreach ($data['contents'] as $album) {
+                        $external_id  = implode('/', array_map('rawurlencode', explode('/', $album['path'])));
                         if ($album['is_dir']) {
                             $path = explode('/', $album['path']);
                             $albums[] = [
-                                'external_id' => implode('/', array_map('rawurlencode', explode('/', $album['path']))),
+                                'external_id' => $external_id,
                                 'provider'    => 'dropbox',
                                 'caption'     => array_pop($path),
                                 'artwork'     => '',
@@ -381,14 +383,117 @@ class PhotoModels extends DataModel {
                                 'updated_at'  => date('Y-m-d H:i:s', strtotime($album['modified'])) . ' +0000',
                             ];
                         } else if ($album['mime_type'] === 'image/jpeg') {
-                            //$photos[] = 
+                            $rawPto[] = $external_id;
                         }
                     }
-                    return ['albums' => $albums, 'photos' => []];
+                    if ($rawPto && strlen($album_id) > 0) { // @todo @leaskh ignore photos in root folder now
+                        $idsGet = [];
+                        foreach ($rawPto as $i => $rItem) {
+                            if ($i > 9) {       // get 10 photos a time
+                                $photos[] = $this->packPhoto([
+                                    'id'                   => 0,
+                                    'cross_id'             => 0,
+                                    'caption'              => '',
+                                    'by_identity_id'       => $identity_id,
+                                    'created_at'           => '',
+                                    'updated_at'           => '',
+                                    'external_created_at'  => '',
+                                    'external_updated_at'  => '',
+                                    'provider'             => 'dropbox',
+                                    'external_album_id'    => $album_id,
+                                    'external_id'          => $external_id,
+                                    'location_title'       => '',
+                                    'location_description' => '',
+                                    'location_external_id' => '',
+                                    'location_lng'         => '',
+                                    'location_lat'         => '',
+                                    'fullsize_url'         => '',
+                                    'fullsize_width'       => 0,
+                                    'fullsize_height'      => 0,
+                                    'preview_url'          => '',
+                                    'preview_width'        => 0,
+                                    'preview_height'       => 0,
+                                ]);
+                            } else {
+                                $idsGet[] = $rItem;
+                            }   
+                        }
+                        if ($idsGet) {
+                            $rawGet = $this->getPhotosFromDropbox($identity_id, $album_id, $idsGet);
+                            if ($rawGet) {
+                                $photos = array_merge($photos, $rawGet);
+                            }
+                        }
+                    }
+                    return ['albums' => $albums, 'photos' => $photos];
                 }
             }
         }
         return null;
+    }
+
+
+    public function getPhotosFromDropbox($identity_id, $album_id, $photo_ids) {
+        require_once(dirname(dirname(__FILE__)) . '/lib/httpkit.php');
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $identity = $hlpIdentity->getIdentityById($identity_id);
+        if ($identity
+         && $identity->connected_user_id > 0
+         && $identity->provider === 'dropbox') {
+            $token = $hlpIdentity->getOAuthTokenById($identity_id);
+            if ($token
+             && $token['oauth_token']
+             && $token['oauth_token_secret']) {
+                $photos = httpKit::request(
+                    EXFE_AUTH_SERVER . '/thirdpart/photographers/photos?picture_id=' . implode(',', $photo_ids),
+                    null, new Recipient(
+                        $identity->id,
+                        $identity->connected_user_id,
+                        $identity->name,
+                        json_encode($token),
+                        '',
+                        '',
+                        '',
+                        $identity->provider,
+                        $identity->external_id,
+                        $identity->external_username
+                    ), false, false, 10, 3, 'json', true
+                );
+                if ($photos
+                 && $photos['http_code'] === '200'
+                 && isset($photos['json'])
+                 && $photos['json']) {
+                    $rtPhotos = [];
+                    foreach ($photos['json'] as $i => $rawPhoto) {
+                        $rtPhotos[] = $this->packPhoto([
+                            'id'                   => 0,
+                            'cross_id'             => 0,
+                            'caption'              => '',
+                            'by_identity_id'       => $identity_id,
+                            'created_at'           => '',
+                            'updated_at'           => '',
+                            'external_created_at'  => '',
+                            'external_updated_at'  => '',
+                            'provider'             => 'dropbox',
+                            'external_album_id'    => $album_id,
+                            'external_id'          => $photo_ids[$i],
+                            'location_title'       => '',
+                            'location_description' => '',
+                            'location_external_id' => '',
+                            'location_lng'         => '',
+                            'location_lat'         => '',
+                            'fullsize_url'         => $rawPhoto,
+                            'fullsize_width'       => 0,
+                            'fullsize_height'      => 0,
+                            'preview_url'          => $rawPhoto,
+                            'preview_width'        => 0,
+                            'preview_height'       => 0,
+                        ]);
+                    }
+                    return $rtPhotos;
+                }
+            }
+        }
     }
 
 
@@ -518,7 +623,7 @@ class PhotoModels extends DataModel {
                   . "&user_id={$identity->external_id}&format=json&nojsoncallback=1"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['photosets']) && isset($data['photosets']['photoset'])) {
@@ -560,7 +665,7 @@ class PhotoModels extends DataModel {
                   . "&photoset_id={$album_id}&extras=date_taken%2Clast_update%2Cgeo%2Curl_m%2Curl_o&format=json&nojsoncallback=1"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
                 $data = curl_exec($objCurl);
                 curl_close($objCurl);
                 if ($data && ($data = json_decode($data, true)) && isset($data['photoset']) && isset($data['photoset']['photo'])) {
@@ -623,7 +728,7 @@ class PhotoModels extends DataModel {
           . FLICKR_KEY . "&photo_id={$photo->external_id}&format=json&nojsoncallback=1"
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($data = json_decode($data, true)) && isset($data['sizes']) && isset($data['sizes']['size'])) {
@@ -650,7 +755,7 @@ class PhotoModels extends DataModel {
                 "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webstream"
             );
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($objCurl, CURLOPT_POST, 1);
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['streamCtag' => null]));
             $data = curl_exec($objCurl);
@@ -700,7 +805,7 @@ class PhotoModels extends DataModel {
                     "https://p01-sharedstreams.icloud.com/{$strId}/sharedstreams/webasseturls"
                 );
                 curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
                 curl_setopt($objCurl, CURLOPT_POST, 1);
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photoGuids]));
                 $data = curl_exec($objCurl);
@@ -735,7 +840,7 @@ class PhotoModels extends DataModel {
                 "https://p01-sharedstreams.icloud.com/{$photo->external_album_id}/sharedstreams/webasseturls"
             );
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 3);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 10);
             curl_setopt($objCurl, CURLOPT_POST, 1);
             curl_setopt($objCurl, CURLOPT_POSTFIELDS, json_encode(['photoGuids' => $photo->external_id]));
             $data = curl_exec($objCurl);

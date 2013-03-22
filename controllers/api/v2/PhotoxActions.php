@@ -77,7 +77,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
+                        //@@@@@@@@@@@@@@@$rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
                     }
                     break;
                 case 'dropbox':
@@ -90,7 +90,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
+                        //@@@@@@@@@@@@@@@$rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
                     }
                     break;
                 case 'instagram':
@@ -137,6 +137,49 @@ class PhotoxActions extends ActionController {
             'photos'            => $rawPhotos,
             'failed_identities' => $failed,
         ]);
+    }
+
+
+    public function doGetSourcePhotos() {
+        // get models
+        $modPhoto    = $this->getModelByName('Photo');
+        $modIdentity = $this->getModelByName('Identity');
+        $checkHelper = $this->getHelperByName('check');
+        // check args
+        $params = $this->params;
+        $ids    = @json_decode($_POST['external_ids']);
+        if (!$ids || !is_array($ids)) {
+            apiError(404, 'photo_not_found');
+        }
+        if (count($ids) > 10) {
+            apiError(400, 'max 10 photos per request');   
+        }
+        // check signin
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', ''); // 需要登录
+        }
+        // get identity
+        $raw_identity_id = @ (int) $_POST['identity_id'];
+        $identity = $modIdentity->getIdentityById($raw_identity_id);
+        if (!$identity || $identity->connected_user_id !== $user_id) {
+            apiError(403, 'not_authorized', 'Can not access this identity.');
+        }
+        switch ($identity->provider) {
+            case 'dropbox':
+                $photos = $modPhoto->getPhotosFromDropbox(
+                    $identity->id, @$_POST['album_id'] ?: '', $ids
+                );
+                if ($photos) {
+                    apiResponse(['photos' => $photos]);
+                }
+                break;
+            default:
+                apiError(400, 'unknow_provider', '');
+        }
+        apiError(400, 'error_getting_photo');
     }
 
 
