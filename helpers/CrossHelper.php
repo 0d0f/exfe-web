@@ -136,7 +136,10 @@ class CrossHelper extends ActionController {
         if($exfee_id>0)
         {
             $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
-            $efeResult = $exfeeData->addExfee($exfee_id, $cross->exfee->invitations, $by_identity_id, $user_id);
+            $draft = isset($cross->attribute)
+                  && isset($cross->attribute['state'])
+                  && $cross->attribute['state'] === 'draft';
+            $efeResult = $exfeeData->addExfee($exfee_id, $cross->exfee->invitations, $by_identity_id, $user_id, $draft);
             $exfeeData->updateExfeeTime($exfee_id);
         }
 
