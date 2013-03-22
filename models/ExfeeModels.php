@@ -456,6 +456,7 @@ class ExfeeModels extends DataModel {
             );
         }
         // updated invitations
+        $oldUserIds = [];
         if (isset($exfee->invitations) && is_array($exfee->invitations)) {
             foreach ($exfee->invitations as $toI => $toItem) {
                 // adding new identity
@@ -475,6 +476,9 @@ class ExfeeModels extends DataModel {
                 // find out the existing invitation
                 $exists = false;
                 foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
+                    if (!in_array($fmItem->identity->connected_user_id, $oldUserIds)) {
+                        $oldUserIds[] = $fmItem->identity->connected_user_id;
+                    }
                     if ((int) $toItem->identity->id === $fmItem->identity->id) {
                         $exists = true;
                         // update existing invitaion
@@ -535,7 +539,8 @@ class ExfeeModels extends DataModel {
             $hlpQueue = $this->getHelperByName('Queue');
             $cross    = $hlpCross->getCross($cross_id, true, true);
             foreach ($cross->exfee->invitations as $eI => $eItem) {
-                if (in_array($eItem->id, $newInvId)) {
+                if (in_array($eItem->id, $newInvId)
+                 && !in_array($eItem->identity->connected_user_id, $oldUserIds)) {
                     $addExfee[] = $eItem;
                 }
             }
