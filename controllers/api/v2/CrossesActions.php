@@ -400,9 +400,18 @@ class CrossesActions extends ActionController {
                   && $cross->attribute['state'] === 'draft';
             if (!$draft) {
                 $modQueue = $this->getModelByName('Queue');
-                $modQueue->despatchSummary(
-                    $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id, $by_identity_id
-                );
+                $oldDraft = isset($old_cross->attribute)
+                         && isset($old_cross->attribute['state'])
+                         && $old_cross->attribute['state'] === 'draft';
+                if ($oldDraft) {
+                    $modQueue->despatchInvitation(
+                        $cross, $cross->exfee, (int) $result['uid'] ?: -$by_identity_id, $by_identity_id
+                    );
+                } else {
+                    $modQueue->despatchSummary(
+                        $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id, $by_identity_id
+                    );
+                }
             }
             // }
             foreach ($cross->exfee->invitations as $i => $invitation) {
