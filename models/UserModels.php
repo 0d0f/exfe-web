@@ -781,6 +781,19 @@ class UserModels extends DataModel {
     }
 
 
+    public function getUserCalendarToken($token) {
+        if ($token) {
+            $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+            $result = $hlpExfeAuth->keyGet($token);
+            if ($result
+             && $result['data']['token_type'] === 'calendar_token') {
+                return $result;
+            }
+        }
+        return null;
+    }
+
+
     public function setUserIdentityStatus($user_id, $identity_id, $status) {
         if (!$user_id || !$identity_id || !$status) {
             return null;

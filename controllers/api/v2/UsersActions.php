@@ -27,6 +27,36 @@ class UsersActions extends ActionController {
             if ($updated_at && $updated_at >= strtotime($objUser->updated_at)) {
                 apiError(304, 'User Not Modified.');
             }
+            // update token {
+            $modExfeAuth = $this->getModelByName('ExfeAuth');
+            $calToken = ''; 
+            $resource = ['token_type'   => 'calendar_token',
+                         'user_id'      => (int) $result['uid']];
+            $data     = $resource
+                      + ['created_time' => time(),
+                         'updated_time' => time()];
+            $curTokens = $modExfeAuth->resourceGet($resource);
+            if ($curTokens && is_array($curTokens)) {
+                foreach ($curTokens as $cI => $cItem) {
+                    if ($cItem['data']['token_type'] === 'calendar_token'
+                     && $cItem['data']['user_id']    === (int) $result['uid']) {
+                        $calToken = $cItem['token'];
+                        $data     = $cItem['data'];
+                        break;
+                    }
+                }
+            }
+            $expireSec = 60 * 60 * 24 * 365; // 1 year
+            $data['updated_time'] = time();
+            $data['expired_time'] = time() + $expireSec;
+            if ($calToken) {
+                $modExfeAuth->keyUpdate($calToken, $data, $expireSec); // update && extension
+            } else {
+                $calToken = $modExfeAuth->create($resource, $data, $expireSec);
+            }
+            if ($calToken) {
+                $objUser->webcal = preg_replace('/http/', 'webcal', API_URL) . "/v2/ics/{$result['uid']}?token={$calToken}";
+            }
             apiResponse(['user' => $objUser]);
         }
         apiError(404, 'user_not_found', 'user not found');
