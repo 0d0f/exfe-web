@@ -15,7 +15,7 @@ class PhotoxActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($params['id']);
         if ($cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
@@ -344,7 +344,7 @@ class PhotoxActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($id);
         if ($cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
