@@ -59,7 +59,7 @@ class ExfeeActions extends ActionController {
         } else {
             $rawExfee  = @json_decode(file_get_contents('php://input'));
             if ($rawExfee) {
-                $exfee = @$rawExfee['exfee'];
+                $exfee = @$rawExfee->exfee;
             }
         }
         if ($exfee && is_object($exfee)) {
