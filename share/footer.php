@@ -16,8 +16,8 @@ addScript([
     ['base',          '0.0.2'],
     ['bus',           '0.0.2'],
     ['rex',           '0.0.2'],
-    ['util',          '0.1.6'],
-    ['widget',        '0.0.3'],
+    ['util',          '0.2.6'],
+    ['widget',        '0.0.4'],
     ['jquery',        '1.8.2'],
     ['store',         '1.3.5'],
     ['marked',        '0.2.5'],
@@ -38,11 +38,11 @@ addScript([
     ['api',           '0.0.8'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
-    ['panel',         '0.0.1'],
+    ['panel',         '0.0.2'],
     ['xidentity',     '0.0.3'],
     ['xdialog',       '0.1.12'],
     ['datepanel',     '0.1.2'],
-    ['mappanel',      '0.0.7'],
+    ['mappanel',      '0.0.8'],
     ['global',        '0.0.5'],
     ['photox',        '0.0.1']
 ]);
@@ -51,8 +51,8 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.15'],
-    ['user',          '0.0.7'],
+    ['profile',       '0.1.16'],
+    ['user',          '0.0.8'],
 ]);
 
 echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
@@ -61,8 +61,8 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 addScript([
     ['lightsaber',    '0.0.4'],
     ['middleware',    '0.0.9'],
-    ['routes',        '0.2.12'],
-    ['app',           '0.2.8'],
+    ['routes',        '0.3.12'],
+    ['app',           '0.2.9'],
 ]);
 
 // Google Analytics
