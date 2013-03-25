@@ -177,8 +177,8 @@ function apiError($code,$errorType,$errorDetail = '') {
 }
 
 
-function apiResponse($object) {
-    $meta["code"]=200;
+function apiResponse($object, $code = 200) {
+    $meta["code"] = $code;
     echo json_encode(array("meta"=>$meta,"response"=>$object));
     exit(0);
 }

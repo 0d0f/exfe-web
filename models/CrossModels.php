@@ -33,6 +33,7 @@ class CrossModels extends DataModel {
 
 
     public function addCross($cross, $place_id = 0, $exfee_id = 0, $by_identity_id = 0, $old_cross = null) {
+        $setTime    = isset($cross->time);
         $cross_time = $cross->time ?: new CrossTime('', '', '', '', '', '', '');
         $widgets    = $cross->widget;
         $background = '';
@@ -112,7 +113,8 @@ class CrossModels extends DataModel {
                 $cross_updated['description'] = $updated;
             }
 
-            if ($cross_time
+            if ($setTime
+             && $cross_time
              && $old_cross
              && (mysql_real_escape_string($old_cross->time->origin) !== $cross->time->origin
               || $old_cross->time->begin_at->date !== $cross->time->begin_at->date
@@ -226,6 +228,37 @@ class CrossModels extends DataModel {
             }
             delCache("exfee:{$cross->exfee->id}");
             return true;
+        }
+        return null;
+    }
+
+
+    public function deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete = true) {
+        if (!$cross_id || !$user_id) {
+            return null;
+        }
+        $hlpCross = $this->getHelperByName('Cross');
+        $hlpExfee = $this->getHelperByName('Exfee');
+        $cross    = $hlpCross->getCross($cross_id);
+        if ($cross) {
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $user_id
+                 && $invitation->rsvp_status                 !== 'REMOVED'
+                 && $invitation->host) {
+                    if ($cross->attribute['state'] !== 'deleted' && $delete) {
+                        $sql = "UPDATE `crosses` SET `updated_at` = NOW(), `state` = 2 WHERE `id` = {$cross->id}";
+                        if ($this->query($sql) > 0) {
+                            return true;
+                        }
+                    } else if ($cross->attribute['state'] === 'deleted' && !$delete) {
+                        $sql = "UPDATE `crosses` SET `updated_at` = NOW(), `state` = 1 WHERE `id` = {$cross->id}";
+                        if ($this->query($sql) > 0) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }
         }
         return null;
     }

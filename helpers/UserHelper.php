@@ -61,8 +61,8 @@ class UserHelper extends ActionController {
     }
 
 
-    public function addUser($password = '', $name = '') {
-        return $this->modUser->addUser($password, $name);
+    public function addUser($password = '', $name = '', $bio = '') {
+        return $this->modUser->addUser($password, $name, $bio);
     }
 
 
