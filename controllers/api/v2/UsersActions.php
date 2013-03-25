@@ -674,8 +674,28 @@ class UsersActions extends ActionController {
         }
         // error handle
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
-        $raw_flag = $modUser->getRegistrationFlag($identity);        
-        apiError(403, 'failed', ['flag' => @$raw_flag['flag']]);
+        // 身份不存在，提示注册
+        if ($identity) {
+            $raw_flag = $modUser->getRegistrationFlag($identity);
+            $flag     = @$raw_flag['flag'];
+        } else {
+            switch ($provider) {
+                case 'email':
+                case 'phone':
+                    $flag = 'SIGN_UP';
+                    break;
+                case 'twitter':
+                case 'facebook':
+                case 'flickr':
+                case 'dropbox':
+                case 'instagram':
+                    $flag = 'AUTHENTICATE';
+                    break;
+                default:
+                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            }
+        }
+        apiError(403, 'failed', ['registration_flag' => $flag]);
     }
 
 
