@@ -628,7 +628,9 @@ class OAuthModels extends DataModel {
                              ? 'revoked' : 'connected';
         // 孤立身份，创建新用户并连接到该身份
         } else if (($user_id = $hlpUser->addUser(
-            '', $rawIdentity->name ?: $rawIdentity->external_username
+            '',
+            $rawIdentity->name ?: $rawIdentity->external_username,
+            $rawIdentity->bio  ?: $rawIdentity->bio
         ))) {
             $identity_status = 'new';
         // no user_id

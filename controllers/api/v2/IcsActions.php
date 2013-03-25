@@ -1,4 +1,5 @@
 <?php
+// @todo: 过滤需要删除的cross
 
 class IcsActions extends ActionController {
 
@@ -12,7 +13,7 @@ class IcsActions extends ActionController {
         $params = $this->params;
         $uid    = (int) @$params['id'];
         $result = $checkHelper->isAPIAllow(
-            'user_crosses', @$params['token'], ['user_id' => $uid]
+            'user_icses', @$params['token'], ['user_id' => $uid]
         );
         if (!$result['check'] || !$result['uid']) {
             header('HTTP/1.1 401 Unauthorized');

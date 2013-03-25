@@ -213,7 +213,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function addUser($password = '', $name = '') {
+    public function addUser($password = '', $name = '', $bio = '') {
         $passwordSql = '';
         if (strlen($password)) {
             $passwordSalt = md5(createToken());
@@ -225,8 +225,12 @@ class UserModels extends DataModel {
         if (strlen($name)) {
             $nameSql      = "`name` = '{$name}',";
         }
+        $bioSql  = ''; 
+        if (strlen($bio)) {
+            $bioSql       = "`bio`  = '{$bio}',";
+        }
         $dbResult = $this->query(
-            "INSERT INTO `users` SET {$passwordSql} {$nameSql}
+            "INSERT INTO `users` SET {$passwordSql} {$nameSql} {$bioSql}
              `created_at` = NOW(), `updated_at` = NOW()"
         );
         $id = intval($dbResult['insert_id']);
@@ -770,6 +774,19 @@ class UserModels extends DataModel {
             $result = $hlpExfeAuth->keyGet($token);
             if ($result
              && $result['data']['token_type'] === 'user_token') {
+                return $result;
+            }
+        }
+        return null;
+    }
+
+
+    public function getUserCalendarToken($token) {
+        if ($token) {
+            $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
+            $result = $hlpExfeAuth->keyGet($token);
+            if ($result
+             && $result['data']['token_type'] === 'calendar_token') {
                 return $result;
             }
         }

@@ -20,8 +20,13 @@ class CrossesActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($params["id"]);
         if ($cross) {
-            if ($cross->attribute['deleted']) {
-                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            switch ($cross->attribute['state']) {
+                case 'deleted':
+                    apiError(403, 'not_authorized', "The X you're requesting is private.");
+                case 'draft':
+                    if (!in_array($uid, $cross->exfee->hosts)) {
+                        apiError(403, 'not_authorized', "The X you're requesting is private.");
+                    }
             }
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                 apiError(304, 'Cross Not Modified.');
@@ -82,7 +87,7 @@ class CrossesActions extends ActionController {
                 'read_only' => true,
             ];
             // check cross status
-            if ($result['cross']->attribute['deleted']) {
+            if ($result['cross']->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The X you're requesting is private.");
             }
             // used token
@@ -333,12 +338,19 @@ class CrossesActions extends ActionController {
             apiError(400, 'cross_error', $chkCross['error'][0]);
         }
         $cross = $chkCross['cross'];
-        $cross_id=$crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
+        $gthResult = $crossHelper->gatherCross($cross, $by_identity_id, $result['uid']);
+        $cross_id = @$gthResult['cross_id'];
 
         if(intval($cross_id)>0)
         {
             $crossHelper=$this->getHelperByName('cross');
             $cross=$crossHelper->getCross($cross_id);
+            if (@$gthResult['over_quota']) {
+                apiResponse([
+                    'cross'            => $cross,
+                    'exfee_over_quota' => EXFEE_QUOTA_SOFT_LIMIT,
+                ], '206');    
+            }
             apiResponse(array("cross"=>$cross));
         }
         else
@@ -383,10 +395,24 @@ class CrossesActions extends ActionController {
         if(intval($cross_id) > 0) {
             $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus {
-            $modQueue = $this->getModelByName('Queue');
-            $modQueue->despatchSummary(
-                $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id, $by_identity_id
-            );
+            $draft = isset($cross->attribute)
+                  && isset($cross->attribute['state'])
+                  && $cross->attribute['state'] === 'draft';
+            if (!$draft) {
+                $modQueue = $this->getModelByName('Queue');
+                $oldDraft = isset($old_cross->attribute)
+                         && isset($old_cross->attribute['state'])
+                         && $old_cross->attribute['state'] === 'draft';
+                if ($oldDraft) {
+                    $modQueue->despatchInvitation(
+                        $cross, $cross->exfee, (int) $result['uid'] ?: -$by_identity_id, $by_identity_id
+                    );
+                } else {
+                    $modQueue->despatchSummary(
+                        $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id, $by_identity_id
+                    );
+                }
+            }
             // }
             foreach ($cross->exfee->invitations as $i => $invitation) {
                 $cross->exfee->invitations[$i]->token = '';
@@ -402,7 +428,7 @@ class CrossesActions extends ActionController {
         $cross_id = @ (int) $params['id'];
         $archive  = isset($_POST['archive']) && strtolower($_POST['archive']) === 'false' ? false : true;
         if (!$cross_id) {
-            apiError(403, 'not_authorized', "The X you're requesting is private.");
+            apiError(400, 'no_cross_id', "cross_id must be provided.");
         }
 
         $checkHelper = $this->getHelperByName('check');
@@ -425,6 +451,38 @@ class CrossesActions extends ActionController {
             }
         }
         apiError(500, 'server_error', "Can't Edit this Cross.");
+    }
+
+
+    public function doDelete() {
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        if (!$cross_id) {
+            apiError(400, 'no_cross_id', "cross_id must be provided.");
+        }
+
+        $checkHelper = $this->getHelperByName('check');
+        $hlpCross    = $this->getHelperByName('Cross');
+        $modCross    = $this->getModelByName('Cross');
+
+        $result = $checkHelper->isAPIAllow('user', $params['token']);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+        }
+
+        $result = $modCross->deleteCrossByCrossIdAndUserId($cross_id, $result['uid']);
+
+        if ($result) {
+           apiResponse(['cross_id' => $cross_id]); 
+        } else if ($result === false) {
+            apiError(400, 'param_error', "Can't Edit this Cross.");
+        }
+
+        apiError(403, 'not_authorized', 'You can not delete this cross.');
     }
 
 }

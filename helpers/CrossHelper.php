@@ -15,7 +15,7 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null,$with_updated=false,$uid = 0)
+    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null, $with_updated = false, $uid = 0)
     {
         $crossData=$this->getModelByName("cross");
         $crosses=$crossData->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
@@ -136,11 +136,14 @@ class CrossHelper extends ActionController {
         if($exfee_id>0)
         {
             $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
-            $exfeeData->addExfee($exfee_id, $cross->exfee->invitations, $by_identity_id, $user_id);
+            $draft = isset($cross->attribute)
+                  && isset($cross->attribute->state)
+                  && $cross->attribute->state === 'draft';
+            $efeResult = $exfeeData->addExfee($exfee_id, $cross->exfee->invitations, $by_identity_id, $user_id, $draft);
             $exfeeData->updateExfeeTime($exfee_id);
         }
 
-        return $cross_id;
+        return ['cross_id' => $cross_id, 'over_quota' => @$efeResult['soft_quota']];
     }
 
 
