@@ -37,6 +37,7 @@ class AvatarActions extends ActionController {
             }
             switch ($identity->provider) {
                 case 'email':
+                case 'phone':
                     break;
                 default:
                     apiError(400, 'provider_error', 'Can not update avatars of this kind of identities.');
@@ -127,7 +128,7 @@ class AvatarActions extends ActionController {
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../../default_avatar_portrait/";
-        require_once "{$curDir}/../../../lib/httpKit.php";
+        require_once "{$curDir}/../../../lib/httpkit.php";
         require_once "{$curDir}/../../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config

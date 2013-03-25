@@ -27,6 +27,36 @@ class UsersActions extends ActionController {
             if ($updated_at && $updated_at >= strtotime($objUser->updated_at)) {
                 apiError(304, 'User Not Modified.');
             }
+            // update token {
+            $modExfeAuth = $this->getModelByName('ExfeAuth');
+            $calToken = ''; 
+            $resource = ['token_type'   => 'calendar_token',
+                         'user_id'      => (int) $result['uid']];
+            $data     = $resource
+                      + ['created_time' => time(),
+                         'updated_time' => time()];
+            $curTokens = $modExfeAuth->resourceGet($resource);
+            if ($curTokens && is_array($curTokens)) {
+                foreach ($curTokens as $cI => $cItem) {
+                    if ($cItem['data']['token_type'] === 'calendar_token'
+                     && $cItem['data']['user_id']    === (int) $result['uid']) {
+                        $calToken = $cItem['token'];
+                        $data     = $cItem['data'];
+                        break;
+                    }
+                }
+            }
+            $expireSec = 60 * 60 * 24 * 365; // 1 year
+            $data['updated_time'] = time();
+            $data['expired_time'] = time() + $expireSec;
+            if ($calToken) {
+                $modExfeAuth->keyUpdate($calToken, $data, $expireSec); // update && extension
+            } else {
+                $calToken = $modExfeAuth->create($resource, $data, $expireSec);
+            }
+            if ($calToken) {
+                $objUser->webcal = preg_replace('/http/', 'webcal', API_URL) . "/v2/ics/{$result['uid']}?token={$calToken}";
+            }
             apiResponse(['user' => $objUser]);
         }
         apiError(404, 'user_not_found', 'user not found');
@@ -294,6 +324,9 @@ class UsersActions extends ActionController {
                     break;
                 case 'twitter':
                 case 'facebook':
+                case 'flickr':
+                case 'dropbox':
+                case 'instagram':
                     apiResponse(['registration_flag' => 'AUTHENTICATE']);
                     break;
                 default:
@@ -623,7 +656,6 @@ class UsersActions extends ActionController {
         if (strlen($password = $_POST['password']) === 0) {
             apiError(403, 'no_password', 'password must be provided');
         }
-        // $autoSignin = intval($_POST['auto_signin']) === 1; // @todo: 记住密码功能
         // adding new identity
         if (($name = formatName($_POST['name'])) !== ''
         && !$modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, true)) {
@@ -640,7 +672,10 @@ class UsersActions extends ActionController {
         if ($siResult) {
             apiResponse(['user_id' => $siResult['user_id'], 'token' => $siResult['token']]);
         }
-        apiError(403, 'failed', '');
+        // error handle
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
+        $raw_flag = $modUser->getRegistrationFlag($identity);        
+        apiError(403, 'failed', ['flag' => @$raw_flag['flag']]);
     }
 
 
@@ -719,13 +754,13 @@ class UsersActions extends ActionController {
 
     public function doCrosses() {
         $params = $this->params;
-        $uid=$params["id"];
-        $updated_at=$params["updated_at"];
-        if($updated_at!='')
-            $updated_at=date('Y-m-d H:i:s',strtotime($updated_at));
-
-        $checkHelper=$this->getHelperByName('check');
-        $result=$checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
+        $uid = @ (int) $params["id"];
+        $updated_at = $params["updated_at"];
+        if ($updated_at !== '') {
+            $updated_at = date('Y-m-d H:i:s',strtotime($updated_at));
+        }
+        $checkHelper = $this->getHelperByName('check');
+        $result = $checkHelper->isAPIAllow("user_crosses",$params["token"],array("user_id"=>$uid));
         if ($result["check"] !== true) {
             if ($result["uid"] === 0)
                 apiError(401,"invalid_auth","");
@@ -736,11 +771,17 @@ class UsersActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross_list  = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, !!$updated_at, $uid);
         foreach ($cross_list as $i => $cross) {
-            if ($cross->attribute['deleted']) {
-                unset($cross_list[$i]);
+            switch ($cross->attribute['state']) {
+                case 'deleted':
+                    unset($cross_list[$i]);
+                    break;
+                case 'draft':
+                    if (!in_array($uid, $cross->exfee->hosts)) {
+                        unset($cross_list[$i]);
+                    }
             }
         }
-        sort($cross_list);
+        $cross_list = array_values($cross_list);
         apiResponse(['crosses' => $cross_list]);
     }
 
@@ -748,7 +789,7 @@ class UsersActions extends ActionController {
     public function doArchivedCrosses() {
         // @todo: 此处为临时方案，应该直接从 invitations 开始筛选，才能取得更完整的结果。 by @leaskh
         $params = $this->params;
-        $uid    = (int) $params['id'];
+        $uid    = @ (int) $params['id'];
 
         $checkHelper = $this->getHelperByName('check');
         $result = $checkHelper->isAPIAllow('user_crosses', $params['token'], ['user_id' => $uid]);
@@ -773,11 +814,22 @@ class UsersActions extends ActionController {
                     }
                 }
             }
-            if ($cross->attribute['deleted'] || !$archived) {
-                unset($cross_list[$i]);
+            switch ($cross->attribute['state']) {
+                case 'deleted':
+                    unset($cross_list[$i]);
+                    break;
+                case 'draft':
+                    if (!in_array($uid, $cross->exfee->hosts)) {
+                        unset($cross_list[$i]);
+                    }
+                    break;
+                default:
+                    if (!$archived) {
+                        unset($cross_list[$i]);
+                    }
             }
         }
-        sort($cross_list);
+        $cross_list = array_values($cross_list);
         apiResponse(['crosses' => $cross_list]);
     }
 
@@ -1021,11 +1073,18 @@ class UsersActions extends ActionController {
         unset($rawCrosses);
         // clean deleted
         foreach ($crosses as $i => $cross) {
-            if ($cross->attribute['deleted']) {
-                unset($crosses[$i]);
+            switch ($cross->attribute['state']) {
+                case 'deleted':
+                    unset($crosses[$i]);
+                    break;
+                case 'draft':
+                    if (!in_array($uid, $cross->exfee->hosts)) {
+                        unset($crosses[$i]);
+                    }
             }
         }
         ksort($crosses);
+        $crosses = array_values($crosses);
         // return
         apiResponse(['crosses' => $crosses, 'more' => $more]);
     }

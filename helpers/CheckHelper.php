@@ -51,6 +51,15 @@ class CheckHelper extends ActionController {
                     }
                 }
             }
+            if ($api === 'user_icses') {   
+                $calToken = $userData->getUserCalendarToken($token);
+                if ($calToken
+                 && $calToken['data']
+                 && $calToken['data']['token_type'] === 'calendar_token'
+                 && $calToken['data']['user_id']    === (int) $args['user_id']) {
+                    return ['check' => true, 'uid' => (int) $args['user_id']];
+                }
+            }
             return array('check' => false, 'uid' => 0);
         }
 

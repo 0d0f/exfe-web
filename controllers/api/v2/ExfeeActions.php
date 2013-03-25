@@ -32,6 +32,7 @@ class ExfeeActions extends ActionController {
         // get libs
         $params   = $this->params;
         $modExfee = $this->getModelByName('exfee');
+        $modCross = $this->getModelByName('Cross');
         $hlpCheck = $this->getHelperByName('check');
         // basic check
         if (!($exfee_id = intval($params['id']))) {
@@ -58,7 +59,8 @@ class ExfeeActions extends ActionController {
         }
         if ($exfee && is_object($exfee)) {
             $exfee->id = $exfee_id;
-            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid']);
+            $rawCross  = $modCross->getCross($cross_id);
+            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid'], false, $rawCross['state'] === 0); // draft
             if ($cross_id && $udResult['changed']) {
                 saveUpdate(
                     $cross_id,
@@ -66,10 +68,12 @@ class ExfeeActions extends ActionController {
                 );
             }
             $rtResult = ['exfee' => $modExfee->getExfeeById($exfee_id)];
+            $code = 200;
             if ($udResult['soft_quota'] || $udResult['hard_quota']) {
-                $rtResult['over_quota'] = true;
+                $rtResult['exfee_over_quota'] = EXFEE_QUOTA_SOFT_LIMIT;
+                $code = 206;
             }
-            apiResponse($rtResult);
+            apiResponse($rtResult, $code);
         }
         apiError(400, 'editing failed', '');
     }
@@ -119,7 +123,8 @@ class ExfeeActions extends ActionController {
             apiError(401, 'invalid_auth', '');
         }
         // do it
-        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'])) {
+        $rawCross  = $modCross->getCross($cross_id);
+        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'], $rawCross['state'] === 0)) {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,

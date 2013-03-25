@@ -90,9 +90,14 @@ class ConversationActions extends ActionController {
         $hlpCross = $this->getHelperByName('cross');
         $cross_id = $modExfee->getCrossIdByExfeeId($post->postable_id);
         $cross    = $hlpCross->getCross($cross_id, true);
-        $modQueue->despatchConversation(
-            $cross, $post, $result['uid'], $post->by_identity_id
-        );
+        $draft    = isset($cross->attribute)
+                 && isset($cross->attribute['state'])
+                 && $cross->attribute['state'] === 'draft';
+        if (!$draft) {
+            $modQueue->despatchConversation(
+                $cross, $post, $result['uid'], $post->by_identity_id
+            );
+        }
         // }
         $modExfee->updateExfeeTime($cross->exfee->id);
         // return

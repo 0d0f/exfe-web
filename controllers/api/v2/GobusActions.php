@@ -98,11 +98,20 @@ class GobusActions extends ActionController {
         }
 
         // gather
-        $cross_id = $crossHelper->gatherCross($cross, $identity_id, $user_id);
+        $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
+        $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'gather_error', "Can't gather this Cross.");        
         }
+
+        if (@$gthResult['over_quota']) {
+            apiResponse([
+                'cross_id'         => $cross_id,
+                'exfee_over_quota' => EXFEE_QUOTA_SOFT_LIMIT,
+            ], '206');    
+        }
+
         apiResponse(['cross_id' => $cross_id]);
     }
 
@@ -225,11 +234,17 @@ class GobusActions extends ActionController {
             apiError(500, 'update_error', "Can't update this Cross.");
         }
         $hlpCross = $this->getHelperByName('Cross');
-        apiResponse([
+        $rtResult = [
             'cross_id' => $cross_id,
             'exfee_id' => $rawResult['exfee_id'],
             'cross'    => $hlpCross->getCross($cross_id)
-        ]);  
+        ];
+        $code = 200;
+        if ($rawResult['soft_quota'] || $rawResult['hard_quota']) {
+            $rtResult['exfee_over_quota'] = EXFEE_QUOTA_SOFT_LIMIT;
+            $code = 206;
+        }
+        apiResponse($rtResult, $code);
     }
 
 
@@ -246,6 +261,7 @@ class GobusActions extends ActionController {
         $provider        = trim($_POST['provider']);
         $external_id     = trim($_POST['external_id']);
         $content         = trim($_POST['content']);
+        $exclude         = @$_POST['exclude'] ?: '';
         $time            = strtotime($_POST['time']);
         if ((!$cross_id && !$iom) || !$provider || !$external_id || !$content || !$time) {
             header('HTTP/1.1 500 Internal Server Error');
@@ -305,7 +321,7 @@ class GobusActions extends ActionController {
             $cross_id = (int) $curlResult;
         }
         // get cross
-        $cross = $hlpCross->getCross($cross_id);
+        $cross = $hlpCross->getCross($cross_id, true);
         if (!$cross) {
             header('HTTP/1.1 500 Internal Server Error');
             return;
@@ -346,8 +362,23 @@ class GobusActions extends ActionController {
         $post     = $modCnvrstn->getPostById($post_id);
         // call Gobus {
         $modQueue = $this->getModelByName('Queue');
+        if ($exclude) {
+            $arrExclude = [];
+            foreach (explode(',', $exclude) ?: [] as $rawIdentity) {
+                $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $rawIdentity);
+                $provider          = preg_replace('/^.*@([^@]*)$/', '$1', $rawIdentity);
+                if ($external_username && $provider) {
+                    $excInvitation = new stdClass(); 
+                    $excInvitation->identity = new stdClass();
+                    $excInvitation->identity->external_username = strtolower($external_username);
+                    $excInvitation->identity->provider          = strtolower($provider);
+                    $arrExclude[]  = $excInvitation;
+                }
+            }
+        }
         $modQueue->despatchConversation(
-            $cross, $post, $by_identity->connected_user_id, $post->by_identity_id
+            $cross, $post, $by_identity->connected_user_id,
+            $post->by_identity_id, $arrExclude
         );
         // }
         $modExfee = $this->getModelByName('exfee');
