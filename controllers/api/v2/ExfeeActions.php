@@ -53,7 +53,15 @@ class ExfeeActions extends ActionController {
         }
         $by_identity_id = (int) $result['by_identity_id'];
         // do it
-        $exfee = json_decode(@$_POST['exfee'] ?: @file_get_contents('php://input'));
+        $exfee = null;
+        if (@$_POST['exfee']) {
+            $exfee     = @json_decode($_POST['exfee']);    
+        } else {
+            $rawExfee  = @json_decode(file_get_contents('php://input'));
+            if ($rawExfee) {
+                $exfee = @$rawExfee['exfee'];
+            }
+        }
         if ($exfee && is_object($exfee)) {
             $exfee->id = $exfee_id;
             $rawCross  = $modCross->getCross($cross_id);
