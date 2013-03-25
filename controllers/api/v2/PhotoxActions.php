@@ -77,7 +77,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        //@@@@@@@@@@@@@@@$rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
+                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
                     }
                     break;
                 case 'dropbox':
@@ -90,7 +90,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        //@@@@@@@@@@@@@@@$rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
+                        $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
                     }
                     break;
                 case 'instagram':
