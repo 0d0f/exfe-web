@@ -38,7 +38,7 @@ class ExfeeActions extends ActionController {
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
-        if (!($by_identity_id = intval($_POST['by_identity_id']))) {
+        if (!($by_identity_id = intval(@$_POST['by_identity_id'] ?: @$_GET['by_identity_id']))) {
             apiError(400, 'no_by_identity_id', 'by_identity_id must be provided');
         }
         // get cross id
@@ -53,10 +53,7 @@ class ExfeeActions extends ActionController {
         }
         $by_identity_id = (int) $result['by_identity_id'];
         // do it
-        $exfee = json_decode($_POST['exfee']);
-        if (DEBUG) {
-            error_log($_POST['exfee']);
-        }
+        $exfee = json_decode(@$_POST['exfee'] ?: @file_get_contents('php://input'));
         if ($exfee && is_object($exfee)) {
             $exfee->id = $exfee_id;
             $rawCross  = $modCross->getCross($cross_id);
