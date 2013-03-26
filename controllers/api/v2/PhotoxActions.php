@@ -338,6 +338,34 @@ class PhotoxActions extends ActionController {
     }
 
 
+    public function doDelete() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check');
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else if ($result['uid'] === 0) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        } else {
+            apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+        }
+        // del album from cross
+        $modPhoto = $this->getModelByName('Photo');
+        $provider = @ $_POST['provider'] ?: '';
+        $album_id = @ $_POST['album_id'] ?: '';
+        $modPhoto = $this->getModelByName('Photo');
+        $result   = $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId(
+            $cross_id, $provider, $album_id
+        );
+        if ($result) {
+            apiResponse([]);    
+        }
+        apiError(400, 'param_error', "Please retry later.");
+    }
+
+
     public function doGetLikes() {
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
