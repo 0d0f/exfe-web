@@ -155,6 +155,9 @@ class QueueModels extends DataModel {
                     foreach ($gotInvitation as $item) {
                         switch ($item->identity->provider) {
                             case 'email':
+                                $imsgInv = unserialize(serialize($item));
+                                $imsgInv->identity->provider = 'phone';
+                                $instant[] = $imsgInv;
                             case 'phone':
                             case 'twitter':
                             case 'facebook':
