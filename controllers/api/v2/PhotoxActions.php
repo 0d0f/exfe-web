@@ -62,8 +62,15 @@ class PhotoxActions extends ActionController {
         if (!$objIdentities) {
             apiError(400, 'no_supported_identities', ''); // 需要输入identity_id
         }
-        // get albums
+        // get selected albums
         $modPhoto  = $this->getModelByName('Photo');
+        $photox_id = @ (int) $_GET['photox_id'];
+        $rawAlbums = $modPhoto->getAlbumIdsByPhotoxId($_GET['photox_id']);
+        $album_ids = [];
+        foreach ($rawAlbums ?: [] as $raItem) {
+            $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = true;
+        }
+        // get albums
         $rawAlbums = [];
         $rawPhotos = [];
         $failed    = [];
@@ -118,6 +125,7 @@ class PhotoxActions extends ActionController {
             }
             if ($rawResult) {
                 foreach ($rawResult['albums'] as $album) {
+                    $album->imported = isset($album_ids["{$album->provider}_{$album->external_id}"]);
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
                         $rawAlbums[$key] = $album;
