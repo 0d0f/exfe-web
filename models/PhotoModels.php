@@ -91,6 +91,17 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function getAlbumIdsByPhotoxId($id) {
+        $rawAlbums = $id ? $this->getAll(
+            "SELECT   `provider`, `external_album_id`
+             FROM     `photos`
+             WHERE    `cross_id` = {$id}
+             GROUP BY `provider`, `external_album_id`"
+        ) : null;
+        $rtResult $rawAlbums ?: null;
+    }
+
+
     public function getPhotoById($id) {
         $rawPhoto = $this->getRow("SELECT * FROM `photos` WHERE `id` = {$id}");
         return $rawPhoto ? $this->packPhoto($rawPhoto) : null;
