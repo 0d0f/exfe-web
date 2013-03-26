@@ -102,6 +102,16 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId($id, $provider, $external_album_id) {
+        return $id && $provider && $external_album_id ? $this->query(
+            "DELETE FROM `photos`
+             WHERE `cross_id`           =  {$id}
+             AND   `provider`           = '{$provider}'
+             AND   `external_album_id`  = '{$external_album_id}'"
+        ) : null;
+    }
+
+
     public function getPhotoById($id) {
         $rawPhoto = $this->getRow("SELECT * FROM `photos` WHERE `id` = {$id}");
         return $rawPhoto ? $this->packPhoto($rawPhoto) : null;
