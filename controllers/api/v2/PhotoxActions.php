@@ -125,7 +125,7 @@ class PhotoxActions extends ActionController {
             }
             if ($rawResult) {
                 foreach ($rawResult['albums'] as $album) {
-                    $album->imported = isset($album_ids["{$album->provider}_{$album->external_id}"]);
+                    $album['imported'] = isset($album_ids["{$album['provider']}_{$album['external_id']}"]);
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
                         $rawAlbums[$key] = $album;
