@@ -223,6 +223,7 @@ class ExfeeActions extends ActionController {
     public function doAddNotificationIdentity() {
         // get libs
         $params      = $this->params;
+        $modUser     = $this->getModelByName('user');
         $modIdentity = $this->getModelByName('identity');
         $modExfee    = $this->getModelByName('exfee');
         $hlpCheck    = $this->getHelperByName('check');
@@ -259,7 +260,19 @@ class ExfeeActions extends ActionController {
                     apiError(500, 'failed', '');
                 }
                 if ($rawIdentity->connected_user_id !== (int) $result['uid']) {
-                    $modUser->verifyIdentity($rawIdentity, 'VERIFY', (int) $result['uid']);
+                    $viResult = $modUser->verifyIdentity($rawIdentity, 'VERIFY', (int) $result['uid']);
+                    if ($viResult) {
+                        $user = $modUser->getUserById((int) $result['uid']);
+                        $modIdentity->sendVerification(
+                            'Verify',
+                            $rawIdentity,
+                            $viResult['token'],
+                            false,
+                            @$user->name ?: ''
+                        );
+                    } else {
+                        apiError(500, 'failed', '');   
+                    }
                 }
                 // getting current invitation
                 $exfee = $modExfee->getExfeeById($exfee_id);
@@ -288,6 +301,8 @@ class ExfeeActions extends ActionController {
                 $objInvitation->id = 0;
                 $objInvitation->identity    = $rawIdentity;
                 $objInvitation->rsvp_status = 'NOTIFICATION';
+                $objInvitation->host        = $cur_invitation->host;
+                $objInvitation->mates       = $cur_invitation->mates;
                 $result = $modExfee->addInvitationIntoExfee(
                     $objInvitation, $exfee->id, $cur_invitation->identity->id, (int) $result['uid']
                 );
