@@ -98,7 +98,7 @@ class PhotoModels extends DataModel {
              WHERE    `cross_id` = {$id}
              GROUP BY `provider`, `external_album_id`"
         ) : null;
-        $rtResult $rawAlbums ?: null;
+        return $rawAlbums ?: null;
     }
 
 
