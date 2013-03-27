@@ -219,4 +219,86 @@ class ExfeeActions extends ActionController {
         apiError(400, 'changing failed', '');
     }
 
+
+    public function doAddNotificationIdentity() {
+        // get libs
+        $params      = $this->params;
+        $modIdentity = $this->getModelByName('identity');
+        $modExfee    = $this->getModelByName('exfee');
+        $hlpCheck    = $this->getHelperByName('check');
+        // basic check
+        if (!($exfee_id = intval($params['id']))) {
+            apiError(400, 'no_exfee_id', 'exfee_id must be provided');
+        }
+        // get cross id
+        $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
+        // check rights
+        $result   = $hlpCheck->isAPIAllow('cross', $params['token'], ['cross_id' => $cross_id]);
+        if (!$result['check']) {
+            if ($result['uid']) {
+                apiError(403, 'not_authorized', 'You are not a member of this exfee.');
+            }
+            apiError(401, 'invalid_auth', '');
+        }
+        //
+        $provider          = @ $_POST['provider']          ?: '';
+        $external_username = @ $_POST['external_username'] ?: '';
+        switch ($provider) {
+            case 'phone':
+            case 'email':
+                $rawIdentity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
+                if (!$rawIdentity) {
+                    $identity_id = $modIdentity->addIdentity([
+                        'provider'          => $provider,
+                        'external_id'       => $external_username,
+                        'external_username' => $external_username,
+                    ]);
+                    $rawIdentity = $modIdentity->getIdentityById($identity_id);
+                }
+                if (!$rawIdentity) {
+                    apiError(500, 'failed', '');
+                }
+                if ($rawIdentity->connected_user_id !== (int) $result['uid']) {
+                    $modUser->verifyIdentity($rawIdentity, 'VERIFY', (int) $result['uid']);
+                }
+                // getting current invitation
+                $exfee = $modExfee->getExfeeById($exfee_id);
+                $cur_invitation  = null;
+                $cur_identity_id = 0;
+                foreach ($exfee->invitations as $invitation) {
+                    if ($invitation->identity->connected_user_id === (int) $result['uid']) {
+                        switch ($invitation->rsvp_status) {
+                            case 'NORESPONSE':
+                            case 'ACCEPTED':
+                            case 'INTERESTED':
+                            case 'DECLINED':
+                            case 'IGNORED':
+                                $cur_invitation = $invitation;
+                        }
+                    }
+                    if ($invitation->identity->id === $rawIdentity->id) {
+                        $cur_identity_id = $rawIdentity->id;
+                        break;
+                    }
+                }
+                if ($cur_identity_id) {
+                    apiError(400, 'already_in', '');
+                }
+                $objInvitation = new stdClass;
+                $objInvitation->id = 0;
+                $objInvitation->identity    = $rawIdentity;
+                $objInvitation->rsvp_status = 'NOTIFICATION';
+                $result = $modExfee->addInvitationIntoExfee(
+                    $objInvitation, $exfee->id, $cur_invitation->identity->id, (int) $result['uid']
+                );
+                if ($result) {
+                    apiResponse([]);
+                }
+                break;
+            default:
+                apiError(400, 'unsupported_provider', '');
+        }
+        apiError(500, 'failed', '');
+    }
+
 }
