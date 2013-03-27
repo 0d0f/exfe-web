@@ -35,12 +35,12 @@ echo "  </script>\n";
 
 addScript([
     ['humantime',     '0.0.7'],
-    ['api',           '0.0.8'],
+    ['api',           '0.0.9'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.2'],
     ['xidentity',     '0.0.3'],
-    ['xdialog',       '0.1.12'],
+    ['xdialog',       '0.1.13'],
     ['datepanel',     '0.1.2'],
     ['mappanel',      '0.0.8'],
     ['global',        '0.0.5'],
@@ -60,7 +60,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 // lightsaber
 addScript([
     ['lightsaber',    '0.0.4'],
-    ['middleware',    '0.0.9'],
+    ['middleware',    '0.0.10'],
     ['routes',        '0.3.12'],
     ['app',           '0.2.9'],
 ]);
