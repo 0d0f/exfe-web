@@ -62,22 +62,18 @@ class PhotoxActions extends ActionController {
         if (!$objIdentities) {
             apiError(400, 'no_supported_identities', ''); // 需要输入identity_id
         }
-        // get selected albums
+        // get selected albums & photos
         $modPhoto  = $this->getModelByName('Photo');
         $photox_id = @ (int) $_GET['photox_id'];
-        $rawAlbums = $modPhoto->getAlbumIdsByPhotoxId($_GET['photox_id']);
+        $rawAlbums = $modPhoto->getPhotoIdsByPhotoxId($_GET['photox_id']);
         $album_ids = [];
+        $photo_ids = [];
         foreach ($rawAlbums ?: [] as $raItem) {
             if (isset($album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"])) {
                 $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"]++;
             } else {
                 $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
             }
-        }
-        // get selected photos
-        $rawPhtIds = $modPhoto->getPhotoIdsByPhotoxId($_GET['photox_id']);
-        $photo_ids = [];
-        foreach ($rawPhtIds ?: [] as $rpItem) {
             $photo_ids["{$rpItem['provider']}_{$rpItem['external_id']}"] = true;
         }
         // get albums
@@ -333,7 +329,7 @@ class PhotoxActions extends ActionController {
                         $arr_cur_id = explode('_', $photo->external_id);
                         $cur_id = (int) array_shift($arr_cur_id);
                         if ($min_id > $cur_id || $max_id < $cur_id) {
-                            unset($photos[$i]);
+                            unset($photos['photos'][$i]);
                         }
                     }
                     $result = $modPhoto->addPhotosToCross(
