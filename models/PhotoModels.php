@@ -91,20 +91,9 @@ class PhotoModels extends DataModel {
     }
 
 
-    public function getAlbumIdsByPhotoxId($id) {
-        $rawAlbums = $id ? $this->getAll(
-            "SELECT   `provider`, `external_album_id`
-             FROM     `photos`
-             WHERE    `cross_id` = {$id}
-             GROUP BY `provider`, `external_album_id`"
-        ) : null;
-        return $rawAlbums ?: null;
-    }
-
-
     public function getPhotoIdsByPhotoxId($id) {
         $rawPhotos = $id ? $this->getAll(
-            "SELECT   `provider`, `external_id`
+            "SELECT   `provider`, `external_album_id`, `external_id`
              FROM     `photos`
              WHERE    `cross_id` = {$id}"
         ) : null;
@@ -150,7 +139,6 @@ class PhotoModels extends DataModel {
                     `location_lng`         = '" . ($photo->location ? $photo->location->lng         : '') . "',
                     `location_lat`         = '" . ($photo->location ? $photo->location->lat         : '') . "',
                     `caption`              = '{$photo->caption}',
-                    `external_album_id`    = '{$photo->external_album_id}',
                     `fullsize_url`         = '{$photo->images['fullsize']['url']}',
                     `fullsize_width`       =  {$photo->images['fullsize']['width']},
                     `fullsize_height`      =  {$photo->images['fullsize']['height']},
