@@ -141,7 +141,6 @@ class PhotoModels extends DataModel {
                 $photo->images['fullsize'] = (array) $photo->images['fullsize'];
                 $photo->images['preview']  = (array) $photo->images['preview'];
                 $strSql = "
-                    `caption`              = '{$photo->caption}',
                     `updated_at`           =  NOW(),
                     `external_created_at`  = '" . date('Y-m-d H:i:s', strtotime($photo->created_at))      . "',
                     `external_updated_at`  = '" . date('Y-m-d H:i:s', strtotime($photo->updated_at))      . "',
@@ -150,6 +149,8 @@ class PhotoModels extends DataModel {
                     `location_external_id` = '" . ($photo->location ? $photo->location->external_id : '') . "',
                     `location_lng`         = '" . ($photo->location ? $photo->location->lng         : '') . "',
                     `location_lat`         = '" . ($photo->location ? $photo->location->lat         : '') . "',
+                    `caption`              = '{$photo->caption}',
+                    `external_album_id`    = '{$photo->external_album_id}',
                     `fullsize_url`         = '{$photo->images['fullsize']['url']}',
                     `fullsize_width`       =  {$photo->images['fullsize']['width']},
                     `fullsize_height`      =  {$photo->images['fullsize']['height']},
@@ -595,7 +596,7 @@ class PhotoModels extends DataModel {
                             'external_created_at'  => $created_at,
                             'external_updated_at'  => $updated_at,
                             'provider'             => 'instagram',
-                            'external_album_id'    => '',
+                            'external_album_id'    => $identity_id,
                             'external_id'          => $photo->id,
                             'location_title'       => $photo->location->name,
                             'location_description' => '',

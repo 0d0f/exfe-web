@@ -68,7 +68,11 @@ class PhotoxActions extends ActionController {
         $rawAlbums = $modPhoto->getAlbumIdsByPhotoxId($_GET['photox_id']);
         $album_ids = [];
         foreach ($rawAlbums ?: [] as $raItem) {
-            $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = true;
+            if (isset($album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"])) {
+                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"]++;
+            } else {
+                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
+            }
         }
         // get selected photos
         $rawPhtIds = $modPhoto->getPhotoIdsByPhotoxId($_GET['photox_id']);
@@ -131,7 +135,15 @@ class PhotoxActions extends ActionController {
             }
             if ($rawResult) {
                 foreach ($rawResult['albums'] as $album) {
-                    $album['imported'] = isset($album_ids["{$album['provider']}_{$album['external_id']}"]);
+                    if (isset($album_ids["{$album['provider']}_{$album['external_id']}"])) {
+                        if ($album['provider'] === 'instagram') {
+                            $album['imported']  =  $album_ids["{$album['provider']}_{$album['external_id']}"];
+                        } else {
+                            $album['imported']  =  -1;    
+                        }
+                    } else {
+                        $album['imported'] = 0;    
+                    }
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
                         $rawAlbums[$key] = $album;
@@ -141,7 +153,7 @@ class PhotoxActions extends ActionController {
                 }
                 $rawPhotos = $rawResult['photos'];
                 foreach ($rawPhotos as $rpI => $rpItem) {
-                    $rawPhotos[$rpI]->imported = isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"]);
+                    $rawPhotos[$rpI]->imported = isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"]) ? 1 : 0;
                 }
             } else if ($rawResult === null) {
                 $failed[]  = $objIdentity;
