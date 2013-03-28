@@ -70,6 +70,12 @@ class PhotoxActions extends ActionController {
         foreach ($rawAlbums ?: [] as $raItem) {
             $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = true;
         }
+        // get selected photos
+        $rawPhtIds = $modPhoto->getPhotoIdsByPhotoxId($_GET['photox_id']);
+        $photo_ids = [];
+        foreach ($rawPhtIds ?: [] as $rpItem) {
+            $photo_ids["{$rpItem['provider']}_{$rpItem['external_id']}"] = true;
+        }
         // get albums
         $rawAlbums = [];
         $rawPhotos = [];
@@ -134,6 +140,9 @@ class PhotoxActions extends ActionController {
                     }
                 }
                 $rawPhotos = $rawResult['photos'];
+                foreach ($rawPhotos as $rpI => $rpItem) {
+                    $rawPhotos[$rpI]->imported = isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"]);
+                }
             } else if ($rawResult === null) {
                 $failed[]  = $objIdentity;
             }
