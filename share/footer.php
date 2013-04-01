@@ -45,6 +45,7 @@ addScript([
     ['mappanel',      '0.0.8'],
     ['global',        '0.0.5'],
     ['photox',        '0.0.1'],
+    ['countrycodes',  '0.0.1'],
     ['phonepanel',    '0.0.1']
 ]);
 
