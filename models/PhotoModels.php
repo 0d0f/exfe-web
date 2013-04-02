@@ -111,6 +111,15 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function delPhotosFromPhotoxByPhotoxIdAndPhotoIds($id, $photo_ids) {
+        $photo_ids = implode(', ', $photo_ids);
+        return $id && $photo_ids ? $this->query(
+            "DELETE FROM `photos`
+             WHERE `cross_id` = {$id} AND `id` in ({$photo_ids})'"
+        ) : null;
+    }    
+
+
     public function getPhotoById($id) {
         $rawPhoto = $this->getRow("SELECT * FROM `photos` WHERE `id` = {$id}");
         return $rawPhoto ? $this->packPhoto($rawPhoto) : null;

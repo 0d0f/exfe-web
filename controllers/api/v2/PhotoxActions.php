@@ -365,10 +365,11 @@ class PhotoxActions extends ActionController {
         $modPhoto = $this->getModelByName('Photo');
         $provider = @ $_POST['provider'] ?: '';
         $album_id = @ $_POST['album_id'] ?: '';
+        $photo_id = @ json_decode($_POST['photo_ids']) ?: [];
         $modPhoto = $this->getModelByName('Photo');
-        $result   = $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId(
-            $cross_id, $provider, $album_id
-        );
+        $result   = isset($_POST['photo_ids'])
+                  ? $modPhoto->delPhotosFromPhotoxByPhotoxIdAndPhotoIds($cross_id, $photo_id)
+                  : $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId($cross_id, $provider, $album_id);
         if ($result) {
             apiResponse([]);    
         }
