@@ -260,10 +260,9 @@ class PhotoxActions extends ActionController {
             apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         // check args
-        $album_id     = @ $_POST['album_id']       ?: '';
-        $min_id       = @ $_POST['min_id']         ?: '';
-        $max_id       = @ $_POST['max_id']         ?: '';
-        $stream_id    = @ $_POST['photostream_id'] ?: '';
+        $album_id     = @ $_POST['album_id']         ?: '';
+        $ids          = @ json_decode($_POST['ids']) ?: [];
+        $stream_id    = @ $_POST['photostream_id']   ?: '';
         $identity_id  = 0;
         // check identity
         if ($stream_id) {
@@ -316,19 +315,13 @@ class PhotoxActions extends ActionController {
                 $result = $modPhoto->addDropboxAlbumToCross($album_id, $cross_id, $identity_id);
                 break;
             case 'instagram':
-                if (!$min_id || !$max_id) {
-                    apiError(400, 'no_min_id_or_max_id', '');
+                if (!$ids || !is_array($ids)) {
+                    apiError(400, 'error_ids_array', '');
                 }
-                $arr_min_id = explode('_', $min_id);
-                $arr_max_id = explode('_', $max_id);
-                $min_id = (int) array_shift($arr_min_id);
-                $max_id = (int) array_shift($arr_max_id);
                 $photos = $modPhoto->getPhotosFromInstagram($identity_id);
                 if ($photos) {
                     foreach ($photos['photos'] as $i => $photo) {
-                        $arr_cur_id = explode('_', $photo->external_id);
-                        $cur_id = (int) array_shift($arr_cur_id);
-                        if ($min_id > $cur_id || $max_id < $cur_id) {
+                        if (!in_array($photo->external_id, $ids)) {
                             unset($photos['photos'][$i]);
                         }
                     }
