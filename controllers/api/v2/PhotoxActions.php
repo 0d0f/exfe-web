@@ -74,7 +74,7 @@ class PhotoxActions extends ActionController {
             } else {
                 $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
             }
-            $photo_ids["{$raItem['provider']}_{$raItem['external_id']}"] = $raItem['id']};
+            $photo_ids["{$raItem['provider']}_{$raItem['external_id']}"] = $raItem['id'];
         }
         // get albums
         $rawAlbums = [];
