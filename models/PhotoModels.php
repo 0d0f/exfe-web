@@ -93,7 +93,7 @@ class PhotoModels extends DataModel {
 
     public function getPhotoIdsByPhotoxId($id) {
         $rawPhotos = $id ? $this->getAll(
-            "SELECT   `provider`, `external_album_id`, `external_id`
+            "SELECT   `id`, `provider`, `external_album_id`, `external_id`
              FROM     `photos`
              WHERE    `cross_id` = {$id}"
         ) : null;
@@ -112,10 +112,10 @@ class PhotoModels extends DataModel {
 
 
     public function delPhotosFromPhotoxByPhotoxIdAndPhotoIds($id, $photo_ids) {
-        $photo_ids = implode("', '", $photo_ids);
+        $photo_ids = implode(", ", $photo_ids);
         return $id && $photo_ids ? $this->query(
             "DELETE FROM `photos`
-             WHERE `cross_id` = {$id} AND `id` in ('{$photo_ids}')"
+             WHERE `cross_id` = {$id} AND `id` in ({$photo_ids})"
         ) : null;
     }    
 
