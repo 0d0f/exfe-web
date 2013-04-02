@@ -15,7 +15,7 @@ class PhotoxActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($params['id']);
         if ($cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
@@ -62,8 +62,21 @@ class PhotoxActions extends ActionController {
         if (!$objIdentities) {
             apiError(400, 'no_supported_identities', ''); // 需要输入identity_id
         }
-        // get albums
+        // get selected albums & photos
         $modPhoto  = $this->getModelByName('Photo');
+        $photox_id = @ (int) $_GET['photox_id'];
+        $rawAlbums = $modPhoto->getPhotoIdsByPhotoxId($_GET['photox_id']);
+        $album_ids = [];
+        $photo_ids = [];
+        foreach ($rawAlbums ?: [] as $raItem) {
+            if (isset($album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"])) {
+                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"]++;
+            } else {
+                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
+            }
+            $photo_ids["{$rpItem['provider']}_{$rpItem['external_id']}"] = true;
+        }
+        // get albums
         $rawAlbums = [];
         $rawPhotos = [];
         $failed    = [];
@@ -77,7 +90,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        //@@@@@@@@@@@@@@@$rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
+                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
                     }
                     break;
                 case 'dropbox':
@@ -90,7 +103,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        //@@@@@@@@@@@@@@@$rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
+                        $rawResult = $modPhoto->getAlbumsFromFlickr($objIdentity->id);
                     }
                     break;
                 case 'instagram':
@@ -118,6 +131,15 @@ class PhotoxActions extends ActionController {
             }
             if ($rawResult) {
                 foreach ($rawResult['albums'] as $album) {
+                    if (isset($album_ids["{$album['provider']}_{$album['external_id']}"])) {
+                        if ($album['provider'] === 'instagram') {
+                            $album['imported']  =  $album_ids["{$album['provider']}_{$album['external_id']}"];
+                        } else {
+                            $album['imported']  =  -1;    
+                        }
+                    } else {
+                        $album['imported'] = 0;    
+                    }
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
                         $rawAlbums[$key] = $album;
@@ -126,6 +148,9 @@ class PhotoxActions extends ActionController {
                     }
                 }
                 $rawPhotos = $rawResult['photos'];
+                foreach ($rawPhotos as $rpI => $rpItem) {
+                    $rawPhotos[$rpI]->imported = isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"]) ? 1 : 0;
+                }
             } else if ($rawResult === null) {
                 $failed[]  = $objIdentity;
             }
@@ -304,7 +329,7 @@ class PhotoxActions extends ActionController {
                         $arr_cur_id = explode('_', $photo->external_id);
                         $cur_id = (int) array_shift($arr_cur_id);
                         if ($min_id > $cur_id || $max_id < $cur_id) {
-                            unset($photos[$i]);
+                            unset($photos['photos'][$i]);
                         }
                     }
                     $result = $modPhoto->addPhotosToCross(
@@ -330,6 +355,34 @@ class PhotoxActions extends ActionController {
     }
 
 
+    public function doDelete() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check');
+        $params   = $this->params;
+        $cross_id = @ (int) $params['id'];
+        $result   = $checkHelper->isAPIAllow('cross_edit_by_user', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else if ($result['uid'] === 0) {
+            apiError(401, 'no_signin', ''); // 需要登录
+        } else {
+            apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+        }
+        // del album from cross
+        $modPhoto = $this->getModelByName('Photo');
+        $provider = @ $_POST['provider'] ?: '';
+        $album_id = @ $_POST['album_id'] ?: '';
+        $modPhoto = $this->getModelByName('Photo');
+        $result   = $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId(
+            $cross_id, $provider, $album_id
+        );
+        if ($result) {
+            apiResponse([]);    
+        }
+        apiError(400, 'param_error', "Please retry later.");
+    }
+
+
     public function doGetLikes() {
         $checkHelper = $this->getHelperByName('check');
         $params = $this->params;
@@ -344,7 +397,7 @@ class PhotoxActions extends ActionController {
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($id);
         if ($cross) {
-            if ($cross->attribute['deleted']) {
+            if ($cross->attribute['state'] === 'deleted') {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
