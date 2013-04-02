@@ -112,10 +112,10 @@ class PhotoModels extends DataModel {
 
 
     public function delPhotosFromPhotoxByPhotoxIdAndPhotoIds($id, $photo_ids) {
-        $photo_ids = implode(', ', $photo_ids);
+        $photo_ids = implode("', '", $photo_ids);
         return $id && $photo_ids ? $this->query(
             "DELETE FROM `photos`
-             WHERE `cross_id` = {$id} AND `id` in ({$photo_ids})'"
+             WHERE `cross_id` = {$id} AND `id` in ('{$photo_ids}')"
         ) : null;
     }    
 
