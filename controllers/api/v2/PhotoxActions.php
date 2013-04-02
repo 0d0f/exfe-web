@@ -376,7 +376,8 @@ class PhotoxActions extends ActionController {
                   ? $modPhoto->delPhotosFromPhotoxByPhotoxIdAndPhotoIds($cross_id, $photo_id)
                   : $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId($cross_id, $provider, $album_id);
         if ($result) {
-            apiResponse([]);    
+            $photox = $modPhoto->getPhotoxById($cross_id);
+            apiResponse(['photox' => $photox]);
         }
         apiError(400, 'param_error', "Please retry later.");
     }
