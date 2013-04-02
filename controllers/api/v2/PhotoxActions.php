@@ -74,7 +74,7 @@ class PhotoxActions extends ActionController {
             } else {
                 $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
             }
-            $photo_ids["{$raItem['provider']}_{$raItem['external_id']}"] = true;
+            $photo_ids["{$raItem['provider']}_{$raItem['external_id']}"] = $raItem['id']};
         }
         // get albums
         $rawAlbums = [];
@@ -149,7 +149,12 @@ class PhotoxActions extends ActionController {
                 }
                 $rawPhotos = $rawResult['photos'];
                 foreach ($rawPhotos as $rpI => $rpItem) {
-                    $rawPhotos[$rpI]->imported = isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"]) ? 1 : 0;
+                    if (isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"])) {
+                        $rawPhotos[$rpI]->id = $photo_ids["{$rpItem->provider}_{$rpItem->external_id}"];
+                        $rawPhotos[$rpI]->imported = 1;
+                    } else {
+                        $rawPhotos[$rpI]->imported = 0;
+                    }
                 }
             } else if ($rawResult === null) {
                 $failed[]  = $objIdentity;
