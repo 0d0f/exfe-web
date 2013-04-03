@@ -377,8 +377,8 @@ class IdentityModels extends DataModel {
                     return null;
             }
             // insert new identity into database
+            $name = formatName($name);
             $dbResult = $this->query(
-                $name = formatName($name);
                 "INSERT INTO `identities` SET
                  `provider`          = '{$provider}',
                  `external_identity` = '{$external_id}',
