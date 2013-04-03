@@ -40,7 +40,7 @@ class UsersActions extends ActionController {
                 foreach ($curTokens as $cI => $cItem) {
                     if ($cItem['data']['token_type'] === 'calendar_token'
                      && $cItem['data']['user_id']    === (int) $result['uid']) {
-                        $calToken = $cItem['token'];
+                        $calToken = $cItem['key'];
                         $data     = $cItem['data'];
                         break;
                     }
