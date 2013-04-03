@@ -222,10 +222,12 @@ class UserModels extends DataModel {
                              `password_salt`      = '{$passwordSalt}',";
         }
         $nameSql = '';
+        $name = formatName($name);
         if (strlen($name)) {
             $nameSql      = "`name` = '{$name}',";
         }
-        $bioSql  = ''; 
+        $bioSql  = '';
+        $bio  = formatDescription($bio);  
         if (strlen($bio)) {
             $bioSql       = "`bio`  = '{$bio}',";
         }
