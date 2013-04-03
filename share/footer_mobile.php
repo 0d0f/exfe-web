@@ -21,6 +21,7 @@ echo " var sms_token = " . json_encode($this->getVar('sms_token')) . ";\n";
 echo "  </script>\n";
 
 addScript([
+    ['live',          '0.0.1'],
     ['mobile',        '0.0.1'],
 ]);
 
