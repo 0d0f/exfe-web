@@ -239,10 +239,10 @@ class IdentitiesActions extends ActionController {
         }
         $identity = array();
         if (isset($_POST['name'])) {
-            $identity['name'] = trim($_POST['name']);
+            $identity['name'] = formatName($_POST['name']);
         }
         if (isset($_POST['bio'])) {
-            $identity['bio']  = trim($_POST['bio']);
+            $identity['bio']  = formatDescription($_POST['bio']);
         }
         // check identity
         foreach ($objUser->identities as $iItem) {
