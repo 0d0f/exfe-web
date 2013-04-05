@@ -3,6 +3,7 @@
 class VersionsActions extends ActionController {
 
     public function doIndex() {
+        header('Content-Type: application/json; charset=UTF-8');
         apiResponse([
             'ios' => [
                 'version'     => '2.1',
