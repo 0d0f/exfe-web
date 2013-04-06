@@ -25,8 +25,10 @@ addScript([
     ['handlebarsext', '0.0.1'],
     ['jqfocusend',    '0.0.2'],
     ['jqoffset',      '0.0.2'],
-    ['jqmousewheel',  '3.0.6'],
+    ['jqmousewheel',  '3.1.3'],
     ['jqdndsortable', '0.0.2'],
+    ['jqresize',      '0.0.1'],
+    ['tween',         '10.0.0'],
 ]);
 
 echo "  <script>\n";
@@ -46,7 +48,9 @@ addScript([
     ['global',        '0.0.5'],
     ['photox',        '0.0.1'],
     ['countrycodes',  '0.0.1'],
-    ['phonepanel',    '0.0.1']
+    ['phonepanel',    '0.0.1'],
+    ['photoxwidget',  '0.0.1'],
+    ['mnemosyne',     '0.0.1']
 ]);
 
 // profile
