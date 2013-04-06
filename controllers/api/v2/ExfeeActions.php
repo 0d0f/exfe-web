@@ -88,6 +88,7 @@ class ExfeeActions extends ActionController {
         // get libs
         $params   = $this->params;
         $modExfee = $this->getModelByName('exfee');
+        $modCross = $this->getModelByName('Cross');
         $hlpCheck = $this->getHelperByName('check');
         // basic check
         if (!($exfee_id = intval($params['id']))) {
