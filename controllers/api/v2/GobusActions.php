@@ -567,22 +567,26 @@ class GobusActions extends ActionController {
             $exfee_id = $modCross->getExfeeByCrossId($id);
             $userids  = $modExfee->getUserIdsByExfeeId($exfee_id, true);
             if ($user_id && !in_array($user_id, $userids)) {
-                apiError(403, 'not_authorized', "The X you're requesting is private.");
+                header('HTTP/1.1 403 Forbidden');
+                return;
             }
             $cross    = $hlpCross->getCross($id, true, false, $updated_at);
             if ($cross) {
                 switch ($cross->attribute['state']) {
                     case 'deleted':
-                        apiError(403, 'not_authorized', "The X you're requesting is private.");
+                        header('HTTP/1.1 403 Forbidden');
+                        return;
                     case 'draft':
                         if ($user_id && !in_array($user_id, $cross->exfee->hosts)) {
-                            apiError(403, 'not_authorized', "The X you're requesting is private.");
+                            header('HTTP/1.1 403 Forbidden');
+                            return;
                         }
                 }
                 if ($updated_at && strtotime($updated_at) >= strtotime($cross->exfee->updated_at)) {
-                    apiError(304, 'Cross Not Modified.');
+                    header('HTTP/1.1 304 Not Modified');
+                    return;
                 }
-                apiResponse(['cross' => $cross]);
+                echo json_encode($cross);
                 return;
             }
         }
