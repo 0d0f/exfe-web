@@ -48,7 +48,6 @@ class ResponseModels extends DataModel {
         $result = $this->getResponsesByObjectTypeAndObjectIds(
             $object_type, [$object_id], $identity_id
         );
-        print_r($object_id);
         return $result && isset($result[$object_id]) ? $result[$object_id] : null;
     }
 
