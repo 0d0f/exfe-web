@@ -79,8 +79,7 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function getCross($cross_id, $withToken = false, $withRemoved = false)
-    {
+    public function getCross($cross_id, $withToken = false, $withRemoved = false, $updated_at = '') {
         $crossData=$this->getModelByName("cross");
         $cross=$crossData->getCross($cross_id);
         if($cross==NULL)
@@ -113,8 +112,18 @@ class CrossHelper extends ActionController {
         $relative_id=0;
         $relation="";
 
-        $update_result=getUpdate($cross_id);
-        //$cross->setRelation($relative_id,$relation);
+        $update_result = getUpdate($cross_id);
+        $cross->updated = [];
+        if ($update_result) {
+            $updated_at = $updated_at ? strtotime($updated_at) : 0;
+            foreach ($update_result as $uI => $uItem) {
+                $uItem['updated_at'] .= ' +0000';
+                if (($updated_at && $updated_at <= strtotime($uItem['updated_at']))
+                 || !$updated_at) {
+                    $cross->updated[$uI]['updated_at'] = $uItem['updated_at'];
+                }
+            }
+        }
         return $cross;
     }
 
