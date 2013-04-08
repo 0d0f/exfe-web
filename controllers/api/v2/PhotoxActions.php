@@ -19,8 +19,9 @@ class PhotoxActions extends ActionController {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
-            $photox = $modPhotos->getPhotoxById($params['id']);
-            apiResponse(['photox' => $photox]);
+            $photox    = $modPhotos->getPhotoxById($params['id']);
+            $responses = $modPhotos->getResponsesByPhotoxId($params['id']);
+            apiResponse(['photox' => $photox, 'likes' => $responses]);
         }
         apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
     }
