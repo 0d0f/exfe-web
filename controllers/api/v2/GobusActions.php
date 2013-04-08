@@ -552,14 +552,37 @@ class GobusActions extends ActionController {
     }
 
 
-    public function doGetCrossById() {
-        $params = $this->params;
-        $id = @ (int) $params['id'];
+    public function doCrosses() {
+        $params     = $this->params;
+        $updated_at = $params['updated_at'];
+        $id         = @ (int) $params['id'];
+        $user_id    = @ (int) $params['user_id'];
+        if ($updated_at) {
+            $updated_at = date('Y-m-d H:i:s', strtotime($updated_at));
+        }
         if ($id) {
+            $modCross = $this->getModelByName('Cross');
+            $modExfee = $this->getModelByName('Exfee');
             $hlpCross = $this->getHelperByName('Cross');
-            $cross = $hlpCross->getCross($id, true);
+            $exfee_id = $modCross->getExfeeByCrossId($id);
+            $userids  = $modExfee->getUserIdsByExfeeId($exfee_id, true);
+            if ($user_id && !in_array($user_id, $userids)) {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+            $cross    = $hlpCross->getCross($id, true, false, $updated_at);
             if ($cross) {
-                echo json_encode($cross);
+                switch ($cross->attribute['state']) {
+                    case 'deleted':
+                        apiError(403, 'not_authorized', "The X you're requesting is private.");
+                    case 'draft':
+                        if ($user_id && !in_array($user_id, $cross->exfee->hosts)) {
+                            apiError(403, 'not_authorized', "The X you're requesting is private.");
+                        }
+                }
+                if ($updated_at && strtotime($updated_at) >= strtotime($cross->exfee->updated_at)) {
+                    apiError(304, 'Cross Not Modified.');
+                }
+                apiResponse(['cross' => $cross]);
                 return;
             }
         }
