@@ -449,7 +449,7 @@ class PhotoxActions extends ActionController {
             apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         //
-        $response = @ $_POST['LIKE'] === false ? '' : 'LIKE';
+        $response = @ $_POST['LIKE'] === 'false' ? '' : 'LIKE';
         $result   = $modPhoto->responseToPhoto($id, $identity_id, $response);
         if ($result) {
             apiResponse(['like' => $result]);
