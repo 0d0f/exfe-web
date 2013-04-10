@@ -74,17 +74,9 @@ function apiResponse($object, $code = 200) {
 }
 
 
-function mgetUpdate($cross_ids) {
-    $fields=implode($cross_ids," ");
-    $redis = new Redis();
-    $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-    if(sizeof($cross_ids)>0)
-    {
-        $key=$cross_id;
-        $update=$redis->HMGET("cross:updated",$cross_ids);
-        return $update;
-    }
-}
+// cross touch at {
+
+// }
 
 
 // common redis cache access by @leaskh {
@@ -130,6 +122,18 @@ function getUpdate($cross_id){
         $redis = new Redis();
         $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
         $update=json_decode($redis->HGET("cross:updated",$key),true);
+        return $update;
+    }
+}
+
+function mgetUpdate($cross_ids) {
+    $fields=implode($cross_ids," ");
+    $redis = new Redis();
+    $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+    if(sizeof($cross_ids)>0)
+    {
+        $key=$cross_id;
+        $update=$redis->HMGET("cross:updated",$cross_ids);
         return $update;
     }
 }
