@@ -2,6 +2,13 @@
 
 require_once dirname(__FILE__)."/config.php";
 
+
+function reverse_escape($str) {
+  $search  = ["\\\\","\\0","\\n","\\r","\Z","\'",'\"'];
+  $replace = ["\\","\0","\n","\r","\x1a","'",'"'];
+  return str_replace($search, $replace, $str);
+}
+
 function stripslashes_deep($value) {
     return is_array($value) ? array_map('reverse_escape', $value) : reverse_escape($value);
 }
