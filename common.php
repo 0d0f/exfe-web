@@ -33,18 +33,6 @@ function exPost($name)
 }
 
 
-/**
- * 取得微秒时间
- * @param NULL
- * @return: float microtime value.
- **/
-function getMicrotime()
-{
-    list($usec, $sec) = explode(" ", microtime());
-    return ((float)$usec + (float)$sec);
-}
-
-
 function reverse_escape($str)
 {
   $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');

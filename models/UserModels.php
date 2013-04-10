@@ -34,12 +34,20 @@ class UserModels extends DataModel {
     }
 
 
+    public function getMicrotime() {
+        list($usec, $sec) = explode(" ", microtime());
+        return (float) $usec + (float) $sec;
+    }
+
+
     public function createToken() {
         $randString = $this->randStr(16);
         $hashString = md5(base64_encode(
             pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())
         ));
-        return md5($hashStr . $randString . getMicrotime() . uniqid()) . time();
+        return md5(
+            $hashStr . $randString . $this->getMicrotime() . uniqid()
+        ) . time();
     }
 
 
