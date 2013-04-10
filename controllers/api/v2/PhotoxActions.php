@@ -25,6 +25,7 @@ class PhotoxActions extends ActionController {
                 isset($params['limit']) ? (int) $params['limit'] : 0
             );
             $responses = $modPhotos->getResponsesByPhotoxId($params['id']);
+            touchCross($params['id'], $result['uid']);
             apiResponse(['photox' => $photox, 'likes' => $responses]);
         }
         apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
@@ -354,6 +355,7 @@ class PhotoxActions extends ActionController {
         }
         // get photos
         $photox = $modPhoto->getPhotoxById($cross_id);
+        touchCross($cross_id, $user_id);
         apiResponse(['photox' => $photox]);
     }
 
@@ -382,6 +384,7 @@ class PhotoxActions extends ActionController {
                   : $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId($cross_id, $provider, $album_id);
         if ($result) {
             $photox = $modPhoto->getPhotoxById($cross_id);
+            touchCross($cross_id, $user_id);
             apiResponse(['photox' => $photox]);
         }
         apiError(400, 'param_error', "Please retry later.");
@@ -407,6 +410,7 @@ class PhotoxActions extends ActionController {
             }
             $modPhotos = $this->getModelByName('Photo');
             $responses = $modPhotos->getResponsesByPhotoxId($id);
+            touchCross($id, $result['uid']);
             apiResponse(['likes' => $responses]);
         }
         apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
@@ -456,6 +460,7 @@ class PhotoxActions extends ActionController {
         $response = @ $_POST['LIKE'] === 'false' ? '' : 'LIKE';
         $result   = $modPhoto->responseToPhoto($id, $identity_id, $response);
         if ($result) {
+            touchCross($cross_id, $user_id);
             apiResponse(['like' => $result]);
         }
         apiError(400, 'error_responsing_photo');

@@ -22,6 +22,7 @@ class ExfeeActions extends ActionController {
             apiError(401, 'invalid_auth', '');
         }
         if ($objExfee = $modExfee->getExfeeById($exfee_id)) {
+            touchCross($cross_id, $result['uid']);
             apiResponse(array('exfee' => $modExfee->getExfeeById($exfee_id)));
         }
         apiError(400, 'fetching exfee failed', '');
@@ -55,7 +56,7 @@ class ExfeeActions extends ActionController {
         // do it
         $exfee = null;
         if (@$_POST['exfee']) {
-            $exfee     = @json_decode($_POST['exfee']);    
+            $exfee     = @json_decode($_POST['exfee']);
         } else {
             $rawExfee  = @json_decode(file_get_contents('php://input'));
             if ($rawExfee) {
@@ -78,6 +79,7 @@ class ExfeeActions extends ActionController {
                 $rtResult['exfee_over_quota'] = EXFEE_QUOTA_SOFT_LIMIT;
                 $code = 206;
             }
+            touchCross($cross_id, $result['uid']);
             apiResponse($rtResult, $code);
         }
         apiError(400, 'editing failed', '');
@@ -95,7 +97,7 @@ class ExfeeActions extends ActionController {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
         if (isset($_POST['rsvp'])) {
-            $rsvp = json_decode($_POST['rsvp']);    
+            $rsvp = json_decode($_POST['rsvp']);
         } else {
             $rsvp = json_decode(@file_get_contents('php://input'));
         }
@@ -137,6 +139,7 @@ class ExfeeActions extends ActionController {
                     ['exfee' => ['updated_at' => date('Y-m-d H:i:s',time()), 'identity_id' => $by_identity_id]]
                 );
             }
+            touchCross($cross_id, $result['uid']);
             apiResponse(['rsvp' => $actResult]);
         }
         apiError(400, 'editing failed', '');
@@ -215,6 +218,7 @@ class ExfeeActions extends ActionController {
         // updating exfee cache
         delCache("exfee:{$exfee_id}");
         if ($add_result && $rmv_result && ($exfee = $modExfee->getExfeeById($exfee_id))) {
+            touchCross($cross_id, $result['uid']);
             apiResponse(['exfee' => $exfee]);
         }
         apiError(400, 'changing failed', '');
@@ -272,7 +276,7 @@ class ExfeeActions extends ActionController {
                             @$user->name ?: ''
                         );
                     } else {
-                        apiError(500, 'failed', '');   
+                        apiError(500, 'failed', '');
                     }
                 }
                 // getting current invitation
@@ -308,6 +312,7 @@ class ExfeeActions extends ActionController {
                     $objInvitation, $exfee->id, $cur_invitation->identity->id, (int) $result['uid']
                 );
                 if ($result) {
+                    touchCross($cross_id, $result['uid']);
                     apiResponse([]);
                 }
                 break;
