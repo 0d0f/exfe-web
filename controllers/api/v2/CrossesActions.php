@@ -38,6 +38,24 @@ class CrossesActions extends ActionController {
     }
 
 
+    // api.local.exfe.com/v2/crosses/[int:cross_id]/touch?user_id=[int:user_id]
+    public function doTouch() {
+        // touch
+        $params = $this->params;
+        $cross_id = @ (int) $params['id'];
+        $user_id  = @ (int) $params['user_id'];
+        touchCross($cross_id, $user_id);
+        // render
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        $image = imagecreatefromstring(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCB1jYAAAAAIAAc/INeUAAAAASUVORK5CYII='));
+        imagepng($image);
+        imagedestroy($image);
+    }
+
+
     public function doGetCrossByInvitationToken() {
         // load models
         $hlpCheck    = $this->getHelperByName('check');
