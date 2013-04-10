@@ -57,7 +57,7 @@ class PhotoModels extends DataModel {
     }
 
 
-    public function getPhotoxById($id) {
+    public function getPhotoxById($id, $sort) {
         //
         $hlpExfee = $this->getHelperByName('Exfee');
         $exfee_id = $hlpExfee->getExfeeIdByCrossId($id);
@@ -70,9 +70,16 @@ class PhotoModels extends DataModel {
             }
         }
         //
+        switch ($sort) {
+            case 'imported_time_desc':
+                $sort = '`id` DESC';
+                break;
+            default:
+                $sort = '`external_created_at`';
+        }
         $photos = [];
         $rawPhotos = $this->getAll(
-            "SELECT * FROM `photos` WHERE `cross_id` = {$id}"
+            "SELECT * FROM `photos` WHERE `cross_id` = {$id} ORDER BY {$sort}"
         );
         foreach ($rawPhotos ?: [] as $rawPhoto) {
             if ($rawPhoto['provider'] === 'photostream') {
