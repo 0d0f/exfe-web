@@ -76,6 +76,14 @@ function apiResponse($object, $code = 200) {
 
 // cross touch at {
 
+function getTouchAt($object_id, $user_id) {
+
+}
+
+function setTouchAt($object_id, $user_id) {
+
+}
+
 // }
 
 
