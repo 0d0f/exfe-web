@@ -34,41 +34,6 @@ function exPost($name)
 
 
 /**
- * 随机产生字符串。
- * @param: string length
- * @return: rand string.
- */
-function randStr($len=5, $type="normal")
-{
-    switch($type){
-        case "num":
-            $chars = '0123456789';
-            $chars_len = 10;
-            break;
-        case "lowercase":
-            $chars = 'abcdefghijklmnopqrstuvwxyz';
-            $chars_len = 26;
-            break;
-        case "uppercase":
-            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $chars_len = 26;
-            break;
-        default:
-            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
-            $chars_len = 62;
-            break;
-    }
-    $string = '';
-    for($len; $len>=1; $len--)
-    {
-        $position = rand() % $chars_len;//62 is the length of $chars
-        $string .= substr($chars, $position, 1);
-    }
-    return $string;
-}
-
-
-/**
  * 取得微秒时间
  * @param NULL
  * @return: float microtime value.
@@ -127,13 +92,6 @@ function getAvatarUrl($raw_avatar, $size = '80_80') {
 
 function getDefaultAvatarUrl($name) {
     return $name ? (API_URL . '/v2/avatar/default?name=' . urlencode($name)) : '';
-}
-
-
-function createToken(){
-    $randString = randStr(16);
-    $hashString = md5(base64_encode(pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
-    return md5($hashStr.$randString.getMicrotime().uniqid()).time();
 }
 
 
