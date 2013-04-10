@@ -117,7 +117,7 @@ class PhotoModels extends DataModel {
             "DELETE FROM `photos`
              WHERE `cross_id` = {$id} AND `id` in ({$photo_ids})"
         ) : null;
-    }    
+    }
 
 
     public function getPhotoById($id) {
@@ -445,7 +445,7 @@ class PhotoModels extends DataModel {
                                 ]);
                             } else {
                                 $idsGet[] = $rItem;
-                            }   
+                            }
                         }
                         if ($idsGet) {
                             $rawGet = $this->getPhotosFromDropbox($identity_id, $album_id, $idsGet);
