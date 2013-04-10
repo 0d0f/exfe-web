@@ -108,6 +108,14 @@ function touchObject($object_type, $object_id, $user_id) {
     return null;
 }
 
+function getCrossTouchTime($cross_id, $user_id) {
+    return getObjectTouchTime('cross', $cross_id, $user_id);
+}
+
+function touchCross($cross_id, $user_id) {
+    return touchObject('cross', $cross_id, $user_id);
+}
+
 // }
 
 
