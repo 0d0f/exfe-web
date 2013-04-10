@@ -18,23 +18,7 @@ if(array_key_exists("locale", $_COOKIE)){
 $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 
 
-/**
- * 判断并获取POST数据
- * @param $name:field name;
- * @return 如果存在，则返回POST的数据，否则返回空!
-*/
-function exPost($name)
-{
-    if (array_key_exists($name,$_POST)) {
-        return $_POST[$name];
-    } else {
-        return ('');
-    }
-}
-
-
-function reverse_escape($str)
-{
+function reverse_escape($str) {
   $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
   $replace=array("\\","\0","\n","\r","\x1a","'",'"');
   return str_replace($search,$replace,$str);
