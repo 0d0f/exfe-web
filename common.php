@@ -90,7 +90,7 @@ function apiResponse($object, $code = 200) {
 function getObjectTouchTime($object_type, $object_id, $user_id) {
     global $redis;
     if ($object_type && $object_id && $user_id) {
-        $key   = "{$object_type}_{$object_id}_{$user_id}";
+        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
         $value = $redis->get($key);
         return $value ?: null;
     }
@@ -100,7 +100,7 @@ function getObjectTouchTime($object_type, $object_id, $user_id) {
 function touchObject($object_type, $object_id, $user_id) {
     global $redis;
     if ($object_type && $object_id && $user_id) {
-        $key   = "{$object_type}_{$object_id}_{$user_id}";
+        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
         $value = time();
         $redis->SET($key, $value);
         return $value;
