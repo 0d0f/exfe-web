@@ -16,13 +16,6 @@ $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 // }
 
 
-function reverse_escape($str) {
-  $search  = ["\\\\","\\0","\\n","\\r","\Z","\'",'\"'];
-  $replace = ["\\","\0","\n","\r","\x1a","'",'"'];
-  return str_replace($search, $replace, $str);
-}
-
-
 function getHashedFilePath($filename = '') {
     // do hash
     $hashed_name = md5(json_encode(array(
