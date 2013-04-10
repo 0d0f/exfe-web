@@ -45,7 +45,7 @@ class PhotoxActions extends ActionController {
         }
         // check identity
         $identity_id     = @ (int) $_GET['identity_id'];
-        $objIdentities   = []; 
+        $objIdentities   = [];
         $photo_providers = ['facebook', 'dropbox', 'flickr', 'instagram'];
         foreach ($user->identities as $identity) {
             if ($identity->status === 'CONNECTED'
@@ -73,7 +73,7 @@ class PhotoxActions extends ActionController {
             if (isset($album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"])) {
                 $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"]++;
             } else {
-                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
+                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1;
             }
             $photo_ids["{$raItem['provider']}_{$raItem['external_id']}"] = $raItem['id'];
         }
@@ -91,7 +91,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
+                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);
                     }
                     break;
                 case 'dropbox':
@@ -111,7 +111,7 @@ class PhotoxActions extends ActionController {
                     if ($album_id) {
                         $rawResult = null;
                         if ($album_id === "{$objIdentity->id}") {
-                            $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);    
+                            $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);
                         }
                         if ($rawResult !== null) {
                             $rawResult = ['albums' => [], 'photos' => $rawResult['photos']];
@@ -136,10 +136,10 @@ class PhotoxActions extends ActionController {
                         if ($album['provider'] === 'instagram') {
                             $album['imported']  =  $album_ids["{$album['provider']}_{$album['external_id']}"];
                         } else {
-                            $album['imported']  =  -1;    
+                            $album['imported']  =  -1;
                         }
                     } else {
-                        $album['imported'] = 0;    
+                        $album['imported'] = 0;
                     }
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
@@ -183,7 +183,7 @@ class PhotoxActions extends ActionController {
             apiError(404, 'photo_not_found');
         }
         if (count($ids) > 10) {
-            apiError(400, 'max 10 photos per request');   
+            apiError(400, 'max 10 photos per request');
         }
         // check signin
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
