@@ -137,37 +137,6 @@ function createToken(){
 }
 
 
-/**
- * @todo: removing!!!!!!!
- * @by: @leaskh
- */
-function json_encode_nounicode($code)
-{
-    $code = json_encode(urlencodeAry($code));
-    return urldecode($code);
-}
-
-
-function urlencodeAry($data)
-{
-    if(is_array($data))
-    {
-        foreach($data as $key=>$val)
-        {
-            if(is_numeric($val))
-                $data[$key] = $val;
-            else
-                $data[$key] = urlencodeAry($val);
-        }
-        return $data;
-    }
-    else
-    {
-        return urlencode($data);
-    }
-}
-
-
 function apiError($code,$errorType,$errorDetail = '') {
     $meta["code"]=$code;
     $meta["errorType"]=$errorType;
