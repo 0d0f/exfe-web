@@ -77,9 +77,8 @@ class PhotoModels extends DataModel {
             default:
                 $sort = '`external_created_at`';
         }
-        if ($limit) {
-            $limit = "LIMIT {$limit}";
-        }
+        $limit = (int) $limit;
+        $limit = $limit ? "LIMIT {$limit}" : '';
         $photos = [];
         $rawPhotos = $this->getAll(
             "SELECT * FROM `photos` WHERE `cross_id` = {$id} ORDER BY {$sort} {$limit}"
