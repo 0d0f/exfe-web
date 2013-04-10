@@ -3,7 +3,6 @@
 class HomeActions extends ActionController {
 
     public function doIndex() {
-
         // token debuging {
         // $modAuth = $this->getModelByName('ExfeAuth');
         // $a = $modAuth->create(['a' => 1, 'b' => 2], ['c' => 3, 'd' => 4], 10000, true);
@@ -39,6 +38,7 @@ class HomeActions extends ActionController {
                 $modExfee->updateExfeeRsvpById(
                     $objToken['exfee_id'], [$rsvp], $objToken['identity_id'], $user_id
                 );
+                touchCross($objToken['cross_id'], $user_id);
                 header("location: /#!token={$token}");
             } else if ($rsvp === 'accept') {
                 header("location: /#!token={$token}/accept");
