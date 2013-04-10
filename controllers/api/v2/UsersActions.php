@@ -29,7 +29,7 @@ class UsersActions extends ActionController {
             }
             // update token {
             $modExfeAuth = $this->getModelByName('ExfeAuth');
-            $calToken = ''; 
+            $calToken = '';
             $resource = ['token_type'   => 'calendar_token',
                          'user_id'      => (int) $result['uid']];
             $data     = $resource
@@ -55,7 +55,7 @@ class UsersActions extends ActionController {
                 $calToken = $modExfeAuth->create($resource, $data, $expireSec);
             }
             if ($calToken) {
-                $objUser->webcal = preg_replace('/http/', 'webcal', API_URL) . "/v2/ics/{$result['uid']}?token={$calToken}";
+                $objUser->webcal = preg_replace('/^http|^https/', 'webcal', API_URL) . "/v2/ics/{$result['uid']}?token={$calToken}";
             }
             apiResponse(['user' => $objUser]);
         }
