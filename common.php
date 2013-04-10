@@ -4,24 +4,22 @@ require_once dirname(__FILE__)."/Classes/EFObject.php";
 
 date_default_timezone_set('UTC');
 
-/**
- * 国际化，取用户浏览器语言
- * @param NULL
- * @return $local
-*/
-$locale = "en_US"; // 默认en_US
-if(array_key_exists("locale", $_COOKIE)){
-    $locale = $_COOKIE["locale"];
-}else if(array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER)){
+
+// get user locale {
+$locale = 'en_US'; // 默认en_US
+if (isset($_COOKIE['locale'])) {
+    $locale = $_COOKIE['locale'];
+} else if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
     $locale = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 }
 $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
+// }
 
 
 function reverse_escape($str) {
-  $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
-  $replace=array("\\","\0","\n","\r","\x1a","'",'"');
-  return str_replace($search,$replace,$str);
+  $search  = ["\\\\","\\0","\\n","\\r","\Z","\'",'\"'];
+  $replace = ["\\","\0","\n","\r","\x1a","'",'"'];
+  return str_replace($search, $replace, $str);
 }
 
 
@@ -83,8 +81,7 @@ function apiResponse($object, $code = 200) {
 }
 
 
-function mgetUpdate($cross_ids)
-{
+function mgetUpdate($cross_ids) {
     $fields=implode($cross_ids," ");
     $redis = new Redis();
     $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
@@ -131,6 +128,8 @@ function deepClone($object) {
 }
 
 
+// set and get cross update times {
+
 function getUpdate($cross_id){
     if(intval($cross_id)>0)
     {
@@ -141,7 +140,6 @@ function getUpdate($cross_id){
         return $update;
     }
 }
-
 
 function saveUpdate($cross_id, $updated) {
     if(intval($cross_id) > 0) {
@@ -157,6 +155,10 @@ function saveUpdate($cross_id, $updated) {
     }
 }
 
+// }
+
+
+// cjk libs {
 
 /**
  * Dictionary:
@@ -192,18 +194,20 @@ function get_CJK_unicode_ranges() {
     );
 }
 
-
 function checkCjk($string) {
     return preg_match('/' . implode('|', get_CJK_unicode_ranges()) . '/u', $string);
 }
 
+// }
+
+
+// data validate by @leask {
 
 function formatName($string, $length = 30) {
     $string = mb_substr($string, 0, $length, 'utf8');
     $string = preg_replace('/\r\n|\n\r|\r|\n/', ' ',  $string);
     return $string;
 }
-
 
 function formatTitle($string, $length = 144) {
     $string = trim(mb_substr($string, 0, $length, 'utf8'));
@@ -212,19 +216,18 @@ function formatTitle($string, $length = 144) {
     return $string;
 }
 
-
 function formatDescription($string, $length = 233) {
     $string = trim($length ? mb_substr($string, 0, $length, 'utf8') : $string);
     $string = preg_replace('/\r\n|\n\r|\r|\n/', "\n", $string);
     return $string;
 }
 
-
 function validatePassword($string) {
     return mb_strlen($string, 'utf8') >= 4;
 }
 
-
 function validatePhoneNumber($string) {
     return preg_match('/^\+[0-9]{5,15}$/', $string);
 }
+
+// }
