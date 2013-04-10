@@ -36,7 +36,7 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['humantime',     '0.0.7'],
+    ['humantime',     '0.0.8'],
     ['api',           '0.0.9'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
