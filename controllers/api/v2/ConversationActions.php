@@ -42,6 +42,9 @@ class ConversationActions extends ActionController {
             $conversationData=$this->getModelByName('conversation');
             $conversationData->clearConversationCounter($exfee_id, $result['uid']);
         }
+        $modExfee = $this->getModelByName('exfee');
+        $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
+        touchCross($cross_id, $result['uid']);
         apiResponse(['conversation' => $conversation]);
     }
 
@@ -101,6 +104,7 @@ class ConversationActions extends ActionController {
         // }
         $modExfee->updateExfeeTime($cross->exfee->id);
         // return
+        touchCross($cross_id, $result['uid']);
         apiResponse(['post' => $post]);
     }
 
@@ -125,10 +129,14 @@ class ConversationActions extends ActionController {
         $result=$modelData->delPostById($exfee_id,$post_id);
         $post["id"]=$post_id;
         $post["exfee_id"]=$exfee_id;
-        if($result===true)
+        if ($result === true) {
+            $modExfee = $this->getModelByName('exfee');
+            $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
+            touchCross($cross_id, $result['uid']);
             apiResponse(array("post"=>$post));
-        else
+        } else {
             apiError(400,"param_error","Can't delete this post.");
+        }
     }
 
 }

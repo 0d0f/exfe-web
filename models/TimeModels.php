@@ -2,6 +2,17 @@
 
 class TimeModels extends DataModel {
 
+    public function getTimezoneNameBy($offset) {
+        foreach (DateTimeZone::listAbbreviations() as $group) {
+            foreach ($group as $timezone) {
+                if ($timezone['offset'] === $offset) {
+                    return $timezone['timezone_id'];
+                }
+            }
+        }
+    }
+
+
     public function parseTimeString($origin_string, $timezone = '') {
         // check timezone
         if (preg_match('/^[+-][0-9]{2}:[0-9]{2}(\ [a-z]{1,5})?$/i', $timezone)) {
@@ -12,12 +23,20 @@ class TimeModels extends DataModel {
         } else {
             return new CrossTime('', '', '', '', '', '', 0);
         }
-        switch (strtotime($timezone)) {
+        switch ($timezone) {
             case 'z':
             case 'utc':
             case 'gmt':
                 $timezone = '+00:00 GMT';
         }
+        $arrTzone = explode(':', $timezone);
+        $diffHour = ((int) $arrTzone[0]) * 60 * 60;
+        $diffMin  = ((int) $arrTzone[1]) * 60;
+        $timeDiff =  $diffHour > 0
+                  ? ($diffHour + $diffMin)
+                  : ($diffHour - $diffMin);
+        $timezoneName = $this->getTimezoneNameBy($timeDiff);
+        @date_default_timezone_set($timezoneName);
         // init
         $date_word    = '';
         $date         = '';
@@ -225,12 +244,6 @@ class TimeModels extends DataModel {
         // fix timezone
         if ($date && sizeof($actTimes)) {
             $intDate  = strtotime("{$date} {$time}");
-            $arrTzone = explode(':', $timezone);
-            $diffHour = ((int) $arrTzone[0]) * 60 * 60;
-            $diffMin  = ((int) $arrTzone[1]) * 60;
-            $timeDiff =  $diffHour > 0
-                      ? ($diffHour + $diffMin)
-                      : ($diffHour - $diffMin);
             $fixTime  = explode(' ', date('Y-m-d H:i:s', $intDate - $timeDiff));
             $date     = $fixTime[0];
             $time     = $fixTime[1];
