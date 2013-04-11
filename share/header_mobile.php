@@ -1,8 +1,5 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
-<!--[if (gt IE 8)|!(IE)]><!--> <html class="no-js" lang="en" dir="ltr"> <!--<![endif]-->
+<html class="no-js" lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
@@ -21,4 +18,3 @@
   <link rel="shortcut icon" href="/static/img/favicon.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon.png" />
   <link rel="stylesheet" media="screen" type="text/css" href="/static/css/exfe_mobile.min.css?<?php echo STATIC_CODE_TIMESTAMP; ?>" />
-  <script src="/static/js/modernizr/2.5.3/modernizr.min.js?<?php echo STATIC_CODE_TIMESTAMP; ?>"></script>
