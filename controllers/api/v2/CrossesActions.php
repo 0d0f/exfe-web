@@ -24,16 +24,35 @@ class CrossesActions extends ActionController {
                 case 'deleted':
                     apiError(403, 'not_authorized', "The X you're requesting is private.");
                 case 'draft':
-                    if (!in_array($uid, $cross->exfee->hosts)) {
+                    if (!in_array($result['uid'], $cross->exfee->hosts)) {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                 apiError(304, 'Cross Not Modified.');
             }
+            touchCross($params['id'], $result['uid']);
             apiResponse(['cross' => $cross]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
+    }
+
+
+    // api.local.exfe.com/v2/crosses/[int:cross_id]/touch?user_id=[int:user_id]
+    public function doTouch() {
+        // touch
+        $params = $this->params;
+        $cross_id = @ (int) $params['id'];
+        $user_id  = @ (int) $params['user_id'];
+        touchCross($cross_id, $user_id);
+        // render
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        $image = imagecreatefromstring(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCB1jYAAAAAIAAc/INeUAAAAASUVORK5CYII='));
+        imagepng($image);
+        imagedestroy($image);
     }
 
 
@@ -114,6 +133,7 @@ class CrossesActions extends ActionController {
               || (isset($user_infos['REVOKED'])   && ($inv_user_id = $user_infos['REVOKED'][0]['user_id'])))
              && $user_id === $inv_user_id) {
                 $result['read_only'] = false;
+                touchCross($invitation['cross_id'], $user_id);
                 apiResponse($result);
             }
             // 已登录  初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -123,6 +143,12 @@ class CrossesActions extends ActionController {
                     $invitation['identity_id']
                 );
                 $result['action'] = 'singin';
+                if (isset($result['browsing_identity']->connected_user_id)) {
+                    touchCross(
+                        $invitation['cross_id'],
+                        $result['browsing_identity']->connected_user_id
+                    );
+                }
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -163,6 +189,7 @@ class CrossesActions extends ActionController {
                 }
                 // setup user by sms }
 
+                touchCross($invitation['cross_id'], $user_id);
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -180,6 +207,10 @@ class CrossesActions extends ActionController {
                     );
                 }
                 $result['read_only'] = false;
+                touchCross(
+                    $invitation['cross_id'],
+                    $user_infos['CONNECTED'][0]['user_id']
+                );
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -223,6 +254,7 @@ class CrossesActions extends ActionController {
                 }
                 // setup user by sms }
 
+                touchCross($invitation['cross_id'], $user_id);
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -236,6 +268,7 @@ class CrossesActions extends ActionController {
                 );
                 $result['read_only'] = false;
                 $result['action'] = 'singin';
+                touchCross($invitation['cross_id'], $user_id);
                 apiResponse($result);
             }
             // 已登录 初次点击Token   身份连接状态  登录状态    帐号弹出窗操作
@@ -279,6 +312,7 @@ class CrossesActions extends ActionController {
                 }
                 // setup user by sms }
 
+                touchCross($invitation['cross_id'], $user_id);
                 apiResponse($result);
             }
         }
@@ -304,6 +338,9 @@ class CrossesActions extends ActionController {
         $invitation = $modExfee->getInvitationByExfeeIdAndToken($exfee_id, $token);
         // return
         if ($invitation) {
+            if (isset($invitation->identity->connected_user_id)) {
+                touchCross($cross_id, $invitation->identity->connected_user_id);
+            }
             apiResponse(['invitation' => $invitation]);
         }
         apiError(404, 'invitation_not_found', 'Invitation Not Found');
@@ -345,11 +382,12 @@ class CrossesActions extends ActionController {
         {
             $crossHelper=$this->getHelperByName('cross');
             $cross=$crossHelper->getCross($cross_id);
+            touchCross($cross_id, $result['uid']);
             if (@$gthResult['over_quota']) {
                 apiResponse([
                     'cross'            => $cross,
                     'exfee_over_quota' => EXFEE_QUOTA_SOFT_LIMIT,
-                ], '206');    
+                ], '206');
             }
             apiResponse(array("cross"=>$cross));
         }
@@ -417,6 +455,7 @@ class CrossesActions extends ActionController {
             foreach ($cross->exfee->invitations as $i => $invitation) {
                 $cross->exfee->invitations[$i]->token = '';
             }
+            touchCross($cross_id, $result['uid']);
             apiResponse(['cross' => $cross]);
         }
         apiError(500, 'server_error', "Can't Edit this Cross.");
@@ -447,6 +486,7 @@ class CrossesActions extends ActionController {
         if ($modCross->archiveCrossByCrossIdAndUserId($cross_id, $result['uid'], $archive)) {
             $cross = $hlpCross->getCross($cross_id);
             if ($cross) {
+                touchCross($cross_id, $result['uid']);
                 apiResponse(['cross' => $cross]);
             }
         }
@@ -477,7 +517,8 @@ class CrossesActions extends ActionController {
         $result = $modCross->deleteCrossByCrossIdAndUserId($cross_id, $result['uid']);
 
         if ($result) {
-           apiResponse(['cross_id' => $cross_id]); 
+            touchCross($cross_id, $result['uid']);
+            apiResponse(['cross_id' => $cross_id]);
         } else if ($result === false) {
             apiError(400, 'param_error', "Can't Edit this Cross.");
         }

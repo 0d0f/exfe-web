@@ -16,6 +16,17 @@ $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 // }
 
 
+// redis connection pool {
+
+$redis = new Redis();
+$redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
+
+$redis_cache = new Redis();
+$redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
+
+// }
+
+
 function getHashedFilePath($filename = '') {
     // do hash
     $hashed_name = md5(json_encode(array(
@@ -76,21 +87,39 @@ function apiResponse($object, $code = 200) {
 
 // cross touch at {
 
-function getTouchAt($object_id, $user_id) {
-
+function getObjectTouchTime($object_type, $object_id, $user_id) {
+    global $redis;
+    if ($object_type && $object_id && $user_id) {
+        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
+        $value = $redis->get($key);
+        return $value ?: null;
+    }
+    return null;
 }
 
-function setTouchAt($object_id, $user_id) {
+function touchObject($object_type, $object_id, $user_id) {
+    global $redis;
+    if ($object_type && $object_id && $user_id) {
+        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
+        $value = time();
+        $redis->SET($key, $value);
+        return $value;
+    }
+    return null;
+}
 
+function getCrossTouchTime($cross_id, $user_id) {
+    return getObjectTouchTime('cross', $cross_id, $user_id);
+}
+
+function touchCross($cross_id, $user_id) {
+    return touchObject('cross', $cross_id, $user_id);
 }
 
 // }
 
 
 // common redis cache access by @leaskh {
-
-$redis_cache = new Redis();
-$redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
 
 function getCache($key) {
     global $redis_cache;
@@ -123,40 +152,35 @@ function deepClone($object) {
 
 // set and get cross update times {
 
-function getUpdate($cross_id){
-    if(intval($cross_id)>0)
-    {
-        $key=$cross_id;
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $update=json_decode($redis->HGET("cross:updated",$key),true);
+function getUpdate($cross_id) {
+    global $redis;
+    if (intval($cross_id) > 0) {
+        $key    = $cross_id;
+        $update = json_decode($redis->HGET('cross:updated', $key), true);
         return $update;
     }
 }
 
 function mgetUpdate($cross_ids) {
-    $fields=implode($cross_ids," ");
-    $redis = new Redis();
-    $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-    if(sizeof($cross_ids)>0)
-    {
-        $key=$cross_id;
-        $update=$redis->HMGET("cross:updated",$cross_ids);
+    global $redis;
+    $fields = implode($cross_ids, ' ');
+    if (sizeof($cross_ids) > 0) {
+        $key    = $cross_id;
+        $update = $redis->HMGET('cross:updated', $cross_ids);
         return $update;
     }
 }
 
 function saveUpdate($cross_id, $updated) {
-    if(intval($cross_id) > 0) {
-        $key = $cross_id;
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $update = json_decode($redis->HGET("cross:updated",$key),true);
-        foreach($updated as $k => $v)
+    global $redis;
+    if (intval($cross_id) > 0) {
+        $key    = $cross_id;
+        $update = json_decode($redis->HGET('cross:updated', $key), true);
+        foreach ($updated as $k => $v) {
             $update[$k] = $v;
-
-        $update_json=json_encode($update);
-        $redis->HSET("cross:updated",$key,$update_json);
+        }
+        $update_json = json_encode($update);
+        $redis->HSET('cross:updated', $key, $update_json);
     }
 }
 
