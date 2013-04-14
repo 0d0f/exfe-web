@@ -42,7 +42,7 @@ addScript([
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.2'],
     ['xidentity',     '0.0.3'],
-    ['xdialog',       '0.1.12'],
+    ['xdialog',       '0.1.13'],
     ['datepanel',     '0.1.2'],
     ['mappanel',      '0.0.8'],
     ['global',        '0.0.5'],
@@ -56,7 +56,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.16'],
+    ['profile',       '0.1.17'],
     ['user',          '0.0.8'],
 ]);
 
