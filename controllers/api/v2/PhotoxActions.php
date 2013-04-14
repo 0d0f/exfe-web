@@ -19,8 +19,13 @@ class PhotoxActions extends ActionController {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
             }
             $modPhotos = $this->getModelByName('Photo');
-            $photox    = $modPhotos->getPhotoxById($params['id']);
+            $photox    = $modPhotos->getPhotoxById(
+                $params['id'],
+                isset($params['sort'])  ? $params['sort']        : '',
+                isset($params['limit']) ? (int) $params['limit'] : 0
+            );
             $responses = $modPhotos->getResponsesByPhotoxId($params['id']);
+            touchCross($params['id'], $result['uid']);
             apiResponse(['photox' => $photox, 'likes' => $responses]);
         }
         apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
@@ -45,7 +50,7 @@ class PhotoxActions extends ActionController {
         }
         // check identity
         $identity_id     = @ (int) $_GET['identity_id'];
-        $objIdentities   = []; 
+        $objIdentities   = [];
         $photo_providers = ['facebook', 'dropbox', 'flickr', 'instagram'];
         foreach ($user->identities as $identity) {
             if ($identity->status === 'CONNECTED'
@@ -73,9 +78,9 @@ class PhotoxActions extends ActionController {
             if (isset($album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"])) {
                 $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"]++;
             } else {
-                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1; 
+                $album_ids["{$raItem['provider']}_{$raItem['external_album_id']}"] = 1;
             }
-            $photo_ids["{$rpItem['provider']}_{$rpItem['external_id']}"] = true;
+            $photo_ids["{$raItem['provider']}_{$raItem['external_id']}"] = $raItem['id'];
         }
         // get albums
         $rawAlbums = [];
@@ -91,7 +96,7 @@ class PhotoxActions extends ActionController {
                             $rawResult = ['albums' => [], 'photos' => $rawResult];
                         }
                     } else {
-                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);    
+                        $rawResult = $modPhoto->getAlbumsFromFacebook($objIdentity->id);
                     }
                     break;
                 case 'dropbox':
@@ -111,7 +116,7 @@ class PhotoxActions extends ActionController {
                     if ($album_id) {
                         $rawResult = null;
                         if ($album_id === "{$objIdentity->id}") {
-                            $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);    
+                            $rawResult = $modPhoto->getPhotosFromInstagram($objIdentity->id);
                         }
                         if ($rawResult !== null) {
                             $rawResult = ['albums' => [], 'photos' => $rawResult['photos']];
@@ -136,10 +141,10 @@ class PhotoxActions extends ActionController {
                         if ($album['provider'] === 'instagram') {
                             $album['imported']  =  $album_ids["{$album['provider']}_{$album['external_id']}"];
                         } else {
-                            $album['imported']  =  -1;    
+                            $album['imported']  =  -1;
                         }
                     } else {
-                        $album['imported'] = 0;    
+                        $album['imported'] = 0;
                     }
                     if (($key = strtotime($album['updated_at']))
                      && !isset($rawAlbums[$key])) {
@@ -150,7 +155,12 @@ class PhotoxActions extends ActionController {
                 }
                 $rawPhotos = $rawResult['photos'];
                 foreach ($rawPhotos as $rpI => $rpItem) {
-                    $rawPhotos[$rpI]->imported = isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"]) ? 1 : 0;
+                    if (isset($photo_ids["{$rpItem->provider}_{$rpItem->external_id}"])) {
+                        $rawPhotos[$rpI]->id = $photo_ids["{$rpItem->provider}_{$rpItem->external_id}"];
+                        $rawPhotos[$rpI]->imported = 1;
+                    } else {
+                        $rawPhotos[$rpI]->imported = 0;
+                    }
                 }
             } else if ($rawResult === null) {
                 $failed[]  = $objIdentity;
@@ -178,7 +188,7 @@ class PhotoxActions extends ActionController {
             apiError(404, 'photo_not_found');
         }
         if (count($ids) > 10) {
-            apiError(400, 'max 10 photos per request');   
+            apiError(400, 'max 10 photos per request');
         }
         // check signin
         $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
@@ -261,10 +271,9 @@ class PhotoxActions extends ActionController {
             apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }
         // check args
-        $album_id     = @ $_POST['album_id']       ?: '';
-        $min_id       = @ $_POST['min_id']         ?: '';
-        $max_id       = @ $_POST['max_id']         ?: '';
-        $stream_id    = @ $_POST['photostream_id'] ?: '';
+        $album_id     = @ $_POST['album_id']         ?: '';
+        $ids          = @ json_decode($_POST['ids']) ?: [];
+        $stream_id    = @ $_POST['photostream_id']   ?: '';
         $identity_id  = 0;
         // check identity
         if ($stream_id) {
@@ -317,19 +326,13 @@ class PhotoxActions extends ActionController {
                 $result = $modPhoto->addDropboxAlbumToCross($album_id, $cross_id, $identity_id);
                 break;
             case 'instagram':
-                if (!$min_id || !$max_id) {
-                    apiError(400, 'no_min_id_or_max_id', '');
+                if (!$ids || !is_array($ids)) {
+                    apiError(400, 'error_ids_array', '');
                 }
-                $arr_min_id = explode('_', $min_id);
-                $arr_max_id = explode('_', $max_id);
-                $min_id = (int) array_shift($arr_min_id);
-                $max_id = (int) array_shift($arr_max_id);
                 $photos = $modPhoto->getPhotosFromInstagram($identity_id);
                 if ($photos) {
                     foreach ($photos['photos'] as $i => $photo) {
-                        $arr_cur_id = explode('_', $photo->external_id);
-                        $cur_id = (int) array_shift($arr_cur_id);
-                        if ($min_id > $cur_id || $max_id < $cur_id) {
+                        if (!in_array($photo->external_id, $ids)) {
                             unset($photos['photos'][$i]);
                         }
                     }
@@ -352,6 +355,7 @@ class PhotoxActions extends ActionController {
         }
         // get photos
         $photox = $modPhoto->getPhotoxById($cross_id);
+        touchCross($cross_id, $user_id);
         apiResponse(['photox' => $photox]);
     }
 
@@ -373,12 +377,15 @@ class PhotoxActions extends ActionController {
         $modPhoto = $this->getModelByName('Photo');
         $provider = @ $_POST['provider'] ?: '';
         $album_id = @ $_POST['album_id'] ?: '';
+        $photo_id = @ json_decode($_POST['photo_ids']) ?: [];
         $modPhoto = $this->getModelByName('Photo');
-        $result   = $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId(
-            $cross_id, $provider, $album_id
-        );
+        $result   = isset($_POST['photo_ids'])
+                  ? $modPhoto->delPhotosFromPhotoxByPhotoxIdAndPhotoIds($cross_id, $photo_id)
+                  : $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId($cross_id, $provider, $album_id);
         if ($result) {
-            apiResponse([]);    
+            $photox = $modPhoto->getPhotoxById($cross_id);
+            touchCross($cross_id, $user_id);
+            apiResponse(['photox' => $photox]);
         }
         apiError(400, 'param_error', "Please retry later.");
     }
@@ -403,6 +410,7 @@ class PhotoxActions extends ActionController {
             }
             $modPhotos = $this->getModelByName('Photo');
             $responses = $modPhotos->getResponsesByPhotoxId($id);
+            touchCross($id, $result['uid']);
             apiResponse(['likes' => $responses]);
         }
         apiError(400, 'param_error', "The PhotoX you're requesting is not found.");
@@ -452,6 +460,7 @@ class PhotoxActions extends ActionController {
         $response = @ $_POST['LIKE'] === 'false' ? '' : 'LIKE';
         $result   = $modPhoto->responseToPhoto($id, $identity_id, $response);
         if ($result) {
+            touchCross($cross_id, $user_id);
             apiResponse(['like' => $result]);
         }
         apiError(400, 'error_responsing_photo');

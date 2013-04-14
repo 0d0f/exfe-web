@@ -4,88 +4,27 @@ require_once dirname(__FILE__)."/Classes/EFObject.php";
 
 date_default_timezone_set('UTC');
 
-/**
- * 国际化，取用户浏览器语言
- * @param NULL
- * @return $local
-*/
-$locale = "en_US"; // 默认en_US
-if(array_key_exists("locale", $_COOKIE)){
-    $locale = $_COOKIE["locale"];
-}else if(array_key_exists("HTTP_ACCEPT_LANGUAGE", $_SERVER)){
+
+// get user locale {
+$locale = 'en_US'; // 默认en_US
+if (isset($_COOKIE['locale'])) {
+    $locale = $_COOKIE['locale'];
+} else if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
     $locale = Locale::acceptFromHttp($_SERVER['HTTP_ACCEPT_LANGUAGE']);
 }
 $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
+// }
 
 
-/**
- * 判断并获取POST数据
- * @param $name:field name;
- * @return 如果存在，则返回POST的数据，否则返回空!
-*/
-function exPost($name)
-{
-    if (array_key_exists($name,$_POST)) {
-        return $_POST[$name];
-    } else {
-        return ('');
-    }
-}
+// redis connection pool {
 
+$redis = new Redis();
+$redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
 
-/**
- * 随机产生字符串。
- * @param: string length
- * @return: rand string.
- */
-function randStr($len=5, $type="normal")
-{
-    switch($type){
-        case "num":
-            $chars = '0123456789';
-            $chars_len = 10;
-            break;
-        case "lowercase":
-            $chars = 'abcdefghijklmnopqrstuvwxyz';
-            $chars_len = 26;
-            break;
-        case "uppercase":
-            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            $chars_len = 26;
-            break;
-        default:
-            $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
-            $chars_len = 62;
-            break;
-    }
-    $string = '';
-    for($len; $len>=1; $len--)
-    {
-        $position = rand() % $chars_len;//62 is the length of $chars
-        $string .= substr($chars, $position, 1);
-    }
-    return $string;
-}
+$redis_cache = new Redis();
+$redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
 
-
-/**
- * 取得微秒时间
- * @param NULL
- * @return: float microtime value.
- **/
-function getMicrotime()
-{
-    list($usec, $sec) = explode(" ", microtime());
-    return ((float)$usec + (float)$sec);
-}
-
-
-function reverse_escape($str)
-{
-  $search=array("\\\\","\\0","\\n","\\r","\Z","\'",'\"');
-  $replace=array("\\","\0","\n","\r","\x1a","'",'"');
-  return str_replace($search,$replace,$str);
-}
+// }
 
 
 function getHashedFilePath($filename = '') {
@@ -130,44 +69,6 @@ function getDefaultAvatarUrl($name) {
 }
 
 
-function createToken(){
-    $randString = randStr(16);
-    $hashString = md5(base64_encode(pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
-    return md5($hashStr.$randString.getMicrotime().uniqid()).time();
-}
-
-
-/**
- * @todo: removing!!!!!!!
- * @by: @leaskh
- */
-function json_encode_nounicode($code)
-{
-    $code = json_encode(urlencodeAry($code));
-    return urldecode($code);
-}
-
-
-function urlencodeAry($data)
-{
-    if(is_array($data))
-    {
-        foreach($data as $key=>$val)
-        {
-            if(is_numeric($val))
-                $data[$key] = $val;
-            else
-                $data[$key] = urlencodeAry($val);
-        }
-        return $data;
-    }
-    else
-    {
-        return urlencode($data);
-    }
-}
-
-
 function apiError($code,$errorType,$errorDetail = '') {
     $meta["code"]=$code;
     $meta["errorType"]=$errorType;
@@ -184,24 +85,41 @@ function apiResponse($object, $code = 200) {
 }
 
 
-function mgetUpdate($cross_ids)
-{
-    $fields=implode($cross_ids," ");
-    $redis = new Redis();
-    $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-    if(sizeof($cross_ids)>0)
-    {
-        $key=$cross_id;
-        $update=$redis->HMGET("cross:updated",$cross_ids);
-        return $update;
+// cross touch at {
+
+function getObjectTouchTime($object_type, $object_id, $user_id) {
+    global $redis;
+    if ($object_type && $object_id && $user_id) {
+        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
+        $value = $redis->get($key);
+        return $value ?: null;
     }
+    return null;
 }
+
+function touchObject($object_type, $object_id, $user_id) {
+    global $redis;
+    if ($object_type && $object_id && $user_id) {
+        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
+        $value = time();
+        $redis->SET($key, $value);
+        return $value;
+    }
+    return null;
+}
+
+function getCrossTouchTime($cross_id, $user_id) {
+    return getObjectTouchTime('cross', $cross_id, $user_id);
+}
+
+function touchCross($cross_id, $user_id) {
+    return touchObject('cross', $cross_id, $user_id);
+}
+
+// }
 
 
 // common redis cache access by @leaskh {
-
-$redis_cache = new Redis();
-$redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
 
 function getCache($key) {
     global $redis_cache;
@@ -232,32 +150,44 @@ function deepClone($object) {
 }
 
 
-function getUpdate($cross_id){
-    if(intval($cross_id)>0)
-    {
-        $key=$cross_id;
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $update=json_decode($redis->HGET("cross:updated",$key),true);
+// set and get cross update times {
+
+function getUpdate($cross_id) {
+    global $redis;
+    if (intval($cross_id) > 0) {
+        $key    = $cross_id;
+        $update = json_decode($redis->HGET('cross:updated', $key), true);
         return $update;
     }
 }
 
-
-function saveUpdate($cross_id, $updated) {
-    if(intval($cross_id) > 0) {
-        $key = $cross_id;
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        $update = json_decode($redis->HGET("cross:updated",$key),true);
-        foreach($updated as $k => $v)
-            $update[$k] = $v;
-
-        $update_json=json_encode($update);
-        $redis->HSET("cross:updated",$key,$update_json);
+function mgetUpdate($cross_ids) {
+    global $redis;
+    $fields = implode($cross_ids, ' ');
+    if (sizeof($cross_ids) > 0) {
+        $key    = $cross_id;
+        $update = $redis->HMGET('cross:updated', $cross_ids);
+        return $update;
     }
 }
 
+function saveUpdate($cross_id, $updated) {
+    global $redis;
+    if (intval($cross_id) > 0) {
+        $key    = $cross_id;
+        $update = json_decode($redis->HGET('cross:updated', $key), true);
+        foreach ($updated as $k => $v) {
+            $update[$k] = $v;
+        }
+        $update_json = json_encode($update);
+        $redis->HSET('cross:updated', $key, $update_json);
+    }
+}
+
+// }
+
+
+// cjk libs {
 
 /**
  * Dictionary:
@@ -293,18 +223,20 @@ function get_CJK_unicode_ranges() {
     );
 }
 
-
 function checkCjk($string) {
     return preg_match('/' . implode('|', get_CJK_unicode_ranges()) . '/u', $string);
 }
 
+// }
+
+
+// data validate by @leask {
 
 function formatName($string, $length = 30) {
     $string = mb_substr($string, 0, $length, 'utf8');
     $string = preg_replace('/\r\n|\n\r|\r|\n/', ' ',  $string);
     return $string;
 }
-
 
 function formatTitle($string, $length = 144) {
     $string = trim(mb_substr($string, 0, $length, 'utf8'));
@@ -313,19 +245,18 @@ function formatTitle($string, $length = 144) {
     return $string;
 }
 
-
 function formatDescription($string, $length = 233) {
     $string = trim($length ? mb_substr($string, 0, $length, 'utf8') : $string);
     $string = preg_replace('/\r\n|\n\r|\r|\n/', "\n", $string);
     return $string;
 }
 
-
 function validatePassword($string) {
     return mb_strlen($string, 'utf8') >= 4;
 }
 
-
 function validatePhoneNumber($string) {
     return preg_match('/^\+[0-9]{5,15}$/', $string);
 }
+
+// }

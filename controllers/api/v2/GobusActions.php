@@ -42,7 +42,7 @@ class GobusActions extends ActionController {
         $modIdentity = $this->getModelByName('identity');
         $modUser     = $this->getModelByName('User');
         $crossHelper = $this->getHelperByName('cross');
-        
+
         // grep inputs
         $cross_str = @file_get_contents('php://input');
         $cross = json_decode($cross_str);
@@ -70,7 +70,7 @@ class GobusActions extends ActionController {
                 'avatar_filename'   => $cross->by_identity->avatar_filename
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
-        } 
+        }
         if (!$identity) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'error_identity', 'error_identity');
@@ -102,16 +102,17 @@ class GobusActions extends ActionController {
         $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
             header('HTTP/1.1 500 Internal Server Error');
-            apiError(500, 'gather_error', "Can't gather this Cross.");        
+            apiError(500, 'gather_error', "Can't gather this Cross.");
         }
 
         if (@$gthResult['over_quota']) {
             apiResponse([
                 'cross_id'         => $cross_id,
                 'exfee_over_quota' => EXFEE_QUOTA_SOFT_LIMIT,
-            ], '206');    
+            ], '206');
         }
 
+        touchCross($cross_id, $user_id);
         apiResponse(['cross_id' => $cross_id]);
     }
 
@@ -158,7 +159,7 @@ class GobusActions extends ActionController {
                 'avatar_filename'   => $cross->by_identity->avatar_filename
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
-        } 
+        }
         if (!$identity) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'error_identity', 'error_identity');
@@ -244,6 +245,7 @@ class GobusActions extends ActionController {
             $rtResult['exfee_over_quota'] = EXFEE_QUOTA_SOFT_LIMIT;
             $code = 206;
         }
+        touchCross($cross_id, $user_id);
         apiResponse($rtResult, $code);
     }
 
@@ -282,7 +284,7 @@ class GobusActions extends ActionController {
                 'external_username' => $external_id,
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
-        } 
+        }
         if (!$identity) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'error_identity', 'error_identity');
@@ -368,7 +370,7 @@ class GobusActions extends ActionController {
                 $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $rawIdentity);
                 $provider          = preg_replace('/^.*@([^@]*)$/', '$1', $rawIdentity);
                 if ($external_username && $provider) {
-                    $excInvitation = new stdClass(); 
+                    $excInvitation = new stdClass();
                     $excInvitation->identity = new stdClass();
                     $excInvitation->identity->external_username = strtolower($external_username);
                     $excInvitation->identity->provider          = strtolower($provider);
@@ -384,6 +386,7 @@ class GobusActions extends ActionController {
         $modExfee = $this->getModelByName('exfee');
         $modExfee->updateExfeeTime($cross->exfee->id);
         // return
+        touchCross($cross_id, $user_id);
         apiResponse(['post' => $post]);
     }
 

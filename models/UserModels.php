@@ -7,6 +7,50 @@ class UserModels extends DataModel {
     public  $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
 
 
+    function randStr($len = 5, $type = 'normal') {
+        switch($type){
+            case 'num':
+                $chars     = '0123456789';
+                $chars_len = 10;
+                break;
+            case 'lowercase':
+                $chars     = 'abcdefghijklmnopqrstuvwxyz';
+                $chars_len = 26;
+                break;
+            case 'uppercase':
+                $chars     = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                $chars_len = 26;
+                break;
+            default:
+                $chars     = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+                $chars_len = 62;
+        }
+        $string = '';
+        for ($len; $len >= 1; $len--) {
+            $position = rand() % $chars_len;
+            $string  .= substr($chars, $position, 1);
+        }
+        return $string;
+    }
+
+
+    public function getMicrotime() {
+        list($usec, $sec) = explode(" ", microtime());
+        return (float) $usec + (float) $sec;
+    }
+
+
+    public function createToken() {
+        $randString = $this->randStr(16);
+        $hashString = md5(base64_encode(
+            pack('N5', mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())
+        ));
+        return md5(
+            $hashStr . $randString . $this->getMicrotime() . uniqid()
+        ) . time();
+    }
+
+
     protected function encryptPassword($password, $password_salt) {
         return md5($password.( // compatible with the old users
             $password_salt === $this->salt ? $this->salt
@@ -216,7 +260,7 @@ class UserModels extends DataModel {
     public function addUser($password = '', $name = '', $bio = '') {
         $passwordSql = '';
         if (strlen($password)) {
-            $passwordSalt = md5(createToken());
+            $passwordSalt = md5($this->createToken());
             $passwordInDb = $this->encryptPassword($password, $passwordSalt);
             $passwordSql  = "`encrypted_password` = '{$passwordInDb}',
                              `password_salt`      = '{$passwordSalt}',";
@@ -227,7 +271,7 @@ class UserModels extends DataModel {
             $nameSql      = "`name` = '{$name}',";
         }
         $bioSql  = '';
-        $bio  = formatDescription($bio);  
+        $bio  = formatDescription($bio);
         if (strlen($bio)) {
             $bioSql       = "`bio`  = '{$bio}',";
         }
@@ -515,7 +559,7 @@ class UserModels extends DataModel {
                 $workflow['user_id'] = $user_id;
                 if ($device && $device_callback) {
                     if (!isset($workflow['callback'])) {
-                        $workflow['callback'] = [];    
+                        $workflow['callback'] = [];
                     }
                     $workflow['callback']['oauth_device']          = $device;
                     $workflow['callback']['oauth_device_callback'] = $device_callback;
@@ -537,7 +581,7 @@ class UserModels extends DataModel {
                 }
                 if ($args) {
                     if (!isset($workflow['callback'])) {
-                        $workflow['callback'] = [];    
+                        $workflow['callback'] = [];
                     }
                     $workflow['callback']['args'] = $args;
                 }
@@ -852,7 +896,7 @@ class UserModels extends DataModel {
             return false;
         }
         $password = $this->encryptPassword(
-            $password, $passwordSalt = md5(createToken())
+            $password, $passwordSalt = md5($this->createToken())
         );
         $sqlName  = $name === '' ? '' : ", `name` = '{$name}'";
         delCache("users:{$user_id}");

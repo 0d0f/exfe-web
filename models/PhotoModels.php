@@ -57,7 +57,7 @@ class PhotoModels extends DataModel {
     }
 
 
-    public function getPhotoxById($id) {
+    public function getPhotoxById($id, $sort = '', $limit = 0) {
         //
         $hlpExfee = $this->getHelperByName('Exfee');
         $exfee_id = $hlpExfee->getExfeeIdByCrossId($id);
@@ -70,9 +70,18 @@ class PhotoModels extends DataModel {
             }
         }
         //
+        switch ($sort) {
+            case 'imported_time_desc':
+                $sort = '`id` DESC';
+                break;
+            default:
+                $sort = '`external_created_at`';
+        }
+        $limit = (int) $limit;
+        $limit = $limit ? "LIMIT {$limit}" : '';
         $photos = [];
         $rawPhotos = $this->getAll(
-            "SELECT * FROM `photos` WHERE `cross_id` = {$id}"
+            "SELECT * FROM `photos` WHERE `cross_id` = {$id} ORDER BY {$sort} {$limit}"
         );
         foreach ($rawPhotos ?: [] as $rawPhoto) {
             if ($rawPhoto['provider'] === 'photostream') {
@@ -93,7 +102,7 @@ class PhotoModels extends DataModel {
 
     public function getPhotoIdsByPhotoxId($id) {
         $rawPhotos = $id ? $this->getAll(
-            "SELECT   `provider`, `external_album_id`, `external_id`
+            "SELECT   `id`, `provider`, `external_album_id`, `external_id`
              FROM     `photos`
              WHERE    `cross_id` = {$id}"
         ) : null;
@@ -107,6 +116,15 @@ class PhotoModels extends DataModel {
              WHERE `cross_id`           =  {$id}
              AND   `provider`           = '{$provider}'
              AND   `external_album_id`  = '{$external_album_id}'"
+        ) : null;
+    }
+
+
+    public function delPhotosFromPhotoxByPhotoxIdAndPhotoIds($id, $photo_ids) {
+        $photo_ids = implode(", ", $photo_ids);
+        return $id && $photo_ids ? $this->query(
+            "DELETE FROM `photos`
+             WHERE `cross_id` = {$id} AND `id` in ({$photo_ids})"
         ) : null;
     }
 
@@ -436,7 +454,7 @@ class PhotoModels extends DataModel {
                                 ]);
                             } else {
                                 $idsGet[] = $rItem;
-                            }   
+                            }
                         }
                         if ($idsGet) {
                             $rawGet = $this->getPhotosFromDropbox($identity_id, $album_id, $idsGet);

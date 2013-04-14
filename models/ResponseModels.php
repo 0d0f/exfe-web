@@ -77,7 +77,7 @@ class ResponseModels extends DataModel {
                         $this->query(
                             "UPDATE `responses`
                              SET    `response_id` = {$opt_idx},
-                                    `updated_at`  = NOW
+                                    `updated_at`  = NOW()
                              WHERE  `id`          = {$cur_rsp->id}"
                         );
                         return $this->getResponseByObjectTypeAndObjectIdAndIdentityId(
