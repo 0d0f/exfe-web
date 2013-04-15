@@ -6,14 +6,14 @@ class VersionsActions extends ActionController {
         header('Content-Type: application/json; charset=UTF-8');
         apiResponse([
             'ios' => [
-                'version'     => '2.1',
-                'description' => 'ageafe',
-                'url'         => 'https://itunes.apple.com/us/app/exfe/id514026604',
+                'version'     => CLIENT_IOS_VERSION,
+                'description' => CLIENT_IOS_DESCRIPTION,
+                'url'         => CLIENT_IOS_URL,
             ],
             'andriod' => [
-                'version'     => '',
-                'description' => '',
-                'url'         => '',
+                'version'     => CLIENT_ANDROID_VERSION,
+                'description' => CLIENT_ANDROID_DESCRIPTION,
+                'url'         => CLIENT_ANDROID_URL,
             ]
         ]);
     }
