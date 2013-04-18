@@ -1,0 +1,116 @@
+#!/usr/bin/env node
+
+// by @leaskh
+
+// config
+var binFolder = 'bin';
+var sources = [
+    'APIFrontController.php',
+    'ActionController.php',
+    'Classes',
+    'DataModel.php',
+    'FrontController.php',
+    'apiindex.php',
+    'common.php',
+    'config.php',
+    'controllers',
+    'default_avatar_portrait',
+    'helpers',
+    'index.php',
+    'intl',
+    'lib',
+    'models',
+    'share',
+    'update_autocomplete_index.php',
+    'update_caches.php',
+    'update_cross_time.php',
+    'update_geoip_datas.php',
+    'update_gravatars.php',
+    'update_old_datas.php',
+    'views',
+    'xbgutilitie'
+];
+
+// include
+var fs   = require('fs');
+var ncp  = require('ncp').ncp;
+var exec = require('child_process').exec;
+
+// define
+var print = console.log;
+
+var rmDir = function(dirPath) {
+    try {
+        var files = fs.readdirSync(dirPath);
+        if (files.length > 0) {
+            for (var i = 0; i < files.length; i++) {
+                var filePath = dirPath + '/' + files[i];
+                if (fs.statSync(filePath).isFile()) {
+                    fs.unlinkSync(filePath);
+                } else {
+                    rmDir(filePath);
+                }
+            }
+        }
+        return fs.rmdirSync(dirPath);
+    } catch (e) {
+        return false;
+    }
+};
+
+// flush bin
+var flush = function() {
+    print('* Flush bin folder');
+    rmDir(dirPath);
+    fs.mkdirSync(dirPath);
+    var child = exec('mkdir bin', make);
+    try {
+        fs.readdirSync(dirPath);
+    } catch (e) {
+        print('ERROR: Failed on making bin folder');
+        return 1;
+    }
+    make();
+};
+
+// lint
+var lint = function() {
+    print('* Lint codes');
+    var cmd = 'find ' + dirPath + ' -iname "*.php" -depth -exec php -l {} \\; | grep -v "No syntax errors detected"';
+    print(cmd);
+    var child = exec(cmd, function (error, stdout, stderr) {
+        if (stdout) {
+            print(stdout);
+        }
+        if (stderr) {
+            print(stderr);
+        }
+        if (error || stdout) {
+            print('ERROR: Failed linting codes');
+        } else {
+            print('OK');
+        }
+    });
+    // make();
+};
+
+// make codes
+var make = function() {
+    print('* Make codes');
+    for (var i in sources) {
+        var curPath = sources[i];
+        var error = null;
+        ncp(curPath, dirPath + '/' + sources[i], function(err) {
+            error = err;
+        });
+        if (error) {
+            print('ERROR: Failed on making codes');
+        }
+    }
+    lint();
+};
+
+// start
+print('Build started:');
+var dirPath = __dirname + '/' + binFolder;
+flush();
