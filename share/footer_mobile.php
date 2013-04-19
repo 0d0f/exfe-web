@@ -12,7 +12,9 @@ addScript([
     ['common',        '0.0.3'],
     ['zepto',         '1.0.0'],
     ['store',         '1.3.5'],
+    ['util',          '0.2.6'],
     ['humantime',     '0.0.6'],
+    ['tween',         '10.0.0'],
 ]);
 
 echo "  <script>\n";
