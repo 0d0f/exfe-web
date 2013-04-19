@@ -17,7 +17,6 @@ $sources = [
     'FrontController.php',
     'apiindex.php',
     'common.php',
-    'config.php',
     'controllers',
     'default_avatar_portrait',
     'helpers',
