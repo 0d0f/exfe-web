@@ -7,6 +7,7 @@
       img_url: '<?php echo IMG_URL; ?>',
       site_url: '<?php echo SITE_URL; ?>',
       streaming_api_url: '<?php echo STREAMING_API_URL; ?>',
+      app_scheme: '<?php echo APP_SCHEME; ?>',
       timestamp: <?php echo STATIC_CODE_TIMESTAMP; ?>,
       backgrounds: <?php echo json_encode($this->getVar('backgrounds')); ?>,
       location: <?php echo json_encode($this->getVar('location')); ?>,

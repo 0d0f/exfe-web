@@ -1,9 +1,0 @@
-<?php
-$username = 'x@exfe.com';
-$password = 'V:%wGHsuOXI}x)il';
-$interval=10;
-
-define("POSTKEY","1263d65d53e5b1ff736d69c18dbf8851");
-define("EmailPost_link","https://exfe.com/conversation/emailsave");
-define("Mailbox_name","exfe");
-define("RESQUE_SERVER", "127.0.0.1:6379");
