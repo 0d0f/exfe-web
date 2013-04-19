@@ -1,0 +1,15 @@
+#!/bin/sh
+
+TARGET="$1"
+TAG="$2"
+
+if [ "${TARGET}" = "" ]; then
+    echo Target cannot be empty
+    exit -1
+fi
+
+cp -r ./bin/* ${TARGET}
+
+cd ${TARGET}
+git add .
+git commit -m "${TAG}" || echo '';
