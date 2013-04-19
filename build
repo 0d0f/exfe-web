@@ -1,10 +1,15 @@
-#!/usr/bin/env node
-
+#!/usr/bin/env php
+<?php
 // by @leaskh
 
+
 // config
-var binFolder = 'bin';
-var sources = [
+
+error_reporting(E_ALL ^ E_NOTICE);
+
+$binFolder = 'bin';
+
+$sources = [
     'APIFrontController.php',
     'ActionController.php',
     'Classes',
@@ -31,86 +36,98 @@ var sources = [
     'xbgutilitie'
 ];
 
-// include
-var fs   = require('fs');
-var ncp  = require('ncp').ncp;
-var exec = require('child_process').exec;
 
 // define
-var print = console.log;
 
-var rmDir = function(dirPath) {
-    try {
-        var files = fs.readdirSync(dirPath);
-        if (files.length > 0) {
-            for (var i = 0; i < files.length; i++) {
-                var filePath = dirPath + '/' + files[i];
-                if (fs.statSync(filePath).isFile()) {
-                    fs.unlinkSync(filePath);
-                } else {
-                    rmDir(filePath);
-                }
+function delDir($path) {
+    $files = array_diff(scandir($path), ['.', '..']);
+    foreach ($files as $file) {
+        $curPath = "{$path}/{$file}";
+        is_dir($curPath) ? delDir($curPath) : unlink($curPath);
+    }
+    return rmdir($path);
+}
+
+function copyDir($src, $dst) {
+    @mkdir($dst);
+    $files = array_diff(scandir($src), ['.', '..']);
+    foreach ($files as $file) {
+        copyAny("{$src}/{$file}", "{$dst}/{$file}");
+    }
+}
+
+function copyAny($src, $dst) {
+    is_dir($src) ? copyDir($src, $dst) : copy($src, $dst);
+}
+
+function lintFile($path) {
+    if (preg_match('/^.*\.php$/i', $path)) {
+        $result = shell_exec("php -l {$path}");
+        if (preg_match('/No syntax errors detected/', $result)) {
+            return 0;
+        }
+        $arrResult = explode("\n", $result);
+        foreach ($arrResult as $item) {
+            if ($item) {
+                echo "❌  $item\n";
             }
         }
-        return fs.rmdirSync(dirPath);
-    } catch (e) {
-        return false;
-    }
-};
-
-// flush bin
-var flush = function() {
-    print('* Flush bin folder');
-    rmDir(dirPath);
-    fs.mkdirSync(dirPath);
-    var child = exec('mkdir bin', make);
-    try {
-        fs.readdirSync(dirPath);
-    } catch (e) {
-        print('ERROR: Failed on making bin folder');
         return 1;
     }
-    make();
-};
+    return -1;
+}
 
-// lint
-var lint = function() {
-    print('* Lint codes');
-    var cmd = 'find ' + dirPath + ' -iname "*.php" -depth -exec php -l {} \\; | grep -v "No syntax errors detected"';
-    print(cmd);
-    var child = exec(cmd, function (error, stdout, stderr) {
-        if (stdout) {
-            print(stdout);
-        }
-        if (stderr) {
-            print(stderr);
-        }
-        if (error || stdout) {
-            print('ERROR: Failed linting codes');
-        } else {
-            print('OK');
-        }
-    });
-    // make();
-};
-
-// make codes
-var make = function() {
-    print('* Make codes');
-    for (var i in sources) {
-        var curPath = sources[i];
-        var error = null;
-        ncp(curPath, dirPath + '/' + sources[i], function(err) {
-            error = err;
-        });
-        if (error) {
-            print('ERROR: Failed on making codes');
+function lintDir($path) {
+    $files = array_diff(scandir($path), ['.', '..']);
+    foreach ($files as $file) {
+        if (lintAny("{$path}/{$file}") === 1) {
+            return 1;
         }
     }
-    lint();
-};
+    return 0;
+}
+
+function lintAny($path) {
+    return is_dir($path) ? lintDir($path) : lintFile($path);
+}
+
 
 // start
-print('Build started:');
-var dirPath = __dirname + '/' + binFolder;
-flush();
+echo "Build started:\n";
+$curDir = dirname(__FILE__);
+$binDir = "{$curDir}/{$binFolder}";
+
+
+// flush bin
+echo "* Flush bin folder\n";
+if (file_exists($binDir) && is_dir($binDir)) {
+    if (!delDir($binDir)) {
+        echo "❌  Failed on making bin folder\n";
+        return 1;
+    }
+}
+@mkdir($binDir);
+
+
+// lint
+echo "* Lint codes\n";
+foreach ($sources as $item) {
+    if (lintAny("{$curDir}/{$item}") === 1) {
+        return 1;
+    }
+}
+
+
+// make
+echo "* Make codes\n";
+foreach ($sources as $item) {
+    if (copyAny("{$curDir}/{$item}", "{$binDir}/{$item}")) {
+        echo "❌  Failed making codes\n";
+        return 1;
+    }
+}
+
+
+// finished
+echo "⭕ Built successfully\n";
+return 0;
