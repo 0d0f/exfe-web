@@ -21,7 +21,7 @@ class ExfeeModels extends DataModel {
         if (!$rawExfee) {
             $rawExfee = $this->getAll(
                 "SELECT * FROM `invitations`
-                 WHERE `cross_id` = {$id} AND `state` <> 4"
+                 WHERE `exfee_id` = {$id} AND `state` <> 4"
             );
             setCache($key, $rawExfee);
         }
@@ -35,7 +35,7 @@ class ExfeeModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('identity');
         // get invitations
         $rawExfee = $withRemoved
-                  ? $this->getAll("SELECT * FROM `invitations` WHERE `cross_id` = {$id}")
+                  ? $this->getAll("SELECT * FROM `invitations` WHERE `exfee_id` = {$id}")
                   : $this->getRawExfeeById($id);
         $objExfee = new Exfee($id);
         $objExfee->hosts = [];
@@ -120,7 +120,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['by_identity_id'] = (int) $rawInvitation['by_identity_id'];
                 $rawInvitation['host']           = (int) $rawInvitation['host'];
                 $rawInvitation['mates']          = (int) $rawInvitation['mates'];
-                $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
+                $rawInvitation['exfee_id']       = (int) $rawInvitation['exfee_id'];
                 $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
                 $rawInvitation['valid']          = $rawInvitation['state'] !== 4
                                                 && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
@@ -137,7 +137,7 @@ class ExfeeModels extends DataModel {
         $exfee_id = $this->getExfeeIdByCrossId($cross_id);
         if ($exfee_id && $identity_id) {
             $rawInvitation = $this->getRow(
-                "SELECT * FROM `invitations` WHERE `cross_id` = {$exfee_id}
+                "SELECT * FROM `invitations` WHERE `exfee_id` = {$exfee_id}
                  AND `identity_id` = {$identity_id} AND `state` <> 4"
             );
             if ($rawInvitation) {
@@ -147,7 +147,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['by_identity_id'] = (int) $rawInvitation['by_identity_id'];
                 $rawInvitation['host']           = (int) $rawInvitation['host'];
                 $rawInvitation['mates']          = (int) $rawInvitation['mates'];
-                $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
+                $rawInvitation['exfee_id']       = (int) $rawInvitation['exfee_id'];
                 $rawInvitation['cross_id']       = (int) $cross_id;
                 $rawInvitation['valid']          = true;
                 return $rawInvitation;
@@ -171,7 +171,7 @@ class ExfeeModels extends DataModel {
             }
             $rawInvitation = $this->getRow(
                 "SELECT * FROM `invitations`
-                 WHERE `cross_id` = $exfee_id
+                 WHERE `exfee_id` =  {$exfee_id}
                  AND   `token` LIKE '{$token}'"
             );
             if ($rawInvitation) {
@@ -182,7 +182,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['by_identity_id'] = (int) $rawInvitation['by_identity_id'];
                 $rawInvitation['host']           = (int) $rawInvitation['host'];
                 $rawInvitation['mates']          = (int) $rawInvitation['mates'];
-                $rawInvitation['exfee_id']       = (int) $rawInvitation['cross_id'];
+                $rawInvitation['exfee_id']       = (int) $rawInvitation['exfee_id'];
                 $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
                 $rawInvitation['valid']          = $rawInvitation['state'] !== 4
                                                 && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
@@ -232,7 +232,7 @@ class ExfeeModels extends DataModel {
     public function getIdentityIdsByExfeeId($exfee_id) {
         $identity_ids = [];
         $sql          = "SELECT `identity_id` FROM `invitations`
-                         WHERE  `cross_id` = {$exfee_id} AND `state` <> 4";
+                         WHERE  `exfee_id` = {$exfee_id} AND `state` <> 4";
         $rawExfee     = $this->getAll($sql);
         foreach ($rawExfee ?: [] as $eItem) {
             $identity_ids[] = $eItem['identity_id'];
@@ -276,7 +276,7 @@ class ExfeeModels extends DataModel {
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},
-                `cross_id`         =  {$exfee_id},
+                `exfee_id`         =  {$exfee_id},
                 `state`            = '{$rsvp_status}',
                 `created_at`       = NOW(),
                 `updated_at`       = NOW(),
@@ -354,7 +354,7 @@ class ExfeeModels extends DataModel {
                  `updated_at`       = NOW(),
                  `exfee_updated_at` = NOW(),
                  `by_identity_id`   = {$by_identity_id}
-                 WHERE `cross_id`   = {$exfee_id}
+                 WHERE `exfee_id`   = {$exfee_id}
                  AND `identity_id`  = {$identity_id}"
             ))) {
                 return array(
@@ -602,31 +602,30 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getExfeeIdByUserid($userid,$updated_at='') {
-        $sql="SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid} AND ( `status` = 3 OR `status` = 4 );";
-        $identities=$this->getColumn($sql);
-        if($updated_at!="")
+    public function getExfeeIdByUserid($userid, $updated_at = '') {
+        $sql = "SELECT `identityid` FROM `user_identity` WHERE `userid` = {$userid} AND ( `status` = 3 OR `status` = 4 )";
+        $identities = $this->getColumn($sql);
+        if ($updated_at !== '') {
             $updated_sql="and exfee_updated_at>'$updated_at'";
-
-        $identities_list=implode($identities,",");
-        $sql="select DISTINCT cross_id from invitations where identity_id in($identities_list) AND `state` <> 4 {$updated_sql} order by updated_at DESC limit 100;";
-        //TODO: cross_id will be renamed to exfee_id
-        $exfee_id_list=$this->getColumn($sql);
+        }
+        $identities_list = implode($identities, ',');
+        $sql = "SELECT DISTINCT `exfee_id` FROM `invitations` WHERE `identity_id` IN ($identities_list) AND `state` <> 4 {$updated_sql} ORDER BY `updated_at` DESC LIMIT 100";
+        $exfee_id_list = $this->getColumn($sql);
         return $exfee_id_list;
     }
 
 
     public function updateExfeeTime($exfee_id) {
-        $sql="update invitations set exfee_updated_at=NOW() where `cross_id`={$exfee_id};";
+        $sql = "UPDATE `invitations` SET `exfee_updated_at` = NOW() WHERE `exfee_id` = {$exfee_id}";
         $this->query($sql);
         delCache("exfee:{$exfee_id}");
     }
 
 
-    public function getUpdatedExfeeByIdentityIds($identityids,$updated_at) {
-        $join_identity_ids=implode($identityids,",");
-        $sql="select cross_id from invitations where identity_id in ({$join_identity_ids}) and exfee_updated_at >'$updated_at'; ";
-        $cross_ids=$this->getColumn($sql);
+    public function getUpdatedExfeeByIdentityIds($identityids, $updated_at) {
+        $join_identity_ids = implode($identityids, ',');
+        $sql = "SELECT `exfee_id` FROM `invitations` WHERE `identity_id` IN ({$join_identity_ids}) AND `exfee_updated_at` > '$updated_at'";
+        $cross_ids = $this->getColumn($sql);
         return $cross_ids;
     }
 
