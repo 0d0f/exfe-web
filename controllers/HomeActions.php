@@ -112,16 +112,17 @@ class HomeActions extends ActionController {
                 if ($oauthIfo['identity']->provider === 'twitter') {
                     $oauthRst['data']['twitter_following'] = $oauthIfo['twitter_following'];
                 }
-                if (isset($oauthIfo['workflow'])) {
-                    if (isset($oauthIfo['workflow']['callback']['url'])) {
-                        $oauthRst['refere']             = $oauthIfo['workflow']['callback']['url'];
-                    }
-                    if (isset($oauthIfo['workflow']['callback']['args'])) {
-                        $oauthRst['event']              = $oauthIfo['workflow']['callback']['args'];
-                    }
-                    if (isset($oauthIfo['workflow']['verification_token'])) {
-                        $oauthRst['verification_token'] = $oauthIfo['workflow']['verification_token'];
-                    }
+                if (isset($oauthIfo['workflow'])
+                 && isset($oauthIfo['workflow']['verification_token'])) {
+                    $oauthRst['verification_token'] = $oauthIfo['workflow']['verification_token'];
+                }
+            }
+            if (isset($oauthIfo['workflow'])) {
+                if (isset($oauthIfo['workflow']['callback']['url'])) {
+                    $oauthRst['refere'] = $oauthIfo['workflow']['callback']['url'];
+                }
+                if (isset($oauthIfo['workflow']['callback']['args'])) {
+                    $oauthRst['event']  = $oauthIfo['workflow']['callback']['args'];
                 }
             }
         }
