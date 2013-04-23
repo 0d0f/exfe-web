@@ -25,7 +25,7 @@ $sources = [
     'lib',
     'models',
     'share',
-    'update_autocomplete_index.php',
+    'update_autocomplete_index',
     'update_caches.php',
     'update_cross_time.php',
     'update_geoip_datas.php',
