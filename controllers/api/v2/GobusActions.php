@@ -561,7 +561,8 @@ class GobusActions extends ActionController {
         $id         = @ (int) $params['id'];
         $user_id    = @ (int) $params['user_id'];
         if ($updated_at) {
-            $updated_at = date('Y-m-d H:i:s', strtotime($updated_at));
+            $intTime    = strtotime($updated_at);
+            $updated_at = date('Y-m-d H:i:s', $intTime);
         }
         if ($id) {
             $modCross = $this->getModelByName('Cross');
@@ -574,6 +575,14 @@ class GobusActions extends ActionController {
                 return;
             }
             $cross    = $hlpCross->getCross($id, true, false, $updated_at);
+            if ($updated_at && $cross->updated) {
+                foreach ($cross->updated as $uI => $uItem) {
+                    $itemTime = strtotime($uItem['updated_at']);
+                    if ($itemTime < $intTime) {
+                        unset($cross->updated[$uI]);
+                    }
+                }
+            }
             if ($cross) {
                 switch ($cross->attribute['state']) {
                     case 'deleted':
@@ -585,7 +594,7 @@ class GobusActions extends ActionController {
                             return;
                         }
                 }
-                if ($updated_at && strtotime($updated_at) >= strtotime($cross->exfee->updated_at)) {
+                if ($updated_at && (strtotime($updated_at) >= strtotime($cross->exfee->updated_at) || !$cross->updated)) {
                     header('HTTP/1.1 304 Not Modified');
                     return;
                 }

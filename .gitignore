@@ -4,3 +4,4 @@ static
 .*.swp
 eimgs/*
 test.php
+bin/*

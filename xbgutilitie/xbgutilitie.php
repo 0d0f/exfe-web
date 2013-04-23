@@ -61,3 +61,4 @@ switch (strtolower($argv[0])) {
         echo "xbgUtilitie: invalid option -- '{$argv[0]}'\r\n";
         return false;
 }
+

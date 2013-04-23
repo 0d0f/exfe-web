@@ -19,26 +19,4 @@ define("INVITATION_MAYBE", 3);
 define("INVITATION_YES", 1);
 define("INVITATION_NO", 2);
 
-//echo "apiindex";
-//print "class:".$_GET["class"];
-//print "<br/>";
-//print $_GET["path"];
-//print "<br/>";
-//print_r($_GET);
-//print "<br/>";
-//$path=$_GET["path"];
-//$paths=explode("?",$path);
-//print_r($paths);
-
-//$pathinfo=$_SERVER["REQUEST_URI"];
-//$pathinfos=explode("?",$pathinfo);
-//print "<br/>";
-//$paths=explode("/",$pathinfos[0]);
-//print_r($paths);
-//print "<br/>";
-//print "param:".$pathinfos[1];
-//print "<br/>";
-//print $_GET["class"];
-//print "<br/>";
-//print $_GET["path"];
 FrontController::createInstance()->dispatch();
