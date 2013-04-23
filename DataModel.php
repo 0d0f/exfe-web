@@ -1,12 +1,11 @@
 <?php
 
-require_once dirname(__FILE__)."/config.php";
-
+require_once dirname(__FILE__) . '/config.php';
 
 function reverse_escape($str) {
-  $search  = ["\\\\","\\0","\\n","\\r","\Z","\'",'\"'];
-  $replace = ["\\","\0","\n","\r","\x1a","'",'"'];
-  return str_replace($search, $replace, $str);
+    $search  = [ "\\\\" , "\\0" , "\\n" , "\\r" , "\Z"   , "\'" , '\"' ];
+    $replace = [ "\\"   , "\0"  , "\n"  , "\r"  , "\x1a" , "'"  , '"'  ];
+    return str_replace($search, $replace, $str);
 }
 
 function stripslashes_deep($value) {
@@ -18,32 +17,29 @@ abstract class DataModel {
 
     static $FAKE_ID = '0';
 
-
-    public function getHelperByNamev1($name)
-    {
-        $class = ucfirst($name) . "Helper";
-        $helperfile = HELPER_DIR. "/" . $class.  ".php";
+    public function getHelperByNamev1($name) {
+        $class = ucfirst($name) . 'Helper';
+        $helperfile = HELPER_DIR. '/' . $class . '.php';
         include_once $helperfile;
         return new $class;
     }
 
-    public function getHelperByName($name,$version="")
-    {
-        if($version=="")
+    public function getHelperByName($name, $version = '') {
+        if ($version == '') {
             $this->getHelperByNamev1($name);
-
-        $class = ucfirst($name) . "Helper";
-        $helperfile = HELPER_DIR. "/".$version. "/" . $class.  ".php";
+        }
+        $class = ucfirst($name) . 'Helper';
+        $helperfile = HELPER_DIR . '/' . $version . '/' . $class . '.php';
         include_once $helperfile;
         return new $class;
     }
 
     private function endswith($str, $test) {
-        return substr($str, -strlen($test)) == $test;
+        return substr($str, - strlen($test)) == $test;
     }
 
     private function needToConvertToFloat($name) {
-        return 	 $this->endswith(strtolower($name), 'lat')
+        return $this->endswith(strtolower($name), 'lat')
             || $this->endswith(strtolower($name), 'lng');
     }
 
@@ -52,12 +48,11 @@ abstract class DataModel {
             || $name == 'createdAt'
             || $name == 'width'
             || $name == 'height';
-
     }
 
     public function convertDataTypeForRow($row) {
-        foreach($row as $key=>$value) {
-            if($this->needToConvertToInt($key)) {
+        foreach ($row as $key => $value) {
+            if ($this->needToConvertToInt($key)) {
                 $row[$key] = intval($value);
             } else if ($this->needToConvertToFloat($key)) {
                 $row[$key] = floatval($value);
@@ -69,7 +64,7 @@ abstract class DataModel {
     }
 
     public function convertDataTypeForAll($all) {
-        $result = array();
+        $result = [];
         foreach($all as $row) {
             $result[] = $this->convertDataTypeForRow($row);
         }
@@ -77,7 +72,7 @@ abstract class DataModel {
     }
 
     public function mysql_fetch_all($result) {
-        $return = array();
+        $return = [];
         while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
             $return[] = stripslashes_deep($row);
         }
@@ -93,8 +88,9 @@ abstract class DataModel {
             return false;
         } else {
             $insert_id=mysql_insert_id();
-            if($insert_id>0)
-                return array("insert_id" => strval($insert_id));
+            if ($insert_id > 0) {
+                return ['insert_id' => strval($insert_id)];
+            }
             return mysql_affected_rows();
         }
     }
@@ -149,15 +145,7 @@ abstract class DataModel {
     public function getData($sql){
 
     }
-#public function getData($page,$action) {
-#  $modelMethod = "get" . ucfirst($action);
-#  print $modelMethod;
-#  if (!method_exists($this, $modelMethod )) {
-#    exit("mode not found");
-#  }
-#  $this->$modelMethod();
-#  #$this->displayView($action);
-#}
+
 }
 
 function getMainDB() {
@@ -166,9 +154,9 @@ function getMainDB() {
     if(!$maindb) {
         $maindb = mysql_connect($dbhost, $dbuser, $dbpasswd);
         mysql_select_db($dbname, $maindb);
-     // mysql_query("SET NAMES 'utf8mb4'");
+     // mysql_query("SET NAMES 'utf8mb4'"); @todo by @leaskh for emoji!!!
         mysql_query("SET NAMES 'utf8'");
     }
     return $maindb;
 }
-$maindb=getMainDB();
+$maindb = getMainDB();
