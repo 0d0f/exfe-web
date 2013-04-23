@@ -1,4 +1,7 @@
+#!/usr/bin/env php
 <?php
+// by @leaskh
+
 error_reporting(E_ALL ^ E_NOTICE);
 ini_set('max_input_time', 3600);
 ini_set('memory_limit', '1024M');

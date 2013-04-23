@@ -25,12 +25,9 @@ $sources = [
     'lib',
     'models',
     'share',
-    'update_autocomplete_index',
-    'update_caches.php',
-    'update_cross_time.php',
-    'update_geoip_datas.php',
-    'update_gravatars.php',
-    'update_old_datas.php',
+    'rebuild_autocomplete_index',
+    'rebuild_cache',
+    'rebuild_geoip_datas',
     'views',
     'xbgutilitie'
 ];
