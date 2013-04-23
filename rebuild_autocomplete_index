@@ -1,5 +1,6 @@
+#!/usr/bin/env php
 <?php
-error_reporting(E_ALL ^ E_NOTICE);
+// by @leaskh
 
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/DataModel.php';
