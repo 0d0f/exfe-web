@@ -17,15 +17,15 @@ class FrontController {
     }
 
     public static function createInstance() {
-        if (!defined("PAGE_DIR")) {
-            exit("Critical error: Cannot proceed without PAGE_DIR.");
+        if (!defined('PAGE_DIR')) {
+            exit('Critical error: Cannot proceed without PAGE_DIR.');
         }
         $instance = new self();
         return $instance;
     }
 
     public function dispatch() {
-        $classname = !empty($_GET["class"]) ? $_GET["class"] : "home";
+        $classname = !empty($_GET["class"]) ? $_GET['class'] : "home";
         $action = !empty($_GET["action"]) ? $_GET["action"] : "index";
         $version= !empty($_GET["v"]) ? $_GET["v"] : "v1";
 
@@ -84,16 +84,6 @@ class FrontController {
             }
         }
 
-
-        //print_r($actions);
-        //if($classname=='x')
-        //{
-        //    if(preg_match("/![a-zA-Z0-9]+/",$action)==1)
-        //    {
-        //        $params["id"]=$action;
-        //        $action="index";
-        //    }
-        //}
         $controller->dispatchAPIAction($action,$params);
     }
 
@@ -118,6 +108,5 @@ class FrontController {
 #	}
 #	fclose($handle);
 #}
-
 
 }
