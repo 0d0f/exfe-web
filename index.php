@@ -26,5 +26,4 @@ define('STATUS_CONNECTED', 3);
 define('TIMETYPE_ALLDAY', 'All day');
 define('TIMETYPE_ANYTIME', 'Anytime');
 
-
 frontController::createInstance()->dispatch();
