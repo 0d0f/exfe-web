@@ -1,6 +1,6 @@
 <?php
 // runtime env
-define("STATIC_CODE_TIMESTAMP", 1334903539); // date +%s
+define('STATIC_CODE_TIMESTAMP', 1334903539); // date +%s
 
 // debug
 define('DEBUG',    false);
@@ -8,32 +8,32 @@ define('JS_DEBUG', false);
 
 // database
 $dbhost   = '127.0.0.1';
-$dbuser   = 'root';
-$dbpasswd = '';
-$dbname   = 'exfe_dev';
+$dbuser   = 'exfe';
+$dbpasswd = 'di5#vuaavF';
+$dbname   = 'exfe';
 
 // exfee quota
 define('EXFEE_QUOTA_SOFT_LIMIT', 12);
 define('EXFEE_QUOTA_HARD_LIMIT', 20);
 
 // domian
-define('SITE_URL', 'http://local.exfe.com');
-define('IMG_URL',  'http://images.exfe.com');
-define('API_URL',  'http://api.local.exfe.com');
-define('IOM_URL',  'http://192.168.1.113:8080');
+define('SITE_URL', 'https://exfe.com');
+define('IMG_URL',  'http://img.exfe.com');
+define('API_URL',  'https://www.exfe.com');
+define('IOM_URL',  'http://127.0.0.1:8080');
 define('STREAMING_API_URL', 'http://ec2-54-251-199-79.ap-southeast-1.compute.amazonaws.com:23333');
 
 // upload
 define("IMG_FOLDER", "eimgs");
 
 // app
-define('CLIENT_IOS_VERSION', '2.0');
-define('CLIENT_IOS_DESCRIPTION', '');
-define('CLIENT_IOS_URL', 'https://itunes.apple.com/us/app/exfe/id514026604');
-define('CLIENT_ANDROID_VERSION', '');
+define('CLIENT_IOS_VERSION',         '2.0');
+define('CLIENT_IOS_DESCRIPTION',     '');
+define('CLIENT_IOS_URL',             'https://itunes.apple.com/us/app/exfe/id514026604');
+define('CLIENT_ANDROID_VERSION',     '');
 define('CLIENT_ANDROID_DESCRIPTION', '');
-define('CLIENT_ANDROID_URL', '');
-define('APP_SCHEME', 'exfe');
+define('CLIENT_ANDROID_URL',         '');
+define('APP_SCHEME',                 'exfe');
 
 // cache
 define('REDIS_SERVER_ADDRESS', '127.0.0.1');
@@ -46,21 +46,21 @@ define('EXFE_AUTH_SERVER',  'http://127.0.0.1:23333');
 define('EXFE_GOBUS_SERVER', 'http://127.0.0.1:23334');
 
 // i18n
-define('INTL_RESOURCES', '/Users/huoju/www/exfe/intl');
+define('INTL_RESOURCES', '/exfe/exfeweb/intl');
 
 // SALT
 define('EXFE_PASSWORD_SALT', 'f(#)u&^c!k*G@F%W81_&0=ro-ifl+c');
 
 // oauth - twitter
-define('TWITTER_CONSUMER_KEY',     'nCjPcQsjbQAh6NavknHHw');
-define('TWITTER_CONSUMER_SECRET',  'cSgxIjIh92uFO5C85BWoxOGawkjGCoOf1HfOVzT8');
+define('TWITTER_CONSUMER_KEY',     'oGzqJNr6loHEsZOsIHTQ7w');
+define('TWITTER_CONSUMER_SECRET',  '1q54ZzPppYc4kMWZEQi5dHKtSVVUFWPMLLQWeTOu90');
 define('TWITTER_OAUTH_CALLBACK',   SITE_URL.'/OAuth/twitterCallBack');
 define('TWITTER_API_URL',          'http://api.twitter.com/1');
-define('TWITTER_OFFICE_ACCOUNT',   'exfe_com');
+define('TWITTER_OFFICE_ACCOUNT',   'exfe');
 
 // oauth - facebook
-define('FACEBOOK_APP_ID',          '210626042352165');
-define('FACEBOOK_SECRET_KEY',      'd6aa2f4e5f19dfbbd933304033f28db2');
+define('FACEBOOK_APP_ID',          '176789085794356');
+define('FACEBOOK_SECRET_KEY',      '969b8267f7ca3eaff4725b36e8772f3a');
 define('FACEBOOK_OAUTH_CALLBACK',  SITE_URL.'/OAuth/facebookCallBack');
 
 // oauth - dropbox
