@@ -1,7 +1,5 @@
 <?php
 
-require_once dirname(__FILE__) . '/config.php';
-
 function reverse_escape($str) {
     $search  = [ "\\\\" , "\\0" , "\\n" , "\\r" , "\Z"   , "\'" , '\"' ];
     $replace = [ "\\"   , "\0"  , "\n"  , "\r"  , "\x1a" , "'"  , '"'  ];

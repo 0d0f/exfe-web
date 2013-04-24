@@ -17,10 +17,11 @@ define('EXFEE_QUOTA_SOFT_LIMIT', 12);
 define('EXFEE_QUOTA_HARD_LIMIT', 20);
 
 // domian
-define('SITE_URL', 'https://exfe.com');
-define('IMG_URL',  'http://img.exfe.com');
-define('API_URL',  'https://www.exfe.com');
-define('IOM_URL',  'http://127.0.0.1:8080');
+define('ROOT_DOMAIN', '.exfe.com');
+define('SITE_URL',    'https://exfe.com');
+define('IMG_URL',     'http://img.exfe.com');
+define('API_URL',     'https://www.exfe.com');
+define('IOM_URL',     'http://127.0.0.1:8080');
 define('STREAMING_API_URL', 'http://ec2-54-251-199-79.ap-southeast-1.compute.amazonaws.com:23333');
 
 // upload
