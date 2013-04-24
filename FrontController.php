@@ -1,6 +1,7 @@
 <?php
-require_once dirname(__FILE__)."/ActionController.php";
-require_once dirname(__FILE__)."/DataModel.php";
+
+require_once dirname(__FILE__) . '/ActionController.php';
+
 
 class FrontController {
 

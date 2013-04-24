@@ -1,8 +1,13 @@
 <?php
+
+error_reporting(E_ALL ^ E_NOTICE);
+date_default_timezone_set('UTC');
+ini_set('session.cookie_domain', ROOT_DOMAIN);
+set_time_limit(3);
+
 require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/Classes/EFObject.php';
-
-date_default_timezone_set('UTC');
+require_once dirname(__FILE__) . '/DataModel.php';
 
 
 // get user locale {
@@ -195,7 +200,7 @@ function saveUpdate($cross_id, $updated) {
  * http://stackoverflow.com/questions/5074161/what-is-the-most-efficient-way-to-whitelist-utf-8-characters-in-php
  */
 function get_CJK_unicode_ranges() {
-    return array(
+    return [
         '[\x{2E80}-\x{2EFF}]',   # CJK Radicals Supplement
         '[\x{2F00}-\x{2FDF}]',   # Kangxi Radicals
         '[\x{2FF0}-\x{2FFF}]',   # Ideographic Description Characters
@@ -220,7 +225,7 @@ function get_CJK_unicode_ranges() {
         '[\x{1D300}-\x{1D35F}]', # Tai Xuan Jing Symbols
         '[\x{20000}-\x{2A6DF}]', # CJK Unified Ideographs Extension B
         '[\x{2F800}-\x{2FA1F}]', # CJK Compatibility Ideographs Supplement
-    );
+    ];
 }
 
 function checkCjk($string) {
