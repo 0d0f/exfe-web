@@ -15,15 +15,4 @@ require_once 'FrontController.php';
 
 define ('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
 
-define('INVITATION_MAYBE', 3);
-define('INVITATION_YES', 1);
-define('INVITATION_NO', 2);
-
-define('STATUS_DISCONNECTED', 1);
-define('STATUS_VERYIFING', 2);
-define('STATUS_CONNECTED', 3);
-
-define('TIMETYPE_ALLDAY', 'All day');
-define('TIMETYPE_ANYTIME', 'Anytime');
-
 frontController::createInstance()->dispatch();
