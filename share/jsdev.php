@@ -2,7 +2,7 @@
 $jsdev = <<<EOD
 <script>
   var e = document.createElement('div');
-  e.style.width = '100%';
+  e.style.width = '50px';
   e.style.position = 'absolute';
   e.style.top = 0;
   e.style.zIndex = 10000;
