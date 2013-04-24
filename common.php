@@ -74,7 +74,7 @@ function getDefaultAvatarUrl($name) {
 }
 
 
-function apiError($code,$errorType,$errorDetail = '') {
+function apiError($code, $errorType, $errorDetail = '') {
     $meta["code"]=$code;
     $meta["errorType"]=$errorType;
     $meta["errorDetail"]=$errorDetail;
