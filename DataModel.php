@@ -15,8 +15,6 @@ function stripslashes_deep($value) {
 
 abstract class DataModel {
 
-    static $FAKE_ID = '0';
-
     public function getHelperByNamev1($name) {
         $class = ucfirst($name) . 'Helper';
         $helperfile = HELPER_DIR. '/' . $class . '.php';
@@ -35,7 +33,7 @@ abstract class DataModel {
     }
 
     private function endswith($str, $test) {
-        return substr($str, - strlen($test)) == $test;
+        return substr($str, - strlen($test)) === $test;
     }
 
     private function needToConvertToFloat($name) {
@@ -79,7 +77,6 @@ abstract class DataModel {
         return $return;
     }
 
-
     //check insert or delete is Error
     public function query($sql) {
         mysql_query($sql);
@@ -87,7 +84,7 @@ abstract class DataModel {
             error_log("sql error: {$error}\nsql: {$sql}");
             return false;
         } else {
-            $insert_id=mysql_insert_id();
+            $insert_id = mysql_insert_id();
             if ($insert_id > 0) {
                 return ['insert_id' => strval($insert_id)];
             }
@@ -111,7 +108,7 @@ abstract class DataModel {
     //get one row
     public function getRow($sql) {
         if($query = mysql_query($sql)) {
-            if($return = mysql_fetch_array($query,MYSQL_ASSOC)) {
+            if($return = mysql_fetch_array($query, MYSQL_ASSOC)) {
                 return $return;
             }
         }
