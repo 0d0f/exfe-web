@@ -60,35 +60,35 @@ define('EXFE_PASSWORD_SALT', 'f(#)u&^c!k*G@F%W81_&0=ro-ifl+c');
 // oauth - twitter
 define('TWITTER_CONSUMER_KEY',     'oGzqJNr6loHEsZOsIHTQ7w');
 define('TWITTER_CONSUMER_SECRET',  '1q54ZzPppYc4kMWZEQi5dHKtSVVUFWPMLLQWeTOu90');
-define('TWITTER_OAUTH_CALLBACK',   SITE_URL.'/OAuth/twitterCallBack');
+define('TWITTER_OAUTH_CALLBACK',   SITE_URL . '/OAuth/twitterCallBack');
 define('TWITTER_API_URL',          'http://api.twitter.com/1');
 define('TWITTER_OFFICE_ACCOUNT',   'exfe');
 
 // oauth - facebook
 define('FACEBOOK_APP_ID',          '176789085794356');
 define('FACEBOOK_SECRET_KEY',      '969b8267f7ca3eaff4725b36e8772f3a');
-define('FACEBOOK_OAUTH_CALLBACK',  SITE_URL.'/OAuth/facebookCallBack');
+define('FACEBOOK_OAUTH_CALLBACK',  SITE_URL . '/OAuth/facebookCallBack');
 
 // oauth - dropbox
 define('DROPBOX_APP_KEY',          'cvgsns0uyluu09j');
 define('DROPBOX_APP_SECRET',       'c4lcawkhcdbjgzy');
-define('DROPBOX_OAUTH_CALLBACK',   SITE_URL.'/OAuth/dropboxCallBack');
+define('DROPBOX_OAUTH_CALLBACK',   SITE_URL . '/OAuth/dropboxCallBack');
 
 // oauth - instagram
 define('INSTAGRAM_CLIENT_ID',      '4c5df52d89604c63bbfec3a35eb4e551');
 define('INSTAGRAM_CLIENT_SECRET',  'd68594e762a94d9bb7749eb9a9244a7e');
-define('INSTAGRAM_REDIRECT_URI',   SITE_URL.'/OAuth/InstagramCallBack');
+define('INSTAGRAM_REDIRECT_URI',   SITE_URL . '/OAuth/InstagramCallBack');
 
 // oauth - flickr
 define('FLICKR_KEY',               '4d4b6607c002f1afd54f98e18491104e');
 define('FLICKR_SECRET',            '4ece1ec373dfaab4');
-define('FLICKR_OAUTH_CALLBACK',    SITE_URL.'/OAuth/flickrCallBack');
+define('FLICKR_OAUTH_CALLBACK',    SITE_URL . '/OAuth/flickrCallBack');
 
 // oauth - google
 define('GOOGLE_MAP_KEY',           'AIzaSyAgYKtU2lpDg_HYH_rP2MIna0DFyIoEGMs');
 define('GOOGLE_CLIENT_ID',         '968124746422.apps.googleusercontent.com');
 define('GOOGLE_CLIENT_SECRET',     'Z8POTJnYqNOVciDHNmjBsxLs');
-define('GOOGLE_REDIRECT_URIS',     SITE_URL.'/OAuth/googleOAuthCallback');
+define('GOOGLE_REDIRECT_URIS',     SITE_URL . '/OAuth/googleOAuthCallback');
 
 // oauth - foursquare
 define('FOURSQUARE_CLIENT_KEY',    'TGQU0UKUHS3H5WYG0KAWPRU2FY0RYVYSD3JJPXJTCKXTGG3K');
