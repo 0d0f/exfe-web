@@ -4,13 +4,9 @@ abstract class ActionController {
 
     protected $name;
 
-    protected $model;
-
     protected $action;
 
     protected $viewData   = [];
-
-    protected $modelArray = [];
 
 
     public function setName($name) {
@@ -19,10 +15,6 @@ abstract class ActionController {
 
     public function getName() {
         return $this->name;
-    }
-
-    public function getModel() {
-        return $this->model;
     }
 
     public function setVar($key, $value) {
@@ -55,20 +47,9 @@ abstract class ActionController {
         $this->displayViewByAction($this->action);
     }
 
-    public function getHelperByNamev1($name) {
+    public function getHelperByName($name) {
         $class = ucfirst($name) . 'Helper';
-        $helperfile = HELPER_DIR. '/' . $class . '.php';
-        include_once $helperfile;
-        return new $class;
-    }
-
-    public function getHelperByName($name, $version = '') {
-        if($version == '') {
-            $this->getHelperByNamev1($name);
-        }
-
-        $class = ucfirst($name) . 'Helper';
-        $helperfile = HELPER_DIR . '/' . $version. '/' . $class . '.php';
+        $helperfile = HELPER_DIR . '/' . $class . '.php';
         include_once $helperfile;
         return new $class;
     }
@@ -80,12 +61,14 @@ abstract class ActionController {
         return new $class;
     }
 
-    public function getDataModel($action) {
-        $class = ucfirst($this->getName()) . 'Models';
-        $modelfile = MODEL_DIR . '/' .  $class . '.php';
-        include_once $modelfile;
-        $this->model = new $class;
-        return $this->model;
+    public function dispatchAction($action) {
+        $actionMethod = 'do' . ucfirst($action);
+        if (!method_exists($this, $actionMethod)) {
+            header('HTTP/1.1 404 Not Found');
+            exit('Action not found:' . $actionMethod);
+        }
+        $this->action=$action;
+        $this->$actionMethod();
     }
 
     public function dispatchAPIAction($action, $params) {
@@ -96,16 +79,6 @@ abstract class ActionController {
         }
         $this->action = $action;
         $this->params = $params;
-        $this->$actionMethod();
-    }
-
-    public function dispatchAction($action) {
-        $actionMethod = 'do' . ucfirst($action);
-        if (!method_exists($this, $actionMethod)) {
-            header('HTTP/1.1 404 Not Found');
-            exit('Action not found:' . $actionMethod);
-        }
-        $this->action=$action;
         $this->$actionMethod();
     }
 
