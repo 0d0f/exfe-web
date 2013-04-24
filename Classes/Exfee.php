@@ -22,16 +22,16 @@ class Exfee extends EFObject {
 
 
     public function summary() {
-    	foreach ($this->invitations as $invI => $invItem) {
-    		if ($invItem->rsvp_status === 'REMOVED'
-    		 || $invItem->rsvp_status === 'NOTIFICATION') {
-    			continue;
-    		}
-    		// @todo: 需要处理身份冲突时的 fallback。
+        foreach ($this->invitations as $invI => $invItem) {
+            if ($invItem->rsvp_status === 'REMOVED'
+             || $invItem->rsvp_status === 'NOTIFICATION') {
+                continue;
+            }
+            // @todo: 需要处理身份冲突时的 fallback。
             $this->items++;
-			$this->total    += ($num = 1 + $invItem->mates);
-			$this->accepted += $invItem->rsvp_status === 'ACCEPTED' ? $num : 0;
-		}
+            $this->total    += ($num = 1 + $invItem->mates);
+            $this->accepted += $invItem->rsvp_status === 'ACCEPTED' ? $num : 0;
+        }
     }
 
 }
