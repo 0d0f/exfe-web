@@ -15,18 +15,15 @@ function stripslashes_deep($value) {
 }
 
 function getMainDB() {
-    global $mysql_config, $maindb;
-    global $dbhost, $dbuser, $dbpasswd, $dbname;
-    if(!$maindb) {
-        $maindb = mysql_connect($dbhost, $dbuser, $dbpasswd);
-        mysql_select_db($dbname, $maindb);
+    global $maindb;
+    if (!$maindb) {
+        $maindb = mysql_connect(DBHOST, DBUSER, DBPASSWD);
+        mysql_select_db(DBNAME, $maindb);
      // mysql_query("SET NAMES 'utf8mb4'"); @todo by @leaskh for emoji!!!
         mysql_query("SET NAMES 'utf8'");
     }
-    return $maindb;
 }
-
-$maindb = getMainDB();
+getMainDB();
 
 
 abstract class DataModel {
