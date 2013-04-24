@@ -1,7 +1,7 @@
 <?php
 
-define("TIME_OUTPUT_FORMAT", "0");
-define("TIME_OUTPUT_ORIGIN", "1");
+define('TIME_OUTPUT_FORMAT', '0');
+define('TIME_OUTPUT_ORIGIN', '1');
 
 class CrossTime extends EFObject{
 
@@ -18,8 +18,7 @@ class CrossTime extends EFObject{
     }
 
 
-    public function stringInZone($targetTimezone)
-    {
+    public function stringInZone($targetTimezone) {
         $begin_at=$this->begin_at;
         if($this->outputformat==TIME_OUTPUT_FORMAT)
         {

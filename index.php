@@ -8,22 +8,18 @@ define('HELPER_DIR',     dirname(__FILE__) . '/helpers');
 define('MODEL_DIR',      dirname(__FILE__) . '/models');
 define('CONTROLLER_DIR', dirname(__FILE__) . '/controllers');
 define('VIEW_DIR',       dirname(__FILE__) . '/views');
-define('URL_PREFIX',     '/exfe');
 
 require_once 'common.php';
 require_once 'FrontController.php';
 
-define ('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
-
-define('INVITATION_MAYBE', 3);
-define('INVITATION_YES', 1);
-define('INVITATION_NO', 2);
-
-define('STATUS_DISCONNECTED', 1);
-define('STATUS_VERYIFING', 2);
-define('STATUS_CONNECTED', 3);
-
-define('TIMETYPE_ALLDAY', 'All day');
-define('TIMETYPE_ANYTIME', 'Anytime');
-
 frontController::createInstance()->dispatch();
+
+
+        // "^/v2/([a-zA-Z]+)/(.*)$" => "apiindex.php?v=v2&class=$1&path=$2",
+        // "^/v1/([a-zA-Z]+)/?([^?/]+)?(\??(.*))$" => "index.php?v=v1&class=$1&action=$2&$4",
+        // "^/v1/([a-zA-Z]+)/([0-9]+)/?([^?/]+)?(\??(.*))$" => "index.php?v=v1&class=$1&action=$3&id=$2&$4",
+        // "^/!([a-zA-Z0-9]+)/gather$" => "/index.php?class=x&action=gather&id=$1",
+        // "^/!([a-zA-Z0-9]+)/crossEdit$" => "/index.php?class=x&action=crossEdit&id=$1",
+        // "^/!([a-zA-Z0-9]+)\??(.*)$" => "/index.php?class=x&action=index&id=$1&$2",
+        // "^/([0-9]+)/([a-zA-Z]+)/?([^?/]+)\??(.*)$" => "index.php?class=$2&action=$3&id=$1&$4",
+        // "^/([a-zA-Z]+)/?([^?/]+)?(\??(.*))$" => "index.php?class=$1&action=$2&$4",
