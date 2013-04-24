@@ -1,18 +1,17 @@
 <?php
 
-//require_once("Common.php");
-//require_once("io.php");
-
 abstract class ActionController {
+
     protected $name;
+
     protected $model;
+
     protected $action;
+
     protected $viewData   = [];
+
     protected $modelArray = [];
 
-    // public function __construct() {
-    //     ini_set('session.cookie_domain', ROOT_DOMAIN);
-    // }
 
     public function setName($name) {
         $this->name = $name;
@@ -74,19 +73,9 @@ abstract class ActionController {
         return new $class;
     }
 
-    public function getModelByNamev1($name) {
+    public function getModelByName($name) {
         $class = ucfirst($name) . 'Models';
         $modelfile = MODEL_DIR . '/' . $class . '.php';
-        include_once $modelfile;
-        return new $class;
-    }
-
-    public function getModelByName($name, $version = '') {
-        if($version == '') {
-            $this->getModelByNamev1($name);
-        }
-        $class = ucfirst($name) . 'Models';
-        $modelfile = MODEL_DIR . '/' . $version . '/' . $class . '.php';
         include_once $modelfile;
         return new $class;
     }
@@ -118,10 +107,6 @@ abstract class ActionController {
         }
         $this->action=$action;
         $this->$actionMethod();
-    }
-
-    public function getPhotoArray($arrays) {
-        return ['count' => count($arrays), 'items' => empty($arrays) ? [] : $arrays];
     }
 
 }
