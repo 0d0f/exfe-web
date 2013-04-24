@@ -1,5 +1,4 @@
 <?php
-set_time_limit(3);
 
 class AvatarActions extends ActionController {
 

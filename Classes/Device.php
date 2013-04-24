@@ -22,17 +22,20 @@ class Device extends EFObject {
 
     public $disconnected_at    = null;
 
-    public function __construct($id                 = 0,
-                                $name               = '',
-                                $brand              = '',
-                                $model              = '',
-                                $os_name            = '',
-                                $os_version         = '',
-                                $description        = '',
-                                $status             = false,
-                                $first_connected_at = '',
-                                $last_connected_at  = '',
-                                $disconnected_at    = '') {
+
+    public function __construct(
+        $id                 = 0,
+        $name               = '',
+        $brand              = '',
+        $model              = '',
+        $os_name            = '',
+        $os_version         = '',
+        $description        = '',
+        $status             = false,
+        $first_connected_at = '',
+        $last_connected_at  = '',
+        $disconnected_at    = ''
+    ) {
         parent::__construct($id, 'device');
 
         $first_connected_at       = $first_connected_at ?: '0000-00-00 00:00:00';
@@ -51,7 +54,6 @@ class Device extends EFObject {
         $this->first_connected_at = $first_connected_at . ' +0000';
         $this->last_connected_at  = $last_connected_at  . ' +0000';
         $this->disconnected_at    = $disconnected_at    . ' +0000';
-
     }
 
 }
