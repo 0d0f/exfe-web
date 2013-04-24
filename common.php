@@ -3,6 +3,7 @@
 error_reporting(E_ALL ^ E_NOTICE);
 date_default_timezone_set('UTC');
 ini_set('session.cookie_domain', ROOT_DOMAIN);
+set_time_limit(3);
 
 require_once dirname(__FILE__) . '/config.php';
 require_once dirname(__FILE__) . '/Classes/EFObject.php';

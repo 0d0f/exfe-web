@@ -25,22 +25,24 @@ class Photo extends EFObject {
     public $external_album_id = null;
 
 
-    public function __construct($id                = 0,
-                                $caption           = '',
-                                $by_identity       = null,
-                                $created_at        = '',
-                                $updated_at        = '',
-                                $provider          = '',
-                                $external_id       = '',
-                                $location          = null,
-                                $images            = [],
-                                $external_album_id = '',
-                                $siblings          = []) {
+    public function __construct(
+        $id                = 0,
+        $caption           = '',
+        $by_identity       = null,
+        $created_at        = '',
+        $updated_at        = '',
+        $provider          = '',
+        $external_id       = '',
+        $location          = null,
+        $images            = [],
+        $external_album_id = '',
+        $siblings          = []
+    ) {
         parent::__construct(intval($id), 'Photo');
 
-        $created_at              = $created_at  ?: date('Y-m-d H:i:s');
-        $updated_at              = $updated_at  && $updated_at !== '0000-00-00 00:00:00'
-                                 ? $updated_at   : $created_at;
+        $created_at              = $created_at ?: date('Y-m-d H:i:s');
+        $updated_at              = $updated_at && $updated_at !== '0000-00-00 00:00:00'
+                                 ? $updated_at  : $created_at;
 
         $this->caption           = $caption;
         $this->by_identity       = $by_identity;

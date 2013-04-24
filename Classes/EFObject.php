@@ -13,11 +13,13 @@ require_once 'Photo.php';
 require_once 'PhotoX.php';
 require_once 'Response.php';
 
+
 abstract class EFobject{
 
     public $id   = null;
 
     public $type = null;
+
 
     public function __construct($id = 0, $type = 'EFObject') {
         $this->id   = intval($id);

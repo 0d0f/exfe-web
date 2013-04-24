@@ -37,23 +37,25 @@ class Identity extends EFObject {
         } else {
             return null;
         }
-        return array('name' => $name, 'email' => $email);
+        return ['name' => $name, 'email' => $email];
     }
 
 
-    public function __construct($id                = 0,
-                                $name              = '',
-                                $nickname          = '',
-                                $bio               = '',
-                                $provider          = '',
-                                $connected_user_id = 0,
-                                $external_id       = '',
-                                $external_username = '',
-                                $avatar_filename   = '',
-                                $created_at        = '',
-                                $updated_at        = '',
-                                $order             = 0,
-                                $unreachable       = false) {
+    public function __construct(
+        $id                = 0,
+        $name              = '',
+        $nickname          = '',
+        $bio               = '',
+        $provider          = '',
+        $connected_user_id = 0,
+        $external_id       = '',
+        $external_username = '',
+        $avatar_filename   = '',
+        $created_at        = '',
+        $updated_at        = '',
+        $order             = 0,
+        $unreachable       = false
+    ) {
         parent::__construct($id, 'identity');
 
         $created_at              = $created_at ?:  '0000-00-00 00:00:00';

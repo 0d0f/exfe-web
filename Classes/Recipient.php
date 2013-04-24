@@ -23,16 +23,18 @@ class Recipient extends EFObject {
     public $external_username = null;
 
 
-    public function __construct($identity_id       = 0,
-                                $user_id           = 0,
-                                $name              = '',
-                                $auth_data         = '',
-                                $timezone          = '',
-                                $token             = '',
-                                $language          = '',
-                                $provider          = '',
-                                $external_id       = '',
-                                $external_username = '') {
+    public function __construct(
+        $identity_id       = 0,
+        $user_id           = 0,
+        $name              = '',
+        $auth_data         = '',
+        $timezone          = '',
+        $token             = '',
+        $language          = '',
+        $provider          = '',
+        $external_id       = '',
+        $external_username = ''
+    ) {
         parent::__construct(0, 'Recipient');
 
         $this->identity_id       = $identity_id;
