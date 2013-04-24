@@ -1,6 +1,7 @@
 <?php
+
 require_once dirname(__FILE__) . '/ActionController.php';
-require_once dirname(__FILE__) . '/DataModel.php';
+
 
 class FrontController {
 
@@ -25,38 +26,35 @@ class FrontController {
     }
 
     public function dispatch() {
-        $classname = !empty($_GET["class"]) ? $_GET['class'] : "home";
-        $action = !empty($_GET["action"]) ? $_GET["action"] : "index";
-        $version= !empty($_GET["v"]) ? $_GET["v"] : "v1";
+        $classname = !empty($_GET['class']) ? $_GET['class'] : 'home';
+        $action = !empty($_GET['action']) ? $_GET['action'] : 'index';
+        $version= !empty($_GET['v']) ? $_GET['v'] : 'v1';
 
-        $class = ucfirst($classname) . "Actions";
+        $class = ucfirst($classname) . 'Actions';
 
-        $file = APICONTROLLER_DIR. "/" . $version . "/" .$class . ".php";
+        $file = APICONTROLLER_DIR. '/' . $version . '/' . $class . '.php';
         if (!is_file($file)) {
-            exit("Page not found:".$file);
+            exit('Page not found:' . $file);
         }
-        $path=$_GET["path"];
-        $paths=explode("?",$path);
-        $params=array();
-        if(sizeof($paths)>=2)
-        {
-            $p=explode("=",$paths[1]);
-            $params[$p[0]]=$p[1];
-            $action=$paths[0];
-        }
-        else
-            $action=$paths[0];
-
-        foreach($_GET as $k=>$v)
-        {
-            if($k!="v" && $k!="class" && $k!=$path)
-                $params[$k]=$v;
+        $path = $_GET['path'];
+        $paths = explode('?',$path);
+        $params = array();
+        if (sizeof($paths) >= 2) {
+            $p = explode('=', $paths[1]);
+            $params[$p[0]] = $p[1];
+            $action = $paths[0];
+        } else {
+            $action = $paths[0];
         }
 
-        foreach($_SERVER as $name=>$value)
-        {
-            if (substr($name, 0, 5) == 'HTTP_')
-           {
+        foreach ($_GET as $k => $v) {
+            if ($k != 'v' && $k != 'class' && $k != $path) {
+                $params[$k] = $v;
+            }
+        }
+
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) == 'HTTP_') {
                $name = str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))));
                $params[$name]=$value;
            }
@@ -66,25 +64,20 @@ class FrontController {
 
         $controller = new $class();
         $controller->setName($classname);
-        $actions=explode("/",$action);
-        if(sizeof($actions)==2)
-        {
-            if(preg_match("/![a-zA-Z0-9]+|[0-9]+/",$actions[0])==1)
-            {
-                $params["id"]=$actions[0];
-                $action=$actions[1];
+        $actions = explode('/', $action);
+        if(sizeof($actions) == 2) {
+            if(preg_match('/![a-zA-Z0-9]+|[0-9]+/', $actions[0]) == 1) {
+                $params['id'] = $actions[0];
+                $action = $actions[1];
             }
-        }
-        else if(sizeof($actions)==1)
-        {
-            if(preg_match("/![a-zA-Z0-9]+|[0-9]+/",$actions[0])==1)
-            {
-                $params["id"]=$actions[0];
-                $action="index";
+        } else if(sizeof($actions) == 1) {
+            if(preg_match('/![a-zA-Z0-9]+|[0-9]+/', $actions[0]) == 1) {
+                $params['id'] = $actions[0];
+                $action = 'index';
             }
         }
 
-        $controller->dispatchAPIAction($action,$params);
+        $controller->dispatchAPIAction($action, $params);
     }
 
 #private function logRequest() {

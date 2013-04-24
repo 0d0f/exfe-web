@@ -7,20 +7,21 @@ define('DEBUG',    false);
 define('JS_DEBUG', false);
 
 // database
-$dbhost   = '127.0.0.1';
-$dbuser   = 'exfe';
-$dbpasswd = 'di5#vuaavF';
-$dbname   = 'exfe';
+define('DBHOST',   '192.168.1.89');
+define('DBUSER',   'root');
+define('DBPASSWD', '135qetadg');
+define('DBNAME',   'exfe_dev');
 
 // exfee quota
 define('EXFEE_QUOTA_SOFT_LIMIT', 12);
 define('EXFEE_QUOTA_HARD_LIMIT', 20);
 
 // domian
-define('SITE_URL', 'https://exfe.com');
-define('IMG_URL',  'http://img.exfe.com');
-define('API_URL',  'https://www.exfe.com');
-define('IOM_URL',  'http://127.0.0.1:8080');
+define('ROOT_DOMAIN', '.exfe.com');
+define('SITE_URL',    'https://exfe.com');
+define('IMG_URL',     'http://img.exfe.com');
+define('API_URL',     'https://www.exfe.com');
+define('IOM_URL',     'http://127.0.0.1:8080');
 define('STREAMING_API_URL', 'http://ec2-54-251-199-79.ap-southeast-1.compute.amazonaws.com:23333');
 
 // upload
@@ -34,6 +35,11 @@ define('CLIENT_ANDROID_VERSION',     '');
 define('CLIENT_ANDROID_DESCRIPTION', '');
 define('CLIENT_ANDROID_URL',         '');
 define('APP_SCHEME',                 'exfe');
+
+// proxy
+define('PROXY_TYPE', 'SOCKS');
+define('PROXY_ADDR', '127.0.0.1');
+define('PROXY_PORT', '8964');
 
 // cache
 define('REDIS_SERVER_ADDRESS', '127.0.0.1');
