@@ -213,7 +213,7 @@
         <!--form class="form-horizontal"><fieldset-->
         <div class="controls" style="-webkit-transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 1); -webkit-backface-visibility: hidden;">
           <input class="input-item" type="email" autocapitalize="none" tabindex="1" id="card-name" placeholder="Your email or mobile no."/>
-          <button class="btn btn-start" type="button">Start</button>
+          <button class="btn btn-start" type="button">Live</button>
         </div>
         <div class="hide" id="card-bio"></div>
         <div class="identities">
@@ -236,7 +236,7 @@
       <div class="live-title">
         <div class="back"><img width="20" height="44" src="/static/img/back@2x.png" alt="" /></div>
         <h2>Live <span class="x">·X·</span></h2>
-        <!-- Note: 暂时去掉 <button class="btn btn-confirm hide" type="button">Confirm</button> -->
+        <button class="btn btn-confirm hide" type="button">Contact</button>
         <div id="live-tip" class="live-tip live-tip-close">
           <h4>Gather people nearby</h4>
           <p>Close two phones together to capture people using Live ·X·. For those accessing exfe.com, max their speaker volume.</p>
