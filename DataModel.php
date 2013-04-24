@@ -43,30 +43,25 @@ abstract class DataModel {
         return $return;
     }
 
-    // check insert or delete is Error
     public function query($sql) {
         mysql_query($sql);
         if (($error = mysql_error())) {
-            error_log("sql error: {$error}\nsql: {$sql}");
-            return false;
-        } else {
-            $insert_id = mysql_insert_id();
-            if ($insert_id > 0) {
-                return ['insert_id' => strval($insert_id)];
-            }
-            return mysql_affected_rows();
+            error_log("SQL error: {$error}\nSQL: {$sql}");
+            return null;
         }
+        $result = [];
+        $insert_id = mysql_insert_id();
+        if ($insert_id > 0) {
+            $result['insert_id'] = strval($insert_id);
+        }
+        $result['affected_rows'] = mysql_affected_rows();
+        return $result;
     }
 
     public function getAll($sql) {
-        if($query = mysql_query($sql)) {
-            $return = $this->mysql_fetch_all($query);
-            if(count($return)) {
-                return $return;
-            }
-            //Return NULL Bug Fix
-            return $return;
-        }
+        return ($query = mysql_query($sql))
+             ? $this->mysql_fetch_all($query)
+             : null;
     }
 
     public function getRow($sql) {
@@ -79,27 +74,27 @@ abstract class DataModel {
 
     public function countNum($sql) {
         $row = $this->getRow($sql);
-        if(!empty($row)) {
+        if (!empty($row)) {
             foreach($row as $key => $value) {
                 return $value;
             }
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     public function getColumn($sql) {
-        $result = array();
-        if($query = mysql_query($sql)) {
+        $result = [];
+        if (($query = mysql_query($sql))) {
             if($data = $this->mysql_fetch_all($query)) {
-                foreach($data as $row) {
-                    foreach($row as $name=>$value) {
+                foreach ($data as $row) {
+                    foreach ($row as $name => $value) {
                         $result[] = $value;
                     }
                 }
             }
+            return $result;
         }
-        return $result;
+        return null;
     }
 
 }
