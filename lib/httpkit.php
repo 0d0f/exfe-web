@@ -44,9 +44,6 @@ class httpKit {
                 if ($proxy['type'] === 'socks') {
                     curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
                 }
-                if (DEBUG) {
-                    error_log('PROXY');
-                }
             }
             if ($argsGet) {
                 $url .= (strpos($url, '?') ? '&' : '?')
