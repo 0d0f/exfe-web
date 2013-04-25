@@ -29,8 +29,11 @@ include 'ftconfig.php';
 echo "  </script>\n";
 
 addScript([
-    ['live',          '0.0.1'],
-    ['mobile',        '0.0.1'],
+    ['live',                    '0.0.1'],
+    ['mobilemiddleware',        '0.0.1'],
+    ['mobilecontroller',        '0.0.1'],
+    ['mobileroutes',            '0.0.1'],
+    ['mobile',                  '0.0.1'],
 ]);
 
 // Google Analytics
