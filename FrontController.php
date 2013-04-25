@@ -27,6 +27,9 @@ class FrontController {
         $controller = new $controller();
         $controller->setName($controllerName);
         $action = 'index';
+        if ($arrPath) {
+            $action = $arrPath[0];
+        }
         $controller->dispatchAction($action);
     }
 
@@ -95,7 +98,7 @@ class FrontController {
         } else if ($arrPath[0] === '500') {
             echo '500';
         } else {
-            echo '404';
+            $this->rockWeb($first, $arrPath);
         }
     }
 

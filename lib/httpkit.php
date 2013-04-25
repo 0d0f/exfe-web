@@ -16,7 +16,8 @@ class httpKit {
         $maxRedirs   = 3,
         $postType    = 'txt',
         $jsonDecode  = false,
-        $decoAsArray = true
+        $decoAsArray = true,
+        $proxy       = []
     ) {
         if ($url) {
             $objCurl = curl_init();
@@ -27,6 +28,26 @@ class httpKit {
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($objCurl, CURLOPT_MAXREDIRS,      $maxRedirs);
             curl_setopt($objCurl, CURLOPT_FOLLOWLOCATION, 1);
+            // for exfe only by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT
+             && preg_match('/(twitter|facebook|flickr|google|dropbox)/', $url)) {
+                $proxy = [
+                    'type' => PROXY_TYPE,
+                    'addr' => PROXY_ADDR,
+                    'port' => PROXY_PORT
+                ];
+            }
+            // }
+            if ($proxy && $proxy['type'] && $proxy['addr'] && $proxy['port']) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     $proxy['addr']);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, $proxy['port']);
+                if ($proxy['type'] === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+                if (DEBUG) {
+                    error_log('PROXY');
+                }
+            }
             if ($argsGet) {
                 $url .= (strpos($url, '?') ? '&' : '?')
                       . http_build_query($argsGet);
@@ -45,6 +66,9 @@ class httpKit {
             if (DEBUG) {
                 error_log('httpKit fetching {');
                 error_log("URL: {$url}");
+                if ($proxy) {
+                    error_log('PROXY: ' . json_encode($proxy));
+                }
                 if ($argsPost !== null) {
                     error_log("POST: {$argsPost}");
                 }
