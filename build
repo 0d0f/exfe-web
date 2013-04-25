@@ -11,6 +11,7 @@ $binFolder = 'bin';
 
 $sources = [
     'ActionController.php',
+    'api_controllers',
     'common.php',
     'controllers',
     'Classes',
