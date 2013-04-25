@@ -599,6 +599,16 @@ class tmhOAuth {
       curl_setopt($c, CURLOPT_WRITEFUNCTION, array($this, 'curlWrite'));
     }
 
+    // anti-gfw by @leask {
+    if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+      curl_setopt($c, CURLOPT_PROXY, PROXY_ADDR);
+      curl_setopt($c, CURLOPT_PROXYPORT, PROXY_PORT);
+      if (PROXY_TYPE === 'socks') {
+        curl_setopt($c, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+      }
+    }
+    // }
+
     switch ($this->method) {
       case 'GET':
         break;

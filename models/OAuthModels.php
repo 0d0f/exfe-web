@@ -201,6 +201,15 @@ class OAuthModels extends DataModel {
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
@@ -226,6 +235,16 @@ class OAuthModels extends DataModel {
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
+    print_r($objCurl);
         if (!($data = curl_exec($objCurl))) {
             curl_close($objCurl);
             return null;
@@ -260,6 +279,15 @@ class OAuthModels extends DataModel {
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = json_decode($data, true))) {
@@ -286,6 +314,15 @@ class OAuthModels extends DataModel {
         $objCurl = curl_init("https://graph.facebook.com/{$external_username}");
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = (array) json_decode($data))) {
@@ -314,6 +351,15 @@ class OAuthModels extends DataModel {
         $objCurl = curl_init('https://api.dropbox.com/1/oauth/request_token');
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
             'Authorization: '
           . 'OAuth oauth_version="1.0", '
@@ -360,6 +406,15 @@ class OAuthModels extends DataModel {
             $objCurl = curl_init('https://api.dropbox.com/1/oauth/access_token');
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            // anti-gfw by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+                if (PROXY_TYPE === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
+            // }
             curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                 'Authorization: '
               . 'OAuth oauth_version="1.0", '
@@ -401,6 +456,15 @@ class OAuthModels extends DataModel {
             $objCurl = curl_init('https://api.dropbox.com/1/account/info');
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            // anti-gfw by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+                if (PROXY_TYPE === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
+            // }
             curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                 'Authorization: '
               . 'OAuth oauth_version="1.0", '
@@ -503,6 +567,15 @@ class OAuthModels extends DataModel {
             $objCurl = curl_init($url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            // anti-gfw by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+                if (PROXY_TYPE === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
+            // }
             curl_setopt($objCurl, CURLOPT_HTTPHEADER, [implode(', ', $header)]);
             $data = curl_exec($objCurl);
             curl_close($objCurl);
