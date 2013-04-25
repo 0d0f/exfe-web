@@ -207,6 +207,16 @@ class TwitterOAuth {
     curl_setopt($ci, CURLOPT_HEADERFUNCTION, array($this, 'getHeader'));
     curl_setopt($ci, CURLOPT_HEADER, FALSE);
 
+    // anti-gfw by @leask {
+    if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+      curl_setopt($ci, CURLOPT_PROXY, PROXY_ADDR);
+      curl_setopt($ci, CURLOPT_PROXYPORT, PROXY_PORT);
+      if (PROXY_TYPE === 'socks') {
+        curl_setopt($ci, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+      }
+    }
+    // }
+
     switch ($method) {
       case 'POST':
         curl_setopt($ci, CURLOPT_POST, TRUE);
