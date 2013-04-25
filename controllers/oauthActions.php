@@ -145,6 +145,8 @@ class OAuthActions extends ActionController {
         $isMobile = $workflow ? ($workflow['callback']
                  && $workflow['callback']['oauth_device']
                  && $workflow['callback']['oauth_device_callback']) : false;
+print_r($oauthIfo);
+return;
         if (!$oauthIfo || $oauthIfo['external_service'] !== 'facebook') {
             if ($isMobile) {
                 $modOauth->resetSession();
