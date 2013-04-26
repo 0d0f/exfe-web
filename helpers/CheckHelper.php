@@ -8,7 +8,6 @@ class CheckHelper extends ActionController {
         $exfeeData    = $this->getModelByName('exfee');
         $crossData    = $this->getModelByName('cross');
 
-        $token        = $token ?: $_SERVER['HTTP_TOKEN'];
         $objToken     = $userData->getUserToken($token);
         $uid          = $objToken['data']['user_id'];
 
@@ -51,7 +50,7 @@ class CheckHelper extends ActionController {
                     }
                 }
             }
-            if ($api === 'user_icses') {   
+            if ($api === 'user_icses') {
                 $calToken = $userData->getUserCalendarToken($token);
                 if ($calToken
                  && $calToken['data']
