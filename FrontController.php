@@ -11,7 +11,7 @@ class FrontController {
         }
         foreach ($_SERVER as $sI => $sItem) {
             if (preg_match('/^HTTP_.*$/', $sI)) {
-                $sI = preg_replace('/^HTTP_(.*)$/', '$1', $sI);
+                $sI = strtolower(preg_replace('/^HTTP_(.*)$/', '$1', $sI));
                 $params[$sI] = $sItem;
             }
         }
@@ -84,7 +84,6 @@ class FrontController {
         }
         $params = $this->getParams($params);
         $controller->dispatchAction($action, $params);
-        return 0;
     }
 
 
