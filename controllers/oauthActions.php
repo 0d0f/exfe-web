@@ -422,9 +422,10 @@ class OAuthActions extends ActionController {
         $modOauth    = $this->getModelByName('OAuth');
         $checkHelper = $this->getHelperByName('check');
         // get args
+        $params      = $this->params;
         $identity_id = trim($_POST['identity_id']);
         // basic check
-        $result      = $checkHelper->isAPIAllow('user_edit', $_GET['token']);
+        $result      = $checkHelper->isAPIAllow('user_edit', $params['token']);
         if ($result['check']) {
             $user_id = $result['uid'];
         } else {

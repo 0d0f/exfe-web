@@ -5,6 +5,20 @@ require_once dirname(__FILE__) . '/ActionController.php';
 
 class FrontController {
 
+    protected function getParams($params = []) {
+        foreach ($_GET as $gI => $gItem) {
+            $params[$gI] = $gItem;
+        }
+        foreach ($_SERVER as $sI => $sItem) {
+            if (preg_match('/^HTTP_.*$/', $sI)) {
+                $sI = strtolower(preg_replace('/^HTTP_(.*)$/', '$1', $sI));
+                $params[$sI] = $sItem;
+            }
+        }
+        return $params;
+    }
+
+
     public static function createInstance() {
         if (!defined('PAGE_DIR')) {
             exit("Critical error: Cannot proceed without PAGE_DIR.");
@@ -18,10 +32,8 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = CONTROLLER_DIR . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            header("location:/error/404?e=PageNotFound");
+            header("location: /error/404?e=PageNotFound");
             return;
-            //exit("Page not found:".$file);
-            // 404
         }
         require_once $ctlFile;
         $controller = new $controller();
@@ -30,7 +42,8 @@ class FrontController {
         if ($arrPath) {
             $action = $arrPath[0];
         }
-        $controller->dispatchAction($action);
+        $params = $this->getParams($params);
+        $controller->dispatchAction($action, $params);
     }
 
 
@@ -69,18 +82,8 @@ class FrontController {
                 $params['id'] = $arrPath[0];
             }
         }
-        foreach ($_GET as $gI => $gItem) {
-            $params[$gI] = $gItem;
-        }
-        foreach ($_SERVER as $sI => $sItem) {
-            if (preg_match('/^HTTP_.*$/', $sI)) {
-                $sI = preg_replace('/^HTTP_(.*)$/', '$1', $sI);
-                $params[$sI] = $sItem;
-            }
-        }
-        print_r($params);
+        $params = $this->getParams($params);
         $controller->dispatchAction($action, $params);
-        return 0;
     }
 
 
