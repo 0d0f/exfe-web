@@ -260,6 +260,14 @@
 
   </div>
   </script>
+
+  <script id="live-li-identity-tmpl" type="text/x-handlebars-template">
+    <li class="identity">
+      <span class="provider">{{provider_alias}}</span>
+      <input data-provider="{{identity.provider}}" style="" autocapitalize="none" class="external_username input-item normal" value="{{{identity.external_username}}}" type="email"/>
+      <div class="delete hidden"><div class="delete-x">x</div></div>
+    </li>
+  </script>
   <!--/Templates }}}-->
 
   <noscript>EXFE.COM can't load if JavaScript is disabled</noscript>
