@@ -69,20 +69,25 @@ class FrontController {
                 $params['id'] = $arrPath[0];
             }
         }
-        // 兼容老代码 { // by @leaskh
         foreach ($_GET as $gI => $gItem) {
             $params[$gI] = $gItem;
         }
-        // }
+        foreach ($_SERVER as $sI => $sItem) {
+            if (preg_match('/^HTTP_.*$/', $sI)) {
+                $sI = preg_replace('/^HTTP_(.*)$/', '$1', $sI);
+                $params[$sI] = $sItem;
+            }
+        }
+        print_r($params);
         $controller->dispatchAction($action, $params);
         return 0;
     }
 
 
     public function dispatch() {
+        $route   = isset($_GET['_route']) ? $_GET['_route'] : $_SERVER['REQUEST_URI'];
         $arrPath = explode(
-            '/',
-            strtolower(current(explode('?', $_SERVER['REQUEST_URI'])))
+            '/', strtolower(current(explode('?', $route)))
         );
         array_shift($arrPath);
         $first = array_shift($arrPath);
