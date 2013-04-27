@@ -18,7 +18,7 @@
           <div class="action subscribe hide">Subscribe to updates and engage in:
             <div class="subscribe-frame">
               <input type="text" class="email" id="email" placeholder="Enter your email">
-              <button class="btn_mail"></button>
+              <button class="btn_mail">OK</button>
             </div>
           </div>
           <div class="action error-info hide">You just opened an invalid link.</div>
@@ -80,11 +80,11 @@
         <div class="description">{{{description}}}<div class="xbtn-more hide"><span class="rb hidden"></span><span class="lt hidden"></span></div></div>
         <div class="time_area">
           <div class="time_major">{{time.title}}</div>
-          <div class="time_minor{{#if time.tobe}} {{time_tobe}}{{/if}}">{{time.content}}</div>
+          <div class="time_minor{{#if time.tobe}} {{time.tobe}}{{/if}}">{{time.content}}</div>
         </div>
         <div class="place_area">
           <div class="place_major">{{place.title}}</div>
-          <div class="place_minor">{{place.description}}</div>
+          <div class="place_minor{{#if place.tobe}} {{place.tobe}}{{/if}}">{{place.description}}</div>
           {{#if place.map}}
           <a class="map_link" href="{{#if place.href}}{{place.href}}{{else}}#{{/if}}">
             <div class="map{{#unless place.map}} {{hide}}{{/unless}}" {{#if place.map}}style="background-image: url({{place.map}});"{{/if}}>
