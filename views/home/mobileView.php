@@ -15,7 +15,7 @@
       <div id="app-body" class="page-body"></div>
       <div id="app-footer" class="page-footer hide">
         <div class="actions">
-         <div class="action subscribe hide">Subscribe to updates and engage in:
+          <div class="action subscribe hide">Subscribe to updates and engage in:
             <div class="subscribe-frame">
               <input type="text" class="email" id="email" placeholder="Enter your email">
               <button class="btn_mail"></button>
@@ -38,8 +38,14 @@
   <div class="page home-page hide" id="app-home">
     <div class="logo-box">
       <div class="title">
-        <h1>EXFE</h1>
-        <p>A utility for gathering with friends.</p>
+        <div class="normal">
+          <h1>EXFE</h1>
+          <p>A utility for gathering with friends.</p>
+        </div>
+        <div class="invalid hide">
+          <h1>Invalid link</h1>
+          <p>Requested page was not found.</p>
+        </div>
       </div>
       <div class="inner">
         <img id="big-logo" class="big-logo" width="320" height="300" src="/static/img/EXFE_glossy@2x.png" />
@@ -77,13 +83,15 @@
           <div class="time_minor{{#if time.tobe}} {{time_tobe}}{{/if}}">{{time.content}}</div>
         </div>
         <div class="place_area">
-          <div class="place_major">{{place.title}}</div>
-          <div class="place_minor">{{place.descrption}}</div>
+          <div class="place_major">{{{place.title}}}</div>
+          <div class="place_minor">{{{place.descrption}}}</div>
+          {{#if place.map}}
           <a class="map_link" href="{{#if place.href}}{{place.href}}{{else}}#{{/if}}">
             <div class="map{{#unless place.map}} {{hide}}{{/unless}}" {{#if place.map}}style="background-image: url({{place.map}});"{{/if}}>
               <img class="place_mark" alt="" src="http://img.exfe.com/web/map_pin_blue@2x.png" />
             </div>
           </a>
+          {{/if}}
         </div>
         {{#unless read_only}}
         <div class="rsvp_toolbar{{#unless inviter}} rsvp_toolbar_off{{/unless}}">
