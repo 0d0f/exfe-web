@@ -281,7 +281,7 @@ class PhotoModels extends DataModel {
                         );
                         // @todo @leaskh
                         $cover_photo = ($cover_photo
-                                     && $cover_photo['http_code'] === '200'
+                                     && $cover_photo['http_code'] === 200
                                      && isset($cover_photo['json']['picture'])
                                      && $cover_photo['json']['picture'])
                                      ? $cover_photo['json']['picture'] : '';
@@ -498,7 +498,7 @@ class PhotoModels extends DataModel {
                     ), false, false, 10, 3, 'json', true
                 );
                 if ($photos
-                 && $photos['http_code'] === '200'
+                 && $photos['http_code'] === 200
                  && isset($photos['json'])
                  && $photos['json']) {
                     $rtPhotos = [];
