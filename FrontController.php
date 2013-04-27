@@ -21,7 +21,8 @@ class FrontController {
 
     public static function createInstance() {
         if (!defined('PAGE_DIR')) {
-            exit("Critical error: Cannot proceed without PAGE_DIR.");
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
         }
         $instance = new self();
         return $instance;
