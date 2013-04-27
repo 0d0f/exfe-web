@@ -65,7 +65,7 @@
       <div class="title_area" style="background: url(/static/img/xbg/{{background}}) no-repeat 50% 50%;">
         <div class="title_wrap_a">
           <div class="title_wrap_b">
-            <div class="title_text">{{title}}</div>
+            <div class="title_text">{{{title}}}</div>
           </div>
         </div>
         {{#if inviter}}
@@ -83,8 +83,8 @@
           <div class="time_minor{{#if time.tobe}} {{time_tobe}}{{/if}}">{{time.content}}</div>
         </div>
         <div class="place_area">
-          <div class="place_major">{{{place.title}}}</div>
-          <div class="place_minor">{{{place.descrption}}}</div>
+          <div class="place_major">{{place.title}}</div>
+          <div class="place_minor">{{place.description}}</div>
           {{#if place.map}}
           <a class="map_link" href="{{#if place.href}}{{place.href}}{{else}}#{{/if}}">
             <div class="map{{#unless place.map}} {{hide}}{{/unless}}" {{#if place.map}}style="background-image: url({{place.map}});"{{/if}}>
