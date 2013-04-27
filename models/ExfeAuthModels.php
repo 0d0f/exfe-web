@@ -15,6 +15,16 @@ class ExfeAuthModels extends DataModel {
     }
 
 
+    public function checkResponse($httpResponse) {
+        if (!$httpResponse
+         || !$httpResponse['http_code']
+         ||  $httpResponse['http_code'] === 500) {
+            header('HTTP/1.1 500 Internal Server Error');
+            exit(1);
+        }
+    }
+
+
     public function create(
         $resource, $data, $expireAfterSeconds, $short = false
     ) {
@@ -27,7 +37,8 @@ class ExfeAuthModels extends DataModel {
                     'expire_after_seconds' => (int) $expireAfterSeconds,
                 ], false, false, 3, 3, 'json', true
             );
-            if ($rawResult && $rawResult['http_code'] === '200') {
+            checkResponse($rawResult);
+            if ($rawResult && $rawResult['http_code'] === 200) {
                 $ipvResult = $this->packToken($rawResult['json']);
                 if ($ipvResult
                  && isset($ipvResult['key'])
@@ -46,7 +57,8 @@ class ExfeAuthModels extends DataModel {
                 EXFE_AUTH_SERVER . "/v3/tokens/key/{$key}",
                 null, null, false, false, 3, 3, 'json', true
             );
-            if ($rawResult && $rawResult['http_code'] === '200') {
+            checkResponse($rawResult);
+            if ($rawResult && $rawResult['http_code'] === 200) {
                 return $this->packToken($rawResult['json'][0]);
             }
         }
@@ -61,7 +73,8 @@ class ExfeAuthModels extends DataModel {
                 null, json_encode($resource),
                 false, false, 3, 3, 'json', true
             );
-            if ($rawResult && $rawResult['http_code'] === '200') {
+            checkResponse($rawResult);
+            if ($rawResult && $rawResult['http_code'] === 200) {
                 $rtnResult = [];
                 foreach ($rawResult['json'] as $rI => $rItem) {
                     $rtnResult[] = $this->packToken($rItem);
@@ -86,7 +99,8 @@ class ExfeAuthModels extends DataModel {
                 EXFE_AUTH_SERVER . "/v3/tokens/key/{$key}",
                 null, $postArgs, false, false, 3, 3, 'json', true
             );
-            if ($rawResult && $rawResult['http_code'] === '200') {
+            checkResponse($rawResult);
+            if ($rawResult && $rawResult['http_code'] === 200) {
                 return true;
             }
         }
@@ -105,7 +119,8 @@ class ExfeAuthModels extends DataModel {
                 EXFE_AUTH_SERVER . "/v3/tokens/resource",
                 null, $postArgs, false, false, 3, 3, 'json', true
             );
-            if ($rawResult && $rawResult['http_code'] === '200') {
+            checkResponse($rawResult);
+            if ($rawResult && $rawResult['http_code'] === 200) {
                 return true;
             }
         }
