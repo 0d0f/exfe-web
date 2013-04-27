@@ -153,7 +153,7 @@
             <div class="subscribe">Subscribe to updates and engage in:
               <div class="subscribe-frame">
                 <input type="text" class="email" id="email" placeholder="Enter your email">
-                <button class="btn_mail"></button>
+                <button class="btn_mail">OK</button>
               </div>
             </div>
             <div class="get-button">
