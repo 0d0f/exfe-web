@@ -126,9 +126,9 @@ class AvatarActions extends ActionController {
         $modUser = $this->getModelByName('user');
         // init requirement
         $curDir    = dirname(__FILE__);
-        $resDir    = "{$curDir}/../../../default_avatar_portrait/";
-        require_once "{$curDir}/../../../lib/httpkit.php";
-        require_once "{$curDir}/../../../xbgutilitie/libimage.php";
+        $resDir    = "{$curDir}/../../default_avatar_portrait/";
+        require_once "{$curDir}/../../lib/httpkit.php";
+        require_once "{$curDir}/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
         $config      = array(
@@ -173,9 +173,9 @@ class AvatarActions extends ActionController {
                 $resolution = 1;
         }
         if ($resolution > 1) {
-            $icoFile = "{$curDir}/../../../static/img/icons@{$resolution}x.png";
+            $icoFile = "{$curDir}/../../static/img/icons@{$resolution}x.png";
         } else {
-            $icoFile = "{$curDir}/../../../static/img/icons.png";
+            $icoFile = "{$curDir}/../../static/img/icons.png";
         }
         foreach ($config as $cI => $cItem) {
             if ($cI !== 'mates-max') {

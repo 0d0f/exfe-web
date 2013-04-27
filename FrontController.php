@@ -32,7 +32,7 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = CONTROLLER_DIR . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            header("location: /error/404?e=PageNotFound");
+            header('location: /error/404');
             return;
         }
         require_once $ctlFile;
@@ -57,8 +57,7 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = API_CONTROLLER_DIR . '/' . $version . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            // 404
-            echo 'Page not found:' . $ctlFile;
+            header('location: /error/404');
             return;
         }
         require_once $ctlFile;
@@ -104,7 +103,8 @@ class FrontController {
             $controller = array_shift($arrPath);
             $this->rockApi($controller, $arrPath, $first);
         } else if ($arrPath[0] === '500') {
-            echo '500';
+            header('location: /error/500');
+            return;
         } else {
             $this->rockWeb($first, $arrPath);
         }
