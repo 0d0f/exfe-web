@@ -11,6 +11,7 @@ abstract class ActionController {
     protected $viewData   = [];
 
     protected $httpStatus = [
+        206 => 'Partial Content',
         400 => 'Bad Request',
         401 => 'Unauthorized',
         403 => 'Forbidden',
@@ -91,7 +92,7 @@ abstract class ActionController {
     }
 
 
-    public function jsonResponse($data, $code = 200, $warning = []) {
+    public function jsonResponse($data, $code = 200, $warning = null) {
         if ($code !== 200) {
             if (isset($this->httpStatus[$code])) {
                 header("HTTP/1.1 {$code} {$this->httpStatus[$code]}");
@@ -110,24 +111,27 @@ abstract class ActionController {
     }
 
 
-    public function jsonError($data, $code, $type, $message) {
+    public function jsonError($code, $type = '', $message = '', $data = null) {
         if (isset($this->httpStatus[$code])) {
             header("HTTP/1.1 {$code} {$this->httpStatus[$code]}");
         } else {
             return;
         }
+        if ($code === 500) {
+            $type = 'server_error';
+        }
         if (!$code || !$type) {
             return;
         }
         $output = new stdClass;
-        if ($data) {
-            $output->data = $data;
-        }
         $output->error = [
             'code'    => $code,
             'type'    => $type,
             'message' => $message,
         ];
+        if ($data) {
+            $output->data = $data;
+        }
         echo json_encode($output);
     }
 

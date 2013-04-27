@@ -37,7 +37,7 @@ class ExfeAuthModels extends DataModel {
                     'expire_after_seconds' => (int) $expireAfterSeconds,
                 ], false, false, 3, 3, 'json', true
             );
-            checkResponse($rawResult);
+            $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
                 $ipvResult = $this->packToken($rawResult['json']);
                 if ($ipvResult
@@ -57,7 +57,7 @@ class ExfeAuthModels extends DataModel {
                 EXFE_AUTH_SERVER . "/v3/tokens/key/{$key}",
                 null, null, false, false, 3, 3, 'json', true
             );
-            checkResponse($rawResult);
+            $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
                 return $this->packToken($rawResult['json'][0]);
             }
@@ -73,7 +73,7 @@ class ExfeAuthModels extends DataModel {
                 null, json_encode($resource),
                 false, false, 3, 3, 'json', true
             );
-            checkResponse($rawResult);
+            $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
                 $rtnResult = [];
                 foreach ($rawResult['json'] as $rI => $rItem) {
@@ -99,7 +99,7 @@ class ExfeAuthModels extends DataModel {
                 EXFE_AUTH_SERVER . "/v3/tokens/key/{$key}",
                 null, $postArgs, false, false, 3, 3, 'json', true
             );
-            checkResponse($rawResult);
+            $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
                 return true;
             }
@@ -119,7 +119,7 @@ class ExfeAuthModels extends DataModel {
                 EXFE_AUTH_SERVER . "/v3/tokens/resource",
                 null, $postArgs, false, false, 3, 3, 'json', true
             );
-            checkResponse($rawResult);
+            $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
                 return true;
             }
