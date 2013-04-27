@@ -65,7 +65,7 @@
       <div class="title_area" style="background: url(/static/img/xbg/{{background}}) no-repeat 50% 50%;">
         <div class="title_wrap_a">
           <div class="title_wrap_b">
-            <div class="title_text">{{title}}</div>
+            <div class="title_text">{{{title}}}</div>
           </div>
         </div>
         {{#if inviter}}
