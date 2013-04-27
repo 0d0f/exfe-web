@@ -186,14 +186,16 @@
   <script id="setpassword-tmpl" type="text/x-handlebars-template">
   <div class="page setpassword-page hide" id="app-setpassword">
     <div class="verify-actions">
-      <div class="identity">
-        <img class="avatar" width="40" height="40" src="" />
-        <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
-      </div>
-      <div>
-        <input type="password" id="password" placeholder="Set EXFE Password" />
-        <i class="eye icon16-pass-show"></i>
-        <img width="18" height="18" class="loading hide" src="/static/img/loading.gif" />
+      <div class="user-form">
+        <div class="identity">
+          <img class="avatar" width="40" height="40" src="" />
+          <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
+        </div>
+        <div>
+          <input type="password" id="password" placeholder="Set EXFE Password" />
+          <i class="eye icon16-pass-show"></i>
+          <img width="18" height="18" class="loading hide" src="/static/img/loading.gif" />
+        </div>
       </div>
       <div class="error-info"></div>
       <div class="set-button">
