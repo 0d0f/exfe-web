@@ -26,7 +26,7 @@
             <button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button>
           </div>
           <div class="action redirecting hide">Redirecting to EXFE app in <span class="sec">0</span>s.</div>
-          <div class="action web-version"><span class="underline">Proceed</span> with desktop web version.</div>
+          <div class="action web-version hide"><span class="underline">Proceed</span> with desktop web version.</div>
         </div>
       </div>
     </div>
@@ -236,7 +236,7 @@
       <div class="live-title">
         <div class="back"><img width="20" height="44" src="/static/img/back@2x.png" alt="" /></div>
         <h2>Live <span class="x">·X·</span></h2>
-        <button class="btn btn-confirm hide" type="button">Contact</button>
+        <!--button class="btn btn-confirm hide" type="button">Contact</button-->
         <div id="live-tip" class="live-tip live-tip-close">
           <h4>Gather people nearby</h4>
           <p>Close two phones together to capture people using Live ·X·. For those accessing exfe.com, max their speaker volume.</p>
@@ -265,7 +265,7 @@
   <script id="live-li-identity-tmpl" type="text/x-handlebars-template">
   <li class="identity">
     <span class="provider">{{provider_alias}}</span>
-    <input data-provider="{{identity.provider}}" style="" autocapitalize="none" class="external_username input-item normal" value="{{{identity.external_username}}}" type="email"/>
+    <input data-name="{{identity.name}}" data-external-username="{{identity.external_username}}" data-provider="{{identity.provider}}" style="" autocapitalize="none" class="external_username input-item normal" value="{{{identity.external_username}}}" type="email"/>
     <div class="delete hidden"><div class="delete-x">x</div></div>
   </li>
   </script>
