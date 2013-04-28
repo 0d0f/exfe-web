@@ -177,7 +177,7 @@
       </div>
       <div class="done-info">
         <span class="status">Verification succeeded.</span>
-        <span class="redirecting hide">Redirecting to app in <span class="sec">5</span>s.</span>
+        <span class="redirecting hide">Redirecting to app in <span class="sec">0</span>s.</span>
       </div>
     </div>
   </div>
