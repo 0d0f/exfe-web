@@ -189,7 +189,7 @@
       <div class="user-form">
         <div class="identity">
           <img class="avatar" alt="" width="40" height="40" src="" />
-          <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
+          <div class="name"></div>
         </div>
         <div class="password">
           <div class="lock"></div>
