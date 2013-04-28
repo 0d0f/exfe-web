@@ -192,10 +192,9 @@
           <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
         </div>
         <div class="password">
-          <img class="lock" alt="" width="18" height="18" src="/static/img/lock_18@2x.png" />
+          <div class="lock"></div>
           <input type="password" id="password" placeholder="Set EXFE Password" />
-          <img class="pass" alt="" width="20" height="20" src="/static/img/pass_show@2x.png" />
-          <!--img width="18" height="18" class="loading hide" src="/static/img/loading.gif" /-->
+          <div class="pass"></div>
         </div>
       </div>
       <div class="error-info hide"></div>
