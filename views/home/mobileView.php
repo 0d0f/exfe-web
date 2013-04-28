@@ -192,17 +192,17 @@
           <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
         </div>
         <div class="password">
-          <im class="lock" alt="" width="18" height="18" src="/static/img/lock_18@2x.png" />
+          <img class="lock" alt="" width="18" height="18" src="/static/img/lock_18@2x.png" />
           <input type="password" id="password" placeholder="Set EXFE Password" />
-          <i class="eye icon16-pass-show"></i>
-          <img width="18" height="18" class="loading hide" src="/static/img/loading.gif" />
+          <img class="pass" alt="" width="20" height="20" src="/static/img/pass_show@2x.png" />
+          <!--img width="18" height="18" class="loading hide" src="/static/img/loading.gif" /-->
         </div>
       </div>
-      <div class="error-info"></div>
+      <div class="error-info hide"></div>
       <div class="set-button">
-        <button>Done</button>
+        <button class="btn-done">Done</button>
       </div>
-      <div class="done-info">
+      <div class="done-info hide">
         <span class="status">Password set successfully.</span>
         <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
       </div>
