@@ -188,10 +188,11 @@
     <div class="verify-actions">
       <div class="user-form">
         <div class="identity">
-          <img class="avatar" width="40" height="40" src="" />
+          <img class="avatar" alt="" width="40" height="40" src="" />
           <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
         </div>
-        <div>
+        <div class="password">
+          <im class="lock" alt="" width="18" height="18" src="/static/img/lock_18@2x.png" />
           <input type="password" id="password" placeholder="Set EXFE Password" />
           <i class="eye icon16-pass-show"></i>
           <img width="18" height="18" class="loading hide" src="/static/img/loading.gif" />
