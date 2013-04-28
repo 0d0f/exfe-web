@@ -21,7 +21,7 @@
               <button class="btn_mail">OK</button>
             </div>
           </div>
-          <div class="action error-info hide">You just opened an invalid link.</div>
+          <div class="action error-info hide"></div>
           <div class="action get-button hide">
             <button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button>
           </div>
