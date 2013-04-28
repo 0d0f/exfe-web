@@ -16,7 +16,8 @@ class httpKit {
         $maxRedirs   = 3,
         $postType    = 'txt',
         $jsonDecode  = false,
-        $decoAsArray = true
+        $decoAsArray = true,
+        $proxy       = []
     ) {
         if ($url) {
             $objCurl = curl_init();
@@ -27,6 +28,23 @@ class httpKit {
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, $timeout);
             curl_setopt($objCurl, CURLOPT_MAXREDIRS,      $maxRedirs);
             curl_setopt($objCurl, CURLOPT_FOLLOWLOCATION, 1);
+            // for exfe only by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT
+             && preg_match('/(twitter|facebook|flickr|google|dropbox)/', $url)) {
+                $proxy = [
+                    'type' => PROXY_TYPE,
+                    'addr' => PROXY_ADDR,
+                    'port' => PROXY_PORT
+                ];
+            }
+            // }
+            if ($proxy && $proxy['type'] && $proxy['addr'] && $proxy['port']) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     $proxy['addr']);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, $proxy['port']);
+                if ($proxy['type'] === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
             if ($argsGet) {
                 $url .= (strpos($url, '?') ? '&' : '?')
                       . http_build_query($argsGet);
@@ -45,6 +63,9 @@ class httpKit {
             if (DEBUG) {
                 error_log('httpKit fetching {');
                 error_log("URL: {$url}");
+                if ($proxy) {
+                    error_log('PROXY: ' . json_encode($proxy));
+                }
                 if ($argsPost !== null) {
                     error_log("POST: {$argsPost}");
                 }
@@ -52,7 +73,7 @@ class httpKit {
             $rawData     = @curl_exec($objCurl);
             $intHttpCode = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
-            $result = ['data' => $rawData, 'http_code' => "{$intHttpCode}"];
+            $result = ['data' => $rawData, 'http_code' => $intHttpCode];
             if ($jsonDecode) {
                 $result['json'] = @json_decode($rawData, $decoAsArray);
             }
@@ -77,7 +98,7 @@ class httpKit {
         $rawResult = self::request($url, null, null, false, true);
         if ($rawResult
          && $rawResult['data']
-         && $rawResult['http_code'] === '200') {
+         && $rawResult['http_code'] === 200) {
             $objImage = @imagecreatefromstring($rawResult['data']);
             if ($objImage) {
                 return $objImage;

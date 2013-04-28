@@ -17,13 +17,15 @@ class Response extends EFObject {
     public $updated_at  = null;
 
 
-    public function __construct($id          = 0,
-                                $object_type = 0,
-                                $object_id   = 0,
-                                $response    = '',
-                                $by_identity = null,
-                                $created_at  = '',
-                                $updated_at  = '') {
+    public function __construct(
+        $id          = 0,
+        $object_type = 0,
+        $object_id   = 0,
+        $response    = '',
+        $by_identity = null,
+        $created_at  = '',
+        $updated_at  = ''
+    ) {
         parent::__construct($id, 'Response');
 
         $created_at        = $created_at ?: date('Y-m-d H:i:s');

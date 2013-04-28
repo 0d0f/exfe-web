@@ -201,6 +201,15 @@ class OAuthModels extends DataModel {
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($data = (array) json_decode($data)) && isset($data['data'])) {
@@ -226,6 +235,16 @@ class OAuthModels extends DataModel {
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
+    print_r($objCurl);
         if (!($data = curl_exec($objCurl))) {
             curl_close($objCurl);
             return null;
@@ -260,6 +279,15 @@ class OAuthModels extends DataModel {
         );
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = json_decode($data, true))) {
@@ -286,6 +314,15 @@ class OAuthModels extends DataModel {
         $objCurl = curl_init("https://graph.facebook.com/{$external_username}");
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = (array) json_decode($data))) {
@@ -314,6 +351,15 @@ class OAuthModels extends DataModel {
         $objCurl = curl_init('https://api.dropbox.com/1/oauth/request_token');
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        // anti-gfw by @leask {
+        if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+            curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+            curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+            if (PROXY_TYPE === 'socks') {
+                curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+            }
+        }
+        // }
         curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
             'Authorization: '
           . 'OAuth oauth_version="1.0", '
@@ -360,6 +406,15 @@ class OAuthModels extends DataModel {
             $objCurl = curl_init('https://api.dropbox.com/1/oauth/access_token');
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            // anti-gfw by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+                if (PROXY_TYPE === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
+            // }
             curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                 'Authorization: '
               . 'OAuth oauth_version="1.0", '
@@ -401,6 +456,15 @@ class OAuthModels extends DataModel {
             $objCurl = curl_init('https://api.dropbox.com/1/account/info');
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            // anti-gfw by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+                if (PROXY_TYPE === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
+            // }
             curl_setopt($objCurl, CURLOPT_HTTPHEADER, [
                 'Authorization: '
               . 'OAuth oauth_version="1.0", '
@@ -503,6 +567,15 @@ class OAuthModels extends DataModel {
             $objCurl = curl_init($url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            // anti-gfw by @leask {
+            if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+                curl_setopt($objCurl, CURLOPT_PROXY,     PROXY_ADDR);
+                curl_setopt($objCurl, CURLOPT_PROXYPORT, PROXY_PORT);
+                if (PROXY_TYPE === 'socks') {
+                    curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+                }
+            }
+            // }
             curl_setopt($objCurl, CURLOPT_HTTPHEADER, [implode(', ', $header)]);
             $data = curl_exec($objCurl);
             curl_close($objCurl);
@@ -701,53 +774,5 @@ class OAuthModels extends DataModel {
         }
         return $result;
     }
-
-
-
-
-
-
-
-    /********************
-     ********************  WORKING ON by Leask Huang
-    public function verifyOAuthUser($oAuthUserInfo) {
-        //如果当前OAuth用户已经存在。
-        $identityID = intval($rows["id"]);
-        $sql = "UPDATE identities SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', bio='{$oAuthUserDesc}', avatar_file_name='{$oAuthUserAvatar}', external_username='{$oAuthScreenName}', oauth_token='{$oAuthAccessToken}' WHERE id={$identityID}";
-        $this->query($sql);
-
-        $sql = "SELECT userid FROM user_identity WHERE identityid={$identityID}";
-        $result = $this->getRow($sql);
-
-        //如果已经登录，则合并账户。
-        $userID = intval($_SESSION['userid']);
-        if($userID > 0){
-            if((int)$userID != intval($result["userid"])){
-                $oldUserID = intval($result["userid"]);
-                $sql = "UPDATE user_identity set `status`=1 WHERE `identityid`={$identityID} AND `userid`={$oldUserID}";
-                $this->query($sql);
-                $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID},{$userID}, FROM_UNIXTIME({$currentTimeStamp}), 3)";
-                $this->query($sql);
-            }
-        }else{
-            if(is_array($result)){
-                $userID = intval($result["userid"]);
-                $sql = "UPDATE users SET updated_at=FROM_UNIXTIME({$currentTimeStamp}), name='{$oAuthUserName}', avatar_file_name='{$oAuthUserAvatar}' WHERE id={$userID}";
-                $this->query($sql);
-            }else{
-                $sql = "SELECT name, avatar_file_name FROM identities WHERE id={$identityID}";
-                $identityInfo = $this->getRow($sql);
-                $sql = "INSERT INTO users (`created_at`, `name`, `avatar_file_name`) VALUES (FROM_UNIXTIME({$currentTimeStamp}), '".$identityInfo["name"]."', '".$identityInfo["avatar_file_name"]."')";
-                $result = $this->query($sql);
-                $userID = intval($result["insert_id"]);
-                if($userID){
-                    $sql = "INSERT INTO user_identity (`identityid`, `userid`, `created_at`, `status`) VALUES ({$identityID}, {$userID}, FROM_UNIXTIME($currentTimeStamp), 3)";
-                    $this->query($sql);
-                }
-            }
-        }
-        return array("identityID" => $identityID, "userID" => $userID);
-    }
-    */
 
 }

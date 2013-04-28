@@ -10,7 +10,12 @@ function addScript($scripts) {
 echo "\n";
 addScript([
     ['common',        '0.0.3'],
+    ['class',         '0.0.1'],
+    ['emitter',       '0.0.2'],
+    ['base',          '0.0.2'],
+    //['bus',           '0.0.2'],
     ['zepto',         '1.0.0'],
+    ['handlebars',    '1.0.7'],
     ['store',         '1.3.5'],
     ['util',          '0.2.6'],
     ['humantime',     '0.0.6'],
@@ -20,12 +25,14 @@ addScript([
 
 echo "  <script>\n";
 include 'ftconfig.php';
-echo " var sms_token = " . json_encode($this->getVar('sms_token')) . ";\n";
 echo "  </script>\n";
 
 addScript([
-    ['live',          '0.0.1'],
-    ['mobile',        '0.0.1'],
+    ['live',                    '0.0.1'],
+    ['mobilemiddleware',        '0.0.1'],
+    ['mobilecontroller',        '0.0.1'],
+    ['mobileroutes',            '0.0.1'],
+    ['mobile',                  '0.0.1'],
 ]);
 
 // Google Analytics

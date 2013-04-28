@@ -19,7 +19,17 @@ class Place extends EFObject {
     public $updated_at  = null;
 
 
-    public function __construct($id = 0, $title = '', $description = '', $lng = '', $lat = '', $provider = '', $external_id = '', $created_at = '', $updated_at = '') {
+    public function __construct(
+        $id          = 0,
+        $title       = '',
+        $description = '',
+        $lng         = '',
+        $lat         = '',
+        $provider    = '',
+        $external_id = '',
+        $created_at  = '',
+        $updated_at  = ''
+    ) {
         parent::__construct(intval($id), 'Place');
 
         $created_at        = $created_at  ?: date('Y-m-d H:i:s');
