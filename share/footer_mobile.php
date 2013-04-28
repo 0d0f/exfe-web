@@ -21,6 +21,7 @@ addScript([
     ['humantime',     '0.0.6'],
     ['af',            '0.0.1'],
     ['tween',         '10.0.0'],
+    ['lightsaber',    '0.0.5'],
 ]);
 
 echo "  <script>\n";
