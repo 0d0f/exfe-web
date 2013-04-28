@@ -178,7 +178,7 @@
     </div>
     <div class="done-info hide">
       <span class="status">Verification succeeded.</span>
-      <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
+      <span class="redirecting">Redirecting to app in <span class="sec">5</span>s.</span>
     </div>
   </div>
   </script>
@@ -197,10 +197,10 @@
           <div class="pass"></div>
         </div>
       </div>
-      <div class="error-info hide"></div>
       <div class="set-button">
         <button class="btn-done">Done</button>
       </div>
+      <div class="error-info hide"></div>
       <div class="done-info hide">
         <span class="status">Password set successfully.</span>
         <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
