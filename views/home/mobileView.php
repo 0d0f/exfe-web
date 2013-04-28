@@ -8,7 +8,7 @@
         <div class="center">
           <div class="welcome">Welcome to <span class="exfe">EXFE</span></div>
           <div class="exfe-logo">
-            <img src="/static/img/exfe.png" width="30" height="30" />
+            <img src="/static/img/EXFE_glossy_50@2x.png" width="96" height="50" />
           </div>
         </div>
       </div>
