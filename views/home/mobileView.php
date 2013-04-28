@@ -199,8 +199,8 @@
         </div>
       </div>
       <div class="error-info"></div>
-      <div class="set-button btn-done">
-        <button>Done</button>
+      <div class="set-button">
+        <button class="btn-done">Done</button>
       </div>
       <div class="done-info">
         <span class="status">Password set successfully.</span>
