@@ -168,17 +168,17 @@
   </script>
 
   <script id="verify-tmpl" type="text/x-handlebars-template">
-  <div class="page setpassword-page hide" id="app-setpassword">
+  <div class="page verify-page hide" id="app-verify">
     <div class="verify-actions">
       <div class="identity">
         <img class="avatar" alt="" width="40" height="40" src="" />
-        <img class="provider" alt="" width="18" height="18" src="" />
+        <img class="provider hide" alt="" width="18" height="18" src="" />
         <span class="name"></span>
       </div>
     </div>
-    <div class="done-info hide">
+    <div class="done-info">
       <span class="status">Verification succeeded.</span>
-      <span class="redirecting">Redirecting to app in <span class="sec">5</span>s.</span>
+      <span class="redirecting hide">Redirecting to app in <span class="sec">5</span>s.</span>
     </div>
   </div>
   </script>
