@@ -198,11 +198,11 @@
           <!--img width="18" height="18" class="loading hide" src="/static/img/loading.gif" /-->
         </div>
       </div>
-      <div class="error-info"></div>
+      <div class="error-info hide"></div>
       <div class="set-button">
         <button class="btn-done">Done</button>
       </div>
-      <div class="done-info">
+      <div class="done-info hide">
         <span class="status">Password set successfully.</span>
         <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
       </div>
