@@ -111,7 +111,7 @@ class OAuthActions extends ActionController {
                       . "&external_id={$result['identity']->external_id}"
                       . "&provider={$result['identity']->provider}"
                       . "&identity_status={$result['identity_status']}"
-                      . "&twitter_following={$result['twitter_following']}"
+                      . '&twitter_following=' . ($result['twitter_following'] ? 'true' : 'false')
                       . (isset($workflow['verification_token'])
                       ? "&verification_token={$workflow['verification_token']}"
                       : '')
