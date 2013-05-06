@@ -37,6 +37,9 @@ class ExfeeModels extends DataModel {
         $rawExfee = $withRemoved
                   ? $this->getAll("SELECT * FROM `invitations` WHERE `exfee_id` = {$id}")
                   : $this->getRawExfeeById($id);
+        if (!$rawExfee) {
+            return null;
+        }
         $objExfee = new Exfee($id);
         $objExfee->hosts = [];
         $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
