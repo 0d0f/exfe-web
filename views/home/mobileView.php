@@ -8,7 +8,7 @@
         <div class="center">
           <div class="welcome">Welcome to <span class="exfe">EXFE</span></div>
           <div class="exfe-logo">
-            <img src="/static/img/exfe.png" width="30" height="30" />
+            <img src="/static/img/EXFE_glossy_50@2x.png" width="96" height="50" />
           </div>
         </div>
       </div>
@@ -21,7 +21,7 @@
               <button class="btn_mail">OK</button>
             </div>
           </div>
-          <div class="action error-info hide">You just opened an invalid link.</div>
+          <div class="action error-info hide"></div>
           <div class="action get-button hide">
             <button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button>
           </div>
@@ -168,17 +168,17 @@
   </script>
 
   <script id="verify-tmpl" type="text/x-handlebars-template">
-  <div class="page setpassword-page hide" id="app-setpassword">
+  <div class="page verify-page hide" id="app-verify">
     <div class="verify-actions">
       <div class="identity">
         <img class="avatar" alt="" width="40" height="40" src="" />
-        <img class="provider" alt="" width="18" height="18" src="" />
+        <!--img class="provider" alt="" width="18" height="18" src="" /-->
         <span class="name"></span>
       </div>
-    </div>
-    <div class="done-info hide">
-      <span class="status">Verification succeeded.</span>
-      <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
+      <div class="done-info">
+        <span class="status">Verification succeeded.</span>
+        <span class="redirecting hide">Redirecting to app in <span class="sec">0</span>s.</span>
+      </div>
     </div>
   </div>
   </script>
@@ -189,20 +189,19 @@
       <div class="user-form">
         <div class="identity">
           <img class="avatar" alt="" width="40" height="40" src="" />
-          <input type="text" class="name" id="name" placeholder="Set EXFE User Name" />
+          <div class="name"></div>
         </div>
         <div class="password">
-          <im class="lock" alt="" width="18" height="18" src="/static/img/lock_18@2x.png" />
+          <div class="lock"></div>
           <input type="password" id="password" placeholder="Set EXFE Password" />
-          <i class="eye icon16-pass-show"></i>
-          <img width="18" height="18" class="loading hide" src="/static/img/loading.gif" />
+          <div class="pass"></div>
         </div>
       </div>
-      <div class="error-info"></div>
       <div class="set-button">
-        <button>Done</button>
+        <button class="btn-done">Done</button>
       </div>
-      <div class="done-info">
+      <div class="error-info hide" style="margin-top: 10px"></div>
+      <div class="done-info hide">
         <span class="status">Password set successfully.</span>
         <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
       </div>

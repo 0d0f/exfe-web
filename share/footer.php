@@ -43,7 +43,7 @@ addScript([
     ['panel',         '0.0.2'],
     ['xidentity',     '0.0.3'],
     ['xdialog',       '0.1.13'],
-    ['datepanel',     '0.1.2'],
+    ['datepanel',     '0.1.3'],
     ['mappanel',      '0.0.8'],
     ['global',        '0.0.5'],
     ['countrycodes',  '0.0.1'],
@@ -56,7 +56,7 @@ addScript([
 addScript([
     ['filehtml5',     '0.0.1'],
     ['uploader',      '0.0.3'],
-    ['profile',       '0.1.17'],
+    ['profile',       '0.1.18'],
     ['user',          '0.0.8'],
 ]);
 
@@ -64,7 +64,7 @@ echo "  <script src=\"/static/_cross.js?" . STATIC_CODE_TIMESTAMP . "\"></script
 
 // lightsaber
 addScript([
-    ['lightsaber',    '0.0.4'],
+    ['lightsaber',    '0.0.5'],
     ['middleware',    '0.0.10'],
     ['routes',        '0.3.12'],
     ['app',           '0.2.9'],
