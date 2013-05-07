@@ -1,15 +1,33 @@
 #!/bin/sh
 
+# init
 TARGET="$1"
 TAG="$2"
+PROTECTED=(eimgs, static, config.php)
 
+# check input
 if [ "${TARGET}" = "" ]; then
     echo Target cannot be empty
     exit -1
 fi
 
-cp -r ./bin/* ${TARGET}
+# clear old codes
+for file in ${TARGET}/*
+do
+    prot=0
+    for iPt in ${PROTECTED[*]}
+    do
+        if [ "$file" = "${TARGET}/$iPt" ]; then
+            prot=1
+        fi
+    done
+    if [[ $prot -eq 0 && "$file" != "" ]]; then
+        rm -rf "$file"
+    fi
+done
 
+# deploy new codes
+cp -r ./bin/* ${TARGET}
 cd ${TARGET}
 git add .
 git commit -m "${TAG}" || echo '';
