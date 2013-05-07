@@ -93,6 +93,7 @@ abstract class ActionController {
 
 
     public function jsonResponse($data, $code = 200, $warning = null) {
+        header('Content-Type: application/json; charset=UTF-8');
         if ($code !== 200) {
             if (isset($this->httpStatus[$code])) {
                 header("HTTP/1.1 {$code} {$this->httpStatus[$code]}");
@@ -112,6 +113,7 @@ abstract class ActionController {
 
 
     public function jsonError($code, $type = '', $message = '', $data = null) {
+        header('Content-Type: application/json; charset=UTF-8');
         if (isset($this->httpStatus[$code])) {
             header("HTTP/1.1 {$code} {$this->httpStatus[$code]}");
         } else {
