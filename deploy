@@ -17,11 +17,15 @@ do
     prot=0
     for iPt in ${PROTECTED[*]}
     do
-        if [ "$file" = "${TARGET}/$iPt" ]; then
+        echo '-------------'
+        echo "${file}"
+        echo "${TARGET}/${iPt}"
+        echo '-------------'
+        if [ "${file}" = "${TARGET}/${iPt}" ]; then
             prot=1
         fi
     done
-    if [[ $prot -eq 0 && "$file" != "" ]]; then
+    if [[ ${prot} -eq 0 && "${file}" != "" ]]; then
         rm -rf "$file"
     fi
 done
