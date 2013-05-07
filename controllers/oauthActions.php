@@ -67,6 +67,7 @@ class OAuthActions extends ActionController {
     public function doReverseAuth() {
         // init models
         $modOauth = $this->getModelByName('OAuth');
+        header('Content-Type: application/json; charset=UTF-8'); // @todo v2 only. by @leask
         // grep inputs
         $provider           = @ strtolower($_POST['provider'] ?: '');
         $oauth_token        = @ $_POST['oauth_token'];
