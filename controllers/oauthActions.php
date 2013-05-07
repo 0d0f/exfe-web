@@ -64,6 +64,64 @@ class OAuthActions extends ActionController {
     }
 
 
+    public function doReverseAuth() {
+        // init models
+        $modOauth = $this->getModelByName('OAuth');
+        // grep inputs
+        $provider           = @ strtolower($_POST['provider'] ?: '');
+        $oauth_token        = @ $_POST['oauth_token'];
+        $oauth_token_secret = @ $_POST['oauth_token_secret'];
+        $oauth_expires      = @ $_POST['oauth_expires'];
+        switch ($provider) {
+            case 'twitter':
+                if ($oauth_token && $oauth_token_secret) {
+                    $rawIdentity = $modOauth->verifyTwitterCredentials(
+                        $oauth_token, $oauth_token_secret
+                    );
+                    if ($rawIdentity) {
+                        $result = $modOauth->handleCallback($rawIdentity, [
+                            'oauth_token'        => $oauth_token,
+                            'oauth_token_secret' => $oauth_token_secret,
+                        ]);
+                        if ($result) {
+                            apiResponse([
+                                'user_id' => $result['oauth_signin']['user_id'],
+                                'token'   => $result['oauth_signin']['token'],
+                            ]);
+                            return;
+                        }
+                    }
+                }
+                apiError(400, 'invalid_token', '');
+                return;
+            case 'facebook':
+                if ($oauth_token && $oauth_expires) {
+                    $rawIdentity = $modOauth->getFacebookProfile($oauth_token);
+                    if ($rawIdentity) {
+                        $result = $modOauth->handleCallback($rawIdentity, [], [
+                            'oauth_token'   => $oauth_token,
+                            'oauth_expires' => $oauth_expires,
+                        ]);
+                        if ($result) {
+                            apiResponse([
+                                'user_id' => $result['oauth_signin']['user_id'],
+                                'token'   => $result['oauth_signin']['token'],
+                            ]);
+                            return;
+                        }
+                    }
+                }
+                apiError(400, 'invalid_token', '');
+                return;
+            case '':
+                apiError(400, 'no_provider', '');
+                return;
+            default:
+                apiError(400, 'unsupported_provider', '');
+        }
+    }
+
+
     public function doTwitterCallBack() {
         $modOauth = $this->getModelByName('OAuth');
         $oauthIfo = $modOauth->getSession();

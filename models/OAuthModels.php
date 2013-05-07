@@ -244,7 +244,6 @@ class OAuthModels extends DataModel {
             }
         }
         // }
-    print_r($objCurl);
         if (!($data = curl_exec($objCurl))) {
             curl_close($objCurl);
             return null;
