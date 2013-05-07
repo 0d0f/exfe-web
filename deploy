@@ -3,7 +3,7 @@
 # init
 TARGET="$1"
 TAG="$2"
-PROTECTED=(eimgs, static, config.php)
+PROTECTED=(eimgs static config.php)
 
 # check input
 if [ "${TARGET}" = "" ]; then
@@ -17,10 +17,6 @@ do
     prot=0
     for iPt in ${PROTECTED[*]}
     do
-        echo '-------------'
-        echo "${file}"
-        echo "${TARGET}/${iPt}"
-        echo '-------------'
         if [ "${file}" = "${TARGET}/${iPt}" ]; then
             prot=1
         fi
@@ -34,4 +30,4 @@ done
 cp -r ./bin/* ${TARGET}
 cd ${TARGET}
 git add .
-git commit -m "${TAG}" || echo '';
+git commit -am "${TAG}" || echo '';
