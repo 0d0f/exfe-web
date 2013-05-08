@@ -112,7 +112,7 @@ class QueueModels extends DataModel {
                 continue;
             }
             // }
-            $gotInvitation = [unserialize(serialize($invitation))];
+            $gotInvitation = [deepClone($invitation)];
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -121,7 +121,7 @@ class QueueModels extends DataModel {
                     $invitation->identity
                 );
                 foreach ($mobIdentities as $mI => $mItem) {
-                    $tmpInvitation = unserialize(serialize($invitation));
+                    $tmpInvitation = deepClone($invitation);
                     $tmpInvitation->identity = $mItem;
                     $gotInvitation[] = $tmpInvitation;
                 }
@@ -155,7 +155,7 @@ class QueueModels extends DataModel {
                     foreach ($gotInvitation as $item) {
                         switch ($item->identity->provider) {
                             case 'email':
-                                $imsgInv = unserialize(serialize($item));
+                                $imsgInv = deepClone($item);
                                 $imsgInv->identity->provider = 'phone';
                                 $instant[] = $imsgInv;
                             case 'phone':
@@ -268,7 +268,7 @@ class QueueModels extends DataModel {
     public function updateIdentity($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateIdentity';
-        $identity    = unserialize(serialize($identity));
+        $identity    = deepClone($identity);
         $identity->auth_data = json_encode($oauth_info);
         $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
@@ -278,7 +278,7 @@ class QueueModels extends DataModel {
     public function updateFriends($identity, $oauth_info) {
         $service     = 'Thirdpart';
         $method      = 'UpdateFriends';
-        $identity    = unserialize(serialize($identity));
+        $identity    = deepClone($identity);
         $identity->auth_data = json_encode($oauth_info);
         $invitations = [(object) ['identity' => $identity]];
         return $this->pushJobToQueue('Instant', $service, $method, $invitations);
