@@ -7,10 +7,11 @@ class PhotoxActions extends ActionController {
         $checkHelper = $this->getHelperByName('check');
         $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
         if ($result['check'] !== true) {
-            if ($result['uid'] === 0)
+            if ($result['uid'] === 0) {
                 apiError(401, 'invalid_auth', '');
-            else
+            } else {
                 apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
+            }
         }
         $crossHelper = $this->getHelperByName('cross');
         $cross = $crossHelper->getCross($params['id']);
