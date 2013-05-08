@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+
+
 class QueueModels extends DataModel {
 
     public $hlpGobus = null;
@@ -59,14 +62,36 @@ class QueueModels extends DataModel {
                 $data['old_cross']->exfee->invitations
             );
         }
-        $jobData = [
-            'service'   => $service,
-            'method'    => $method,
-            'merge_key' => "{$service}_{$method}" === 'Cross_Invite' ? '' : (string) $data['cross']->id,
-            'tos'       => $tos,
-            'data'      => $data ?: new stdClass,
-        ];
-        return $this->pushToQueue($queue, 'Push', $jobData);
+        if ($queue === 'Digest') {
+            return httpKit::request(
+                EXFE_GOBUS_SERVER . "/v3/queue/-/POST/" . EXFE_BUS_SERVICES . '/v3/splitter',
+                [
+                    'update'     => 'always',
+                    'ontime'     => time(),
+                ],
+                [
+                    'recipients' => $tos,
+                    'merge_key'  => "cross{$data['cross']->id}",
+                    'method'     => 'POST',
+                    'service'    => EXFE_AUTH_SERVER . '/v3/notifier/cross/digest',
+                    'type'       => 'always',
+                    'ontime'     => strtotime('tomorrow'),
+                    'data'       => [
+                        'cross_id'   => $data['cross']->id,
+                        'updated_at' => $data['cross']->updated_at,
+                    ],
+                ], false, false, 3, 3, 'json'
+            );
+        } else {
+            $jobData = [
+                'service'   => $service,
+                'method'    => $method,
+                'merge_key' => "{$service}_{$method}" === 'Cross_Invite' ? '' : (string) $data['cross']->id,
+                'tos'       => $tos,
+                'data'      => $data ?: new stdClass,
+            ];
+            return $this->pushToQueue($queue, 'Push', $jobData);
+        }
     }
 
 
@@ -74,11 +99,14 @@ class QueueModels extends DataModel {
         $hlpDevice       = $this->getHelperByName('Device');
         $hlpConversation = $this->getHelperByName('Conversation');
         $hlpMute         = $this->getHelperByName('Mute');
-        $head2   = [];
-        $head10  = [];
-        $tail10  = [];
-        $instant = [];
-        $chkUser = [];
+        $head2           = [];
+        $head10          = [];
+        $tail10          = [];
+        $instant         = [];
+        $digest          = [];
+        $chkUser         = [];
+        $userPerProvider = [];
+        $gotInvitation   = [];
         foreach ($incExfee as $ieI => $ieItem) {
             $incExfee[$ieI]->inc = true;
         }
@@ -112,7 +140,7 @@ class QueueModels extends DataModel {
                 continue;
             }
             // }
-            $gotInvitation = [deepClone($invitation)];
+            $gotInvitation[] = deepClone($invitation);
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
@@ -135,55 +163,80 @@ class QueueModels extends DataModel {
                 // marked
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
-            switch ($event) {
-                case 'Conversation_Update':
-                    foreach ($gotInvitation as $item) {
-                        switch ($item->identity->provider) {
-                            case 'email':
-                            case 'facebook':
-                                $head10[]  = $item;
-                                break;
-                            case 'phone':
-                            case 'twitter':
-                            case 'iOS':
-                            case 'Android':
-                                $instant[] = $item;
-                        }
-                    }
-                    break;
-                case 'Cross_Invite':
-                    foreach ($gotInvitation as $item) {
-                        switch ($item->identity->provider) {
-                            case 'email':
-                                $imsgInv = deepClone($item);
-                                $imsgInv->identity->provider = 'phone';
-                                $instant[] = $imsgInv;
-                            case 'phone':
-                            case 'twitter':
-                            case 'facebook':
-                            case 'iOS':
-                            case 'Android':
-                                $instant[] = $item;
-                        }
-                    }
-                    break;
-                case 'Cross_Summary':
-                    foreach ($gotInvitation as $item) {
-                        switch ($item->identity->provider) {
-                            case 'email':
-                            case 'twitter':
-                            case 'facebook':
-                                $tail10[]  = $item;
-                                break;
-                            case 'phone':
-                            case 'iOS':
-                            case 'Android':
-                                $head2[]   = $item;
-                        }
-                    }
+        }
+        // get digest identities {
+        if (in_array($event, ['Conversation_Update', 'Cross_Summary'])) {
+            foreach ($gotInvitation as $gI => $gItem) {
+                if ($gItem->identity->connected_user_id > 0) {
+                    $provider = ($gItem->identity->provider === 'iOS' || $gItem->identity->provider === 'Android')
+                              ? 'device' : $gItem->identity->provider;
+                    $userPerProvider[$provider][$gItem->identity->connected_user_id] = $gI;
+                }
+            }
+            foreach ($chkUser as $cuI => $cuItem) {
+                if ((isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI]))
+                 || (isset($userPerProvider['phone'][$cuI])  && isset($userPerProvider['email'][$cuI])
+                  && $gotInvitation[$userPerProvider['email'][$cuI]]->rsvp_status === 'NOTIFICATION')) {
+                    $digest[] = $gotInvitation[$userPerProvider['email'][$cuI]];
+                    unset($gotInvitation[$userPerProvider['email'][$cuI]]);
+                }
             }
         }
-        return ['Head2' => $head2, 'Head10' => $head10, 'Tail10' => $tail10, 'Instant' => $instant];
+        // }
+        switch ($event) {
+            case 'Conversation_Update':
+                foreach ($gotInvitation as $item) {
+                    switch ($item->identity->provider) {
+                        case 'email':
+                        case 'facebook':
+                            $head10[]  = $item;
+                            break;
+                        case 'phone':
+                        case 'twitter':
+                        case 'iOS':
+                        case 'Android':
+                            $instant[] = $item;
+                    }
+                }
+                break;
+            case 'Cross_Invite':
+                foreach ($gotInvitation as $item) {
+                    switch ($item->identity->provider) {
+                        case 'email':
+                            $imsgInv = deepClone($item);
+                            $imsgInv->identity->provider = 'phone';
+                            $instant[] = $imsgInv;
+                        case 'phone':
+                        case 'twitter':
+                        case 'facebook':
+                        case 'iOS':
+                        case 'Android':
+                            $instant[] = $item;
+                    }
+                }
+                break;
+            case 'Cross_Summary':
+                foreach ($gotInvitation as $item) {
+                    switch ($item->identity->provider) {
+                        case 'email':
+                        case 'twitter':
+                        case 'facebook':
+                            $tail10[]  = $item;
+                            break;
+                        case 'phone':
+                        case 'iOS':
+                        case 'Android':
+                            $head2[]   = $item;
+                    }
+                }
+        }
+        return [
+            'Head2'   => $head2,
+            'Head10'  => $head10,
+            'Tail10'  => $tail10,
+            'Instant' => $instant,
+            'Digest'  => $digest,
+        ];
     }
 
 
