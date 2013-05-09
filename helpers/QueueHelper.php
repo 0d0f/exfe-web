@@ -15,6 +15,15 @@ class QueueHelper extends ActionController {
     }
 
 
+    public function fireBus(
+        $recipients, $merge_key, $method, $service, $type, $ontime, $data
+    ) {
+        return $this->modQueue->fireBus(
+            $recipients, $merge_key, $method, $service, $type, $ontime, $data
+        );
+    }
+
+
     public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
         return $this->modQueue->despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id);
     }
