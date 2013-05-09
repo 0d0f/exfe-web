@@ -128,6 +128,12 @@ class CrossModels extends DataModel {
                 array_push($updatefields, "`timezone`        = '{$cross_time->begin_at->timezone}'");
                 array_push($updatefields, "`origin_begin_at` = '{$cross_time->origin}'");
                 $cross_updated['time']        = $updated;
+                // despatch remind {
+                $hlpQueue = $this->getHelperByName('Queue');
+                $hlpExfee = $this->getHelperByName('Exfee');
+                $cross->exfee = $hlpExfee->getExfeeById($cross->exfee_id);
+                $hlpQueue->despatchRemind($cross, $cross->exfee, -$by_identity_id, $by_identity_id);
+                // }
             }
 
             if ($background !== $old_background) {
