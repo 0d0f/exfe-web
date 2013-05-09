@@ -9,7 +9,8 @@ class QueueModels extends DataModel {
 
 
     public function fireBus(
-        $recipients, $merge_key, $method, $service, $type, $ontime, $data
+        $recipients, $merge_key, $method, $service,
+        $type, $ontime, $data, $cstRequest = ''
     ) {
         return httpKit::request(
             EXFE_AUTH_SERVER . '/v3/splitter',
@@ -21,7 +22,7 @@ class QueueModels extends DataModel {
                 'type'       => $type,
                 'ontime'     => $ontime,
                 'data'       => $data ?: new stdClass,
-            ], false, false, 3, 3, 'json'
+            ], false, false, 3, 3, 'json', false, true, [], $cstRequest
         );
     }
 
@@ -80,6 +81,11 @@ class QueueModels extends DataModel {
                 $mergeK = "cross{$data['cross']->id}";
                 $dataAr = $data;
                 break;
+            case 'cross/remind':
+                $urlSrv = "/v3/notifier/{$strSrv}";
+                $mergeK = "cross{$data['cross']->id}";
+                $dataAr = ['cross_id' => $data['cross']->id];
+                break;
             case 'exfee/conversation':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = "exfee{$data['cross']->exfee->id}";
@@ -111,6 +117,16 @@ class QueueModels extends DataModel {
                 $type   = 'once';
                 $ontime = time();
                 break;
+            case 'Remind':
+                $type   = 'once';
+                $ontime = strtotime(
+                    "{$data['cross']->time->begin_at->date} {$data['cross']->time->begin_at->timezone}"
+                );
+                $this->fireBus(
+                    $tos, $mergeK, 'POST', EXFE_BUS_SERVICES . $urlSrv,
+                    $type, $ontime, $dataAr, 'DELETE'
+                );
+                break;
             case 'Digest':
                 $type   = 'always';
                 $ontime = strtotime('tomorrow');
@@ -137,6 +153,7 @@ class QueueModels extends DataModel {
         $tail10          = [];
         $instant         = [];
         $digest          = [];
+        $remind          = [];
         $chkUser         = [];
         $userPerProvider = [];
         $gotInvitation   = [];
@@ -254,6 +271,22 @@ class QueueModels extends DataModel {
                     }
                 }
                 break;
+            case 'cross/remind':
+                foreach ($gotInvitation as $item) {
+                    switch ($item->identity->provider) {
+                        case 'email':
+                            $imsgInv = deepClone($item);
+                            $imsgInv->identity->provider = 'phone';
+                            $remind[] = $imsgInv;
+                        case 'phone':
+                        case 'twitter':
+                        case 'facebook':
+                        case 'iOS':
+                        case 'Android':
+                            $remind[] = $item;
+                    }
+                }
+                break;
             case 'cross/summary':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
@@ -275,6 +308,7 @@ class QueueModels extends DataModel {
             'Tail10'  => $tail10,
             'Instant' => $instant,
             'Digest'  => $digest,
+            'Remind'  => $remind,
         ];
     }
 
@@ -311,6 +345,40 @@ class QueueModels extends DataModel {
     public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
         $service     = 'cross';
         $method      = 'invitation';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
+        $dpCross     = new stdClass;
+        $dpCross->id = $cross->id;
+        $dpCross->exfee = $to_exfee;
+        $invitations = $this->getToInvitationsByExfee(
+            $dpCross, $by_user_id, "{$service}/{$method}"
+        );
+        $result = true;
+        foreach ($invitations as $invI => $invItems) {
+            if ($invItems) {
+                if ($this->pushJobToQueue(
+                    $invI, $service, $method, $invItems,
+                    ['cross' => $cross, 'by' => $objIdentity]
+                )) {
+                    $result = false;
+                }
+            }
+        }
+        $this->despatchRemind($cross, $to_exfee, $by_user_id, $by_identity_id);
+        return $result;
+    }
+
+
+    public function despatchRemind($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        if (!$cross
+         || !$cross->time
+         || !$cross->time->begin_at
+         || !$cross->time->begin_at->date
+         || !$cross->time->begin_at->timezone) {
+            return -1;
+        }
+        $service     = 'cross';
+        $method      = 'remind';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $dpCross     = new stdClass;

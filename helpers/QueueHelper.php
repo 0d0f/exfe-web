@@ -11,10 +11,10 @@ class QueueHelper extends ActionController {
 
 
     public function fireBus(
-        $recipients, $merge_key, $method, $service, $type, $ontime, $data
+        $recipients, $merge_key, $method, $service, $type, $ontime, $data, $cstRequest = ''
     ) {
         return $this->modQueue->fireBus(
-            $recipients, $merge_key, $method, $service, $type, $ontime, $data
+            $recipients, $merge_key, $method, $service, $type, $ontime, $data, $cstRequest
         );
     }
 
