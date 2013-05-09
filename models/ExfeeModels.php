@@ -479,7 +479,8 @@ class ExfeeModels extends DataModel {
                 // find out the existing invitation
                 $exists = false;
                 foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
-                    if (!in_array($fmItem->identity->connected_user_id, $oldUserIds)) {
+                    if (!in_array($fmItem->identity->connected_user_id, $oldUserIds)
+                     && $this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4) {
                         $oldUserIds[] = $fmItem->identity->connected_user_id;
                     }
                     if ((int) $toItem->identity->id === $fmItem->identity->id) {
