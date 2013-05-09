@@ -8,11 +8,6 @@ class QueueModels extends DataModel {
     public $hlpGobus = null;
 
 
-    public function __construct() {
-        $this->hlpGobus = $this->getHelperByName('Gobus');
-    }
-
-
     public function fireBus(
         $recipients, $merge_key, $method, $service, $type, $ontime, $data
     ) {
