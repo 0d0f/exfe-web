@@ -115,6 +115,7 @@ class QueueModels extends DataModel {
                 $type   = 'always';
                 $ontime = strtotime('tomorrow');
                 $strSrv = "cross/digest";
+                $urlSrv = "/v3/notifier/{$strSrv}";
                 $dataAr = [
                     'cross_id'   => $data['cross']->id,
                     'updated_at' => $data['cross']->updated_at,
