@@ -64,12 +64,8 @@ class QueueModels extends DataModel {
         }
         if ($queue === 'Digest') {
             return httpKit::request(
-                EXFE_GOBUS_SERVER . "/v3/queue/-/POST/" . EXFE_BUS_SERVICES . '/v3/splitter',
-                [
-                    'update'     => 'always',
-                    'ontime'     => time(),
-                ],
-                [
+                EXFE_AUTH_SERVER . '/v3/splitter',
+                null, [
                     'recipients' => $tos,
                     'merge_key'  => "cross{$data['cross']->id}",
                     'method'     => 'POST',
