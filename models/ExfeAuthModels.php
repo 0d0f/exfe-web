@@ -69,7 +69,7 @@ class ExfeAuthModels extends DataModel {
     public function resourceGet($resource) {
         if ($resource) {
             $rawResult = httpkit::request(
-                EXFE_AUTH_SERVER . "/v3/tokens/resources",
+                EXFE_AUTH_SERVER . '/v3/tokens/resources',
                 null, json_encode($resource),
                 false, false, 3, 3, 'json', true
             );
@@ -116,7 +116,7 @@ class ExfeAuthModels extends DataModel {
         if ($resource && $postArgs) {
             $postArgs['resource'] = json_encode($resource);
             $rawResult = httpkit::request(
-                EXFE_AUTH_SERVER . "/v3/tokens/resource",
+                EXFE_AUTH_SERVER . '/v3/tokens/resource',
                 null, $postArgs, false, false, 3, 3, 'json', true
             );
             $this->checkResponse($rawResult);
