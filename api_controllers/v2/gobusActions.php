@@ -569,12 +569,23 @@ class GobusActions extends ActionController {
             $modExfee = $this->getModelByName('Exfee');
             $hlpCross = $this->getHelperByName('Cross');
             $exfee_id = $modCross->getExfeeByCrossId($id);
-            $userids  = $modExfee->getUserIdsByExfeeId($exfee_id, true);
-            if ($user_id && !in_array($user_id, $userids)) {
+            if (!$user_id) {
                 header('HTTP/1.1 403 Forbidden');
                 return;
+            } else if ($user_id > 0) {
+                $userids = $modExfee->getUserIdsByExfeeId($exfee_id, true);
+                if (!in_array($user_id, $userids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
+            } else if ($user_id < 0) {
+                $identityids = $modExfee->getIdentityIdsByExfeeId($exfee_id);
+                if (!in_array(-$user_id, $identityids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
             }
-            $cross    = $hlpCross->getCross($id, true, false, $updated_at);
+            $cross = $hlpCross->getCross($id, true, false, $updated_at);
             if ($updated_at && $cross->updated) {
                 foreach ($cross->updated as $uI => $uItem) {
                     $itemTime = strtotime($uItem['updated_at']);
@@ -589,7 +600,7 @@ class GobusActions extends ActionController {
                         header('HTTP/1.1 403 Forbidden');
                         return;
                     case 'draft':
-                        if ($user_id && !in_array($user_id, $cross->exfee->hosts)) {
+                        if ($user_id > 0 && !in_array($user_id, $cross->exfee->hosts)) { // @todo 可能有安全问题 by @Leask
                             header('HTTP/1.1 403 Forbidden');
                             return;
                         }
