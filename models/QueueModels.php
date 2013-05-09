@@ -119,11 +119,17 @@ class QueueModels extends DataModel {
                 break;
             case 'Remind':
                 $type   = 'once';
-                $ontime = $this->getRemindTimeBy($data['cross']->time);
                 $this->fireBus(
                     $tos, $mergeK, 'POST', EXFE_BUS_SERVICES . $urlSrv,
-                    $type, $ontime, $dataAr, 'DELETE'
+                    $type, 0, $dataAr, 'DELETE'
                 );
+                if (!$data['cross']->time
+                 || !$data['cross']->time->begin_at
+                 || !$data['cross']->time->begin_at->date
+                 || !$data['cross']->time->begin_at->timezone) {
+                    return true;
+                }
+                $ontime = $this->getRemindTimeBy($data['cross']->time);
                 if ($ontime < time()) {
                     return true;
                 }
@@ -380,13 +386,6 @@ class QueueModels extends DataModel {
 
 
     public function despatchRemind($cross, $to_exfee, $by_user_id, $by_identity_id) {
-        if (!$cross
-         || !$cross->time
-         || !$cross->time->begin_at
-         || !$cross->time->begin_at->date
-         || !$cross->time->begin_at->timezone) {
-            return -1;
-        }
         $service     = 'cross';
         $method      = 'remind';
         $hlpIdentity = $this->getHelperByName('Identity');
