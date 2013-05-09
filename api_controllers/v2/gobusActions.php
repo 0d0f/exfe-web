@@ -598,6 +598,9 @@ class GobusActions extends ActionController {
                     header('HTTP/1.1 304 Not Modified');
                     return;
                 }
+                if (!$cross->updated) {
+                    $cross->updated = new stdClass;
+                }
                 echo json_encode($cross);
                 return;
             }

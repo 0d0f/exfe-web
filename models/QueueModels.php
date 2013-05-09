@@ -83,26 +83,28 @@ class QueueModels extends DataModel {
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
             case 'cross/invitation':
+                $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
                 $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by']];
                 break;
+            case 'cross/summary':
+                $urlSrv = "/v3/notifier/{$strSrv}";
+                $mergeK = "cross{$data['cross']->id}";
+                $dataAr = $data;
+                break;
             case 'exfee/conversation':
+                $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = "exfee{$data['cross']->exfee->id}";
                 $dataAr = ['post' => $data['post']];
                 break;
             case 'Thirdpart/UpdateIdentity':
             case 'Thirdpart/UpdateFriends':
-                $jobData = [
-                    'service'   => $service,
-                    'method'    => $method,
-                    'merge_key' => '',
-                    'tos'       => $tos,
-                    'data'      => new stdClass,
-                ];
-                return $this->pushToQueue($queue, 'Push', $jobData);
-            default:
-                $mergeK = "cross{$data['cross']->id}";
+                $urlSrv = "/{$strSrv}";
+                $mergeK = '-';
                 $dataAr = $data;
+                break;
+            default:
+                return;
         }
         switch ($queue) {
             case 'Head2':
@@ -131,7 +133,7 @@ class QueueModels extends DataModel {
                 ];
         }
         return $this->fireBus(
-            $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . "/v3/notifier/{$strSrv}",
+            $tos, $mergeK, 'POST', EXFE_BUS_SERVICES . $urlSrv,
             $type, $ontime, $dataAr
         );
     }
