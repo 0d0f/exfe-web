@@ -128,8 +128,7 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function gatherCross($cross, $by_identity_id, $user_id = 0)
-    {
+    public function gatherCross($cross, $by_identity_id, $user_id = 0) {
 
         $place_id=0;
         if($cross->place)
