@@ -20,6 +20,24 @@ class QueueModels extends DataModel {
     }
 
 
+    public function fireBus(
+        $recipients, $merge_key, $method, $service, $type, $ontime, $data
+    ) {
+        return httpKit::request(
+            EXFE_AUTH_SERVER . '/v3/splitter',
+            null, [
+                'recipients' => $recipients,
+                'merge_key'  => $merge_key,
+                'method'     => $method,
+                'service'    => $service,
+                'type'       => $type,
+                'ontime'     => $ontime,
+                'data'       => $data ?: new stdClass,
+            ], false, false, 3, 3, 'json'
+        );
+    }
+
+
     public function makeRecipientByInvitation($invitation) {
         return new Recipient(
             $invitation->identity->id,
@@ -62,32 +80,60 @@ class QueueModels extends DataModel {
                 $data['old_cross']->exfee->invitations
             );
         }
-        if ($queue === 'Digest') {
-            return httpKit::request(
-                EXFE_AUTH_SERVER . '/v3/splitter',
-                null, [
-                    'recipients' => $tos,
-                    'merge_key'  => "cross{$data['cross']->id}",
-                    'method'     => 'POST',
-                    'service'    => EXFE_AUTH_SERVER . '/v3/notifier/cross/digest',
-                    'type'       => 'always',
-                    'ontime'     => strtotime('tomorrow'),
-                    'data'       => [
-                        'cross_id'   => $data['cross']->id,
-                        'updated_at' => $data['cross']->updated_at,
-                    ],
-                ], false, false, 3, 3, 'json'
-            );
-        } else {
-            $jobData = [
-                'service'   => $service,
-                'method'    => $method,
-                'merge_key' => "{$service}_{$method}" === 'Cross_Invite' ? '' : (string) $data['cross']->id,
-                'tos'       => $tos,
-                'data'      => $data ?: new stdClass,
-            ];
-            return $this->pushToQueue($queue, 'Push', $jobData);
+        $strSrv = "{$service}/{$method}";
+        switch ($strSrv) {
+            case 'cross/invitation':
+                $mergeK = '-';
+                $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by']];
+                break;
+            case 'exfee/conversation':
+                $mergeK = "exfee{$data['cross']->exfee->id}";
+                $dataAr = ['post' => $data['post']];
+                break;
+            case 'Thirdpart/UpdateIdentity':
+            case 'Thirdpart/UpdateFriends':
+                $jobData = [
+                    'service'   => $service,
+                    'method'    => $method,
+                    'merge_key' => '',
+                    'tos'       => $tos,
+                    'data'      => new stdClass,
+                ];
+                return $this->pushToQueue($queue, 'Push', $jobData);
+            default:
+                $mergeK = "cross{$data['cross']->id}";
+                $dataAr = $data;
         }
+        switch ($queue) {
+            case 'Head2':
+                $type   = 'once';
+                $ontime = time() + 60 * 2;
+                break;
+            case 'Head10':
+                $type   = 'once';
+                $ontime = time() + 60 * 10;
+                break;
+            case 'Tail10':
+                $type   = 'always';
+                $ontime = time() + 60 * 10;
+                break;
+            case 'Instant':
+                $type   = 'once';
+                $ontime = time();
+                break;
+            case 'Digest':
+                $type   = 'always';
+                $ontime = strtotime('tomorrow');
+                $strSrv = "cross/digest";
+                $dataAr = [
+                    'cross_id'   => $data['cross']->id,
+                    'updated_at' => $data['cross']->updated_at,
+                ];
+        }
+        return $this->fireBus(
+            $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . "/v3/notifier/{$strSrv}",
+            $type, $ontime, $dataAr
+        );
     }
 
 
@@ -160,27 +206,33 @@ class QueueModels extends DataModel {
                 $chkUser[$invitation->identity->connected_user_id] = true;
             }
         }
-        // get digest identities {
-        if (in_array($event, ['Conversation_Update', 'Cross_Summary'])) {
-            foreach ($gotInvitation as $gI => $gItem) {
-                if ($gItem->identity->connected_user_id > 0) {
-                    $provider = ($gItem->identity->provider === 'iOS' || $gItem->identity->provider === 'Android')
-                              ? 'device' : $gItem->identity->provider;
-                    $userPerProvider[$provider][$gItem->identity->connected_user_id] = $gI;
-                }
+        // match rules {
+        foreach ($gotInvitation as $gI => $gItem) {
+            if ($gItem->identity->connected_user_id > 0) {
+                $provider = ($gItem->identity->provider === 'iOS' || $gItem->identity->provider === 'Android')
+                          ? 'device' : $gItem->identity->provider;
+                $userPerProvider[$provider][$gItem->identity->connected_user_id] = $gI;
             }
-            foreach ($chkUser as $cuI => $cuItem) {
-                if ((isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI]))
-                 || (isset($userPerProvider['phone'][$cuI])  && isset($userPerProvider['email'][$cuI])
-                  && $gotInvitation[$userPerProvider['email'][$cuI]]->rsvp_status === 'NOTIFICATION')) {
-                    $digest[] = $gotInvitation[$userPerProvider['email'][$cuI]];
-                    unset($gotInvitation[$userPerProvider['email'][$cuI]]);
-                }
+        }
+        foreach ($chkUser as $cuI => $cuItem) {
+            switch ($event) {
+                case 'cross/summary':
+                    if ((isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI]))
+                     || (isset($userPerProvider['phone'][$cuI])  && isset($userPerProvider['email'][$cuI])
+                      && $gotInvitation[$userPerProvider['email'][$cuI]]->rsvp_status === 'NOTIFICATION')) {
+                        $digest[] = $gotInvitation[$userPerProvider['email'][$cuI]];
+                        unset($gotInvitation[$userPerProvider['email'][$cuI]]);
+                    }
+                    break;
+                case 'exfee/conversation':
+                    if (isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI])) {
+                        unset($gotInvitation[$userPerProvider['email'][$cuI]]);
+                    }
             }
         }
         // }
         switch ($event) {
-            case 'Conversation_Update':
+            case 'exfee/conversation':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -195,7 +247,7 @@ class QueueModels extends DataModel {
                     }
                 }
                 break;
-            case 'Cross_Invite':
+            case 'cross/invitation':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -211,7 +263,7 @@ class QueueModels extends DataModel {
                     }
                 }
                 break;
-            case 'Cross_Summary':
+            case 'cross/summary':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -243,12 +295,12 @@ class QueueModels extends DataModel {
         $by_identity_id,
         $exclude_identities = []
     ) {
-        $service     = 'Conversation';
-        $method      = 'Update';
+        $service     = 'exfee';
+        $method      = 'conversation';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
-            $cross, $by_user_id, "{$service}_{$method}", [], $exclude_identities
+            $cross, $by_user_id, "{$service}/{$method}", [], $exclude_identities
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -266,15 +318,15 @@ class QueueModels extends DataModel {
 
 
     public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
-        $service     = 'Cross';
-        $method      = 'Invite';
+        $service     = 'cross';
+        $method      = 'invitation';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $dpCross     = new stdClass;
         $dpCross->id = $cross->id;
         $dpCross->exfee = $to_exfee;
         $invitations = $this->getToInvitationsByExfee(
-            $dpCross, $by_user_id, "{$service}_{$method}"
+            $dpCross, $by_user_id, "{$service}/{$method}"
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -292,12 +344,12 @@ class QueueModels extends DataModel {
 
 
     public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
-        $service     = 'Cross';
-        $method      = 'Summary';
+        $service     = 'cross';
+        $method      = 'summary';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(
-            $cross, $by_user_id, "{$service}_{$method}", $inc_exfee, $exc_exfee
+            $cross, $by_user_id, "{$service}/{$method}", $inc_exfee, $exc_exfee
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
