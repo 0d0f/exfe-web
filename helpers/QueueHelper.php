@@ -10,11 +10,6 @@ class QueueHelper extends ActionController {
     }
 
 
-    public function pushToQueue($queue, $method, $data) {
-        return $this->modQueue->pushToQueue($queue, $method, $data);
-    }
-
-
     public function fireBus(
         $recipients, $merge_key, $method, $service, $type, $ontime, $data
     ) {

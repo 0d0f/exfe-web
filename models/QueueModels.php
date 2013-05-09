@@ -13,13 +13,6 @@ class QueueModels extends DataModel {
     }
 
 
-    public function pushToQueue($queue, $method, $data) {
-        return $this->hlpGobus->useGobusApi(
-            EXFE_GOBUS_SERVER, $queue, $method, $data
-        );
-    }
-
-
     public function fireBus(
         $recipients, $merge_key, $method, $service, $type, $ontime, $data
     ) {
