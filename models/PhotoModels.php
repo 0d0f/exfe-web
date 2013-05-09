@@ -199,15 +199,11 @@ class PhotoModels extends DataModel {
 
     public function addPhotosByGobus($photox_id, $album_id, $recipient) {
         $hlpQueue = $this->getHelperByName('Queue');
-        return $hlpQueue->pushToQueue(
-            '', '',
-            ['service'    => 'bus://exfe_service/thirdpart/photographers?album_id='
-                            . urlencode($album_id) . "&photox_id={$photox_id}",
-             'priority'   => 'instant',
-             'delay'      => 'instant',
-             'group_key'  => '',
-             'recipients' => [$recipient],
-             'data'       =>  $recipient]
+        return $hlpQueue->fireBus(
+            [$recipient], '-', 'POST',
+            EXFE_BUS_SERVICES . '/thirdpart/photographers?album_id='
+          . urlencode($album_id) . "&photox_id={$photox_id}",
+            'once', time(), $recipient
         ) ? true : null;
     }
 
