@@ -17,7 +17,8 @@ class httpKit {
         $postType    = 'txt',
         $jsonDecode  = false,
         $decoAsArray = true,
-        $proxy       = []
+        $proxy       = [],
+        $cstRequest  = ''
     ) {
         if ($url) {
             $objCurl = curl_init();
@@ -57,8 +58,13 @@ class httpKit {
                     case 'form':
                         $argsPost = http_build_query($argsPost);
                 }
-                curl_setopt($objCurl, CURLOPT_POST,       1);
+                if (!$cstRequest) {
+                    curl_setopt($objCurl, CURLOPT_POST, 1);
+                }
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, $argsPost);
+            }
+            if ($cstRequest) {
+                curl_setopt($objCurl, CURLOPT_CUSTOMREQUEST, $cstRequest);
             }
             if (DEBUG) {
                 error_log('httpKit fetching {');
