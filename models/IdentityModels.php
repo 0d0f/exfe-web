@@ -453,8 +453,26 @@ class IdentityModels extends DataModel {
 
 
     public function sendVerification($method, $identity, $token, $need_verify = false, $user_name = '') {
-        $data = [
-            'tos'       => [new Recipient(
+        $data   = new stdClass;
+        $strSrv = '';
+        switch ($method) {
+            case 'Welcome':
+                $strSrv            = 'welcome';
+                $data->need_verify = $need_verify;
+                break;
+            case 'Verify':
+                $strSrv            = 'verify';
+                $data->user_name   = $user_name;
+            case 'ResetPassword':
+                $strSrv            = 'reset';
+                $data->user_name   = $user_name;
+                break;
+            default:
+                return false;
+        }
+        $hlpQueue = $this->getHelperByName('Queue');
+        return $hlpQueue->fireBus(
+            [new Recipient(
                 $identity->id,
                 $identity->connected_user_id,
                 $identity->name,
@@ -466,24 +484,9 @@ class IdentityModels extends DataModel {
                 $identity->external_id,
                 $identity->external_username
             )],
-            'service'   => 'User',
-            'method'    => $method,
-            'merge_key' => '',
-            'data'      => new stdClass,
-        ];
-        switch ($method) {
-            case 'Welcome':
-                $data['data']->need_verify = $need_verify;
-                break;
-            case 'Verify':
-            case 'ResetPassword':
-                $data['data']->user_name   = $user_name;
-                break;
-            default:
-                return false;
-        }
-        $modGobus = $this->getHelperByName('Gobus');
-        return $modGobus->useGobusApi(EXFE_GOBUS_SERVER, 'Instant', 'Push', $data);
+            '-', 'POST', EXFE_BUS_SERVICES . "/v3/notifier/user/{$strSrv}",
+            'once', time(), $data
+        );
     }
 
 
