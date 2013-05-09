@@ -98,7 +98,7 @@ class QueueModels extends DataModel {
                 $dataAr = $data;
                 break;
             default:
-                return;
+                return true;
         }
         switch ($queue) {
             case 'Head2':
@@ -119,13 +119,14 @@ class QueueModels extends DataModel {
                 break;
             case 'Remind':
                 $type   = 'once';
-                $ontime = strtotime(
-                    "{$data['cross']->time->begin_at->date} {$data['cross']->time->begin_at->timezone}"
-                );
+                $ontime = $this->getRemindTimeBy($data['cross']->time);
                 $this->fireBus(
                     $tos, $mergeK, 'POST', EXFE_BUS_SERVICES . $urlSrv,
                     $type, $ontime, $dataAr, 'DELETE'
                 );
+                if ($ontime < time()) {
+                    return true;
+                }
                 break;
             case 'Digest':
                 $type   = 'always';
@@ -310,6 +311,15 @@ class QueueModels extends DataModel {
             'Digest'  => $digest,
             'Remind'  => $remind,
         ];
+    }
+
+
+    public function getRemindTimeBy($crossTime) {
+        return strtotime(
+            $crossTime->begin_at->time
+          ? "{$crossTime->begin_at->date} {$crossTime->begin_at->time} +00:00"
+          : "{$crossTime->begin_at->date} {$crossTime->begin_at->timezone}"
+        ) + 60 * 60 * 6; // at 6pm
     }
 
 
