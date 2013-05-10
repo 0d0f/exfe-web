@@ -620,6 +620,38 @@ class GobusActions extends ActionController {
     }
 
 
+    public function doExfees() {
+        $params     = $this->params;
+        $id         = @ (int) $params['id'];
+        $user_id    = @ (int) $params['user_id'];
+        if ($id) {
+            $modExfee = $this->getModelByName('Exfee');
+            if (!$user_id) {
+                header('HTTP/1.1 403 Forbidden');
+                return;
+            } else if ($user_id > 0) {
+                $userids = $modExfee->getUserIdsByExfeeId($id, true);
+                if (!in_array($user_id, $userids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
+            } else if ($user_id < 0) {
+                $identityids = $modExfee->getIdentityIdsByExfeeId($id);
+                if (!in_array(-$user_id, $identityids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
+            }
+            $exfee = $modExfee->getExfeeById($id);
+            if ($exfee) {
+                echo json_encode($exfee);
+                return;
+            }
+        }
+        header('HTTP/1.1 404 Not Found');
+    }
+
+
     public function doAddPhotos() {
         $params   = $this->params;
         $cross_id = @ (int) $params['id'];
