@@ -131,7 +131,7 @@ class CrossModels extends DataModel {
                 // despatch remind {
                 $hlpQueue = $this->getHelperByName('Queue');
                 $hlpExfee = $this->getHelperByName('Exfee');
-                $cross->exfee = $hlpExfee->getExfeeById($cross->exfee_id);
+                $cross->exfee = $hlpExfee->getExfeeById($cross->exfee_id, false, true);
                 $hlpQueue->despatchRemind($cross, $cross->exfee, -$by_identity_id, $by_identity_id);
                 // }
             }
