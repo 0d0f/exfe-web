@@ -254,6 +254,46 @@ class GobusActions extends ActionController {
     }
 
 
+    public function doPublishx() {
+        $modCross = $this->getModelByName('Cross');
+        $modExfee = $this->getModelByName('Exfee');
+        $modQueue = $this->getModelByName('Queue');
+        $hlpCross = $this->getHelperByName('Cross');
+        $params   = $this->params;
+        $args_str = @file_get_contents('php://input');
+        $args     = json_decode($args_str);
+        if (!$args
+         || !$args->cross_id
+         || !$args->exfee_id
+         || !$args->user_id
+         || !$args->identity_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        if (!$modCross->getDraftStatusBy($args->cross_id)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        $hostIds = $modExfee->getHostIdentityIdsByExfeeId($args->exfee_id);
+        if (!$hostIds || !in_array($args->identity_id, $hostIds)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        if (!$modCross->publishCrossBy($args->cross_id)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        $cross = $hlpCross->getCross($args->cross_id, true);
+        if (!$cross) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        $modQueue->despatchInvitation(
+            $cross, $cross->exfee, $args->user_id, $args->identity_id
+        );
+    }
+
+
     public function doPostConversation() {
         // init model
         $modUser         = $this->getModelByName('User');
