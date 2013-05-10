@@ -91,6 +91,12 @@ function apiResponse($object, $code = 200) {
 }
 
 
+function base64_url_encode($input) {
+    // return strtr(base64_encode($input), '+/=', '-_,');
+    return strtr(base64_encode($input), '+/', '-_');
+}
+
+
 // cross touch at {
 
 function getObjectTouchTime($object_type, $object_id, $user_id) {

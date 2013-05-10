@@ -484,7 +484,7 @@ class IdentityModels extends DataModel {
                 $identity->external_id,
                 $identity->external_username
             )],
-            '-', 'POST', EXFE_BUS_SERVICES . "/v3/notifier/user/{$strSrv}",
+            '-', 'POST', EXFE_AUTH_SERVER . "/v3/notifier/user/{$strSrv}",
             'once', time(), $data
         );
     }

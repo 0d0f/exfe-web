@@ -18,7 +18,7 @@ class QueueModels extends DataModel {
                 'recipients' => $recipients,
                 'merge_key'  => $merge_key,
                 'method'     => $method,
-                'service'    => $service,
+                'service'    => base64_url_encode($service),
                 'type'       => $type,
                 'ontime'     => $ontime,
                 'data'       => $data ?: new stdClass,
@@ -120,7 +120,7 @@ class QueueModels extends DataModel {
             case 'Remind':
                 $type   = 'once';
                 $this->fireBus(
-                    $tos, $mergeK, 'POST', EXFE_BUS_SERVICES . $urlSrv,
+                    $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . $urlSrv,
                     $type, 0, $dataAr, 'DELETE'
                 );
                 if (!$data['cross']->time
@@ -145,7 +145,7 @@ class QueueModels extends DataModel {
                 ];
         }
         return $this->fireBus(
-            $tos, $mergeK, 'POST', EXFE_BUS_SERVICES . $urlSrv,
+            $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . $urlSrv,
             $type, $ontime, $dataAr
         );
     }
