@@ -609,7 +609,7 @@ class GobusActions extends ActionController {
                             return;
                         }
                 }
-                if ($updated_at && (strtotime($updated_at) >= strtotime($cross->exfee->updated_at) || !$cross->updated)) {
+                if ($updated_at && (strtotime($updated_at) > strtotime($cross->exfee->updated_at) || !$cross->updated)) {
                     header('HTTP/1.1 304 Not Modified');
                     return;
                 }
