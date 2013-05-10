@@ -201,7 +201,7 @@ class PhotoModels extends DataModel {
         $hlpQueue = $this->getHelperByName('Queue');
         return $hlpQueue->fireBus(
             [$recipient], '-', 'POST',
-            EXFE_BUS_SERVICES . '/thirdpart/photographers?album_id='
+            EXFE_AUTH_SERVER . '/thirdpart/photographers?album_id='
           . urlencode($album_id) . "&photox_id={$photox_id}",
             'once', time(), $recipient
         ) ? true : null;
