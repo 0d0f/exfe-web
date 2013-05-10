@@ -84,7 +84,7 @@ class QueueModels extends DataModel {
             case 'cross/remind':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = "cross{$data['cross']->id}";
-                $dataAr = ['cross_id' => $data['cross']->id];
+                $dataAr = ['cross_id' => (int) $data['cross']->id];
                 break;
             case 'exfee/conversation':
                 $urlSrv = "/v3/notifier/{$strSrv}";
