@@ -38,7 +38,7 @@ class CrossesActions extends ActionController {
     }
 
 
-    // api.local.exfe.com/v2/crosses/[int:cross_id]/touch?user_id=[int:user_id]
+    // api.leask.0d0f.com/v2/crosses/[int:cross_id]/touch?user_id=[int:user_id]
     public function doTouch() {
         // touch
         $params = $this->params;
