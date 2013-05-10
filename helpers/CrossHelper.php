@@ -151,7 +151,11 @@ class CrossHelper extends ActionController {
             $exfeeData->updateExfeeTime($exfee_id);
         }
 
-        return ['cross_id' => $cross_id, 'over_quota' => @$efeResult['soft_quota']];
+        return [
+            'cross_id'   => $cross_id,
+            'exfee_id'   => $exfee_id,
+            'over_quota' => @$efeResult['soft_quota'],
+        ];
     }
 
 
