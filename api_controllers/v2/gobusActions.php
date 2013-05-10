@@ -98,6 +98,10 @@ class GobusActions extends ActionController {
         }
 
         // gather
+        if (!isset($cross->attribute)) {
+            $cross->attribute = new stdClass;
+        }
+        $cross->attribute->state = true;
         $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
         $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
