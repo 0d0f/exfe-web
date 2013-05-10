@@ -7,6 +7,9 @@ function addScript($scripts) {
     }
 }
 
+echo "  <script>\n";
+include 'ftconfig.php';
+echo "  </script>\n";
 
 echo "\n";
 addScript([
@@ -31,23 +34,19 @@ addScript([
     ['tween',         '10.0.0'],
 ]);
 
-echo "  <script>\n";
-include 'ftconfig.php';
-echo "  </script>\n";
-
 addScript([
     ['humantime',     '0.0.8'],
-    ['api',           '0.0.9'],
+    ['api',           '0.0.10'],
     ['dialog',        '0.0.4'],
     ['typeahead',     '0.0.2'],
     ['panel',         '0.0.2'],
     ['xidentity',     '0.0.3'],
     ['xdialog',       '0.1.13'],
     ['datepanel',     '0.1.3'],
-    ['mappanel',      '0.0.8'],
+    ['mappanel',      '0.0.9'],
     ['global',        '0.0.5'],
     ['countrycodes',  '0.0.1'],
-    ['phonepanel',    '0.0.1'],
+    ['phonepanel',    '0.0.2'],
     ['photoxwidget',  '0.0.1'],
     ['mnemosyne',     '0.0.1']
 ]);
@@ -55,8 +54,8 @@ addScript([
 // profile
 addScript([
     ['filehtml5',     '0.0.1'],
-    ['uploader',      '0.0.3'],
-    ['profile',       '0.1.18'],
+    ['uploader',      '0.0.4'],
+    ['profile',       '0.1.19'],
     ['user',          '0.0.8'],
     ['cross',         '0.0.1'],
 ]);
@@ -66,7 +65,7 @@ addScript([
     ['lightsaber',    '0.0.5'],
     ['middleware',    '0.0.10'],
     ['routes',        '0.3.12'],
-    ['app',           '0.2.9'],
+    ['app',           '0.2.10'],
 ]);
 
 // Google Analytics
