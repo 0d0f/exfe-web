@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+
+
 class GobusActions extends ActionController {
 
     public function doUpdateIdentity() {
@@ -101,13 +104,34 @@ class GobusActions extends ActionController {
         if (!isset($cross->attribute)) {
             $cross->attribute = new stdClass;
         }
-        $cross->attribute->state = true;
+        $cross->attribute->state = 'draft';
         $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
         $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'gather_error', "Can't gather this Cross.");
         }
+
+        // publish on time {
+        httpKit::request(
+            EXFE_AUTH_SERVER
+          . '/v3/queue/-/POST/'
+          . base64_url_encode(SITE_URL . '/v2/gobus/publishx'),
+            ['update' => 'once', 'ontime' => now() + 1],
+         // ['update' => 'once', 'ontime' => now() + 60 * 10], @todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!@by Leask Huang
+            [
+                'cross_id'    => $cross_id,
+                'exfee_id'    => $gthResult['exfee_id'],
+                'user_id'     => $user_id,
+                'identity_id' => $identity_id,
+            ],
+            false,
+            false,
+            3,
+            3,
+            'json'
+        );
+        // }
 
         if (@$gthResult['over_quota']) {
             apiResponse([
