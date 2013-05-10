@@ -270,6 +270,29 @@ class CrossModels extends DataModel {
     }
 
 
+    public function getDraftStatusBy($cross_id) {
+        if ($cross_id) {
+            $state = $this->getRow(
+                "SELECT `state` FROM `crosses` WHERE `id` = {$cross_id}"
+            );
+            if ($state) {
+                return (int) $state['state'] === 0 ? true : false;
+            }
+        }
+        return null;
+    }
+
+
+    public function publishCrossBy($cross_id) {
+        if ($cross_id) {
+            return $this->query(
+                "UPDATE `crosses` SET `state` = 1 WHERE `id` = {$cross_id}"
+            );
+        }
+        return null;
+    }
+
+
     public function validateCross($cross, $old_cross = null) {
         // init
         $result = ['cross' => $cross, 'error' => []];
