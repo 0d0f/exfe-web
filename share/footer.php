@@ -7,6 +7,9 @@ function addScript($scripts) {
     }
 }
 
+echo "  <script>\n";
+include 'ftconfig.php';
+echo "  </script>\n";
 
 echo "\n";
 addScript([
@@ -30,10 +33,6 @@ addScript([
     ['jqresize',      '0.0.1'],
     ['tween',         '10.0.0'],
 ]);
-
-echo "  <script>\n";
-include 'ftconfig.php';
-echo "  </script>\n";
 
 addScript([
     ['humantime',     '0.0.8'],
