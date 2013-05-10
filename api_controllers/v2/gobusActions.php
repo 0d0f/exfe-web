@@ -114,7 +114,7 @@ class GobusActions extends ActionController {
 
         // publish on time {
         httpKit::request(
-            EXFE_AUTH_SERVER
+            EXFE_GOBUS_SERVER
           . '/v3/queue/-/POST/'
           . base64_url_encode(SITE_URL . '/v2/gobus/publishx'),
             ['update' => 'once', 'ontime' => time() + 1],
