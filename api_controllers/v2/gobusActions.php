@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+require_once dirname(dirname(__FILE__)) . '/../lib/httpkit.php';
 
 
 class GobusActions extends ActionController {
