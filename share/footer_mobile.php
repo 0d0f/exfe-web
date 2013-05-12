@@ -31,7 +31,7 @@ addScript([
 addScript([
     ['live',                    '0.0.2'],
     ['mobilemiddleware',        '0.0.1'],
-    ['mobilecontroller',        '0.0.2'],
+    ['mobilecontroller',        '0.0.3'],
     ['mobileroutes',            '0.0.2'],
     ['mobile',                  '0.0.1'],
 ]);
