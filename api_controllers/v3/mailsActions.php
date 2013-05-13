@@ -13,7 +13,7 @@ class MailsActions extends ActionController {
 
         // grep inputs
         $params     = $this->params;
-        $background = @base64_url_decode()$params['background'];
+        $background = @base64_url_decode($params['background']);
         echo $background;
     }
 
