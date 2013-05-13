@@ -88,8 +88,8 @@ class QueueModels extends DataModel {
                 break;
             case 'exfee/conversation':
                 $urlSrv = "/v3/notifier/{$strSrv}";
-                $mergeK = "exfee{$data['cross']->exfee->id}";
-                $dataAr = ['post' => $data['post']];
+                $mergeK = "cross{$data['cross']->id}";
+                $dataAr = ['cross_id' => $data['cross']->id, 'post' => $data['post']];
                 break;
             case 'Thirdpart/UpdateIdentity':
             case 'Thirdpart/UpdateFriends':
