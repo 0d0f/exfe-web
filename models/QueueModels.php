@@ -10,7 +10,7 @@ class QueueModels extends DataModel {
 
     public function fireBus(
         $recipients, $merge_key, $method, $service,
-        $type, $ontime, $data, $cstRequest = ''
+        $update, $ontime, $data, $cstRequest = ''
     ) {
         return httpKit::request(
             EXFE_AUTH_SERVER . '/v3/splitter',
@@ -19,7 +19,7 @@ class QueueModels extends DataModel {
                 'merge_key'  => $merge_key,
                 'method'     => $method,
                 'service'    => base64_url_encode($service),
-                'type'       => $type,
+                'update'     => $update,
                 'ontime'     => $ontime,
                 'data'       => $data ?: new stdClass,
             ], false, false, 3, 3, 'json', false, true, [], $cstRequest
