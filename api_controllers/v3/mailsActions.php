@@ -14,7 +14,10 @@ class MailsActions extends ActionController {
         // grep inputs
         $params     = $this->params;
         $background = @base64_url_decode($params['background']);
-        echo $background;
+        $ribbon     = @$params['ribbon'] === 'true' ? true : false;
+        $lat        = @$params['lat'] ?: '';
+        $lng        = @$params['lng'] ?: '';
+        $background = preg_replace('/^.*([^\/]*)/', 'replacement', 'subject')
     }
 
 }
