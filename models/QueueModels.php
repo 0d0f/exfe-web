@@ -239,7 +239,7 @@ class QueueModels extends DataModel {
                         unset($gotInvitation[$userPerProvider['email'][$cuI]]);
                     }
                     break;
-                case 'exfee/conversation':
+                case 'cross/conversation':
                     if (isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI])) {
                         unset($gotInvitation[$userPerProvider['email'][$cuI]]);
                     }
@@ -247,7 +247,7 @@ class QueueModels extends DataModel {
         }
         // }
         switch ($event) {
-            case 'exfee/conversation':
+            case 'cross/conversation':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -336,7 +336,7 @@ class QueueModels extends DataModel {
         $by_identity_id,
         $exclude_identities = []
     ) {
-        $service     = 'exfee';
+        $service     = 'cross';
         $method      = 'conversation';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
