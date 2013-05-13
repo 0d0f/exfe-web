@@ -21,6 +21,10 @@ class httpKit {
         $cstRequest  = ''
     ) {
         if ($url) {
+            if ($argsGet) {
+                $url .= (strpos($url, '?') ? '&' : '?')
+                      . http_build_query($argsGet);
+            }
             $objCurl = curl_init();
             curl_setopt($objCurl, CURLOPT_URL,            $url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
@@ -45,10 +49,6 @@ class httpKit {
                 if ($proxy['type'] === 'socks') {
                     curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
                 }
-            }
-            if ($argsGet) {
-                $url .= (strpos($url, '?') ? '&' : '?')
-                      . http_build_query($argsGet);
             }
             if ($argsPost !== null) {
                 switch ($postType) {
