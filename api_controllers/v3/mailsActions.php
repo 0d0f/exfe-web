@@ -14,7 +14,9 @@ class MailsActions extends ActionController {
         // grep inputs
         $params     = $this->params;
         $background = @base64_url_decode($params['background']);
+        $ribbon     = @$params['ribbon'] === 'true' ? true : false;
         echo $background;
+        var_dump($ribbon);
     }
 
 }
