@@ -43,10 +43,10 @@ addScript([
     ['xidentity',     '0.0.3'],
     ['xdialog',       '0.1.13'],
     ['datepanel',     '0.1.3'],
-    ['mappanel',      '0.0.8'],
+    ['mappanel',      '0.0.9'],
     ['global',        '0.0.5'],
     ['countrycodes',  '0.0.1'],
-    ['phonepanel',    '0.0.1'],
+    ['phonepanel',    '0.0.2'],
     ['photoxwidget',  '0.0.1'],
     ['mnemosyne',     '0.0.1']
 ]);
