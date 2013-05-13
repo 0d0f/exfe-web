@@ -720,6 +720,41 @@ class GobusActions extends ActionController {
     }
 
 
+    public function doConversation() {
+        $params     = $this->params;
+        $exfee_id   = $params['id'];
+        $updated_at = $params['updated_at'];
+        $direction  = $params['direction'];
+        $quantity   = $params['quantity'];
+        $clear      = $params['clear'];
+
+        if ($updated_at) {
+            $raw_updated_at = strtotime($updated_at);
+            if ($raw_updated_at !== false) {
+                $updated_at = date('Y-m-d H:i:s', $raw_updated_at);
+            } else {
+                $updated_at = '';
+            }
+        } else {
+            $updated_at = '';
+        }
+
+        $helperData   = $this->getHelperByName('conversation');
+        $conversation = $helperData->getConversationByExfeeId(
+            $exfee_id, $updated_at, $direction, $quantity
+        );
+        if ($clear !== 'false') {
+            //clear counter
+            $conversationData=$this->getModelByName('conversation');
+            $conversationData->clearConversationCounter($exfee_id, $result['uid']);
+        }
+        $modExfee = $this->getModelByName('exfee');
+        $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
+        touchCross($cross_id, $result['uid']);
+        apiResponse(['conversation' => $conversation]);
+    }
+
+
     public function doAddPhotos() {
         $params   = $this->params;
         $cross_id = @ (int) $params['id'];
