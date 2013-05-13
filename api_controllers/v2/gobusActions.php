@@ -116,7 +116,7 @@ class GobusActions extends ActionController {
         httpKit::request(
             EXFE_GOBUS_SERVER
           . '/v3/queue/-/POST/'
-          . base64_url_encode(SITE_URL . '/v2/gobus/publishx?update=once&ontime=123'),
+          . base64_url_encode(SITE_URL . '/v2/gobus/publishx') . '?update=once&ontime=123',
 null,//            ['update' => 'once', 'ontime' => time() + 1],
          // ['update' => 'once', 'ontime' => time() + 60 * 10], @todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!@by Leask Huang
             [
