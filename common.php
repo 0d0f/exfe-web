@@ -97,6 +97,12 @@ function base64_url_encode($input) {
 }
 
 
+function base64_url_decode($input) {
+    // return base64_encode(strtr($input, '-_,', '+/='));
+    return base64_decode(strtr($input, '-_', '+/'));
+}
+
+
 // cross touch at {
 
 function getObjectTouchTime($object_type, $object_id, $user_id) {
