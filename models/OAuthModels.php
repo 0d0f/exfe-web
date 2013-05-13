@@ -289,7 +289,7 @@ class OAuthModels extends DataModel {
         // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
-        if ($data && ($rawIdentity = json_decode($data, true))) {
+        if ($data && ($rawIdentity = json_decode($data, true)) && !isset($rawIdentity['error'])) {
             return new Identity(
                 0,
                 $rawIdentity['name'],

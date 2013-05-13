@@ -10,8 +10,12 @@ class QueueHelper extends ActionController {
     }
 
 
-    public function pushToQueue($queue, $method, $data) {
-        return $this->modQueue->pushToQueue($queue, $method, $data);
+    public function fireBus(
+        $recipients, $merge_key, $method, $service, $type, $ontime, $data, $cstRequest = ''
+    ) {
+        return $this->modQueue->fireBus(
+            $recipients, $merge_key, $method, $service, $type, $ontime, $data, $cstRequest
+        );
     }
 
 
@@ -23,6 +27,13 @@ class QueueHelper extends ActionController {
     public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
         return $this->modQueue->despatchSummary(
             $cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id
+        );
+    }
+
+
+    public function despatchRemind($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        return $this->modQueue->despatchRemind(
+            $cross, $to_exfee, $by_user_id, $by_identity_id
         );
     }
 

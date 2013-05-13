@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/../lib/httpkit.php';
+
+
 class GobusActions extends ActionController {
 
     public function doUpdateIdentity() {
@@ -98,12 +101,37 @@ class GobusActions extends ActionController {
         }
 
         // gather
+        if (!isset($cross->attribute)) {
+            $cross->attribute = new stdClass;
+        }
+        $cross->attribute->state = 'draft';
         $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
         $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
             header('HTTP/1.1 500 Internal Server Error');
             apiError(500, 'gather_error', "Can't gather this Cross.");
         }
+
+        // publish on time {
+        httpKit::request(
+            EXFE_GOBUS_SERVER
+          . '/v3/queue/-/POST/'
+          . base64_url_encode(SITE_URL . '/v2/gobus/publishx'),
+            ['update' => 'once', 'ontime' => time() + 1],
+         // ['update' => 'once', 'ontime' => time() + 60 * 10], @todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!@by Leask Huang
+            [
+                'cross_id'    => $cross_id,
+                'exfee_id'    => $gthResult['exfee_id'],
+                'user_id'     => $user_id,
+                'identity_id' => $identity_id,
+            ],
+            false,
+            false,
+            3,
+            3,
+            'json'
+        );
+        // }
 
         if (@$gthResult['over_quota']) {
             apiResponse([
@@ -247,6 +275,46 @@ class GobusActions extends ActionController {
         }
         touchCross($cross_id, $user_id);
         apiResponse($rtResult, $code);
+    }
+
+
+    public function doPublishx() {
+        $modCross = $this->getModelByName('Cross');
+        $modExfee = $this->getModelByName('Exfee');
+        $modQueue = $this->getModelByName('Queue');
+        $hlpCross = $this->getHelperByName('Cross');
+        $params   = $this->params;
+        $args_str = @file_get_contents('php://input');
+        $args     = json_decode($args_str);
+        if (!$args
+         || !$args->cross_id
+         || !$args->exfee_id
+         || !$args->user_id
+         || !$args->identity_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        if (!$modCross->getDraftStatusBy($args->cross_id)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        $hostIds = $modExfee->getHostIdentityIdsByExfeeId($args->exfee_id);
+        if (!$hostIds || !in_array($args->identity_id, $hostIds)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        if (!$modCross->publishCrossBy($args->cross_id)) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        $cross = $hlpCross->getCross($args->cross_id, true);
+        if (!$cross) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        $modQueue->despatchInvitation(
+            $cross, $cross->exfee, $args->user_id, $args->identity_id
+        );
     }
 
 
@@ -569,12 +637,23 @@ class GobusActions extends ActionController {
             $modExfee = $this->getModelByName('Exfee');
             $hlpCross = $this->getHelperByName('Cross');
             $exfee_id = $modCross->getExfeeByCrossId($id);
-            $userids  = $modExfee->getUserIdsByExfeeId($exfee_id, true);
-            if ($user_id && !in_array($user_id, $userids)) {
+            if (!$user_id) {
                 header('HTTP/1.1 403 Forbidden');
                 return;
+            } else if ($user_id > 0) {
+                $userids = $modExfee->getUserIdsByExfeeId($exfee_id, true);
+                if (!in_array($user_id, $userids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
+            } else if ($user_id < 0) {
+                $identityids = $modExfee->getIdentityIdsByExfeeId($exfee_id);
+                if (!in_array(-$user_id, $identityids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
             }
-            $cross    = $hlpCross->getCross($id, true, false, $updated_at);
+            $cross = $hlpCross->getCross($id, true, false, $updated_at);
             if ($updated_at && $cross->updated) {
                 foreach ($cross->updated as $uI => $uItem) {
                     $itemTime = strtotime($uItem['updated_at']);
@@ -589,20 +668,90 @@ class GobusActions extends ActionController {
                         header('HTTP/1.1 403 Forbidden');
                         return;
                     case 'draft':
-                        if ($user_id && !in_array($user_id, $cross->exfee->hosts)) {
+                        if ($user_id > 0 && !in_array($user_id, $cross->exfee->hosts)) { // @todo 可能有安全问题 by @Leask
                             header('HTTP/1.1 403 Forbidden');
                             return;
                         }
                 }
-                if ($updated_at && (strtotime($updated_at) >= strtotime($cross->exfee->updated_at) || !$cross->updated)) {
+                if ($updated_at && (strtotime($updated_at) > strtotime($cross->exfee->updated_at) || !$cross->updated)) {
                     header('HTTP/1.1 304 Not Modified');
                     return;
+                }
+                if (!$cross->updated) {
+                    $cross->updated = new stdClass;
                 }
                 echo json_encode($cross);
                 return;
             }
         }
         header('HTTP/1.1 404 Not Found');
+    }
+
+
+    public function doExfees() {
+        $params     = $this->params;
+        $id         = @ (int) $params['id'];
+        $user_id    = @ (int) $params['user_id'];
+        if ($id) {
+            $modExfee = $this->getModelByName('Exfee');
+            if (!$user_id) {
+                header('HTTP/1.1 403 Forbidden');
+                return;
+            } else if ($user_id > 0) {
+                $userids = $modExfee->getUserIdsByExfeeId($id, true);
+                if (!in_array($user_id, $userids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
+            } else if ($user_id < 0) {
+                $identityids = $modExfee->getIdentityIdsByExfeeId($id);
+                if (!in_array(-$user_id, $identityids)) {
+                    header('HTTP/1.1 403 Forbidden');
+                    return;
+                }
+            }
+            $exfee = $modExfee->getExfeeById($id);
+            if ($exfee) {
+                echo json_encode($exfee);
+                return;
+            }
+        }
+        header('HTTP/1.1 404 Not Found');
+    }
+
+
+    public function doConversation() {
+        $params     = $this->params;
+        $exfee_id   = $params['id'];
+        $updated_at = $params['updated_at'];
+        $direction  = $params['direction'];
+        $quantity   = $params['quantity'];
+        $clear      = $params['clear'];
+
+        if ($updated_at) {
+            $raw_updated_at = strtotime($updated_at);
+            if ($raw_updated_at !== false) {
+                $updated_at = date('Y-m-d H:i:s', $raw_updated_at);
+            } else {
+                $updated_at = '';
+            }
+        } else {
+            $updated_at = '';
+        }
+
+        $helperData   = $this->getHelperByName('conversation');
+        $conversation = $helperData->getConversationByExfeeId(
+            $exfee_id, $updated_at, $direction, $quantity
+        );
+        if ($clear !== 'false') {
+            //clear counter
+            $conversationData=$this->getModelByName('conversation');
+            $conversationData->clearConversationCounter($exfee_id, $result['uid']);
+        }
+        $modExfee = $this->getModelByName('exfee');
+        $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
+        touchCross($cross_id, $result['uid']);
+        apiResponse(['conversation' => $conversation]);
     }
 
 

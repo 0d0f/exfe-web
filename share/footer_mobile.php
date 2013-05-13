@@ -7,6 +7,10 @@ function addScript($scripts) {
     }
 }
 
+echo "  <script>\n";
+include 'ftconfig.php';
+echo "  </script>\n";
+
 echo "\n";
 addScript([
     ['common',        '0.0.3'],
@@ -24,15 +28,11 @@ addScript([
     ['lightsaber',    '0.0.5'],
 ]);
 
-echo "  <script>\n";
-include 'ftconfig.php';
-echo "  </script>\n";
-
 addScript([
-    ['live',                    '0.0.1'],
+    ['live',                    '0.0.2'],
     ['mobilemiddleware',        '0.0.1'],
-    ['mobilecontroller',        '0.0.1'],
-    ['mobileroutes',            '0.0.1'],
+    ['mobilecontroller',        '0.0.3'],
+    ['mobileroutes',            '0.0.2'],
     ['mobile',                  '0.0.1'],
 ]);
 

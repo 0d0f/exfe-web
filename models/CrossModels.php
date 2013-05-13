@@ -68,12 +68,24 @@ class CrossModels extends DataModel {
             $cross_time->begin_at->date ? " {$cross_time->begin_at->time}" : ''
         );
 
+        $status = ['draft' => 0, 'published' => 1, 'deleted' => 2];
+
+
         if (intval($cross->id) === 0) {
+            $state = 1;
+            if (isset($cross->attribute)) {
+                $cross->attribute = (array) $cross->attribute;
+                if (isset($cross->attribute['state'])
+                 && isset($status[$cross->attribute['state']])
+                 && $status[$cross->attribute['state']] === 0) {
+                    $state = $status[$cross->attribute['state']];
+                }
+            }
             $sql = "insert into crosses (`created_at`, `updated_at`, `state`,
                     `title`, `description`, `exfee_id`, `begin_at`, `place_id`,
                     `timezone`, `origin_begin_at`, `background`, `date_word`,
                     `time_word`, `date`, `time`, `outputformat`,
-                    `by_identity_id`) values( NOW(), NOW(), '1',
+                    `by_identity_id`) values( NOW(), NOW(), '{$state}',
                     '{$cross->title}', '{$cross->description}', {$exfee_id},
                     '{$begin_at_time_in_old_format}', {$place_id},
                     '{$cross_time->begin_at->timezone}',
@@ -128,6 +140,12 @@ class CrossModels extends DataModel {
                 array_push($updatefields, "`timezone`        = '{$cross_time->begin_at->timezone}'");
                 array_push($updatefields, "`origin_begin_at` = '{$cross_time->origin}'");
                 $cross_updated['time']        = $updated;
+                // despatch remind {
+                $hlpQueue = $this->getHelperByName('Queue');
+                $hlpExfee = $this->getHelperByName('Exfee');
+                $cross->exfee = $hlpExfee->getExfeeById($cross->exfee_id, false, true);
+                $hlpQueue->despatchRemind($cross, $cross->exfee, -$by_identity_id, $by_identity_id);
+                // }
             }
 
             if ($background !== $old_background) {
@@ -139,7 +157,6 @@ class CrossModels extends DataModel {
             $host_ids  = $helpExfee->getHostIdentityIdsByExfeeId($exfee_id);
             if ($host_ids && is_array($host_ids) && in_array($by_identity_id, $host_ids)) {
                 if ($cross->attribute && is_array($cross->attribute)) {
-                    $status = ['draft' => 0, 'published' => 1, 'deleted' => 2];
                     if (isset($cross->attribute['state'])
                      && isset($status[$cross->attribute['state']])) {
                         array_push($updatefields, '`state`  = ' . $status[$cross->attribute['state']]);
@@ -259,6 +276,29 @@ class CrossModels extends DataModel {
                     return false;
                 }
             }
+        }
+        return null;
+    }
+
+
+    public function getDraftStatusBy($cross_id) {
+        if ($cross_id) {
+            $state = $this->getRow(
+                "SELECT `state` FROM `crosses` WHERE `id` = {$cross_id}"
+            );
+            if ($state) {
+                return (int) $state['state'] === 0 ? true : false;
+            }
+        }
+        return null;
+    }
+
+
+    public function publishCrossBy($cross_id) {
+        if ($cross_id) {
+            return $this->query(
+                "UPDATE `crosses` SET `state` = 1 WHERE `id` = {$cross_id}"
+            );
         }
         return null;
     }

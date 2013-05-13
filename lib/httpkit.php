@@ -17,9 +17,14 @@ class httpKit {
         $postType    = 'txt',
         $jsonDecode  = false,
         $decoAsArray = true,
-        $proxy       = []
+        $proxy       = [],
+        $cstRequest  = ''
     ) {
         if ($url) {
+            if ($argsGet) {
+                $url .= (strpos($url, '?') ? '&' : '?')
+                      . http_build_query($argsGet);
+            }
             $objCurl = curl_init();
             curl_setopt($objCurl, CURLOPT_URL,            $url);
             curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, true);
@@ -45,10 +50,6 @@ class httpKit {
                     curl_setopt($objCurl, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
                 }
             }
-            if ($argsGet) {
-                $url .= (strpos($url, '?') ? '&' : '?')
-                      . http_build_query($argsGet);
-            }
             if ($argsPost !== null) {
                 switch ($postType) {
                     case 'json':
@@ -57,8 +58,13 @@ class httpKit {
                     case 'form':
                         $argsPost = http_build_query($argsPost);
                 }
-                curl_setopt($objCurl, CURLOPT_POST,       1);
+                if (!$cstRequest) {
+                    curl_setopt($objCurl, CURLOPT_POST, 1);
+                }
                 curl_setopt($objCurl, CURLOPT_POSTFIELDS, $argsPost);
+            }
+            if ($cstRequest) {
+                curl_setopt($objCurl, CURLOPT_CUSTOMREQUEST, $cstRequest);
             }
             if (DEBUG) {
                 error_log('httpKit fetching {');
