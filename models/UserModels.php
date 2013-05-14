@@ -810,7 +810,7 @@ class UserModels extends DataModel {
                 }
             }
         }
-        return null;2
+        return null;
     }
 
 
