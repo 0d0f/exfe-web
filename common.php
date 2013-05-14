@@ -98,7 +98,7 @@ function rawAddScript($scripts) {
 
 function addScript($scripts) {
     foreach ($scripts as $item) {
-        rawAddScript("{$item[0]}/{$item[1]}/{$item[0]}.min.js");
+        rawAddScript("{$item[0]}/{$item[1]}/{$item[0]}.js");
     }
 }
 
