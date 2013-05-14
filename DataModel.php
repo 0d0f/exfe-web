@@ -17,8 +17,8 @@ function getMainDB() {
     if (!$maindb) {
         $maindb = mysql_connect(DBHOST, DBUSER, DBPASSWD);
         mysql_select_db(DBNAME, $maindb);
-     // mysql_query("SET NAMES 'utf8mb4'"); @todo by @leaskh for emoji!!!
-        mysql_query("SET NAMES 'utf8'");
+        mysql_query("SET NAMES 'utf8mb4'");
+      # mysql_query("SET NAMES 'utf8'");
     }
 }
 getMainDB();
