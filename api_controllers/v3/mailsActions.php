@@ -17,7 +17,7 @@ class MailsActions extends ActionController {
         $ribbon     = @$params['ribbon'] === 'true' ? true : false;
         $lat        = @$params['lat'] ?: '';
         $lng        = @$params['lng'] ?: '';
-        $background = preg_replace('/^.*([^\/]*)/', 'replacement', 'subject')
+        $background = preg_replace('/^.*([^\/]*)/', 'replacement', 'subject');
     }
 
 }
