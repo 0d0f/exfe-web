@@ -1,45 +1,36 @@
 <?php
 
-function addScript($scripts) {
-    $min = JS_DEBUG ? '' : '.min';
-    foreach ($scripts as $item) {
-        echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$min}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
-    }
-}
-
 echo "  <script>\n";
 include 'ftconfig.php';
 echo "  </script>\n";
-
 echo "\n";
-addScript([
-    ['common',        '0.0.3'],
-    ['class',         '0.0.1'],
-    ['emitter',       '0.0.2'],
-    ['base',          '0.0.2'],
-    //['bus',           '0.0.2'],
-    ['zepto',         '1.0.0'],
-    ['handlebars',    '1.0.7'],
-    ['store',         '1.3.5'],
-    ['util',          '0.2.6'],
-    ['humantime',     '0.0.6'],
-    ['af',            '0.0.1'],
-    ['tween',         '10.0.0'],
-    ['lightsaber',    '0.0.5'],
-]);
 
-addScript([
-    ['live',                    '0.0.2'],
-    ['mobilemiddleware',        '0.0.1'],
-    ['mobilecontroller',        '0.0.3'],
-    ['mobileroutes',            '0.0.2'],
-    ['mobile',                  '0.0.1'],
-]);
+$frontConfigFile = 'static/package.json';
+$frontConfigJson = file_get_contents($frontConfigFile);
+$frontConfigData = json_decode($frontConfigJson);
+
+if (!$frontConfigData) {
+    header('location: /error/500');
+    return;
+}
+
+if (JS_DEBUG) {
+    foreach ($frontConfigData->mobile->dependencies as $script)  {
+        addScript([[$script->name, $script->version]]);
+    }
+} else {
+    $filename = preg_replace(
+        '/{{version}}/',
+        $frontConfigData->mobile->version,
+        $frontConfigData->mobile->files->pro
+    );
+    rawAddScript($filename);
+}
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
 echo <<<EOT
-<script type="text/javascript">
+<script>
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-31794223-2']);
   _gaq.push(['_trackPageview']);

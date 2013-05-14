@@ -91,6 +91,18 @@ function apiResponse($object, $code = 200) {
 }
 
 
+function rawAddScript($scripts) {
+    echo "  <script src=\"/static/js/{$scripts}\"></script>\n";
+}
+
+
+function addScript($scripts) {
+    foreach ($scripts as $item) {
+        rawAddScript("{$item[0]}/{$item[1]}/{$item[0]}.min.js");
+    }
+}
+
+
 function base64_url_encode($input) {
     // return strtr(base64_encode($input), '+/=', '-_,');
     return strtr(base64_encode($input), '+/', '-_');
