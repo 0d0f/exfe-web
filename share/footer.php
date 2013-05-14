@@ -1,73 +1,31 @@
 <?php
 
-function addScript($scripts) {
-    $min = JS_DEBUG ? '' : '.min';
-    foreach ($scripts as $item) {
-        echo "  <script src=\"/static/js/{$item[0]}/{$item[1]}/{$item[0]}{$min}.js?" . STATIC_CODE_TIMESTAMP . "\"></script>\n";
-    }
-}
-
 echo "  <script>\n";
 include 'ftconfig.php';
 echo "  </script>\n";
-
 echo "\n";
-addScript([
-    ['common',        '0.0.3'],
-    ['class',         '0.0.1'],
-    ['emitter',       '0.0.2'],
-    ['base',          '0.0.2'],
-    ['bus',           '0.0.2'],
-    ['rex',           '0.0.2'],
-    ['util',          '0.2.6'],
-    ['widget',        '0.0.4'],
-    ['jquery',        '1.8.2'],
-    ['store',         '1.3.5'],
-    ['marked',        '0.2.5'],
-    ['handlebars',    '1.0.7'],
-    ['handlebarsext', '0.0.1'],
-    ['jqfocusend',    '0.0.2'],
-    ['jqoffset',      '0.0.2'],
-    ['jqmousewheel',  '3.1.3'],
-    ['jqdndsortable', '0.0.2'],
-    ['jqresize',      '0.0.1'],
-    ['tween',         '10.0.0'],
-]);
 
-addScript([
-    ['humantime',     '0.0.8'],
-    ['api',           '0.0.10'],
-    ['dialog',        '0.0.4'],
-    ['typeahead',     '0.0.2'],
-    ['panel',         '0.0.2'],
-    ['xidentity',     '0.0.3'],
-    ['xdialog',       '0.1.13'],
-    ['datepanel',     '0.1.3'],
-    ['mappanel',      '0.0.9'],
-    ['global',        '0.0.5'],
-    ['photox',        '0.0.2'],
-    ['countrycodes',  '0.0.1'],
-    ['phonepanel',    '0.0.2'],
-    ['photoxwidget',  '0.0.1'],
-    ['mnemosyne',     '0.0.1']
-]);
+$frontConfigFile = 'static/package.json';
+$frontConfigJson = file_get_contents($frontConfigFile);
+$frontConfigData = json_decode($frontConfigJson);
 
-// profile
-addScript([
-    ['filehtml5',     '0.0.1'],
-    ['uploader',      '0.0.4'],
-    ['profile',       '0.1.19'],
-    ['user',          '0.0.8'],
-    ['cross',         '0.0.1'],
-]);
+if (!$frontConfigData) {
+    header('location: /error/500');
+    return;
+}
 
-// lightsaber
-addScript([
-    ['lightsaber',    '0.0.5'],
-    ['middleware',    '0.0.10'],
-    ['routes',        '0.3.12'],
-    ['app',           '0.2.10'],
-]);
+if (JS_DEBUG) {
+    foreach ($frontConfigData->desktop->dependencies as $script)  {
+        addScript([[$script->name, $script->version]]);
+    }
+} else {
+    $filename = preg_replace(
+        '/{{version}}/',
+        $frontConfigData->desktop->version,
+        $frontConfigData->desktop->files->pro
+    );
+    rawAddScript($filename);
+}
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {
@@ -86,5 +44,5 @@ EOT;
 }
 
 if (SITE_URL !== 'https://exfe.com') {
-  require 'jsdev.php';
+    require 'jsdev.php';
 }
