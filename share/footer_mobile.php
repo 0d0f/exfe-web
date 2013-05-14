@@ -10,7 +10,7 @@ $frontConfigJson = file_get_contents($frontConfigFile);
 $frontConfigData = json_decode($frontConfigJson);
 
 if (!$frontConfigData) {
-    header('location: /error/500');
+    header('location: /500');
     return;
 }
 
