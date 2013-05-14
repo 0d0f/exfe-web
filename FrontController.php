@@ -104,7 +104,7 @@ class FrontController {
             $controller = array_shift($arrPath);
             $this->rockApi($controller, $arrPath, $first);
         } else if ($arrPath[0] === '500') {
-            header('location: /error/500');
+            header('location: /500');
             return;
         } else {
             $this->rockWeb($first, $arrPath);
