@@ -15,14 +15,9 @@ class MailsActions extends ActionController {
         $params     = $this->params;
         $background = @base64_url_decode($params['background']);
         $ribbon     = @$params['ribbon'] === 'true' ? true : false;
-<<<<<<< HEAD
-        echo $background;
-        var_dump($ribbon);
-=======
         $lat        = @$params['lat'] ?: '';
         $lng        = @$params['lng'] ?: '';
-        $background = preg_replace('/^.*([^\/]*)/', 'replacement', 'subject')
->>>>>>> master
+        $background = preg_replace('/^.*([^\/]*)/', 'replacement', 'subject');
     }
 
 }
