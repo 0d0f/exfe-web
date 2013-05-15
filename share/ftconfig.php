@@ -7,7 +7,7 @@ window._ENV_ = {
   site_url: '<?php echo SITE_URL; ?>',
   streaming_api_url: '<?php echo STREAMING_API_URL; ?>',
   app_scheme: '<?php echo APP_SCHEME; ?>',
-  timestamp: <?php echo STATIC_CODE_TIMESTAMP; ?>,
+  timestamp: (new Date()).getTime(),
   backgrounds: <?php echo json_encode($this->getVar('backgrounds')); ?>,
   location: <?php echo json_encode($this->getVar('location')); ?>,
   photo_providers: ['facebook', 'dropbox', 'flickr', 'instagram'],
