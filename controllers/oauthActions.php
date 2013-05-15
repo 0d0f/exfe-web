@@ -64,7 +64,7 @@ class OAuthActions extends ActionController {
     }
 
 
-    public function doReverseAuth() {
+    public function doReverseauth() {
         // init models
         $modOauth = $this->getModelByName('OAuth');
         header('Content-Type: application/json; charset=UTF-8'); // @todo v2 only. by @leask
