@@ -463,6 +463,7 @@ class IdentityModels extends DataModel {
             case 'Verify':
                 $strSrv            = 'verify';
                 $data->user_name   = $user_name;
+                break;
             case 'ResetPassword':
                 $strSrv            = 'reset';
                 $data->user_name   = $user_name;
