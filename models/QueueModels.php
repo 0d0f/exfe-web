@@ -211,7 +211,7 @@ class QueueModels extends DataModel {
                     $gotInvitation[] = $tmpInvitation;
                 }
                 // set conversation counter
-                if ($event === 'Conversation_Update') {
+                if ($event === 'cross/conversation') {
                     $hlpConversation->addConversationCounter(
                         $cross->exfee->id,
                         $invitation->identity->connected_user_id
