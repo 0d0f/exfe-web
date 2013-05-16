@@ -111,11 +111,11 @@ class libImage {
     }
 
 
-    public function drawDrectangle($image, $left, $top, $width, $height, $rgbColor) {
+    public function drawDrectangle($image, $left, $top, $width, $height, $rgbaColor) {
         imagefilledrectangle(
             $image, $left, $top, $left + $width, $top + $height,
-            imagecolorallocate(
-                $image, $crgbColor[0], $rgbColor[1], $rgbColor[2]
+            imagecolorallocatealpha(
+                $image, $rgbaColor[0], $rgbaColor[1], $rgbaColor[2], $rgbaColor[3]
             )
         );
         return $image;
