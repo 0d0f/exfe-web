@@ -446,7 +446,7 @@ class CrossesActions extends ActionController {
                         $cross, $cross->exfee, (int) $result['uid'] ?: -$by_identity_id, $by_identity_id
                     );
                 } else {
-                    $modQueue->despatchSummary(
+                    $modQueue->despatchUpdate(
                         $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id, $by_identity_id
                     );
                 }
