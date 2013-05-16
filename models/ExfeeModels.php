@@ -548,7 +548,7 @@ class ExfeeModels extends DataModel {
                     $addExfee[] = $eItem;
                 }
             }
-            $hlpQueue->despatchSummary(
+            $hlpQueue->despatchUpdate(
                 $cross, $old_cross, $delExfee, $addExfee, $user_id ?: -$by_identity_id, $by_identity_id
             );
             if ($addExfee) {
@@ -596,7 +596,7 @@ class ExfeeModels extends DataModel {
         if (!$draft) {
             $hlpQueue = $this->getHelperByName('Queue');
             $cross    = $hlpCross->getCross($cross_id, true, true);
-            $hlpQueue->despatchSummary(
+            $hlpQueue->despatchUpdate(
                 $cross, $old_cross, [], [], $by_user_id ?: -$by_identity_id, $by_identity_id
             );
         }

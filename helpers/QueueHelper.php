@@ -24,8 +24,8 @@ class QueueHelper extends ActionController {
     }
 
 
-    public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
-        return $this->modQueue->despatchSummary(
+    public function despatchUpdate($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
+        return $this->modQueue->despatchUpdate(
             $cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id
         );
     }
