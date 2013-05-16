@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>EXFE - A utility for gathering with friends.</title>
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
