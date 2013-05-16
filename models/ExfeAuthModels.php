@@ -70,8 +70,7 @@ class ExfeAuthModels extends DataModel {
         if ($resource) {
             $rawResult = httpkit::request(
                 EXFE_AUTH_SERVER . '/v3/tokens/resources',
-                null, json_encode($resource),
-                false, false, 3, 3, 'json', true
+                null, $resource, false, false, 3, 3, 'json', true
             );
             $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
