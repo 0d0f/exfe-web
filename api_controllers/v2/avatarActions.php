@@ -131,7 +131,7 @@ class AvatarActions extends ActionController {
         require_once "{$curDir}/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
-        $config      = array(
+        $config      = [
             'width'          => 40,
             'height'         => 40,
             'host-right'     => 1,
@@ -147,7 +147,7 @@ class AvatarActions extends ActionController {
             'mates-max'      => 9,
             'mates-sprite-x' => 44,
             'mates-sprite-y' => 44,
-        );
+        ];
         // get source image
         $params = $this->params;
         $params['url'] = $params['url'] ? base64_decode("{$params['url']}==") : '';
@@ -159,7 +159,7 @@ class AvatarActions extends ActionController {
         } else {
             $image   = httpKit::fetchImageExpress($params['url']);
         }
-        // get fall back image
+        // get fallback image
         if (!$image) {
             header('HTTP/1.1 404 Not Found');
             return;
