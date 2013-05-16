@@ -75,7 +75,8 @@ class UsersActions extends ActionController {
         }
         // get models
         $modUser     = $this->getModelByName('User');
-        $modIdentity = $this->getModelByName('identity');
+        $modIdentity = $this->getModelByName('Identity');
+        $modOauth    = $this->getModelByName('Oauth');
         // collecting post data
         switch ($provider = @trim($_POST['provider'])) {
             case 'email':
@@ -86,6 +87,9 @@ class UsersActions extends ActionController {
                 break;
             case 'twitter':
             case 'facebook':
+                $oauth_token        = @ $_POST['oauth_token'];
+                $oauth_token_secret = @ $_POST['oauth_token_secret'];
+                $oauth_expires      = @ $_POST['oauth_expires'];
             case 'flickr':
             case 'dropbox':
             case 'instagram':
@@ -107,6 +111,50 @@ class UsersActions extends ActionController {
             }
             $workflow['callback']['args'] = trim($_POST['event']);
         }
+        // reverseauth {
+        if (in_array($provider, ['twitter', 'facebook']) && $oauth_token) {
+            $workflow['user_id'] = $user_id;
+            switch ($provider) {
+                case 'twitter':
+                    if ($oauth_token_secret) {
+                        $rawIdentity = $modOauth->verifyTwitterCredentials(
+                            $oauth_token, $oauth_token_secret
+                        );
+                        if ($rawIdentity) {
+                            $result = $modOauth->handleCallback($rawIdentity, [
+                                'oauth_token'        => $oauth_token,
+                                'oauth_token_secret' => $oauth_token_secret,
+                                'workflow'           => $workflow,
+                            ]);
+                            if ($result && $result['identity']) {
+                                apiResponse(['identity' => $result['identity']]);
+                                return;
+                            }
+                        }
+                    }
+                    apiError(400, 'invalid_oauth_token', '');
+                    return;
+                case 'facebook':
+                    if ($oauth_expires) {
+                        $rawIdentity = $modOauth->getFacebookProfile($oauth_token);
+                        if ($rawIdentity) {
+                            $result = $modOauth->handleCallback($rawIdentity, [
+                                'workflow'      => $workflow,
+                            ], [
+                                'oauth_token'   => $oauth_token,
+                                'oauth_expires' => $oauth_expires,
+                            ]);
+                            if ($result && $result['identity']) {
+                                apiResponse(['identity' => $result['identity']]);
+                                return;
+                            }
+                        }
+                    }
+                    apiError(400, 'invalid_oauth_token', '');
+                    return;
+            }
+        }
+        // }
         // adding
         if (($adResult = $modIdentity->addIdentity(
             ['provider' => $provider, 'external_username' => $external_username],
