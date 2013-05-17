@@ -102,8 +102,8 @@ class libImage {
         imagefill($newImage, 0, 0, imagecolorallocatealpha($newImage, 0, 0, 0, 127));
         // }
         imagecopyresampled($newImage, $draftImage, 0, 0,
-                           ($draftWidth  - $toWidth)/2,
-                           ($draftHeight - $toHeight)/2,
+                           ($draftWidth  - $toWidth)  / 2,
+                           ($draftHeight - $toHeight) / 2,
                            $toWidth, $toHeight, $toWidth, $toHeight);
         ImageDestroy($draftImage);
 
