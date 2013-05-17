@@ -80,6 +80,7 @@ function apiError($code, $errorType, $errorDetail = '') {
     $meta["errorType"]=$errorType;
     $meta["errorDetail"]=$errorDetail;
     echo json_encode(array("meta"=>$meta,"response"=>new stdClass));
+    xhprof_end(); // @debug @leask
     exit(0);
 }
 
@@ -87,6 +88,7 @@ function apiError($code, $errorType, $errorDetail = '') {
 function apiResponse($object, $code = 200) {
     $meta["code"] = $code;
     echo json_encode(array("meta"=>$meta,"response"=>$object));
+    xhprof_end(); // @debug @leask
     exit(0);
 }
 
