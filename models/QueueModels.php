@@ -76,7 +76,7 @@ class QueueModels extends DataModel {
                 $mergeK = '-';
                 $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by']];
                 break;
-            case 'cross/summary':
+            case 'cross/update':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = "cross{$data['cross']->id}";
                 $dataAr = $data;
@@ -231,7 +231,7 @@ class QueueModels extends DataModel {
         }
         foreach ($chkUser as $cuI => $cuItem) {
             switch ($event) {
-                case 'cross/summary':
+                case 'cross/update':
                     if ((isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI]))
                      || (isset($userPerProvider['phone'][$cuI])  && isset($userPerProvider['email'][$cuI])
                       && $gotInvitation[$userPerProvider['email'][$cuI]]->rsvp_status === 'NOTIFICATION')) {
@@ -294,7 +294,7 @@ class QueueModels extends DataModel {
                     }
                 }
                 break;
-            case 'cross/summary':
+            case 'cross/update':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -411,9 +411,9 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchSummary($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
+    public function despatchUpdate($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
         $service     = 'cross';
-        $method      = 'summary';
+        $method      = 'update';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $invitations = $this->getToInvitationsByExfee(

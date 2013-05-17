@@ -49,14 +49,19 @@ class CheckHelper extends ActionController {
                             }
                     }
                 }
-            }
-            if ($api === 'user_icses') {
+            } else if ($api === 'user_icses') {
                 $calToken = $userData->getUserCalendarToken($token);
                 if ($calToken
                  && $calToken['data']
                  && $calToken['data']['token_type'] === 'calendar_token'
                  && $calToken['data']['user_id']    === (int) $args['user_id']) {
                     return ['check' => true, 'uid' => (int) $args['user_id']];
+                }
+            } else if ($api === 'conversation') {
+                $rawInvitation = $exfeeData->getRawInvitationByToken($token);
+                $user_id       = $userData->getUserIdByIdentityId($rawInvitation['identity']);
+                if ($rawInvitation && $rawInvitation['state'] !== 4) {
+                    return ['check' => true, 'uid' => $user_id];
                 }
             }
             return array('check' => false, 'uid' => 0);
