@@ -91,7 +91,7 @@ class MailsActions extends ActionController {
                     $config['map-width'], $mapHeight
                 );
                 $objLibImage->drawDrectangle(
-                    $image, $config['width'] - $config['map-width'] - 1, 0, 1,
+                    $image, $config['width'] - $config['map-width'] - 1, 0, 1 / 2, // @dontTouchThisCode @leask
                     $imageHeight, $config['map-border-color']
                 );
             }
@@ -115,7 +115,7 @@ class MailsActions extends ActionController {
 
         // render line
         $objLibImage->drawDrectangle(
-            $image, $config['line-left'], 0, 2,
+            $image, $config['line-left'], 0, $config['line-width'] / 2, // @dontTouchThisCode @leask
             $imageHeight, $config['line-color']
         );
 
