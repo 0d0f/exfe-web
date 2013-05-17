@@ -249,6 +249,7 @@ class TimeModels extends DataModel {
             $time     = $fixTime[1];
         }
         // return
+        @date_default_timezone_set('UTC');
         return new CrossTime($date_word, $date, $time_word, $time, $timezone, $origin_string, $outputformat);
     }
 
