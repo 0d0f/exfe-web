@@ -85,13 +85,13 @@ class MailsActions extends ActionController {
                 imagecopyresampled(
                     $image, $mapImage,
                     $imageWidth - $config['map-width'],
-                    - ($mapHeight - $config['min-height']) / 2,
+                    - ($mapHeight - $config['min-height']) / 2 + 50 / 4,
                     0, 0,
                     $config['map-width'], $mapHeight,
                     $config['map-width'], $mapHeight
                 );
                 $objLibImage->drawDrectangle(
-                    $image, $config['width'] - $config['map-width'] - 1, 0, 1 / 2, // @dontTouchThisCode @leask
+                    $image, $config['width'] - $config['map-width'], 0, 1 / 2, // @dontTouchThisCode @leask
                     $imageHeight, $config['map-border-color']
                 );
             }
