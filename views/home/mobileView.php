@@ -40,7 +40,7 @@
       <div class="title">
         <div class="normal">
           <h1>EXFE</h1>
-          <p>A utility for gathering with friends.</p>
+          <p>The group utility for gathering.</p>
         </div>
         <div class="invalid hide">
           <h1>Invalid link</h1>

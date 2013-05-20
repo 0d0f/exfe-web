@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>EXFE - A utility for gathering with friends.</title>
+  <title>EXFE - The group utility for gathering.</title>
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
-  <meta name="description" content="EXFE, a utility for gathering with friends." />
+  <meta name="description" content="EXFE, the group utility for gathering." />
   <meta name="copyright" content="Copyright &copy; 2012 EXFE Inc" />
   <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
