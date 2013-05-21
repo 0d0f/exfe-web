@@ -203,7 +203,7 @@ class UserModels extends DataModel {
                     $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
-                            "SELECT COUNT(DISTINCT `cross_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
+                            "SELECT COUNT(DISTINCT `exfee_id`) AS `cross_quantity` FROM `invitations` WHERE `identity_id` IN ({$identityIds})"
                         );
                         $user->cross_quantity = (int) $cross_quantity['cross_quantity'];
                     }
