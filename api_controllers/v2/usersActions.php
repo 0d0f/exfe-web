@@ -909,7 +909,7 @@ class UsersActions extends ActionController {
         $hlpCross   = $this->getHelperByName('cross');
         // auth check
         $params     = $this->params;
-        $user_id    = (int) $params['id'];
+        $user_id    = @ (int) $params['id'];
         $result     = $hlpCheck->isAPIAllow('user_crosses', $params['token'], ['user_id' => $user_id]);
         if (!$result['check']) {
             apiError(401, 'invalid_auth');
@@ -1146,7 +1146,7 @@ class UsersActions extends ActionController {
                     unset($crosses[$i]);
                     break;
                 case 'draft':
-                    if (!in_array($uid, $cross->exfee->hosts)) {
+                    if (!in_array($user_id, $cross->exfee->hosts)) {
                         unset($crosses[$i]);
                     }
             }
