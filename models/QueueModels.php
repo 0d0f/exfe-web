@@ -63,11 +63,19 @@ class QueueModels extends DataModel {
             $data['cross']->exfee->invitations     = $this->cleanInvitations(
                 $data['cross']->exfee->invitations
             );
+            if (isset($data['cross']->updated)
+             && is_array($data['cross']->updated)) {
+                $data['cross']->updated     = (object) $data['cross']->updated;
+            }
         }
         if (isset($data['old_cross'])) {
             $data['old_cross']->exfee->invitations = $this->cleanInvitations(
                 $data['old_cross']->exfee->invitations
             );
+            if (isset($data['old_cross']->updated)
+             && is_array($data['old_cross']->updated)) {
+                $data['old_cross']->updated = (object) $data['old_cross']->updated
+            }
         }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
