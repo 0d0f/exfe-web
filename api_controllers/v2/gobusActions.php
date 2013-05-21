@@ -255,7 +255,7 @@ class GobusActions extends ActionController {
         $cross_id = $rawResult = true;
         $cross_id = $crossHelper->editCross($cross, $by_identity->id);
         if (isset($cross->exfee)) {
-            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true);
+            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, true);
         }
         if (!$cross_id || !$rawResult) {
             header('HTTP/1.1 500 Internal Server Error');
