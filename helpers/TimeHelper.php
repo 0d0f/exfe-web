@@ -14,4 +14,9 @@ class TimeHelper extends ActionController {
         return $this->modTime->parseTimeString($string, $timezone);
     }
 
+
+    public function getTimezoneNameByRaw($timezone) {
+        return $this->modTime->getTimezoneNameByRaw($timezone);
+    }
+
 }
