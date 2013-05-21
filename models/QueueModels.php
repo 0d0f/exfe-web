@@ -74,7 +74,7 @@ class QueueModels extends DataModel {
             );
             if (isset($data['old_cross']->updated)
              && is_array($data['old_cross']->updated)) {
-                $data['old_cross']->updated = (object) $data['old_cross']->updated
+                $data['old_cross']->updated = (object) $data['old_cross']->updated;
             }
         }
         $strSrv = "{$service}/{$method}";
