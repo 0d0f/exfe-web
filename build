@@ -98,7 +98,7 @@ echo "* Flush bin folder\n";
 if (file_exists($binDir) && is_dir($binDir)) {
     if (!delDir($binDir)) {
         echo "❌  Failed on making bin folder\n";
-        return 1;
+        exit(1);
     }
 }
 @mkdir($binDir);
@@ -108,7 +108,7 @@ if (file_exists($binDir) && is_dir($binDir)) {
 echo "* Lint codes\n";
 foreach ($sources as $item) {
     if (lintAny("{$curDir}/{$item}") === 1) {
-        return 1;
+        exit(1);
     }
 }
 
@@ -118,7 +118,7 @@ echo "* Make codes\n";
 foreach ($sources as $item) {
     if (copyAny("{$curDir}/{$item}", "{$binDir}/{$item}")) {
         echo "❌  Failed making codes\n";
-        return 1;
+        exit(1);
     }
 }
 
