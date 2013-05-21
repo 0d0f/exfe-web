@@ -430,7 +430,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false) {
+    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false) {
         // get helper
         $hlpIdentity = $this->getHelperByName('identity');
         // base check
@@ -487,6 +487,12 @@ class ExfeeModels extends DataModel {
                         $exists = true;
                         // update existing invitaion
                         $toItem->id = $fmItem->id;
+                        // 邮件编辑 cross 不删除人 {
+                        if ($keepRsvp && !isset($toItem->rsvp_status)) {
+                            $toItem->rsvp_status = $fmItem->rsvp_status !== 4
+                                                 ? $fmItem->rsvp_status  :  0;
+                        }
+                        // }
                         // delete exfee
                         if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
                          && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
