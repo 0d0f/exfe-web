@@ -13,6 +13,17 @@ class TimeModels extends DataModel {
     }
 
 
+    public function getTimezoneNameByRaw($timezone) {
+        $arrTzone = explode(':', $timezone);
+        $diffHour = ((int) $arrTzone[0]) * 60 * 60;
+        $diffMin  = ((int) $arrTzone[1]) * 60;
+        $timeDiff =  $diffHour > 0
+                  ? ($diffHour + $diffMin)
+                  : ($diffHour - $diffMin);
+        return $this->getTimezoneNameBy($timeDiff);
+    }
+
+
     public function parseTimeString($origin_string, $timezone = '') {
         // check timezone
         if (preg_match('/^[+-][0-9]{2}:[0-9]{2}(\ [a-z]{1,5})?$/i', $timezone)) {
