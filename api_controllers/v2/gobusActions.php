@@ -117,8 +117,7 @@ class GobusActions extends ActionController {
             EXFE_GOBUS_SERVER
           . '/v3/queue/-/POST/'
           . base64_url_encode(SITE_URL . '/v2/gobus/publishx'),
-            ['update' => 'once', 'ontime' => time() + 1],
-         // ['update' => 'once', 'ontime' => time() + 60 * 10], @todo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!@by Leask Huang
+            ['update' => 'once', 'ontime' => time() + 60 * 10],
             [
                 'cross_id'    => $cross_id,
                 'exfee_id'    => $gthResult['exfee_id'],
@@ -256,7 +255,7 @@ class GobusActions extends ActionController {
         $cross_id = $rawResult = true;
         $cross_id = $crossHelper->editCross($cross, $by_identity->id);
         if (isset($cross->exfee)) {
-            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true);
+            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, false, true);
         }
         if (!$cross_id || !$rawResult) {
             header('HTTP/1.1 500 Internal Server Error');

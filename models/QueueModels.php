@@ -63,11 +63,19 @@ class QueueModels extends DataModel {
             $data['cross']->exfee->invitations     = $this->cleanInvitations(
                 $data['cross']->exfee->invitations
             );
+            if (isset($data['cross']->updated)
+             && is_array($data['cross']->updated)) {
+                $data['cross']->updated     = (object) $data['cross']->updated;
+            }
         }
         if (isset($data['old_cross'])) {
             $data['old_cross']->exfee->invitations = $this->cleanInvitations(
                 $data['old_cross']->exfee->invitations
             );
+            if (isset($data['old_cross']->updated)
+             && is_array($data['old_cross']->updated)) {
+                $data['old_cross']->updated = (object) $data['old_cross']->updated;
+            }
         }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
@@ -123,21 +131,25 @@ class QueueModels extends DataModel {
                     $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . $urlSrv,
                     $type, 0, $dataAr, 'DELETE'
                 );
-                if (!$data['cross']->time
-                 || !$data['cross']->time->begin_at
-                 || !$data['cross']->time->begin_at->date
-                 || !$data['cross']->time->begin_at->timezone) {
-                    return true;
-                }
                 $ontime = $this->getRemindTimeBy($data['cross']->time);
-                if ($ontime < time()) {
+                if (!$ontime) {
                     return true;
                 }
                 break;
             case 'Digest':
                 $type   = 'always';
-                $ontime = strtotime('tomorrow');
-                $strSrv = "cross/digest";
+                $rmTime = $this->getRemindTimeBy($data['cross']->time);
+                $ontime = $this->getDigestTimeBy($data['cross']->time);
+                // 明天发生的活动，撤回 remind 通知 {
+                if ($rmTime === $ontime) {
+                    $this->fireBus(
+                        $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . $urlSrv,
+                        'once', 0, ['cross_id' => (int) $data['cross']->id],
+                        'DELETE'
+                    );
+                }
+                // }
+                $strSrv = 'cross/digest';
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $dataAr = [
                     'cross_id'   => $data['cross']->id,
@@ -321,11 +333,34 @@ class QueueModels extends DataModel {
 
 
     public function getRemindTimeBy($crossTime) {
-        return strtotime(
-            $crossTime->begin_at->time
-          ? "{$crossTime->begin_at->date} {$crossTime->begin_at->time} +00:00"
-          : "{$crossTime->begin_at->date} {$crossTime->begin_at->timezone}"
-        ) + 60 * 60 * 6; // at 6pm
+        if ($crossTime
+         && $crossTime->begin_at
+         && $crossTime->begin_at->date
+         && $crossTime->begin_at->timezone) {
+            $time = strtotime(
+                "{$crossTime->begin_at->date} {$crossTime->begin_at->timezone}"
+            ) + 60 * 60 * 6; // at 6pm
+            if ($time >= time()) {
+                return $time;
+            }
+        }
+        return null;
+    }
+
+
+    public function getDigestTimeBy($crossTime) {
+        if ($crossTime
+         && $crossTime->begin_at
+         && $crossTime->begin_at->timezone) {
+            $hlpTime = $this->getHelperByName('Time');
+            $timezoneName = $hlpTime->getTimezoneNameByRaw(
+                $crossTime->begin_at->timezone
+            );
+            @date_default_timezone_set($timezoneName);
+        }
+        $time = strtotime('tomorrow') + 60 * 60 * 6; // at 6pm;
+        @date_default_timezone_set('UTC');
+        return $time;
     }
 
 

@@ -58,7 +58,7 @@ class IcsActions extends ActionController {
          || !($rawInvitation = $modExfee->getRawInvitationByToken($token))
          ||   $rawInvitation['state'] === 4
          || !($objCross      = $crossHelper->getCross($rawInvitation['cross_id']))) {
-            header("HTTP/1.1 401 Unauthorized");
+            header('HTTP/1.1 401 Unauthorized');
             return;
         }
         // make ics
