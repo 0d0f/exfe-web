@@ -67,6 +67,10 @@ class CheckHelper extends ActionController {
             return array('check' => false, 'uid' => 0);
         }
 
+        // update profile and friends {
+
+        // }
+
         switch ($api) {
             case 'cross':
             case 'cross_edit':
