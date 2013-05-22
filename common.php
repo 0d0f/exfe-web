@@ -22,13 +22,139 @@ $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 // }
 
 
-// redis connection pool {
+// redis by @leaskh {
+
+# connection pool
 
 $redis = new Redis();
 $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
 
 $redis_cache = new Redis();
 $redis_cache->connect(REDIS_CACHE_ADDRESS, REDIS_CACHE_PORT);
+
+# basic tools
+
+function readRedisBy($redisObject, $key, $serialize = false) {
+    if (!$redisObject || !$key) {
+        return null;
+    }
+    $value = $redisObject->get($key);
+    return $serialize ? unserialize($value) : $value;
+}
+
+function writeRedisBy($redisObject, $key, $value, $serialize = false) {
+    if (!$redisObject || !$key) {
+        return -1;
+    }
+    return $redisObject->SET($key, $serialize ? serialize($value) : $value);
+}
+
+function setRedisItemTimeoutBy($redisObject, $key, $second) {
+    if (!$redisObject || !$key) {
+        return -1;
+    }
+    return $redisObject->setTimeout($key, $second);
+}
+
+function delRedisItemBy($redisObject, $key) {
+    if (!$redisObject || !$key) {
+        return -1;
+    }
+    return $redisObject->del($key);
+}
+
+# common redis access
+
+function getMem($key, $serialize = true) {
+    global $redis;
+    return readRedisBy($redis, $key, $serialize);
+}
+
+function setMem($key, $value, $serialize = true) {
+    global $redis;
+    return writeRedisBy($redis, $key, $value, $serialize);
+}
+
+# common redis cache access
+
+function getCache($key) {
+    global $redis_cache;
+    return readRedisBy($redis_cache, $key, true);
+}
+
+function setCache($key, $value) {
+    global $redis_cache;
+    writeRedisBy($redis_cache, $key, $value, true);
+    setRedisItemTimeoutBy($redis_cache, $key, 604800); // 60 * 60 * 24 * 7
+}
+
+function delCache($key) {
+    global $redis_cache;
+    return delRedisItemBy($redis_cache, $key);
+}
+
+# cross touch at
+
+function getObjectTouchKey($object_type, $object_id, $user_id) {
+    return $object_type && $object_id && $user_id
+         ? "touch_time_{$object_type}_{$object_id}_{$user_id}" : '';
+}
+
+function getObjectTouchTime($object_type, $object_id, $user_id) {
+    return getMem(getObjectTouchKey($object_type, $object_id, $user_id), false);
+}
+
+function touchObject($object_type, $object_id, $user_id) {
+    $key   = getObjectTouchKey($object_type, $object_id, $user_id);
+    $value = time();
+    setMem($key, $value, false);
+    return $value;
+}
+
+function getCrossTouchTime($cross_id, $user_id) {
+    return getObjectTouchTime('cross', $cross_id, $user_id);
+}
+
+function touchCross($cross_id, $user_id) {
+    return touchObject('cross', $cross_id, $user_id);
+}
+
+// }
+
+
+// set and get cross update times {
+
+function getUpdate($cross_id) {
+    global $redis;
+    if (intval($cross_id) > 0) {
+        $key    = $cross_id;
+        $update = json_decode($redis->HGET('cross:updated', $key), true);
+        return $update;
+    }
+}
+
+function mgetUpdate($cross_ids) {
+    global $redis;
+    $fields = implode($cross_ids, ' ');
+    if (sizeof($cross_ids) > 0) {
+        $key    = $cross_id;
+        $update = $redis->HMGET('cross:updated', $cross_ids);
+        return $update;
+    }
+}
+
+function saveUpdate($cross_id, $updated) {
+    global $redis;
+    if (intval($cross_id) > 0) {
+        $key    = $cross_id;
+        $update = json_decode($redis->HGET('cross:updated', $key), true);
+        foreach ($updated as $k => $v) {
+            $update[$k] = $v;
+        }
+        $update_json = json_encode($update);
+        $redis->HSET('cross:updated', $key, $update_json);
+    }
+}
 
 // }
 
@@ -117,106 +243,9 @@ function base64_url_decode($input) {
 }
 
 
-// cross touch at {
-
-function getObjectTouchTime($object_type, $object_id, $user_id) {
-    global $redis;
-    if ($object_type && $object_id && $user_id) {
-        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
-        $value = $redis->get($key);
-        return $value ?: null;
-    }
-    return null;
-}
-
-function touchObject($object_type, $object_id, $user_id) {
-    global $redis;
-    if ($object_type && $object_id && $user_id) {
-        $key   = "touch_time_{$object_type}_{$object_id}_{$user_id}";
-        $value = time();
-        $redis->SET($key, $value);
-        return $value;
-    }
-    return null;
-}
-
-function getCrossTouchTime($cross_id, $user_id) {
-    return getObjectTouchTime('cross', $cross_id, $user_id);
-}
-
-function touchCross($cross_id, $user_id) {
-    return touchObject('cross', $cross_id, $user_id);
-}
-
-// }
-
-
-// common redis cache access by @leaskh {
-
-function getCache($key) {
-    global $redis_cache;
-    $value = $redis_cache->get($key);
-    return $key && $value ? unserialize($value) : null;
-}
-
-function setCache($key, $value) {
-    global $redis_cache;
-    if ($key && $value) {
-        $redis_cache->SET($key, serialize($value));
-        $redis_cache->setTimeout($key, 604800); // 60*60*24*7
-    }
-}
-
-function delCache($key) {
-    global $redis_cache;
-    if ($key) {
-        $redis_cache->del($key);
-    }
-}
-
-// }
-
-
 function deepClone($object) {
     return unserialize(serialize($object));
 }
-
-
-// set and get cross update times {
-
-function getUpdate($cross_id) {
-    global $redis;
-    if (intval($cross_id) > 0) {
-        $key    = $cross_id;
-        $update = json_decode($redis->HGET('cross:updated', $key), true);
-        return $update;
-    }
-}
-
-function mgetUpdate($cross_ids) {
-    global $redis;
-    $fields = implode($cross_ids, ' ');
-    if (sizeof($cross_ids) > 0) {
-        $key    = $cross_id;
-        $update = $redis->HMGET('cross:updated', $cross_ids);
-        return $update;
-    }
-}
-
-function saveUpdate($cross_id, $updated) {
-    global $redis;
-    if (intval($cross_id) > 0) {
-        $key    = $cross_id;
-        $update = json_decode($redis->HGET('cross:updated', $key), true);
-        foreach ($updated as $k => $v) {
-            $update[$k] = $v;
-        }
-        $update_json = json_encode($update);
-        $redis->HSET('cross:updated', $key, $update_json);
-    }
-}
-
-// }
 
 
 // cjk libs {
