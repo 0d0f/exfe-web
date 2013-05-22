@@ -68,7 +68,22 @@ class CheckHelper extends ActionController {
         }
 
         // update profile and friends {
-
+        $identityUpdateKey = 'user_identities_update';
+        $updateTime = getObjectTouchTime($identityUpdateKey, '-', $uid);
+        if (!$updateTime || time() - $updateTime >= 86400) { // 60 * 60 * 24
+            touchObject($identityUpdateKey, '-', $uid);
+            $hlpQueue = $this->getHelperByName('Queue');
+            $user = $userData->getUserById($uid);
+            foreach ($user && $user->identities ? $user->identities : [] as $identity) {
+                if (in_array($identity->provider, ['twitter', 'facebook', 'dropbox', 'flickr', 'instagram'])) {
+                    $oAuthToken = $identityData->getOAuthTokenById($identity->id);
+                    if ($oAuthToken) {
+                        $hlpQueue->updateIdentity($identity, $oAuthToken);
+                        $hlpQueue->updateFriends($identity,  $oAuthToken);
+                    }
+                }
+            }
+        }
         // }
 
         switch ($api) {

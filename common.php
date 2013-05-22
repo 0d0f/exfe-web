@@ -65,12 +65,12 @@ function delRedisItemBy($redisObject, $key) {
 
 # common redis access
 
-function getMem($key, $serialize = true) {
+function getMem($key, $serialize = false) {
     global $redis;
     return readRedisBy($redis, $key, $serialize);
 }
 
-function setMem($key, $value, $serialize = true) {
+function setMem($key, $value, $serialize = false) {
     global $redis;
     return writeRedisBy($redis, $key, $value, $serialize);
 }
@@ -101,13 +101,13 @@ function getObjectTouchKey($object_type, $object_id, $user_id) {
 }
 
 function getObjectTouchTime($object_type, $object_id, $user_id) {
-    return getMem(getObjectTouchKey($object_type, $object_id, $user_id), false);
+    return getMem(getObjectTouchKey($object_type, $object_id, $user_id));
 }
 
 function touchObject($object_type, $object_id, $user_id) {
     $key   = getObjectTouchKey($object_type, $object_id, $user_id);
     $value = time();
-    setMem($key, $value, false);
+    setMem($key, $value);
     return $value;
 }
 
