@@ -8,7 +8,7 @@
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
   <meta name="description" content="EXFE, the group utility for gathering." />
-  <meta name="copyright" content="Copyright &copy; 2012 EXFE Inc" />
+  <meta name="copyright" content="Copyright &copy; 2013 EXFE Inc" />
   <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <?php if (($sms_token = $this->getVar('sms_token'))) { ?>
   <meta name="sms-token" content="<?php echo htmlentities(json_encode($sms_token)); ?>" />
