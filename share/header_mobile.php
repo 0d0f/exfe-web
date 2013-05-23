@@ -8,7 +8,7 @@
   <meta name="robots" content="index, follow" />
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
   <meta name="description" content="EXFE, the group utility for gathering." />
-  <meta name="copyright" content="Copyright &copy; 2012 EXFE Inc" />
+  <meta name="copyright" content="Copyright &copy; 2013 EXFE Inc" />
   <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
