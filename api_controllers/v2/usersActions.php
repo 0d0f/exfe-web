@@ -76,7 +76,7 @@ class UsersActions extends ActionController {
         // get models
         $modUser     = $this->getModelByName('User');
         $modIdentity = $this->getModelByName('Identity');
-        $modOauth    = $this->getModelByName('Oauth');
+        $modOauth    = $this->getModelByName('OAuth');
         // collecting post data
         switch ($provider = @trim($_POST['provider'])) {
             case 'email':
