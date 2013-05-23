@@ -54,7 +54,7 @@ class IcsModels extends DataModel {
                 $email = $invItem->identity->provider === 'email'
                        ? $invItem->identity->external_username : '';
                 $modInvite->addAttendee(
-                    $email, $invItem->identity->name
+                    $email, $invItem->identity->name, $invItem->rsvp_status
                 );
                 if ($invItem->host) {
                     $modInvite->setOrganizer(
