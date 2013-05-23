@@ -668,8 +668,7 @@ class Invite
         $content .= 'DTSTART' . ($this->all_day_begin ? ";{$this->all_day_begin}" : (':' . $this->getStart(true))) . "\n";
         $content .= 'DTEND'   . ($this->all_day_end   ? ";$this->all_day_end"     : (':' . $this->getEnd(true)))   . "\n";
         $content .= "DTSTAMP:{$this->getStart(true)}\n";
-        $content .= "ORGANIZER;CN={$this->getFromName()}:mailto:{$this->getFromEmail()}\n";
-
+        $content .= "ORGANIZER;CN=\"{$this->getFromName()}\";EMAIL=\"{$this->getFromEmail()}\":mailto:{$this->getFromEmail()}\n";
         foreach ($this->getAttendees() as $email => $data)
         {
         list($name, $rsvp) = $data;
@@ -679,10 +678,10 @@ class Invite
         } else {
             $rsvp = 'NEEDS-ACTION';
         }
-        $content .= "ATTENDEE;PARTSTAT={$rsvp};RSVP=TRUE;CN={$name};X-NUM-GUESTS=0:mailto:{$email}\n";
+        $content .= "ATTENDEE;PARTSTAT={$rsvp};RSVP=TRUE;CN=\"{$name}\";CUTYPE=INDIVIDUAL;X-NUM-GUESTS=0:mailto:{$email}\n";
         }
 
-        $content .= "CREATED:\n";
+     // $content .= "CREATED:\n";
         $content .= "DESCRIPTION:{$this->getDescription()}\n";
         $content .= "LAST-MODIFIED:{$this->getStart(true)}\n";
         $content .= "LOCATION:{$this->getLocation()}\n";
