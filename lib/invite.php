@@ -682,9 +682,9 @@ class Invite
         }
 
      // $content .= "CREATED:\n";
-        $content .= "DESCRIPTION:{$this->getDescription()}\n";
+        $content .= $this->getDescription() ? "DESCRIPTION:{$this->getDescription()}\n" : '';
         $content .= "LAST-MODIFIED:{$this->getStart(true)}\n";
-        $content .= "LOCATION:{$this->getLocation()}\n";
+        $content .= $this->getLocation()    ? "LOCATION:{$this->getLocation()}\n"       : '';
         $content .= "SUMMARY:{$this->getName()}\n";
         $content .= "URL;VALUE=URI:{$this->getUrl()}\n";
         $content .= "SEQUENCE:0\n";
