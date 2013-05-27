@@ -42,6 +42,9 @@ class OAuthActions extends ActionController {
             case 'flickr':
                 $urlOauth = $modOauth->flickrRedirect($workflow);
                 break;
+            case 'google':
+                $urlOauth = $modOauth->googleRedirect($workflow);
+                break;
             default:
                 apiError(400, 'no_provider', '');
         }
@@ -471,6 +474,16 @@ class OAuthActions extends ActionController {
           ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
           : '/'
         ));
+    }
+
+
+    public function doGoogleCallBack() {
+        //print_r($_GET);
+        $modOauth = $this->getModelByName('OAuth');
+        $token = $modOauth->getGoogleOAuthToken();
+
+        $modOauth->getGoogleProfile($token);
+
     }
 
 
