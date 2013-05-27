@@ -1,11 +1,15 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/facebook.php';
-require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
-require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
+$libPath = dirname(dirname(__FILE__)) . '/lib/';
+
+require_once "{$libPath}OAuth.php";
+require_once "{$libPath}TwitterOAuth.php";
+require_once "{$libPath}facebook.php";
+require_once "{$libPath}Instagram.php";
+require_once "{$libPath}tmhOAuth.php";
+require_once "{$libPath}FoursquareAPI.class.php";
+require_once "{$libPath}google_api_client/Google_Client.php";
+require_once "{$libPath}google_api_client/contrib/Google_PlusService.php";
 
 
 class OAuthModels extends DataModel {
@@ -663,6 +667,65 @@ class OAuthModels extends DataModel {
     }
 
     // }
+
+
+    // google {
+
+    public function googleRedirect($workflow) {
+        $client = new Google_Client();
+        $client->setApplicationName('EXFE');
+        $client->setClientId("744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi.apps.googleusercontent.com");
+        $client->setClientSecret("_40miTtyXZdl2BapShN71g-O");
+        $client->setRedirectUri('http://leask.0d0f.com/oauth/googlecallback');
+
+        $plus = new Google_PlusService($client);
+        $authUrl = $client->createAuthUrl();
+
+        if ($authUrl) {
+            $this->setSession('google', '', '', $workflow);
+            return $authUrl;
+        }
+        return false;
+    }
+
+
+    public function getGoogleOAuthToken() {
+        $client = new Google_Client();
+        $client->setApplicationName('EXFE');
+        $client->setClientId("744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi.apps.googleusercontent.com");
+        $client->setClientSecret("_40miTtyXZdl2BapShN71g-O");
+        $client->setRedirectUri('http://leask.0d0f.com/oauth/googlecallback');
+
+        $client->authenticate();
+        $token = $client->getAccessToken();
+
+        if ($token) {
+            return $token;
+            // return [
+            //     'oauth_access_token'  => $token['access_token'],
+            //     'oauth_expires'       => $token['created'] + $token['expires_in'],
+            //     'oauth_id_token'      => $token['id_token'],
+            //     'oauth_refresh_token' => $token['refresh_token'],
+            //     'oauth_token_type'    => $token['token_type'],
+            // ];
+        }
+        return null;
+    }
+
+
+    public function getGoogleProfile($token) {
+        $client = new Google_Client();
+        $client->setApplicationName('EXFE');
+        $client->setClientId("744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi.apps.googleusercontent.com");
+        $client->setClientSecret("_40miTtyXZdl2BapShN71g-O");
+        $client->setRedirectUri('http://leask.0d0f.com/oauth/googlecallback');
+
+        $plus = new Google_PlusService($client);
+        $client->setAccessToken($token);
+
+        $activities = $plus->people->get('me');
+        print 'Your Activities: <pre>' . print_r($activities, true) . '</pre>';
+    }
 
 
     public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
