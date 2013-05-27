@@ -303,14 +303,14 @@ class Invite
      * @param type $name
      * @return \Invite
      */
-    public function addGuest($email, $name = null)
+    public function addGuest($email, $name = null, $rsvp = null)
     {
 	if (null === $name) {
 	    $name = $email;
 	}
 
 	if (!isset($this->_guest[$email])) {
-	    $this->_guests[$email] = $name;
+	    $this->_guests[$email] = [$name, $rsvp];
 	}
 
 	return $this;
@@ -391,9 +391,9 @@ class Invite
      * @param string $name
      * @return Invite
      */
-    public function addAttendee($email, $name = null)
+    public function addAttendee($email, $name = null, $rsvp = null)
     {
-	return $this->addGuest($email, $name);
+	return $this->addGuest($email, $name, $rsvp);
     }
 
     /**
@@ -659,52 +659,6 @@ class Invite
      *
      * @return string|bool
      */
-    private function _generate_origin() // changed by @leask
-    {
-	if ($this->isValid()) {
-
-	    $content = "BEGIN:VCALENDAR\n";
-	    $content .= "VERSION:2.0\n";
-	    $content .= "CALSCALE:GREGORIAN\n";
-	    $content .= "METHOD:REQUEST\n";
-	    $content .= "BEGIN:VEVENT\n";
-	    $content .= "UID:{$this->getUID()}\n";
-	    $content .= "DTSTART:{$this->getStart(true)}\n";
-	    $content .= "DTEND:{$this->getEnd(true)}\n";
-	    $content .= "DTSTAMP:{$this->getStart(true)}\n";
-	    $content .= "ORGANIZER;CN={$this->getFromName()}:mailto:{$this->getFromEmail()}\n";
-
-	    foreach ($this->getAttendees() as $email => $name)
-	    {
-		$content .= "ATTENDEE;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN={$name};X-NUM-GUESTS=0:mailto:{$email}\n";
-	    }
-
-	    $content .= "CREATED:\n";
-	    $content .= "DESCRIPTION:{$this->getDescription()}\n";
-	    $content .= "LAST-MODIFIED:{$this->getStart(true)}\n";
-	    $content .= "LOCATION:{$this->getLocation()}\n";
-	    $content .= "SUMMARY:{$this->getName()}\n";
-	    $content .= "SEQUENCE:0\n";
-	    $content .= "STATUS:NEEDS-ACTION\n";
-	    $content .= "TRANSP:OPAQUE\n";
-	    $content .= "END:VEVENT\n";
-	    $content .= "END:VCALENDAR";
-
-	    $this->_generated = $content;
-	    return $this->_generated;
-	}
-
-	return false;
-    }
-
-    // add by @leask {
-    /**
-     *
-     * The function generates the actual content of the ICS
-     * file and returns it.
-     *
-     * @return string|bool
-     */
     private function _generate()
     {
     if ($this->isValid()) {
@@ -714,17 +668,23 @@ class Invite
         $content .= 'DTSTART' . ($this->all_day_begin ? ";{$this->all_day_begin}" : (':' . $this->getStart(true))) . "\n";
         $content .= 'DTEND'   . ($this->all_day_end   ? ";$this->all_day_end"     : (':' . $this->getEnd(true)))   . "\n";
         $content .= "DTSTAMP:{$this->getStart(true)}\n";
-        $content .= "ORGANIZER;CN={$this->getFromName()}:mailto:{$this->getFromEmail()}\n";
-
-        foreach ($this->getAttendees() as $email => $name)
+        $content .= "ORGANIZER;CN=\"{$this->getFromName()}\";EMAIL=\"{$this->getFromEmail()}\":mailto:{$this->getFromEmail()}\n";
+        foreach ($this->getAttendees() as $email => $data)
         {
-        $content .= "ATTENDEE;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN={$name};X-NUM-GUESTS=0:mailto:{$email}\n";
+        list($name, $rsvp) = $data;
+        if (in_array($rsvp, ['ACCEPTED', 'DECLINED'])) {
+        } else if (in_array($rsvp, ['REMOVED', 'NOTIFICATION'])) {
+            continue;
+        } else {
+            $rsvp = 'NEEDS-ACTION';
+        }
+        $content .= "ATTENDEE;PARTSTAT={$rsvp};RSVP=TRUE;CN=\"{$name}\";CUTYPE=INDIVIDUAL;X-NUM-GUESTS=0:mailto:{$email}\n";
         }
 
-        $content .= "CREATED:\n";
-        $content .= "DESCRIPTION:{$this->getDescription()}\n";
+     // $content .= "CREATED:\n";
+        $content .= $this->getDescription() ? "DESCRIPTION:{$this->getDescription()}\n" : '';
         $content .= "LAST-MODIFIED:{$this->getStart(true)}\n";
-        $content .= "LOCATION:{$this->getLocation()}\n";
+        $content .= $this->getLocation()    ? "LOCATION:{$this->getLocation()}\n"       : '';
         $content .= "SUMMARY:{$this->getName()}\n";
         $content .= "URL;VALUE=URI:{$this->getUrl()}\n";
         $content .= "SEQUENCE:0\n";
@@ -738,7 +698,6 @@ class Invite
 
     return false;
     }
-    // }
 
 }
 
