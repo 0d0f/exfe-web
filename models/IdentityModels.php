@@ -4,6 +4,11 @@ class IdentityModels extends DataModel {
 
     private $salt = '_4f9g18t9VEdi2if';
 
+    public $providers = [
+        'authenticate' => ['twitter', 'facebook', 'flickr', 'dropbox', 'instagram', 'google'],
+        'verification' => ['phone', 'email'],
+    ];
+
 
     protected function packageIdentity($rawIdentity, $user_id = null) {
         $hlpUser = $this->getHelperByName('user');

@@ -88,8 +88,6 @@ class Identity extends EFObject {
                         $this->external_id ?: $this->external_username
                     );
                     break;
-                case 'twitter':
-                case 'facebook':
                 default:
                     $this->name = $this->external_username;
             }
