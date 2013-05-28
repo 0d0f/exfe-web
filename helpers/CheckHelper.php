@@ -75,7 +75,7 @@ class CheckHelper extends ActionController {
             $hlpQueue = $this->getHelperByName('Queue');
             $user = $userData->getUserById($uid);
             foreach ($user && $user->identities ? $user->identities : [] as $identity) {
-                if (in_array($identity->provider, ['twitter', 'facebook', 'dropbox', 'flickr', 'instagram'])) {
+                if (in_array($identity->provider, $identityData->providers['authenticate'])) {
                     $oAuthToken = $identityData->getOAuthTokenById($identity->id);
                     if ($oAuthToken) {
                         $hlpQueue->updateIdentity($identity, $oAuthToken);

@@ -544,6 +544,7 @@ class GobusActions extends ActionController {
             case 'phone':
             case 'twitter':
             case 'facebook':
+            case 'google':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
                     $objRecipient->provider, $objRecipient->external_username, true
                 );

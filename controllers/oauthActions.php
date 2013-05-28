@@ -499,8 +499,6 @@ class OAuthActions extends ActionController {
         if ($profile) {
             $rawIdentity = $profile['identity'];
             $oauthToken  = $profile['oauth_token'];
-            print_r(json_encode($rawIdentity));exit();
-
             if ($rawIdentity) {
                 $result = $modOauth->handleCallback($rawIdentity, $oauthIfo, $oauthToken);
                 if (!$result) {
