@@ -500,10 +500,21 @@ class IdentityModels extends DataModel {
 
     public function getOAuthTokenById($identity_id) {
         $dbResult = $this->getRow(
-            "SELECT `oauth_token` FROM `identities` WHERE `id` = $identity_id"
+            "SELECT `oauth_token`, `provider`
+             FROM   `identities`
+             WHERE  `id` = $identity_id"
         );
-        return $dbResult && $dbResult['oauth_token']
-             ? json_decode($dbResult['oauth_token'], true) : null;
+        $result = $dbResult && $dbResult['oauth_token']
+                ? json_decode($dbResult['oauth_token'], true) : null;
+        if ($result && $dbResult['provider'] === 'google') {
+            $hlpOauth = $this->getHelperByName('OAuth');
+            $newToken = $hlpOauth->refreshGoogleToken($dbResult['oauth_token'], true);
+            if ($newToken) {
+                $this->updateOAuthTokenById($identity_id, $newToken);
+                $result = $newToken;
+            }
+        }
+        return $result;
     }
 
 
