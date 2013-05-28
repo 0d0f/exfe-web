@@ -366,7 +366,7 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
-            if (in_array($provider, $modIdentity->providers['verification']) {
+            if (in_array($provider, $modIdentity->providers['verification'])) {
                 apiResponse(['registration_flag' => 'SIGN_UP']);
             } else if (in_array($provider, $modIdentity->providers['authenticate'])) {
                 apiResponse(['registration_flag' => 'AUTHENTICATE']);
@@ -720,7 +720,7 @@ class UsersActions extends ActionController {
             $raw_flag = $modUser->getRegistrationFlag($identity);
             $flag     = @$raw_flag['flag'];
         } else {
-            if (in_array($provider, $modIdentity->providers['verification']) {
+            if (in_array($provider, $modIdentity->providers['verification'])) {
                 $flag = 'SIGN_UP';
             } else if (in_array($provider, $modIdentity->providers['authenticate'])) {
                 $flag = 'AUTHENTICATE';
