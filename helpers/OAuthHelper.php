@@ -35,6 +35,16 @@ class OAuthHelper extends ActionController {
     }
 
 
+    public function googleRedirect($workflow = []) {
+        return $this->modOAuth->googleRedirect($workflow);
+    }
+
+
+    public function refreshGoogleToken($token, $changedOnly = false) {
+        return $this->modOAuth->refreshGoogleToken($token, $changedOnly);
+    }
+
+
     public function resetSession() {
         return $this->modOAuth->resetSession();
     }

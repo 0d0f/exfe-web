@@ -717,7 +717,7 @@ class OAuthModels extends DataModel {
     }
 
 
-    public function refreshGoogleToken($token) {
+    public function refreshGoogleToken($token, $changedOnly = false) {
         if ($token) {
             if (($token['oauth_expires'] - GOOGLE_TOKEN_LIFE) <= time()) {
                 $client = $this->getGoogleClient();
@@ -725,6 +725,8 @@ class OAuthModels extends DataModel {
                 $client->setAccessToken(json_encode($token));
                 $client->refreshToken($token['refresh_token']);
                 $token = $this->getGoogleTokenFrom($client);
+            } else if ($changedOnly) {
+                return null;
             }
             return $token;
         }
