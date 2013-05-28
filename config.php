@@ -96,27 +96,12 @@ define('FLICKR_SECRET',            '3927a68489806300');
 define('FLICKR_OAUTH_CALLBACK',    SITE_URL .'/OAuth/flickrCallBack');
 
 // oauth - google
+define('GOOGLE_APP_NAME',          'EXFE');
 define('GOOGLE_MAP_KEY',           'AIzaSyAgYKtU2lpDg_HYH_rP2MIna0DFyIoEGMs');
-define('GOOGLE_CLIENT_ID',         '968124746422.apps.googleusercontent.com');
-define('GOOGLE_CLIENT_SECRET',     'Z8POTJnYqNOVciDHNmjBsxLs');
-define('GOOGLE_REDIRECT_URIS',     SITE_URL .'/OAuth/googleOAuthCallback');
-
-
-
-
-// {"web":
-//     {
-//         "auth_uri":"https://accounts.google.com/o/oauth2/auth",
-//         "client_secret":"_40miTtyXZdl2BapShN71g-O",
-//         "token_uri":"https://accounts.google.com/o/oauth2/token",
-//         "client_email":"744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi@developer.gserviceaccount.com",
-//         "redirect_uris":["http://leask.0d0f.com/oauth2callback"],
-//         "client_x509_cert_url":"https://www.googleapis.com/robot/v1/metadata/x509/744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi@developer.gserviceaccount.com",
-//         "client_id":"744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi.apps.googleusercontent.com",
-//         "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
-//         "javascript_origins":["http://leask.0d0f.com"]}}
-
-
+define('GOOGLE_CLIENT_ID',         '744297824584-gjg6alcou6h2nnde0q2qh17jakiaudqi.apps.googleusercontent.com');
+define('GOOGLE_CLIENT_SECRET',     '_40miTtyXZdl2BapShN71g-O');
+define('GOOGLE_TOKEN_LIFE',        1800); // 60 * 30
+define('GOOGLE_REDIRECT_URIS',     SITE_URL .'/oauth/googlecallback');
 
 // oauth - foursquare
 define('FOURSQUARE_CLIENT_KEY',    'TGQU0UKUHS3H5WYG0KAWPRU2FY0RYVYSD3JJPXJTCKXTGG3K');
