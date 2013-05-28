@@ -2,7 +2,7 @@
 
 class IdentityHelper extends ActionController {
 
-    protected $modIdentity = null;
+    public $modIdentity = null;
 
 
     public function __construct() {

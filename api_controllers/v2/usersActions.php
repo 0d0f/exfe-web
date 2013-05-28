@@ -93,6 +93,7 @@ class UsersActions extends ActionController {
             case 'flickr':
             case 'dropbox':
             case 'instagram':
+            case 'google':
                 $external_username = '';
                 break;
             default:
@@ -365,20 +366,12 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
-            switch ($provider) {
-                case 'email':
-                case 'phone':
-                    apiResponse(['registration_flag' => 'SIGN_UP']);
-                    break;
-                case 'twitter':
-                case 'facebook':
-                case 'flickr':
-                case 'dropbox':
-                case 'instagram':
-                    apiResponse(['registration_flag' => 'AUTHENTICATE']);
-                    break;
-                default:
-                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            if (in_array($provider, $modIdentity->providers['verification']) {
+                apiResponse(['registration_flag' => 'SIGN_UP']);
+            } else if (in_array($provider, $modIdentity->providers['authenticate'])) {
+                apiResponse(['registration_flag' => 'AUTHENTICATE']);
+            } else {
+                apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
             }
         }
         // get registration flag
@@ -727,20 +720,12 @@ class UsersActions extends ActionController {
             $raw_flag = $modUser->getRegistrationFlag($identity);
             $flag     = @$raw_flag['flag'];
         } else {
-            switch ($provider) {
-                case 'email':
-                case 'phone':
-                    $flag = 'SIGN_UP';
-                    break;
-                case 'twitter':
-                case 'facebook':
-                case 'flickr':
-                case 'dropbox':
-                case 'instagram':
-                    $flag = 'AUTHENTICATE';
-                    break;
-                default:
-                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            if (in_array($provider, $modIdentity->providers['verification']) {
+                $flag = 'SIGN_UP';
+            } else if (in_array($provider, $modIdentity->providers['authenticate'])) {
+                $flag = 'AUTHENTICATE';
+            } else {
+                apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
             }
         }
         apiError(403, 'failed', ['registration_flag' => $flag]);

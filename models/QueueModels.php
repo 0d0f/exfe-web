@@ -263,6 +263,7 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
+                        case 'google':
                         case 'facebook':
                             $head10[]  = $item;
                             break;
@@ -278,6 +279,7 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
+                        case 'google':
                             $imsgInv = deepClone($item);
                             $imsgInv->identity->provider = 'phone';
                             $instant[] = $imsgInv;
@@ -294,6 +296,7 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
+                        case 'google':
                             $imsgInv = deepClone($item);
                             $imsgInv->identity->provider = 'phone';
                             $remind[] = $imsgInv;
@@ -310,6 +313,7 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
+                        case 'google':
                         case 'twitter':
                         case 'facebook':
                             $tail10[]  = $item;
