@@ -16,6 +16,7 @@ class RelationModels extends DataModel {
                 if ($identity) {
                     switch ($identity->provider) {
                         case 'email':
+                        case 'phone':
                             $identity->external_id       = mysql_real_escape_string(strtolower($identity->external_id));
                             $identity->external_username = mysql_real_escape_string(strtolower($identity->external_username));
                             $isResult = $this->query(
@@ -28,6 +29,12 @@ class RelationModels extends DataModel {
                                  `provider`          = '{$identity->provider}',
                                  `avatar_filename`   = '{$identity->avatar_filename}'"
                             );
+                            $this->buildIdentityIndex($userid, [
+                                'name'              => $identity->name,
+                                'external_username' => $identity->external_username,
+                                'external_identity' => $identity->external_id,
+                                'r_identityid'      => $r_identityid,
+                            ]);
                             return intval($isResult);
                     }
                 }
@@ -74,6 +81,54 @@ class RelationModels extends DataModel {
             error_log(json_encode(['user_id' => $userid, 'identity' => $identity]));
         }
         return 0;
+    }
+
+
+    public function buildIdentitiesIndexes($user_id) {
+        if (!$user_id) {
+            return false;
+        }
+        $identities = $this->getAll(
+            "SELECT * FROM `user_relations` WHERE `userid` = {$user_id}"
+        );
+        foreach($identities as $identity) {
+            $this->buildIdentityIndex($user_id, $identity);
+        }
+        return true;
+    }
+
+
+    public function buildIdentityIndex($user_id, $identity) {
+        mb_internal_encoding('UTF-8');
+        if (!$user_id || !$identity) {
+            return false;
+        }
+        global $redis;
+        $identity_array = explode(' ', mb_strtolower(str_replace('|', ' ', trim(
+            "{$identity['name']} " . (
+                $identity['external_username'] ?: $identity['external_identity']
+            )
+        ))));
+        if ($identity_array) {
+            foreach($identity_array as $iaI) {
+                $identity_part = '';
+                for ($i = 0; $i < mb_strlen($iaI); $i++) {
+                    $redis->zAdd(
+                        "u:{$user_id}", 0,
+                        $identity_part .= mb_substr($iaI, $i, 1)
+                    );
+                }
+                $redis->zAdd(
+                    "u:{$user_id}", 0,
+                    "{$identity_part}|" . (
+                        (int) $identity['r_identityid']
+                      ? "rid:{$identity['r_identityid']}"
+                      :  "id:{$identity['id']}"
+                    ) . '*'
+                );
+            }
+        }
+        return true;
     }
 
 
