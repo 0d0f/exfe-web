@@ -111,7 +111,9 @@
               {{#if identity.isphone}}
               <td class="rsvp accepted" width="98">I'm in</td>
               <td class="rsvp unavailable" width="98">Unavailable</td>
+              {{#if change_name}}
               <td class="rsvp changename" width="98">Change my display name</td>
+              {{/if}}
               {{else}}
               <td class="rsvp accepted">I'm in</td>
               <td class="rsvp unavailable">Unavailable</td>
