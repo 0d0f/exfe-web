@@ -81,6 +81,8 @@ class CheckHelper extends ActionController {
                         $hlpQueue->updateIdentity($identity, $oAuthToken);
                         $hlpQueue->updateFriends($identity,  $oAuthToken);
                     }
+                } else if ($identity->provider === 'email') {
+                    $hlpQueue->updateIdentity($identity, []);
                 }
             }
         }
