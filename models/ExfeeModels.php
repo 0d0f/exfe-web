@@ -313,9 +313,11 @@ class ExfeeModels extends DataModel {
             return null;
         }
         // make invitation token
-        $sqlToken = $updateToken
-                  ? (", `token` = '" . $this->makeExfeeToken() . "', `token_used_at` = 0")
-                  : '';
+        $sqlToken = $updateToken ? (
+            ", `token`         = '" . $this->makeExfeeToken() . "'"
+          . ', `created_at`    = NOW()'
+          . ', `token_used_at` = 0'
+        ) : '';
         // translate rsvp status
         $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
         // get host boolean
