@@ -904,46 +904,6 @@ class UserModels extends DataModel {
     }
 
 
-    public function buildIdentitiesIndexes($user_id) {
-        mb_internal_encoding('UTF-8');
-        if (!$user_id) {
-            return false;
-        }
-        $identities = $this->getAll(
-            "SELECT * FROM `user_relations` WHERE `userid` = {$user_id}"
-        );
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        foreach($identities as $identity) {
-            $identity_array = explode(' ', mb_strtolower(str_replace('|', ' ', trim(
-                "{$identity['name']} " . (
-                    $identity['external_username'] ?: $identity['external_identity']
-                )
-            ))));
-            if ($identity_array) {
-                foreach($identity_array as $iaI) {
-                    $identity_part = '';
-                    for ($i = 0; $i < mb_strlen($iaI); $i++) {
-                        $redis->zAdd(
-                            "u:{$user_id}", 0,
-                            $identity_part .= mb_substr($iaI, $i, 1)
-                        );
-                    }
-                    $redis->zAdd(
-                        "u:{$user_id}", 0,
-                        "{$identity_part}|" . (
-                            (int) $identity['r_identityid']
-                          ? "rid:{$identity['r_identityid']}"
-                          :  "id:{$identity['id']}"
-                        ) . '*'
-                    );
-                }
-            }
-        }
-        return true;
-    }
-
-
     public function updateAvatarById($user_id, $avatar_filename = '') {
         if ($user_id) {
             delCache("users:{$user_id}");
