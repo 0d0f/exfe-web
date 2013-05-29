@@ -53,7 +53,7 @@ class IcsModels extends DataModel {
             if ($invItem->rsvp_status !== 'NOTIFICATION') {
                 if (!in_array(
                     $invItem->identity->provider, ['dropbox', 'google', 'email']
-                ) {
+                )) {
                     $invItem->identity->external_username
                  .= "@{$invItem->identity->provider}.exfe.com";
                 }
