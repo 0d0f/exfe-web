@@ -498,7 +498,7 @@ class GobusActions extends ActionController {
             return;
         }
         // build identities indexes
-        if (!$modUser->buildIdentitiesIndexes($obj_args->user_id)) {
+        if (!$modRelation->buildIdentitiesIndexes($obj_args->user_id)) {
             header('HTTP/1.1 500 Internal Server Error');
             if (DEBUG) {
                 error_log('Index error!');
