@@ -72,7 +72,7 @@
 
   <script id="cross-tmpl" type="text/x-handlebars-template">
   <div class="page cross-page hide" id="app-cross">
-    <div class="cross redirecting">Redirecting to <span class="exfe_blue3">EXFE</span> app in <span class="sec">0</span>s.</div>
+    <!--div class="cross redirecting">Redirecting to <span class="exfe_blue3">EXFE</span> app in <span class="sec">0</span>s.</div-->
     <div class="content">
       <div class="title_area" style="background: url(/static/img/xbg/{{background}}) no-repeat 50% 50%;">
         <div class="title_wrap_a">
