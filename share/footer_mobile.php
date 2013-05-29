@@ -1,10 +1,5 @@
 <?php
 
-echo "  <script>\n";
-include 'ftconfig.php';
-echo "  </script>\n";
-echo "\n";
-
 $frontConfigFile = 'static/package.json';
 $frontConfigJson = file_get_contents($frontConfigFile);
 $frontConfigData = json_decode($frontConfigJson);
@@ -14,18 +9,17 @@ if (!$frontConfigData) {
     return;
 }
 
-if (JS_DEBUG) {
-    foreach ($frontConfigData->mobile->dependencies as $script)  {
-        addScript([[$script->name, $script->version]]);
-    }
-} else {
-    $filename = preg_replace(
-        '/{{version}}/',
-        $frontConfigData->mobile->version,
-        $frontConfigData->mobile->files->pro
-    );
-    rawAddScript($filename);
-}
+$filename = preg_replace(
+    '/{{version}}/',
+    $frontConfigData->mobile->version,
+    JS_DEBUG ? $frontConfigData->mobile->files->dev : $frontConfigData->mobile->files->pro
+);
+
+echo "  <script>\n";
+include 'ftconfig.php';
+echo "window._ENV_.JSFILE = '${filename}'";
+echo "  </script>\n";
+echo "\n";
 
 // Google Analytics
 if (SITE_URL === 'https://exfe.com') {

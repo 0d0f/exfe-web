@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<!--[if IE]> <meta http-equiv="X-UA-Compatible" content="IE=edge" /> <![endif]-->
   <title>EXFE - The group utility for gathering.</title>
   <meta name="author" content="EXFE Inc." />
   <meta name="robots" content="index, follow" />
@@ -17,4 +17,3 @@
 <?php } ?>
   <link rel="shortcut icon" href="/static/img/favicon.png" />
   <link rel="apple-touch-icon" href="/static/img/favicon.png" />
-  <link rel="stylesheet" media="screen" type="text/css" href="/static/css/exfe_mobile.min.css?<?php echo STATIC_CODE_TIMESTAMP; ?>" />
