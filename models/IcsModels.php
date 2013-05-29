@@ -51,14 +51,21 @@ class IcsModels extends DataModel {
         // parse invitations
         foreach ($cross->exfee->invitations as $invItem) {
             if ($invItem->rsvp_status !== 'NOTIFICATION') {
-                $email = $invItem->identity->provider === 'email'
-                       ? $invItem->identity->external_username : '';
+                if (!in_array(
+                    $invItem->identity->provider, ['dropbox', 'google', 'email']
+                )) {
+                    $invItem->identity->external_username
+                 .= "@{$invItem->identity->provider}.exfe.com";
+                }
                 $modInvite->addAttendee(
-                    $email, $invItem->identity->name, $invItem->rsvp_status
+                    $invItem->identity->external_username,
+                    $invItem->identity->name,
+                    $invItem->rsvp_status
                 );
                 if ($invItem->host) {
                     $modInvite->setOrganizer(
-                        $email, $invItem->identity->name
+                        $invItem->identity->external_username,
+                        $invItem->identity->name
                     );
                 }
             }
