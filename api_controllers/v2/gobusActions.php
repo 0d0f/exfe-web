@@ -495,6 +495,7 @@ class GobusActions extends ActionController {
             if (DEBUG) {
                 error_log('Save error!');
             }
+            return;
         }
         // build identities indexes
         if (!$modUser->buildIdentitiesIndexes($obj_args->user_id)) {
@@ -503,6 +504,7 @@ class GobusActions extends ActionController {
                 error_log('Index error!');
                 error_log($str_args);
             }
+            return;
         }
         // return
         apiResponse(['user_id' => $obj_args->user_id]);
