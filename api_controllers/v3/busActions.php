@@ -75,7 +75,7 @@ class BusActions extends ActionController {
             $identity    = $modIdentity->getIdentityById($identity_id);
         }
         if (!$identity) {
-            $this->jsonError(500, 'internal_server_error', 'error identity');
+            $this->jsonError(500, 'identity_error');
             return;
         }
 
@@ -96,7 +96,7 @@ class BusActions extends ActionController {
             );
         }
         if (!$user_id) {
-            $this->jsonError(500, 'internal_server_error', 'error user');
+            $this->jsonError(500, 'user_error');
             return;
         }
 
@@ -108,7 +108,7 @@ class BusActions extends ActionController {
         $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
         $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
-            $this->jsonError(500, 'internal_server_error', 'error gathering');
+            $this->jsonError(500, 'gathering_error');
             return;
         }
 
@@ -192,7 +192,7 @@ class BusActions extends ActionController {
             $identity    = $modIdentity->getIdentityById($identity_id);
         }
         if (!$identity) {
-            $this->jsonError(500, 'internal_server_error', 'error identity');
+            $this->jsonError(500, 'identity_error');
             return;
         }
 
@@ -213,7 +213,7 @@ class BusActions extends ActionController {
             );
         }
         if (!$user_id) {
-            $this->jsonError(500, 'internal_server_error', 'error user');
+            $this->jsonError(500, 'user_error');
             return;
         }
 
@@ -301,7 +301,7 @@ class BusActions extends ActionController {
          || !$args->exfee_id
          || !$args->user_id
          || !$args->identity_id) {
-            $this->jsonError(500, 'internal_server_error');
+            $this->jsonError(500, 'input_error');
             return;
         }
         if (!$modCross->getDraftStatusBy($args->cross_id)) {
@@ -345,7 +345,7 @@ class BusActions extends ActionController {
         $exclude         = @$_POST['exclude'] ?: '';
         $time            = strtotime($_POST['time']);
         if ((!$cross_id && !$iom) || !$provider || !$external_id || !$content || !$time) {
-            $this->jsonError(500, 'internal_server_error');
+            $this->jsonError(500, 'input_error');
             return;
         }
 
@@ -404,7 +404,7 @@ class BusActions extends ActionController {
         // get cross
         $cross = $hlpCross->getCross($cross_id, true);
         if (!$cross) {
-            $this->jsonError(500, 'internal_server_error');
+            $this->jsonError(500, 'cross_error');
             return;
         }
 
