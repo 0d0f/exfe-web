@@ -89,6 +89,11 @@ class AvatarActions extends ActionController {
             }
         } else {
             $filename = '';
+            if ($identity->provider === 'email') {
+                $filename = $modIdentity->getGravatarByExternalUsername(
+                    $identity->external_username
+                );
+            }
         }
 
         // update database
