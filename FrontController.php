@@ -74,7 +74,7 @@ class FrontController {
                 $action       = $arrPath[0];
             }
         } else {
-            if ($controllerName === 'gobus') {
+            if (in_array($controllerName, ['bus', 'gobus'])) {
                 $action       = $arrPath[0];
                 $params['id'] = $arrPath[1];
             } else {
