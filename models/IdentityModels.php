@@ -495,7 +495,7 @@ class IdentityModels extends DataModel {
                     $auData, '', $token, '', 'imessage',
                     $identity->external_id,
                     $identity->external_username
-                )], $megKey, $method, $url, $type, $time, $data)
+                )], $megKey, $method, $url, $type, $time, $data);
                 break;
             case 'phone':
                 $identity->provider = 'imessage,phone';
