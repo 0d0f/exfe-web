@@ -271,7 +271,7 @@ class QueueModels extends DataModel {
                             $head10[]  = $item;
                             break;
                         case 'phone':
-                            $item->identity->provider = 'imessage,phone';
+                            $item->identity->provider = 'imessage|phone';
                         case 'twitter':
                         case 'iOS':
                         case 'Android':
