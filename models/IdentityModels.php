@@ -498,7 +498,7 @@ class IdentityModels extends DataModel {
                 )], $megKey, $method, $url, $type, $time, $data);
                 break;
             case 'phone':
-                $identity->provider = 'imessage,phone';
+                $identity->provider = 'imessage|phone';
         }
         return $hlpQueue->fireBus([new Recipient(
             $identity->id,
