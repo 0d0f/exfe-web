@@ -479,22 +479,36 @@ class IdentityModels extends DataModel {
                 return false;
         }
         $hlpQueue = $this->getHelperByName('Queue');
-        return $hlpQueue->fireBus(
-            [new Recipient(
-                $identity->id,
-                $identity->connected_user_id,
-                $identity->name,
-                $identity->auth_data ?: '',
-                '',
-                "$token",
-                '',
-                $identity->provider,
-                $identity->external_id,
-                $identity->external_username
-            )],
-            '-', 'POST', EXFE_AUTH_SERVER . "/v3/notifier/user/{$strSrv}",
-            'once', time(), $data
-        );
+        $auData = $identity->auth_data ?: '';
+        $token  = "$token";
+        $megKey = '-';
+        $method = 'POST';
+        $url    = EXFE_AUTH_SERVER . "/v3/notifier/user/{$strSrv}";
+        $type   = 'once';
+        $time   = time();
+        switch ($identity->provider) {
+            case 'email':
+                $hlpQueue->fireBus([new Recipient(
+                    $identity->id,
+                    $identity->connected_user_id,
+                    $identity->name,
+                    $auData, '', $token, '', 'imessage',
+                    $identity->external_id,
+                    $identity->external_username
+                )], $megKey, $method, $url, $type, $time, $data)
+                break;
+            case 'phone':
+                $identity->provider = 'imessage,phone';
+        }
+        return $hlpQueue->fireBus([new Recipient(
+            $identity->id,
+            $identity->connected_user_id,
+            $identity->name,
+            $auData, '', $token, '',
+            $identity->provider,
+            $identity->external_id,
+            $identity->external_username
+        )], $megKey, $method, $url, $type, $time, $data);
     }
 
 
