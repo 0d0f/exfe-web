@@ -30,8 +30,9 @@ class ExfeAuthModels extends DataModel {
     ) {
         if ($resource && $data && $expireAfterSeconds) {
             $rawResult = httpkit::request(
-                EXFE_AUTH_SERVER . '/v3/tokens/' . ($short ? 'short' : 'long'),
-                null, [
+                EXFE_AUTH_SERVER . '/v3/tokens',
+                ['type' => $short ? 'short' : 'long'],
+                [
                     'resource'             => json_encode($resource),
                     'data'                 => json_encode($data),
                     'expire_after_seconds' => (int) $expireAfterSeconds,
@@ -70,7 +71,7 @@ class ExfeAuthModels extends DataModel {
         if ($resource) {
             $rawResult = httpkit::request(
                 EXFE_AUTH_SERVER . '/v3/tokens/resources',
-                null, $resource, false, false, 3, 3, 'json', true
+                null, json_encode($resource), false, false, 3, 3, 'json', true
             );
             $this->checkResponse($rawResult);
             if ($rawResult && $rawResult['http_code'] === 200) {
