@@ -151,9 +151,11 @@ class CrossHelper extends ActionController {
         }
 
         return [
-            'cross_id'   => $cross_id,
-            'exfee_id'   => $exfee_id,
-            'over_quota' => @$efeResult['soft_quota'],
+            'cross_id'        => $cross_id,
+            'exfee_id'        => $exfee_id,
+            'over_quota'      => @$efeResult['soft_quota'],
+            'over_soft_quota' => @$efeResult['soft_quota'],
+            'over_hard_quota' => @$efeResult['hard_quota'],
         ];
     }
 
