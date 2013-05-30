@@ -281,7 +281,7 @@ class BusActions extends ActionController {
                     'exfee_soft_quota' => EXFEE_QUOTA_SOFT_LIMIT,
                     'exfee_hard_quota' => EXFEE_QUOTA_HARD_LIMIT,
                 ]
-            ])
+            ]);
             return;
         }
         $this->jsonResponse($rtResult);
