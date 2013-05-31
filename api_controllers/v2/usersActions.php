@@ -428,7 +428,7 @@ class UsersActions extends ActionController {
                 case 'VERIFY':
                     $viResult = $modUser->verifyIdentity(
                         $identity,
-                        $raw_flag['reason'] === 'NO_PASSWORD' ? 'SET_PASSWORD' : 'VERIFY',
+                        $raw_flag['reason'] === 'NO_PASSWORD' ? 'VERIFY_SET_PASSWORD' : 'VERIFY',
                         $user_id, $args
                     );
                     if ($viResult) {
