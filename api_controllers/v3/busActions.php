@@ -163,12 +163,12 @@ class BusActions extends ActionController {
          || (!isset($args->cross_id) && !isset($args->exfee_id))
          || !isset($args->cross)
          || !isset($args->by_identity)) {
-            $this->jsonError(400, 'cross_error');
+            $this->jsonError(500, 'cross_error');
             return;
         }
         $chkCross = $crossHelper->validateCross($args->cross);
         if ($chkCross['error']) {
-            $this->jsonError(400, 'cross_error', $chkCross['error'][0]);
+            $this->jsonError(500, 'cross_error', $chkCross['error'][0]);
             return;
         }
         $cross = $chkCross['cross'];
@@ -625,7 +625,7 @@ class BusActions extends ActionController {
                 return;
             }
         }
-        $this->jsonError(500, 'identity_not_found');
+        $this->jsonError(404, 'identity_not_found');
     }
 
 
@@ -718,7 +718,7 @@ class BusActions extends ActionController {
             }
             $exfee = $modExfee->getExfeeById($id);
             if ($exfee) {
-                echo json_encode($exfee);
+                $this->jsonResponse($exfee);
                 return;
             }
         }
@@ -777,7 +777,7 @@ class BusActions extends ActionController {
         $params   = $this->params;
         $cross_id = @ (int) $params['id'];
         if (!$cross_id) {
-            $this->jsonError(500, 'no_cross_id');
+            $this->jsonError(500, 'no_photox_id');
             return;
         }
         // get model
@@ -797,7 +797,7 @@ class BusActions extends ActionController {
                         $cross_id, $photos, $identity_id
                     );
                     if ($result) {
-                        $this->jsonResponse(['cross_id' => $cross_id]);
+                        $this->jsonResponse(['photox_id' => $cross_id]);
                         return;
                     }
                 }
