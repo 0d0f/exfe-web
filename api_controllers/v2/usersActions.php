@@ -688,14 +688,14 @@ class UsersActions extends ActionController {
         $modIdentity   = $this->getModelByName('identity');
         // collecting post data
         if (!($external_username = $_POST['external_username'])) {
-            apiError(403, 'no_external_username', 'external_username must be provided');
+            apiError(400, 'no_external_username', 'external_username must be provided');
         }
         if (!($provider = $_POST['provider'])) {
-            apiError(403, 'no_provider', 'provider must be provided');
+            apiError(400, 'no_provider', 'provider must be provided');
         }
         // @todo: 需要根据 $provider 检查 $external_username 有效性
         if (strlen($password = $_POST['password']) === 0) {
-            apiError(403, 'no_password', 'password must be provided');
+            apiError(400, 'no_password', 'password must be provided');
         }
         // adding new identity
         if (($name = formatName($_POST['name'])) !== ''
@@ -705,7 +705,7 @@ class UsersActions extends ActionController {
             }
             if (!($user_id = $modUser->addUser($password, $name))
              || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
-                apiError(403, 'failed', 'failed while signing up new user');
+                apiError(500, 'failed', 'failed while signing up new user');
             }
         }
         // raw signin
