@@ -464,6 +464,7 @@ class UserModels extends DataModel {
         }
         $identity->id = (int) $identity->id;
         $user_id      = (int) $user_id;
+        $raw_action   = $action;
         // check action
         switch ($action) {
             case 'VERIFY':
@@ -473,6 +474,9 @@ class UserModels extends DataModel {
                         return null;
                     }
                 }
+                break;
+            case 'VERIFY_SET_PASSWORD':
+                $action = 'SET_PASSWORD';
                 break;
             case 'SET_PASSWORD':
                 break;
@@ -492,7 +496,8 @@ class UserModels extends DataModel {
         $data      = $resource
                    + ['user_id'      => $user_id,
                       'created_time' => time(),
-                      'updated_time' => time()];
+                      'updated_time' => time(),
+                      'raw_action'   => $raw_action];
         if ($args) {
             $data['args'] = $args;
         }
@@ -685,7 +690,7 @@ class UserModels extends DataModel {
                                 'user_name'   => $siResult['name'],
                                 'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['data']['action'],
+                                'token_type'  => @$curToken['raw_action'] === 'VERIFY_SET_PASSWORD' ? 'VERIFY' : $curToken['data']['action'],
                                 'action'      => 'INPUT_NEW_PASSWORD',
                             ];
                         }
