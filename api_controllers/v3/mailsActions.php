@@ -32,6 +32,7 @@ class MailsActions extends ActionController {
         $ribbon     = @ strtolower($params['ribbon']) === 'true' ? true : false;
         $lat        = @ $params['lat'] ?: '';
         $lng        = @ $params['lng'] ?: '';
+        $mapZoom    = @ (int) $params['map-zoom-level'] ?: $config['map-zoom-level'];
         $background = preg_replace('/^.*\/([^\/]*)$/', '$1', $background);
 
         // get background
@@ -77,7 +78,7 @@ class MailsActions extends ActionController {
                 'https://maps.googleapis.com/maps/api/staticmap?center='
               . "{$lat},{$lng}&markers=icon%3a"
               . urlencode('http://img.exfe.com/web/map_pin_blue.png')
-              . "%7C{$lat},{$lng}&zoom={$config['map-zoom-level']}"
+              . "%7C{$lat},{$lng}&zoom={$mapZoom}"
               . "&size={$config['map-width']}x{$mapHeight}"
               . '&maptype=road&sensor=false&scale=1'
             );
