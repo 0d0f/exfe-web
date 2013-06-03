@@ -20,7 +20,7 @@ class MailsActions extends ActionController {
             'line-color'       => [255, 254, 254, 95],
             'map-width'        => 80,
             'map-border-color' => [0, 0, 0, 101],
-            'map-zoom-level'   => 14,
+            'map-zoom-level'   => 13,
             'ribbon-image'     => "{$curDir}/../../static/img/ribbon_280@2x.png",
             'ribbon-padding'   => 7,
             'jpeg-quality'     => 100,
