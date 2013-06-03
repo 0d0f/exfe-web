@@ -378,22 +378,19 @@ class UserModels extends DataModel {
 
 
     public function getRegistrationFlag($identity) {
+        // init models
+        $hlpIdentity = $this->getHelperByName('Identity');
         // get user info
         $user_infos = $this->getUserIdentityInfoByIdentityId($identity->id);
         // no user
         if (!$user_infos) {
             $rtResult = ['reason' => 'NO_USER'];
-            switch ($identity->provider) {
-                case 'email':
-                case 'phone':
-                    $rtResult['flag'] = 'VERIFY';
-                    break;
-                case 'twitter':
-                case 'facebook':
-                    $rtResult['flag'] = 'AUTHENTICATE';
-                    break;
-                default:
-                    return null;
+            if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['verification'])) {
+                $rtResult['flag'] = 'VERIFY';
+            } else if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['authenticate'])) {
+                $rtResult['flag'] = 'AUTHENTICATE';
+            } else {
+                return null;
             }
             return $rtResult;
         }
@@ -406,17 +403,12 @@ class UserModels extends DataModel {
                 return $rtResult;
             }
             $rtResult['reason'] = 'NO_PASSWORD';
-            switch ($identity->provider) {
-                case 'email':
-                case 'phone':
-                    $rtResult['flag'] = 'VERIFY';
-                    break;
-                case 'twitter':
-                case 'facebook':
-                    $rtResult['flag'] = 'AUTHENTICATE';
-                    break;
-                default:
-                    return null;
+            if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['verification'])) {
+                $rtResult['flag'] = 'VERIFY';
+            } else if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['authenticate'])) {
+                $rtResult['flag'] = 'AUTHENTICATE';
+            } else {
+                return null;
             }
             return $rtResult;
         }
@@ -435,34 +427,25 @@ class UserModels extends DataModel {
         // try revoked user
         if (isset($user_infos['REVOKED'])) {
             $rtResult = array('reason'  => 'REVOKED');
-            switch ($identity->provider) {
-                case 'email':
-                case 'phone':
-                    $rtResult['flag'] = 'VERIFY';
-                    break;
-                case 'twitter':
-                case 'facebook':
-                    $rtResult['flag'] = 'AUTHENTICATE';
-                    break;
-                default:
-                    return null;
+            if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['verification'])) {
+                $rtResult['flag'] = 'VERIFY';
+            } else if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['authenticate'])) {
+                $rtResult['flag'] = 'AUTHENTICATE';
+            } else {
+                return null;
             }
             return $rtResult;
         }
         // try verifying or related user
         if (isset($user_infos['VERIFYING']) || isset($user_infos['RELATED'])) {
             $rtResult = ['reason' => 'RELATED'];
-            switch ($identity->provider) {
-                case 'email':
-                case 'phone':
-                    $rtResult['flag'] = 'VERIFY';
-                    break;
-                case 'twitter':
-                case 'facebook':
-                    $rtResult['flag'] = 'AUTHENTICATE';
-                    break;
-                default:
-                    return null;
+            $rtResult = array('reason'  => 'REVOKED');
+            if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['verification'])) {
+                $rtResult['flag'] = 'VERIFY';
+            } else if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['authenticate'])) {
+                $rtResult['flag'] = 'AUTHENTICATE';
+            } else {
+                return null;
             }
             return $rtResult;
         }
@@ -473,23 +456,27 @@ class UserModels extends DataModel {
 
 
     public function verifyIdentity($identity, $action, $user_id = 0, $args = null, $device = '', $device_callback = '', $workflow = []) {
+        // init models
+        $hlpIdentity = $this->getHelperByName('Identity');
         // basic check
         if (!$identity || !$action) {
             return null;
         }
         $identity->id = (int) $identity->id;
         $user_id      = (int) $user_id;
+        $raw_action   = $action;
         // check action
         switch ($action) {
             case 'VERIFY':
                 $user_id = $user_id ?: $this->addUser();
-                switch ($identity->provider) {
-                    case 'email':
-                    case 'phone':
-                        if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
-                            return null;
-                        }
+                if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['verification'])) {
+                    if (!$this->setUserIdentityStatus($user_id, $identity->id, 2)) {
+                        return null;
+                    }
                 }
+                break;
+            case 'VERIFY_SET_PASSWORD':
+                $action = 'SET_PASSWORD';
                 break;
             case 'SET_PASSWORD':
                 break;
@@ -509,7 +496,8 @@ class UserModels extends DataModel {
         $data      = $resource
                    + ['user_id'      => $user_id,
                       'created_time' => time(),
-                      'updated_time' => time()];
+                      'updated_time' => time(),
+                      'raw_action'   => $raw_action];
         if ($args) {
             $data['args'] = $args;
         }
@@ -531,82 +519,78 @@ class UserModels extends DataModel {
         $data['expired_time'] = time() + $expireSec;
         // case provider
         $short = $identity->provider === 'phone';
-        switch ($identity->provider) {
-            case 'email':
-            case 'phone':
-                // call token service
-                if ($result['token']) {
-                    $hlpExfeAuth->keyUpdate($result['token'], $data, $expireSec); // update && extension
-                    $actResult = true;
-                } else {
-                    // make new token
-                    $actResult = $result['token'] = $hlpExfeAuth->create(
-                        $resource, $data, $expireSec, $short
+        if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['verification'])) {
+            // call token service
+            if ($result['token']) {
+                $hlpExfeAuth->keyUpdate($result['token'], $data, $expireSec); // update && extension
+                $actResult = true;
+            } else {
+                // make new token
+                $actResult = $result['token'] = $hlpExfeAuth->create(
+                    $resource, $data, $expireSec, $short
 
-                    );
+                );
+            }
+            // return
+            if ($actResult) {
+                return $result;
+            }
+        } else if (in_array($identity->provider, $hlpIdentity->modIdentity->providers['authenticate'])) {
+            $hlpOAuth = $this->getHelperByName('OAuth');
+            $workflow['user_id'] = $user_id;
+            if ($device && $device_callback) {
+                if (!isset($workflow['callback'])) {
+                    $workflow['callback'] = [];
                 }
-                // return
-                if ($actResult) {
-                    return $result;
-                }
-                break;
-            case 'twitter':
-            case 'facebook':
-            case 'dropbox':
-            case 'flickr':
-            case 'instagram':
-                $hlpOAuth = $this->getHelperByName('OAuth');
-                $workflow['user_id'] = $user_id;
-                if ($device && $device_callback) {
-                    if (!isset($workflow['callback'])) {
-                        $workflow['callback'] = [];
+                $workflow['callback']['oauth_device']          = $device;
+                $workflow['callback']['oauth_device_callback'] = $device_callback;
+            }
+            switch ($action) {
+                case 'SET_PASSWORD':
+                    // update database
+                    if ($result['token']) {
+                        $hlpExfeAuth->keyUpdate($result['token'], $data, $expireSec); // update && extension
+                        $actResult = true;
+                    } else {
+                        $actResult = $result['token'] = $hlpExfeAuth->create( // make new token
+                            $resource, $data, $expireSec
+                        );
                     }
-                    $workflow['callback']['oauth_device']          = $device;
-                    $workflow['callback']['oauth_device_callback'] = $device_callback;
-                }
-                switch ($action) {
-                    case 'SET_PASSWORD':
-                        // update database
-                        if ($result['token']) {
-                            $hlpExfeAuth->keyUpdate($result['token'], $data, $expireSec); // update && extension
-                            $actResult = true;
-                        } else {
-                            $actResult = $result['token'] = $hlpExfeAuth->create( // make new token
-                                $resource, $data, $expireSec
-                            );
-                        }
-                        if ($actResult) {
-                            $workflow['verification_token'] = $result['token'];
-                        }
-                }
-                if ($args) {
-                    if (!isset($workflow['callback'])) {
-                        $workflow['callback'] = [];
+                    if ($actResult) {
+                        $workflow['verification_token'] = $result['token'];
                     }
-                    $workflow['callback']['args'] = $args;
+            }
+            if ($args) {
+                if (!isset($workflow['callback'])) {
+                    $workflow['callback'] = [];
                 }
-                switch ($identity->provider) {
-                    case 'twitter':
-                        $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
-                        break;
-                    case 'facebook':
-                        $urlOauth = $hlpOAuth->facebookRedirect($workflow);
-                        break;
-                    case 'dropbox':
-                        $urlOauth = $hlpOAuth->dropboxRedirect($workflow);
-                        break;
-                    case 'flickr':
-                        $urlOauth = $hlpOAuth->flickrRedirect($workflow);
-                        break;
-                    case 'instagram':
-                        $urlOauth = $hlpOAuth->instagramRedirect($workflow);
-                }
+                $workflow['callback']['args'] = $args;
+            }
+            switch ($identity->provider) {
+                case 'twitter':
+                    $urlOauth = $hlpOAuth->getTwitterRequestToken($workflow);
+                    break;
+                case 'facebook':
+                    $urlOauth = $hlpOAuth->facebookRedirect($workflow);
+                    break;
+                case 'dropbox':
+                    $urlOauth = $hlpOAuth->dropboxRedirect($workflow);
+                    break;
+                case 'flickr':
+                    $urlOauth = $hlpOAuth->flickrRedirect($workflow);
+                    break;
+                case 'instagram':
+                    $urlOauth = $hlpOAuth->instagramRedirect($workflow);
+                    break;
+                case 'google':
+                    $urlOauth = $hlpOAuth->googleRedirect($workflow);
+            }
 
-                if ($urlOauth) {
-                    $result['url'] = $urlOauth;
-                    return $result;
-                }
-                $hlpOAuth->resetSession();
+            if ($urlOauth) {
+                $result['url'] = $urlOauth;
+                return $result;
+            }
+            $hlpOAuth->resetSession();
         }
         // return
         return null;
@@ -706,7 +690,7 @@ class UserModels extends DataModel {
                                 'user_name'   => $siResult['name'],
                                 'identity_id' => $curToken['data']['identity_id'],
                                 'token'       => $siResult['token'],
-                                'token_type'  => $curToken['data']['action'],
+                                'token_type'  => @$curToken['raw_action'] === 'VERIFY_SET_PASSWORD' ? 'VERIFY' : $curToken['data']['action'],
                                 'action'      => 'INPUT_NEW_PASSWORD',
                             ];
                         }
@@ -922,46 +906,6 @@ class UserModels extends DataModel {
         return $update_sql
              ? $this->query("UPDATE `users` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$user_id}")
              : true;
-    }
-
-
-    public function buildIdentitiesIndexes($user_id) {
-        mb_internal_encoding('UTF-8');
-        if (!$user_id) {
-            return false;
-        }
-        $identities = $this->getAll(
-            "SELECT * FROM `user_relations` WHERE `userid` = {$user_id}"
-        );
-        $redis = new Redis();
-        $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        foreach($identities as $identity) {
-            $identity_array = explode(' ', mb_strtolower(str_replace('|', ' ', trim(
-                "{$identity['name']} " . (
-                    $identity['external_username'] ?: $identity['external_identity']
-                )
-            ))));
-            if ($identity_array) {
-                foreach($identity_array as $iaI) {
-                    $identity_part = '';
-                    for ($i = 0; $i < mb_strlen($iaI); $i++) {
-                        $redis->zAdd(
-                            "u:{$user_id}", 0,
-                            $identity_part .= mb_substr($iaI, $i, 1)
-                        );
-                    }
-                    $redis->zAdd(
-                        "u:{$user_id}", 0,
-                        "{$identity_part}|" . (
-                            (int) $identity['r_identityid']
-                          ? "rid:{$identity['r_identityid']}"
-                          :  "id:{$identity['id']}"
-                        ) . '*'
-                    );
-                }
-            }
-        }
-        return true;
     }
 
 

@@ -154,7 +154,7 @@ class IdentitiesActions extends ActionController {
         $count = $redis->zCard("u:{$user_id}");
         if (!$count) {
             $user = $modUser->getUserById($user_id);
-            $modUser->buildIdentitiesIndexes($user_id);
+            $modRelation->buildIdentitiesIndexes($user_id);
         }
         // get identities from redis
         $arrResult = array();

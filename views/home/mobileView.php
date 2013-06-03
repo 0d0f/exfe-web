@@ -1,6 +1,16 @@
 <?php include "share/header_mobile.php" ?>
+  <style>
+    .hide { display: none; }
+  </style>
 </head>
 <body>
+  <!-- iframe {{{ -->
+  <div id="mframe" style="text-align: center;">
+    <h5>Loading...</h5>
+    <iframe id="xframe" frameborder="0" src="" style="display:none"></iframe>
+  </div>
+  <!-- /iframe }}} -->
+
   <!-- Container {{{-->
   <div class="container" id="app-container">
     <div role="main" id="app-main">
@@ -15,17 +25,18 @@
       <div id="app-body" class="page-body"></div>
       <div id="app-footer" class="page-footer hide">
         <div class="actions">
-          <div class="action subscribe hide">Subscribe to updates and engage in:
+          <div class="action subscribe hide">
+            <div class="subscribe-title">Subscribe to updates and engage in:</div>
             <div class="subscribe-frame">
               <input type="text" class="email" id="email" placeholder="Enter your email">
               <button class="btn_mail">OK</button>
             </div>
           </div>
           <div class="action error-info hide"></div>
-          <div class="action get-button hide">
-            <button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button>
+          <div class="action get-button">
+            <!--button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button-->
+            <button>Open <span class="exfe">EXFE</span> app</button>
           </div>
-          <div class="action redirecting hide">Redirecting to EXFE app in <span class="sec">0</span>s.</div>
           <div class="action web-version hide"><span class="underline">Proceed</span> with desktop web version.</div>
         </div>
       </div>
@@ -60,7 +71,6 @@
 
   <script id="cross-tmpl" type="text/x-handlebars-template">
   <div class="page cross-page hide" id="app-cross">
-    <div class="cross redirecting">Redirecting to <span class="exfe_blue3">EXFE</span> app in <span class="sec">0</span>s.</div>
     <div class="content">
       <div class="title_area" style="background: url(/static/img/xbg/{{background}}) no-repeat 50% 50%;">
         <div class="title_wrap_a">
@@ -101,7 +111,9 @@
               {{#if identity.isphone}}
               <td class="rsvp accepted" width="98">I'm in</td>
               <td class="rsvp unavailable" width="98">Unavailable</td>
+              {{#if change_name}}
               <td class="rsvp changename" width="98">Change my display name</td>
+              {{/if}}
               {{else}}
               <td class="rsvp accepted">I'm in</td>
               <td class="rsvp unavailable">Unavailable</td>
@@ -146,24 +158,6 @@
         </div>
       </div>
     </div>
-    <!--footer>
-      <div class="footer-wrap">
-        <div class="footer_frame">
-          <div class="actions" id="cross_actions">
-            <div class="subscribe">Subscribe to updates and engage in:
-              <div class="subscribe-frame">
-                <input type="text" class="email" id="email" placeholder="Enter your email">
-                <button class="btn_mail">OK</button>
-              </div>
-            </div>
-            <div class="get-button">
-              <button class="btn_w">Get <span class="exfe">EXFE</span> app <span class="free">free</span></button>
-            </div>
-            <div class="web-version"><span class="underline">Proceed</span> with desktop web version.</div>
-          </div>
-        </div>
-      </div>
-    </footer-->
   </div>
   </script>
 
@@ -177,7 +171,6 @@
       </div>
       <div class="done-info">
         <span class="status">Verification succeeded.</span>
-        <span class="redirecting hide">Redirecting to app in <span class="sec">0</span>s.</span>
       </div>
     </div>
   </div>
@@ -203,7 +196,6 @@
       <div class="error-info hide" style="margin-top: 10px"></div>
       <div class="done-info hide">
         <span class="status">Password set successfully.</span>
-        <span class="redirecting">Redirecting to app in <span class="sec">0</span>s.</span>
       </div>
     </div>
   </div>

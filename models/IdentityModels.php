@@ -4,6 +4,11 @@ class IdentityModels extends DataModel {
 
     private $salt = '_4f9g18t9VEdi2if';
 
+    public $providers = [
+        'authenticate' => ['twitter', 'facebook', 'flickr', 'dropbox', 'instagram', 'google'],
+        'verification' => ['phone', 'email'],
+    ];
+
 
     protected function packageIdentity($rawIdentity, $user_id = null) {
         $hlpUser = $this->getHelperByName('user');
@@ -304,6 +309,7 @@ class IdentityModels extends DataModel {
             case 'dropbox':
             case 'flickr':
             case 'instagram':
+            case 'google':
                 if (!$external_id && !$external_username) {
                     if ($user_id && $status === 2 && $withVerifyInfo) {
                         $identity = new stdClass;
@@ -371,6 +377,7 @@ class IdentityModels extends DataModel {
                 case 'dropbox':
                 case 'flickr':
                 case 'instagram':
+                case 'google':
                     // @todo by @leaskh
                     break;
                 default:
@@ -472,31 +479,56 @@ class IdentityModels extends DataModel {
                 return false;
         }
         $hlpQueue = $this->getHelperByName('Queue');
-        return $hlpQueue->fireBus(
-            [new Recipient(
-                $identity->id,
-                $identity->connected_user_id,
-                $identity->name,
-                $identity->auth_data ?: '',
-                '',
-                "$token",
-                '',
-                $identity->provider,
-                $identity->external_id,
-                $identity->external_username
-            )],
-            '-', 'POST', EXFE_AUTH_SERVER . "/v3/notifier/user/{$strSrv}",
-            'once', time(), $data
-        );
+        $auData = $identity->auth_data ?: '';
+        $token  = "$token";
+        $megKey = '-';
+        $method = 'POST';
+        $url    = EXFE_AUTH_SERVER . "/v3/notifier/user/{$strSrv}";
+        $type   = 'once';
+        $time   = time();
+        switch ($identity->provider) {
+            case 'email':
+                $hlpQueue->fireBus([new Recipient(
+                    $identity->id,
+                    $identity->connected_user_id,
+                    $identity->name,
+                    $auData, '', $token, '', 'imessage',
+                    $identity->external_id,
+                    $identity->external_username
+                )], $megKey, $method, $url, $type, $time, $data);
+                break;
+            case 'phone':
+                $identity->provider = 'imessage|phone';
+        }
+        return $hlpQueue->fireBus([new Recipient(
+            $identity->id,
+            $identity->connected_user_id,
+            $identity->name,
+            $auData, '', $token, '',
+            $identity->provider,
+            $identity->external_id,
+            $identity->external_username
+        )], $megKey, $method, $url, $type, $time, $data);
     }
 
 
     public function getOAuthTokenById($identity_id) {
         $dbResult = $this->getRow(
-            "SELECT `oauth_token` FROM `identities` WHERE `id` = $identity_id"
+            "SELECT `oauth_token`, `provider`
+             FROM   `identities`
+             WHERE  `id` = $identity_id"
         );
-        return $dbResult && $dbResult['oauth_token']
-             ? json_decode($dbResult['oauth_token'], true) : null;
+        $result = $dbResult && $dbResult['oauth_token']
+                ? json_decode($dbResult['oauth_token'], true) : null;
+        if ($result && $dbResult['provider'] === 'google') {
+            $hlpOauth = $this->getHelperByName('OAuth');
+            $newToken = $hlpOauth->refreshGoogleToken($dbResult['oauth_token'], true);
+            if ($newToken) {
+                $this->updateOAuthTokenById($identity_id, $newToken);
+                $result = $newToken;
+            }
+        }
+        return $result;
     }
 
 

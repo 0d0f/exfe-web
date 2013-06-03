@@ -1,11 +1,16 @@
 <?php
 
-require_once dirname(dirname(__FILE__)) . '/lib/OAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/TwitterOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/facebook.php';
-require_once dirname(dirname(__FILE__)) . '/lib/Instagram.php';
-require_once dirname(dirname(__FILE__)) . '/lib/tmhOAuth.php';
-require_once dirname(dirname(__FILE__)) . '/lib/FoursquareAPI.class.php';
+$libPath = dirname(dirname(__FILE__)) . '/lib/';
+
+require_once "{$libPath}OAuth.php";
+require_once "{$libPath}TwitterOAuth.php";
+require_once "{$libPath}facebook.php";
+require_once "{$libPath}Instagram.php";
+require_once "{$libPath}tmhOAuth.php";
+require_once "{$libPath}FoursquareAPI.class.php";
+require_once "{$libPath}google_api_client/Google_Client.php";
+require_once "{$libPath}google_api_client/contrib/Google_Oauth2Service.php";
+require_once "{$libPath}google_api_client/contrib/Google_PlusService.php";
 
 
 class OAuthModels extends DataModel {
@@ -665,6 +670,103 @@ class OAuthModels extends DataModel {
     // }
 
 
+    // google {
+
+    public function getGoogleClient() {
+        $client = new Google_Client();
+        $client->setApplicationName(GOOGLE_APP_NAME);
+        $client->setClientId(GOOGLE_CLIENT_ID);
+        $client->setClientSecret(GOOGLE_CLIENT_SECRET);
+        $client->setRedirectUri(GOOGLE_REDIRECT_URIS);
+        $client->setScopes([
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/plus.login',
+            'https://www.googleapis.com/auth/userinfo.profile',
+        ]);
+        return $client;
+    }
+
+
+    public function googleRedirect($workflow) {
+        $client = $this->getGoogleClient();
+        $plus = new Google_PlusService($client);
+        $authUrl = $client->createAuthUrl();
+        if ($authUrl) {
+            $this->setSession('google', '', '', $workflow);
+            return $authUrl;
+        }
+        return false;
+    }
+
+
+    public function getGoogleTokenFrom($client) {
+        $token = $client->getAccessToken();
+        $token = @json_decode($token, true);
+        if ($token) {
+            $token['oauth_expires'] = $token['created'] + $token['expires_in'];
+            return $token;
+        }
+        return null;
+    }
+
+
+    public function getGoogleOAuthToken() {
+        $client = $this->getGoogleClient();
+        $client->authenticate();
+        return $this->getGoogleTokenFrom($client);
+    }
+
+
+    public function refreshGoogleToken($token, $changedOnly = false) {
+        if ($token) {
+            if (($token['oauth_expires'] - GOOGLE_TOKEN_LIFE) <= time()) {
+                $client = $this->getGoogleClient();
+                $client->setAccessType('offline');
+                $client->setAccessToken(json_encode($token));
+                $client->refreshToken($token['refresh_token']);
+                $token = $this->getGoogleTokenFrom($client);
+            } else if ($changedOnly) {
+                return null;
+            }
+            return $token;
+        }
+        return null;
+    }
+
+
+    public function getGoogleProfile($token) {
+        $client = $this->getGoogleClient();
+        $token  = $this->refreshGoogleToken($token);
+        if ($token) {
+            $client->setAccessToken(json_encode($token));
+            $plus   = new Google_PlusService($client);
+            $oauth2 = new Google_Oauth2Service($client);
+            $plusProfile   = $plus->people->get('me');
+            $googleProfile = $oauth2->userinfo_v2_me->get();
+            if ($plusProfile && $googleProfile) {
+                $plusProfile['image'] = preg_replace(
+                    '/^([^?]*)\?(.*)$/', '$1', $plusProfile['image']['url']
+                );
+                return [
+                    'identity'    => new Identity(
+                        0,
+                        $plusProfile['displayName'],
+                        $plusProfile['name']['givenName'],
+                        $plusProfile['aboutMe'] ?: $plusProfile['tagline'],
+                        'google',
+                        0,
+                        $plusProfile['id'],
+                        $googleProfile['email'],
+                        $plusProfile['image']
+                    ),
+                    'oauth_token' => $token,
+                ];
+            }
+        }
+        return null;
+    }
+
+
     public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
         // get models
         $hlpUser     = $this->getHelperByName('User');
@@ -738,6 +840,9 @@ class OAuthModels extends DataModel {
                 $oAuthToken = [
                     'oauth_token'        => $rawOAuthToken['oauth_token'],
                 ];
+                break;
+            case 'google':
+                $oAuthToken = $rawOAuthToken;
         }
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);
         // 使用该身份登录

@@ -93,6 +93,7 @@ class UsersActions extends ActionController {
             case 'flickr':
             case 'dropbox':
             case 'instagram':
+            case 'google':
                 $external_username = '';
                 break;
             default:
@@ -365,20 +366,12 @@ class UsersActions extends ActionController {
         $identity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
         // 身份不存在，提示注册
         if (!$identity) {
-            switch ($provider) {
-                case 'email':
-                case 'phone':
-                    apiResponse(['registration_flag' => 'SIGN_UP']);
-                    break;
-                case 'twitter':
-                case 'facebook':
-                case 'flickr':
-                case 'dropbox':
-                case 'instagram':
-                    apiResponse(['registration_flag' => 'AUTHENTICATE']);
-                    break;
-                default:
-                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            if (in_array($provider, $modIdentity->providers['verification'])) {
+                apiResponse(['registration_flag' => 'SIGN_UP']);
+            } else if (in_array($provider, $modIdentity->providers['authenticate'])) {
+                apiResponse(['registration_flag' => 'AUTHENTICATE']);
+            } else {
+                apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
             }
         }
         // get registration flag
@@ -435,7 +428,7 @@ class UsersActions extends ActionController {
                 case 'VERIFY':
                     $viResult = $modUser->verifyIdentity(
                         $identity,
-                        $raw_flag['reason'] === 'NO_PASSWORD' ? 'SET_PASSWORD' : 'VERIFY',
+                        $raw_flag['reason'] === 'NO_PASSWORD' ? 'VERIFY_SET_PASSWORD' : 'VERIFY',
                         $user_id, $args
                     );
                     if ($viResult) {
@@ -695,14 +688,14 @@ class UsersActions extends ActionController {
         $modIdentity   = $this->getModelByName('identity');
         // collecting post data
         if (!($external_username = $_POST['external_username'])) {
-            apiError(403, 'no_external_username', 'external_username must be provided');
+            apiError(400, 'no_external_username', 'external_username must be provided');
         }
         if (!($provider = $_POST['provider'])) {
-            apiError(403, 'no_provider', 'provider must be provided');
+            apiError(400, 'no_provider', 'provider must be provided');
         }
         // @todo: 需要根据 $provider 检查 $external_username 有效性
         if (strlen($password = $_POST['password']) === 0) {
-            apiError(403, 'no_password', 'password must be provided');
+            apiError(400, 'no_password', 'password must be provided');
         }
         // adding new identity
         if (($name = formatName($_POST['name'])) !== ''
@@ -712,7 +705,7 @@ class UsersActions extends ActionController {
             }
             if (!($user_id = $modUser->addUser($password, $name))
              || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
-                apiError(403, 'failed', 'failed while signing up new user');
+                apiError(500, 'failed', 'failed while signing up new user');
             }
         }
         // raw signin
@@ -727,20 +720,12 @@ class UsersActions extends ActionController {
             $raw_flag = $modUser->getRegistrationFlag($identity);
             $flag     = @$raw_flag['flag'];
         } else {
-            switch ($provider) {
-                case 'email':
-                case 'phone':
-                    $flag = 'SIGN_UP';
-                    break;
-                case 'twitter':
-                case 'facebook':
-                case 'flickr':
-                case 'dropbox':
-                case 'instagram':
-                    $flag = 'AUTHENTICATE';
-                    break;
-                default:
-                    apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
+            if (in_array($provider, $modIdentity->providers['verification'])) {
+                $flag = 'SIGN_UP';
+            } else if (in_array($provider, $modIdentity->providers['authenticate'])) {
+                $flag = 'AUTHENTICATE';
+            } else {
+                apiError(400, 'unsupported_provider', 'We are not supporting this kind of provider currently.');
             }
         }
         apiError(403, 'failed', ['registration_flag' => $flag]);

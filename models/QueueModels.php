@@ -248,6 +248,9 @@ class QueueModels extends DataModel {
                      || (isset($userPerProvider['phone'][$cuI])  && isset($userPerProvider['email'][$cuI])
                       && $gotInvitation[$userPerProvider['email'][$cuI]]->rsvp_status === 'NOTIFICATION')) {
                         $digest[] = $gotInvitation[$userPerProvider['email'][$cuI]];
+                        $imsgInv  = deepClone($gotInvitation[$userPerProvider['email'][$cuI]]);
+                        $imsgInv->identity->provider = 'imessage';
+                        $digest[] = $imsgInv;
                         unset($gotInvitation[$userPerProvider['email'][$cuI]]);
                     }
                     break;
@@ -263,10 +266,12 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
+                        case 'google':
                         case 'facebook':
                             $head10[]  = $item;
                             break;
                         case 'phone':
+                            $item->identity->provider = 'imessage|phone';
                         case 'twitter':
                         case 'iOS':
                         case 'Android':
@@ -278,10 +283,11 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
-                            $imsgInv = deepClone($item);
-                            $imsgInv->identity->provider = 'phone';
-                            $instant[] = $imsgInv;
+                        case 'google':
                         case 'phone':
+                            $imsgInv = deepClone($item);
+                            $imsgInv->identity->provider = 'imessage';
+                            $instant[] = $imsgInv;
                         case 'twitter':
                         case 'facebook':
                         case 'iOS':
@@ -294,15 +300,16 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
-                            $imsgInv = deepClone($item);
-                            $imsgInv->identity->provider = 'phone';
-                            $remind[] = $imsgInv;
+                        case 'google':
                         case 'phone':
+                            $imsgInv = deepClone($item);
+                            $imsgInv->identity->provider = 'imessage';
+                            $remind[]  = $imsgInv;
                         case 'twitter':
                         case 'facebook':
                         case 'iOS':
                         case 'Android':
-                            $remind[] = $item;
+                            $remind[]  = $item;
                     }
                 }
                 break;
@@ -310,11 +317,13 @@ class QueueModels extends DataModel {
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
+                        case 'google':
                         case 'twitter':
                         case 'facebook':
                             $tail10[]  = $item;
                             break;
                         case 'phone':
+                            $item->identity->provider = 'imessage';
                         case 'iOS':
                         case 'Android':
                             $head2[]   = $item;
