@@ -406,8 +406,8 @@ class QueueModels extends DataModel {
 
 
     public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id, $host_only = false) {
-        $service     = $host_only ? 'draft' : 'cross';
-        $method      = 'invitation';
+        $service     = 'cross';
+        $method      = $host_only ? 'draft' : 'invitation';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $dpCross     = new stdClass;
