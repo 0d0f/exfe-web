@@ -79,6 +79,7 @@ class QueueModels extends DataModel {
         }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
+            case 'cross/draft':
             case 'cross/invitation':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
@@ -280,6 +281,7 @@ class QueueModels extends DataModel {
                     }
                 }
                 break;
+            case 'cross/draft':
             case 'cross/invitation':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
