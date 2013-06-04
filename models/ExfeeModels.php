@@ -415,13 +415,11 @@ class ExfeeModels extends DataModel {
         }
         $this->updateExfeeTime($exfee_id);
         // call Gobus {
-        if (!$draft) {
-            $hlpCross = $this->getHelperByName('cross');
-            $hlpQueue = $this->getHelperByName('Queue');
-            $cross_id = $this->getCrossIdByExfeeId($exfee_id);
-            $cross    = $hlpCross->getCross($cross_id, true, true);
-            $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id, $by_identity_id);
-        }
+        $hlpCross = $this->getHelperByName('cross');
+        $hlpQueue = $this->getHelperByName('Queue');
+        $cross_id = $this->getCrossIdByExfeeId($exfee_id);
+        $cross    = $hlpCross->getCross($cross_id, true, true);
+        $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id, $by_identity_id, $draft);
         // }
         // return
         return [
