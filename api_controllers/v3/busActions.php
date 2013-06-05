@@ -808,13 +808,27 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
-        $params = $this->params;
-        $stepId = @ (int) $params['id'];
+        $params     = $this->params;
+        $stepId     = @ (int) $params['id'];
+        $identityId = @ (int) $params['identity_id'];
         if (!$stepId) {
             $this->jsonError(500, 'no_step_id');
             return;
         }
-
+        if (!$identityId) {
+            $this->jsonError(500, 'no_identity_id');
+            return;
+        }
+        switch ($stepId) {
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                $this->jsonError(500, 'unknow_step_id');
+        }
     }
 
 }
