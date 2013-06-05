@@ -5,8 +5,7 @@
 </head>
 <body>
   <!-- iframe {{{ -->
-  <div id="mframe" style="text-align: center;" class="hide">
-    <h5>Loading...</h5>
+  <div id="mframe" class="hide">
     <iframe id="xframe" frameborder="0" src="" style="display:none"></iframe>
   </div>
   <!-- /iframe }}} -->
