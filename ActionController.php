@@ -120,7 +120,7 @@ abstract class ActionController {
             return;
         }
         if ($code === 500) {
-            $type = 'server_error';
+            $type = $type ?: 'server_error';
         }
         if (!$code || !$type) {
             return;
