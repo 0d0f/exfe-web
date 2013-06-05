@@ -115,7 +115,7 @@ class BusActions extends ActionController {
         // publish on time {
         httpKit::request(
             EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-          . base64_url_encode(SITE_URL . '/v2/gobus/publishx'),
+          . base64_url_encode(SITE_URL . '/v3/bus/publishx'),
             ['update' => 'once', 'ontime' => time() + 60 * 10],
             [
                 'cross_id'    => $cross_id,
