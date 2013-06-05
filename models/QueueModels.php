@@ -79,7 +79,7 @@ class QueueModels extends DataModel {
         }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
-            case 'cross/draft':
+            case 'cross/preview':
             case 'cross/invitation':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
@@ -281,7 +281,7 @@ class QueueModels extends DataModel {
                     }
                 }
                 break;
-            case 'cross/draft':
+            case 'cross/preview':
             case 'cross/invitation':
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
@@ -407,7 +407,7 @@ class QueueModels extends DataModel {
 
     public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id, $host_only = false) {
         $service     = 'cross';
-        $method      = $host_only ? 'draft' : 'invitation';
+        $method      = $host_only ? 'preview' : 'invitation';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $dpCross     = new stdClass;
