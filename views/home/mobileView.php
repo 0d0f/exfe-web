@@ -1,13 +1,9 @@
 <?php include "share/header_mobile.php" ?>
-  <style>
-    .hide { display: none; }
-  </style>
+  <style>.hide { display: none; }</style>
 </head>
 <body>
   <!-- iframe {{{ -->
-  <div id="mframe" class="hide">
-    <iframe id="xframe" frameborder="0" src="" style="display:none"></iframe>
-  </div>
+  <iframe id="xframe" frameborder="0" src="" class="hide"></iframe>
   <!-- /iframe }}} -->
 
   <!-- Container {{{-->
@@ -33,7 +29,6 @@
           </div>
           <div class="action error-info hide"></div>
           <div class="action get-button">
-            <!--button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button-->
             <button>Open <span class="exfe">EXFE</span> app</button>
           </div>
           <div class="action web-version hide"><span class="underline">Proceed</span> with desktop web version.</div>
