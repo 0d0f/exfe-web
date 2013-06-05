@@ -806,4 +806,15 @@ class BusActions extends ActionController {
         $this->jsonError(500, 'internal_server_error');
     }
 
+
+    public function doTutorials() {
+        $params = $this->params;
+        $stepId = @ (int) $params['id'];
+        if (!$stepId) {
+            $this->jsonError(500, 'no_step_id');
+            return;
+        }
+
+    }
+
 }
