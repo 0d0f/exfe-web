@@ -56,6 +56,21 @@ class CrossesActions extends ActionController {
     }
 
 
+    public function doCheckInvitationToken() {
+        // load models
+        $modExfee   = $this->getModelByName('exfee');
+        // get inputs
+        $invToken   = trim(@$_POST['invitation_token']);
+        if (!$invToken) {
+            apiError('400', 'no_token');
+        }
+        // get invitation
+        $invitation = $modExfee->getRawInvitationByToken($invToken);
+        //
+        apiResponse(['valid' => $invitation && $invitation['valid']]);
+    }
+
+
     public function doGetCrossByInvitationToken() {
         // load models
         $hlpCheck    = $this->getHelperByName('check');
