@@ -98,11 +98,7 @@
           {{/if}}
         </div>
         {{#unless read_only}}
-        {{#if inviter}}
-        <div class="rsvp_toolbar{{#if identity.is_accepted}} rsvp_toolbar_off{{/if}}">
-        {{else}}
-        <div class="rsvp_toolbar rsvp_toolbar_off">
-        {{/if}}
+        <div class="rsvp_toolbar {{#if hide_rsvp}}rsvp_toolbar_off{{/if}}">
           <div class="tri"></div>
           <table>
             <tr>

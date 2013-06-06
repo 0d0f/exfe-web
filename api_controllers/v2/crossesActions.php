@@ -56,6 +56,21 @@ class CrossesActions extends ActionController {
     }
 
 
+    public function doCheckInvitationToken() {
+        // load models
+        $modExfee   = $this->getModelByName('exfee');
+        // get inputs
+        $invToken   = trim(@$_POST['invitation_token']);
+        if (!$invToken) {
+            apiError('400', 'no_token');
+        }
+        // get invitation
+        $invitation = $modExfee->getRawInvitationByToken($invToken);
+        //
+        apiResponse(['valid' => $invitation && $invitation['valid']]);
+    }
+
+
     public function doGetCrossByInvitationToken() {
         // load models
         $hlpCheck    = $this->getHelperByName('check');
@@ -205,6 +220,7 @@ class CrossesActions extends ActionController {
                     $result['browsing_identity'] = $modIdentity->getIdentityById(
                         $invitation['identity_id']
                     );
+                    $result['action'] = 'singin';
                 }
                 $result['read_only'] = false;
                 touchCross(
@@ -224,8 +240,13 @@ class CrossesActions extends ActionController {
                     $invitation['identity_id']
                 );
                 $result['read_only'] = false;
-                $result['action'] = 'setup';
-
+                if ($usInvToken) {
+                    $result['action'] = 'setup';
+                } else if (isset($invitation['raw_valid'])) {
+                    $result['action'] = $invitation['raw_valid'] ? 'setup' : 'signin';
+                } else {
+                    $result['action'] = 'singin';
+                }
                 // setup user by sms {
                 if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
                     // clear verify token

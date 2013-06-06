@@ -212,6 +212,40 @@ class UsersActions extends ActionController {
                 apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
             }
             $fromUserId = $objBsToken['data']['user_id'];
+        // 通过邀请 token 合并用户
+        } else if (($strInvToken = trim(@$_POST['invitation_token']))) {
+            // check signin
+            $result  = $checkHelper->isAPIAllow('user_edit', @$params['token'], [], true);
+            if (!$result['check']) {
+                apiError(401, 'no_signin', ''); // 需要登录
+            }
+            $user_id = $result['uid'];
+            // init models
+            $modExfee    = $this->getModelByName('Exfee');
+            $modIdentity = $this->getModelByName('Identity');
+            $modUser     = $this->getModelByName('User');
+            // get invitation
+            if (!($objInvitation = $modExfee->getRawInvitationByToken($strInvToken))
+             || !($objInvitation['valid'])
+             || !($objIdentity   = $modIdentity->getIdentityById($objInvitation['identity_id']))) {
+                apiError(400, 'error_invitation_token', '');
+            }
+            // get target user identity status
+            $userIdentityStatus = $modUser->getUserIdentityInfoByIdentityId($objInvitation['identity_id']);
+            if ($userIdentityStatus && isset($userIdentityStatus['REVOKED'])) {
+                $status = 'REVOKED';
+            } else {
+                $status = 'CONNECTED';
+            }
+            if ($modUser->setUserIdentityStatus(
+                $user_id, $objInvitation['identity_id'], array_search(
+                    $status, $modUser->arrUserIdentityStatus
+                )
+            )) {
+                $objIdentity->connected_user_id = $user_id;
+                apiResponse(['status' => [$objInvitation['identity_id'] => $objIdentity]]);
+            }
+            apiError(500, 'server_error');
         // 提交一个 Token 的时候，需要保证该 Token 是新鲜的
         // get verify token
         } else if (($verifyToken = $modExfeAuth->keyGet(@$params['token']))
