@@ -1,14 +1,9 @@
 <?php include "share/header_mobile.php" ?>
-  <style>
-    .hide { display: none; }
-  </style>
+  <style>.hide { display: none; }</style>
 </head>
 <body>
   <!-- iframe {{{ -->
-  <div id="mframe" style="text-align: center;">
-    <h5>Loading...</h5>
-    <iframe id="xframe" frameborder="0" src="" style="display:none"></iframe>
-  </div>
+  <iframe id="xframe" frameborder="0" src="" class="hide"></iframe>
   <!-- /iframe }}} -->
 
   <!-- Container {{{-->
@@ -34,7 +29,6 @@
           </div>
           <div class="action error-info hide"></div>
           <div class="action get-button">
-            <!--button>Get <span class="exfe">EXFE</span> app <span class="free">free</span></button-->
             <button>Open <span class="exfe">EXFE</span> app</button>
           </div>
           <div class="action web-version hide"><span class="underline">Proceed</span> with desktop web version.</div>
@@ -104,7 +98,11 @@
           {{/if}}
         </div>
         {{#unless read_only}}
-        <div class="rsvp_toolbar{{#if identity.is_accepted}}{{#if inviter}} rsvp_toolbar_off{{/if}}{{/if}}">
+        {{#if inviter}}
+        <div class="rsvp_toolbar{{#if identity.is_accepted}} rsvp_toolbar_off{{/if}}">
+        {{else}}
+        <div class="rsvp_toolbar rsvp_toolbar_off">
+        {{/if}}
           <div class="tri"></div>
           <table>
             <tr>
