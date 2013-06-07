@@ -975,6 +975,7 @@ class BusActions extends ActionController {
                         $objPost = new Post(
                             0, $btAIdentity, '喵喵~~', $exfeeId, 'exfee'
                         );
+                        $objPost->by_identity_id = $btAIdentity->id;
                         $pstResult = $modConv->addPost($objPost);
                         if ($pstResult && $pstResult['post']) {
                             // fire step 4 {
@@ -998,8 +999,9 @@ class BusActions extends ActionController {
                         break;
                     case 4: // conversation
                         $objPost = new Post(
-                            0, $btAIdentity, '汪汪~~', $exfeeId, 'exfee'
+                            0, $btBIdentity, '汪汪~~', $exfeeId, 'exfee'
                         );
+                        $objPost->by_identity_id = $btBIdentity->id;
                         $pstResult = $modConv->addPost($objPost);
                         if ($pstResult && $pstResult['post']) {
                             touchCross($cross_id, $btBIdentity->connected_user_id);
