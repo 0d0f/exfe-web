@@ -710,23 +710,34 @@ class UserModels extends DataModel {
         // change password
         if (($curToken = $hlpExfeAuth->keyGet($token))
           && $curToken['data']['token_type'] === 'verification_token') {
-            $resource  = ['token_type'  => $curToken['data']['token_type'],
-                          'action'      => $curToken['data']['action'],
-                          'identity_id' => $curToken['data']['identity_id']];
-            $cpResult  = $this->setUserPassword(
-                $curToken['data']['user_id'], $password, $name
+            $cpResult  = $this->setUserPasswordAndSignin(
+                $curToken['data']['user_id'], $password, $name,
+                $curToken['data']['identity_id'],
+                $curToken['data']['action']
             );
             if ($cpResult) {
-                $hlpExfeAuth->resourceUpdate($resource, 0);
-                $siResult = $this->rawSignin($curToken['data']['user_id']);
-                if ($siResult) {
-                    return [
-                        'user_id'     => $siResult['user_id'],
-                        'token'       => $siResult['token'],
-                        'identity_id' => $curToken['data']['identity_id'],
-                        'action'      => $curToken['data']['action'],
-                    ];
-                }
+                $hlpExfeAuth->resourceUpdate([
+                    'token_type'  => $curToken['data']['token_type'],
+                    'action'      => $curToken['data']['action'],
+                    'identity_id' => $curToken['data']['identity_id'],
+                ], 0);
+                return $cpResult;
+            }
+        }
+        return null;
+    }
+
+
+    public function setUserPasswordAndSignin($user_id, $password, $name, $identity_id = 0, $action = '') {
+        $cpResult  =  $this->setUserPassword($user_id, $password, $name);
+        if ($cpResult) {
+            if (($siResult = $this->rawSignin($user_id))) {
+                return [
+                    'user_id'     => $siResult['user_id'],
+                    'token'       => $siResult['token'],
+                    'identity_id' => $identity_id,
+                    'action'      => $action,
+                ];
             }
         }
         return null;
