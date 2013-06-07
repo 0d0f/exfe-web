@@ -809,13 +809,15 @@ class BusActions extends ActionController {
 
     public function doTutorials() {
         // init models
-        $modIdentity   = $this->getModelByName('Identity');
-        $modTime       = $this->getModelByName('Time');
-        $modBackground = $this->getModelByName('Background');
-        $hlpCross      = $this->getHelperByName('cross');
+        $modIdentity = $this->getModelByName('Identity');
+        $modTime     = $this->getModelByName('Time');
+        $modBkg      = $this->getModelByName('Background');
+        $modConv     = $this->getModelByName('Conversation');
+        $modExfee    = $this->getModelByName('Exfee');
+        $hlpCross    = $this->getHelperByName('cross');
         // get inputs
-        $params        = $this->params;
-        $now           = time();
+        $params      = $this->params;
+        $now         = time();
         if (!($stepId      = @ (int) $params['id'])) {
             $this->jsonError(500, 'no_step_id');
             return;
@@ -838,7 +840,7 @@ class BusActions extends ActionController {
             return;
         }
         switch ($stepId) {
-            case 1:
+            case 1: // gather
                 $objCross = new stdClass;
                 $objCross->title       = 'Watch the Star Trek Movie!';
                 $objCross->description = 'Star Trek Into Darkness';
@@ -853,7 +855,7 @@ class BusActions extends ActionController {
                 $objCross->attribute   = new stdClass;
                 $objCross->attribute->state = 'published';
                 $objBackground         = new stdClass;
-                $allBgs = $modBackground->getAllBackground();
+                $allBgs = $modBkg->getAllBackground();
                 $objCross->widget      = [
                     new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
                 ];
@@ -866,10 +868,9 @@ class BusActions extends ActionController {
                     ),
                     new Invitation(
                         0, $objIdentity, $btAIdentity, $btAIdentity,
-                        'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                        'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
                     ),
                 ];
-                 print_r($objCross);
                 $gtResult = $hlpCross->gatherCross(
                     $objCross, $btAIdentity->id,
                     $btAIdentity->connected_user_id > 0
@@ -877,6 +878,7 @@ class BusActions extends ActionController {
                 );
                 $cross_id = @ (int) $gtResult['cross_id'];
                 if ($cross_id > 0) {
+                    $objCross = $hlpCross->getCross($cross_id);
                     // fire step 2 {
                     httpKit::request(
                         EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
@@ -884,19 +886,128 @@ class BusActions extends ActionController {
                         ['update' => 'once', 'ontime' => time()],
                         [
                             'cross_id'    => $cross_id,
+                            'exfee_id'    => $objCross->exfee->id,
                             'identity_id' => $objIdentity->id,
                         ],
                         false, false, 3, 3, 'form'
                     );
                     // }
-                    $this->jsonResponse($hlpCross->getCross($cross_id));
+                    touchCross($cross_id, $btAIdentity->connected_user_id);
+                    $this->jsonResponse($objCross);
                     return;
                 }
-                $this->jsonError(500, 'gathering_error');
+                $this->jsonError(500, 'internal_server_error');
                 break;
             case 2:
-                break;
             case 3:
+            case 4:
+                // get inputs
+                if (!($cross_id     = @ (int) $_POST['cross_id'])) {
+                    $this->jsonError(500, 'no_cross_id');
+                    return;
+                }
+                if (!($exfeeId      = @ (int) $_POST['exfee_id'])) {
+                    $this->jsonError(500, 'no_exfee_id');
+                    return;
+                }
+                // get cross
+                if (!($cross        = $hlpCross->getCross($cross_id))) {
+                    $this->jsonError(500, 'cross_error');
+                    return;
+                }
+                // get exfee
+                if (!($exfee        = $modExfee->getExfeeById($exfeeId))) {
+                    $this->jsonError(500, 'exfee_error');
+                    return;
+                }
+                $leaved = true;
+                foreach ($exfee->invitations as $invitation) {
+                    if ($invitation->identity->id === $identityId) {
+                        $leaved = false;
+                        break;
+                    }
+                }
+                if ($leaved) {
+                    $this->jsonError(500, 'user_leaved');
+                    return;
+                }
+                switch ($stepId) {
+                    case 2: // invite
+                        $exfee->invitations = [new Invitation(
+                            0, $btBIdentity, $btAIdentity, $btAIdentity,
+                            'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+                        )];
+                        $udeResult = $modExfee->updateExfee(
+                            $exfee, $btAIdentity->id,
+                            $btAIdentity->connected_user_id
+                        );
+                        if ($udeResult) {
+                            $objCross = $hlpCross->getCross($cross_id);
+                            // fire step 3 {
+                            httpKit::request(
+                                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                              . base64_url_encode(SITE_URL . '/v3/bus/tutorials/3'),
+                                ['update' => 'once', 'ontime' => time()],
+                                [
+                                    'cross_id'    => $cross_id,
+                                    'exfee_id'    => $objCross->exfee->id,
+                                    'identity_id' => $objIdentity->id,
+                                ],
+                                false, false, 3, 3, 'form'
+                            );
+                            // }
+                            saveUpdate(
+                                $cross_id,
+                                ['exfee' => [
+                                    'updated_at'  => date('Y-m-d H:i:s', $now),
+                                    'identity_id' => $btAIdentity->id,
+                                ]]
+                            );
+                            touchCross(
+                                $cross_id, $btAIdentity->connected_user_id
+                            );
+                            $this->jsonResponse($objCross);
+                            return;
+                        }
+                        $this->jsonError(500, 'internal_server_error');
+                        break;
+                    case 3: // conversation
+                        $objPost = new Post(
+                            0, $btAIdentity, '喵喵~~', $exfeeId, 'exfee'
+                        );
+                        $pstResult = $modConv->addPost($objPost);
+                        if ($pstResult && $pstResult['post']) {
+                            // fire step 4 {
+                            httpKit::request(
+                                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                              . base64_url_encode(SITE_URL . '/v3/bus/tutorials/4'),
+                                ['update' => 'once', 'ontime' => time()],
+                                [
+                                    'cross_id'    => $cross_id,
+                                    'exfee_id'    => $objCross->exfee->id,
+                                    'identity_id' => $objIdentity->id,
+                                ],
+                                false, false, 3, 3, 'form'
+                            );
+                            // }
+                            touchCross($cross_id, $btAIdentity->connected_user_id);
+                            $this->jsonResponse($pstResult['post']);
+                            return;
+                        }
+                        $this->jsonError(500, 'internal_server_error');
+                        break;
+                    case 4: // conversation
+                        $objPost = new Post(
+                            0, $btAIdentity, '汪汪~~', $exfeeId, 'exfee'
+                        );
+                        $pstResult = $modConv->addPost($objPost);
+                        if ($pstResult && $pstResult['post']) {
+                            touchCross($cross_id, $btBIdentity->connected_user_id);
+                            $this->jsonResponse($pstResult['post']);
+                            return;
+                        }
+                        $this->jsonError(500, 'internal_server_error');
+                }
                 break;
             default:
                 $this->jsonError(500, 'unknow_step_id');
