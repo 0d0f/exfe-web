@@ -157,7 +157,7 @@ class CrossesActions extends ActionController {
                 $result['browsing_identity'] = $modIdentity->getIdentityById(
                     $invitation['identity_id']
                 );
-                $result['action'] = 'singin';
+                $result['action'] = 'SIGNIN';
                 if (isset($result['browsing_identity']->connected_user_id)) {
                     touchCross(
                         $invitation['cross_id'],
@@ -174,7 +174,7 @@ class CrossesActions extends ActionController {
                     $invitation['identity_id']
                 );
                 $result['read_only'] = false;
-                $result['action'] = 'setup';
+                $result['action'] = 'SETUP';
 
                 // setup user by sms {
                 if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
@@ -220,7 +220,7 @@ class CrossesActions extends ActionController {
                     $result['browsing_identity'] = $modIdentity->getIdentityById(
                         $invitation['identity_id']
                     );
-                    $result['action'] = 'singin';
+                    $result['action'] = 'SIGNIN';
                 }
                 $result['read_only'] = false;
                 touchCross(
@@ -241,11 +241,11 @@ class CrossesActions extends ActionController {
                 );
                 $result['read_only'] = false;
                 if ($usInvToken) {
-                    $result['action'] = 'setup';
+                    $result['action'] = 'SETUP';
                 } else if (isset($invitation['raw_valid'])) {
-                    $result['action'] = $invitation['raw_valid'] ? 'setup' : 'signin';
+                    $result['action'] = $invitation['raw_valid'] ? 'SETUP' : 'SIGNIN';
                 } else {
-                    $result['action'] = 'singin';
+                    $result['action'] = 'SIGNIN';
                 }
                 // setup user by sms {
                 if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
@@ -288,7 +288,7 @@ class CrossesActions extends ActionController {
                     $invitation['identity_id']
                 );
                 $result['read_only'] = false;
-                $result['action'] = 'singin';
+                $result['action'] = 'SIGNIN';
                 touchCross($invitation['cross_id'], $user_id);
                 apiResponse($result);
             }
@@ -303,7 +303,7 @@ class CrossesActions extends ActionController {
                     $invitation['identity_id']
                 );
                 $result['read_only'] = false;
-                $result['action'] = 'setup';
+                $result['action'] = 'SETUP';
 
                 // setup user by sms {
                 if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
