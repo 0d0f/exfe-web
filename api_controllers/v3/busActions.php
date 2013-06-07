@@ -877,10 +877,20 @@ class BusActions extends ActionController {
                 );
                 $cross_id = @ (int) $gtResult['cross_id'];
                 if ($cross_id > 0) {
-                    $objCross = $hlpCross->getCross($cross_id);
-
-                    print_r($objCross);
-                    exit();
+                    // fire step 2 {
+                    httpKit::request(
+                        EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                      . base64_url_encode(SITE_URL . '/v3/bus/tutorials/2'),
+                        ['update' => 'once', 'ontime' => time()],
+                        [
+                            'cross_id'    => $cross_id,
+                            'identity_id' => $objIdentity->id,
+                        ],
+                        false, false, 3, 3, 'form'
+                    );
+                    // }
+                    $this->jsonResponse($hlpCross->getCross($cross_id));
+                    return;
                 }
                 $this->jsonError(500, 'gathering_error');
                 break;
