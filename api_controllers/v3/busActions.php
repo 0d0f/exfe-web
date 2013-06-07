@@ -808,6 +808,7 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
+                            error_log(json_encode($_POST));
         // init models
         $modIdentity = $this->getModelByName('Identity');
         $modTime     = $this->getModelByName('Time');
@@ -998,7 +999,6 @@ class BusActions extends ActionController {
                         $this->jsonError(500, 'internal_server_error');
                         break;
                     case 4: // conversation
-                    error_log(json_encode($_POST));
                         $objPost = new Post(
                             0, $btBIdentity, '汪汪~~', $exfeeId, 'exfee'
                         );
