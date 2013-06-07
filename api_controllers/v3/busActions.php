@@ -808,19 +808,78 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
-        $params     = $this->params;
-        $stepId     = @ (int) $params['id'];
-        $identityId = @ (int) $params['identity_id'];
-        if (!$stepId) {
+        // init models
+        $modIdentity   = $this->getModelByName('Identity');
+        $modTime       = $this->getModelByName('Time');
+        $modBackground = $this->getModelByName('Background');
+        $hlpCross      = $this->getHelperByName('cross');
+        // get inputs
+        $params        = $this->params;
+        $now           = time();
+        if (!($stepId      = @ (int) $params['id'])) {
             $this->jsonError(500, 'no_step_id');
             return;
         }
-        if (!$identityId) {
+        if (!($identityId  = @ (int) $_POST['identity_id'])) {
             $this->jsonError(500, 'no_identity_id');
+            return;
+        }
+        if (!($objIdentity = $modIdentity->getIdentityById($identityId))) {
+            $this->jsonError(500, 'identity_error');
+            return;
+        }
+        // check robots
+        if (!($btAIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_A))
+         || !($btBIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_B))
+         || !($btCIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_C))
+         || !($btDIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_D))
+         || !($btEIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_E))) {
+            $this->jsonError(500, 'robot_error');
             return;
         }
         switch ($stepId) {
             case 1:
+                $objCross = new stdClass;
+                $objCross->title       = 'Watch the Star Trek Movie!';
+                $objCross->description = 'Star Trek Into Darkness';
+                $objCross->by_identity = $objIdentity;
+                $objCross->time        = $modTime->parseTimeString('tomorrow', '+00:00');
+                $objCross->place       = new Place(
+                    0, '星美国际影城', '中国上海市浦东新区陆家嘴东路168号',
+                    '121.49984399999994', '31.237148',
+                    'google', '0281fa8a12a90a47c8c8bc697c4f525deaffc526',
+                    time(), time()
+                );
+                $objCross->attribute   = new stdClass;
+                $objCross->attribute->state = 'published';
+                $objBackground         = new stdClass;
+                $allBgs = $modBackground->getAllBackground();
+                $objCross->widget      = [new Background($allBgs[rand(0, sizeof($allBgs))])];
+                $objCross->type        = 'Cross';
+                $objCross->exfee       = new Exfee;
+                $objCross->exfee->invitations = [
+                    new Invitation(
+                        0, $btAIdentity, $btAIdentity, $btAIdentity,
+                        'ACCEPTED', 'EXFE', '', $now, $now, true,  0, []
+                    ),
+                    new Invitation(
+                        0, $objIdentity, $btAIdentity, $btAIdentity,
+                        'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                    ),
+                ];
+                 print_r($objCross);
+                $gtResult = $hlpCross->gatherCross(
+                    $objCross, $btAIdentity->id,
+                    $btAIdentity->connected_user_id > 0
+                  ? $btAIdentity->connected_user_id : 0
+                );
+                $cross_id = @ (int) $gtResult['cross_id'];
+                if ($cross_id > 0) {
+                    $objCross = $hlpCross->getCross($cross_id);
+                    print_r($objCross);
+                    exit();
+                }
+                $this->jsonError(500, 'gathering_error');
                 break;
             case 2:
                 break;
