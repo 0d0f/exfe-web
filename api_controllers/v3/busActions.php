@@ -888,9 +888,8 @@ class BusActions extends ActionController {
                           . "&exfee_id={$objCross->exfee->id}"
                           . "&identity_id={$objIdentity->id}"
                         ),
-                        ['update' => 'once', 'ontime' => $now],
-                        [],
-                        false, false, 3, 3, 'form'
+                        ['update' => 'once', 'ontime' => $now], [],
+                        false, false, 3, 3, 'txt'
                     );
                     // }
                     touchCross($cross_id, $btAIdentity->connected_user_id);
@@ -953,9 +952,8 @@ class BusActions extends ActionController {
                                   . "&exfee_id={$objCross->exfee->id}"
                                   . "&identity_id={$objIdentity->id}"
                                 ),
-                                ['update' => 'once', 'ontime' => $now],
-                                [],
-                                false, false, 3, 3, 'form'
+                                ['update' => 'once', 'ontime' => $now], [],
+                                false, false, 3, 3, 'txt'
                             );
                             // }
                             saveUpdate(
@@ -989,9 +987,8 @@ class BusActions extends ActionController {
                                   . "&exfee_id={$objCross->exfee->id}"
                                   . "&identity_id={$objIdentity->id}"
                                 ),
-                                ['update' => 'once', 'ontime' => $now],
-                                [],
-                                false, false, 3, 3, 'form'
+                                ['update' => 'once', 'ontime' => $now], [],
+                                false, false, 3, 3, 'txt'
                             );
                             // }
                             touchCross($cross_id, $btAIdentity->connected_user_id);
