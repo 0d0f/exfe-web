@@ -911,7 +911,7 @@ class BusActions extends ActionController {
                     return;
                 }
                 // get cross
-                if (!($cross        = $hlpCross->getCross($cross_id))) {
+                if (!($objCross     = $hlpCross->getCross($cross_id))) {
                     $this->jsonError(500, 'cross_error');
                     return;
                 }
