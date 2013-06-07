@@ -883,7 +883,7 @@ class BusActions extends ActionController {
                     httpKit::request(
                         EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
                       . base64_url_encode(SITE_URL . '/v3/bus/tutorials/2'),
-                        ['update' => 'once', 'ontime' => time()],
+                        ['update' => 'once', 'ontime' => $now],
                         [
                             'cross_id'    => $cross_id,
                             'exfee_id'    => $objCross->exfee->id,
@@ -947,7 +947,7 @@ class BusActions extends ActionController {
                             httpKit::request(
                                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
                               . base64_url_encode(SITE_URL . '/v3/bus/tutorials/3'),
-                                ['update' => 'once', 'ontime' => time()],
+                                ['update' => 'once', 'ontime' => $now],
                                 [
                                     'cross_id'    => $cross_id,
                                     'exfee_id'    => $objCross->exfee->id,
@@ -982,7 +982,7 @@ class BusActions extends ActionController {
                             httpKit::request(
                                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
                               . base64_url_encode(SITE_URL . '/v3/bus/tutorials/4'),
-                                ['update' => 'once', 'ontime' => time()],
+                                ['update' => 'once', 'ontime' => $now],
                                 [
                                     'cross_id'    => $cross_id,
                                     'exfee_id'    => $objCross->exfee->id,
