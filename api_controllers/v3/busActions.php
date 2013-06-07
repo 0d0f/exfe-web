@@ -882,13 +882,14 @@ class BusActions extends ActionController {
                     // fire step 2 {
                     httpKit::request(
                         EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-                      . base64_url_encode(SITE_URL . '/v3/bus/tutorials/2'),
+                      . base64_url_encode(
+                            SITE_URL . '/v3/bus/tutorials/2'
+                          . "?cross_id={$cross_id}"
+                          . "&exfee_id={$objCross->exfee->id}"
+                          . "&identity_id={$objIdentity->id}"
+                        ),
                         ['update' => 'once', 'ontime' => $now],
-                        [
-                            'cross_id'    => $cross_id,
-                            'exfee_id'    => $objCross->exfee->id,
-                            'identity_id' => $objIdentity->id,
-                        ],
+                        [],
                         false, false, 3, 3, 'form'
                     );
                     // }
@@ -946,13 +947,14 @@ class BusActions extends ActionController {
                             // fire step 3 {
                             httpKit::request(
                                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-                              . base64_url_encode(SITE_URL . '/v3/bus/tutorials/3'),
+                              . base64_url_encode(
+                                    SITE_URL . '/v3/bus/tutorials/3'
+                                  . "?cross_id={$cross_id}"
+                                  . "&exfee_id={$objCross->exfee->id}"
+                                  . "&identity_id={$objIdentity->id}"
+                                ),
                                 ['update' => 'once', 'ontime' => $now],
-                                [
-                                    'cross_id'    => $cross_id,
-                                    'exfee_id'    => $objCross->exfee->id,
-                                    'identity_id' => $objIdentity->id,
-                                ],
+                                [],
                                 false, false, 3, 3, 'form'
                             );
                             // }
@@ -981,13 +983,14 @@ class BusActions extends ActionController {
                             // fire step 4 {
                             httpKit::request(
                                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-                              . base64_url_encode(SITE_URL . '/v3/bus/tutorials/4'),
+                              . base64_url_encode(
+                                    SITE_URL . '/v3/bus/tutorials/4'
+                                  . "?cross_id={$cross_id}"
+                                  . "&exfee_id={$objCross->exfee->id}"
+                                  . "&identity_id={$objIdentity->id}"
+                                ),
                                 ['update' => 'once', 'ontime' => $now],
-                                [
-                                    'cross_id'    => $cross_id,
-                                    'exfee_id'    => $objCross->exfee->id,
-                                    'identity_id' => $objIdentity->id,
-                                ],
+                                [],
                                 false, false, 3, 3, 'form'
                             );
                             // }
