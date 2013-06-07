@@ -808,7 +808,6 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
-                            error_log(json_encode($_POST));
         // init models
         $modIdentity = $this->getModelByName('Identity');
         $modTime     = $this->getModelByName('Time');
@@ -823,7 +822,7 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'no_step_id');
             return;
         }
-        if (!($identityId  = @ (int) $_POST['identity_id'])) {
+        if (!($identityId  = @ (int) $params['identity_id'])) {
             $this->jsonError(500, 'no_identity_id');
             return;
         }
@@ -903,11 +902,11 @@ class BusActions extends ActionController {
             case 3:
             case 4:
                 // get inputs
-                if (!($cross_id     = @ (int) $_POST['cross_id'])) {
+                if (!($cross_id     = @ (int) $params['cross_id'])) {
                     $this->jsonError(500, 'no_cross_id');
                     return;
                 }
-                if (!($exfeeId      = @ (int) $_POST['exfee_id'])) {
+                if (!($exfeeId      = @ (int) $params['exfee_id'])) {
                     $this->jsonError(500, 'no_exfee_id');
                     return;
                 }
