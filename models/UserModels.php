@@ -864,6 +864,24 @@ class UserModels extends DataModel {
             "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
         );
         delCache("users:{$user_id}");
+        // tutorials {
+        $aftStatus = $this->getAll(
+            "SELECT * FROM `user_identity`
+             WHERE `userid` = {$user_id}
+             AND   `status` = 3"
+        );
+        if ($aftStatus && sizeof($aftStatus) === 1) {
+            require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+            httpKit::request(
+                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+              . base64_url_encode(
+                    SITE_URL . "/v3/bus/tutorials/1?identity_id={$identity_id}"
+                ),
+                ['update' => 'once', 'ontime' => time()], [],
+                false, false, 3, 3, 'txt'
+            );
+        }
+        // }
         return true;
     }
 
