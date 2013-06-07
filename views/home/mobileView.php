@@ -4,7 +4,6 @@
 <body>
   <!-- iframe {{{ -->
   <iframe id="xframe" frameborder="0" src="" class="hide"></iframe>
-  <iframe id="oframe" frameborder="0" src="" class="hide"></iframe>
   <!-- /iframe }}} -->
 
   <!-- Container {{{-->
