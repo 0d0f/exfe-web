@@ -848,13 +848,15 @@ class BusActions extends ActionController {
                     0, '星美国际影城', '中国上海市浦东新区陆家嘴东路168号',
                     '121.49984399999994', '31.237148',
                     'google', '0281fa8a12a90a47c8c8bc697c4f525deaffc526',
-                    time(), time()
+                    $now, $now
                 );
                 $objCross->attribute   = new stdClass;
                 $objCross->attribute->state = 'published';
                 $objBackground         = new stdClass;
                 $allBgs = $modBackground->getAllBackground();
-                $objCross->widget      = [new Background($allBgs[rand(0, sizeof($allBgs))])];
+                $objCross->widget      = [
+                    new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
+                ];
                 $objCross->type        = 'Cross';
                 $objCross->exfee       = new Exfee;
                 $objCross->exfee->invitations = [
@@ -876,6 +878,7 @@ class BusActions extends ActionController {
                 $cross_id = @ (int) $gtResult['cross_id'];
                 if ($cross_id > 0) {
                     $objCross = $hlpCross->getCross($cross_id);
+
                     print_r($objCross);
                     exit();
                 }
