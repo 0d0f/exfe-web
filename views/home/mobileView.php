@@ -4,6 +4,7 @@
 <body>
   <!-- iframe {{{ -->
   <iframe id="xframe" frameborder="0" src="" class="hide"></iframe>
+  <iframe id="oframe" frameborder="0" src="" class="hide"></iframe>
   <!-- /iframe }}} -->
 
   <!-- Container {{{-->
@@ -187,10 +188,8 @@
       <div class="set-button">
         <button class="btn-done">Done</button>
       </div>
-      <div class="error-info hide" style="margin-top: 10px"></div>
-      <div class="done-info hide">
-        <span class="status">Password set successfully.</span>
-      </div>
+      <div class="error-info hide" style="margin-top: 10px;"><span class="t">Token expired.</span> Please request to reset password again.</div>
+      <div class="done-info hide"><span class="status">Password set successfully.</span></div>
     </div>
   </div>
   </script>
