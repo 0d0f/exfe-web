@@ -236,6 +236,7 @@ class BusActions extends ActionController {
             'ACCEPTED', 'INTERESTED', 'NORESPONSE', 'DECLINED', 'NOTIFICATION'
         );
         $by_identity   = null;
+        $isHost        = false;
         foreach ($rsvp_priority as $priority) {
             if ($by_identity) {
                 break;
@@ -245,6 +246,7 @@ class BusActions extends ActionController {
                  && ($invitation->identity->connected_user_id === $user_id
                   || $invitation->identity->id                === $identity_id)) {
                     $by_identity = $invitation->identity;
+                    $isHost = $invitation->host ?: $isHost;
                     break;
                 }
             }
@@ -254,11 +256,22 @@ class BusActions extends ActionController {
             return;
         }
 
+        // get current cross
+        $curCross = $crossHelper->getCross($cross->id);
+        $draft    = isset($curCross->attribute)
+                 && isset($curCross->attribute['state'])
+                 && $curCross->attribute['state'] === 'draft';
+
+        if ($draft && !$isHost) {
+            $this->jsonError(400, 'not_authorized');
+            return;
+        }
+
         // update crosss
         $cross_id = $rawResult = true;
         $cross_id = $crossHelper->editCross($cross, $by_identity->id);
         if (isset($cross->exfee)) {
-            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, false, true);
+            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true);
         }
         if (!$cross_id || !$rawResult) {
             $this->jsonError(500, 'internal_server_error');

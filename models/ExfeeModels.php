@@ -230,7 +230,8 @@ class ExfeeModels extends DataModel {
         return $token && $this->query(
             "UPDATE `invitations`
              SET    `token_used_at` = NOW()
-             WHERE  `token` = '{$token}'"
+             WHERE  `token_used_at` = 0
+             AND    `token`         = '{$token}'"
         );
     }
 
