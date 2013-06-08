@@ -628,6 +628,46 @@ class UsersActions extends ActionController {
     }
 
 
+    public function doSetup() {
+        // get models
+        $modUser     = $this->getModelByName('user');
+        $modIdentity = $this->getModelByName('identity');
+        $checkHelper = $this->getHelperByName('check');
+        // check signin
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check'] && $result['fresh']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'invalid_token', 'Invalid Token'); // token 失效
+        }
+        // get inputs
+        if (!($password = $_POST['password'])) {
+            apiError(400, 'no_password', 'password must be provided');
+        }
+        if (!validatePassword($password)) {
+            apiError(400, 'weak_password', 'password must be longer than four');
+        }
+        // set password
+        $name = mysql_real_escape_string(formatName($_POST['name']));
+        $stResult = $modUser->setUserPasswordAndSignin($user_id, $password, $name);
+        if ($stResult) {
+            // set identity name
+            if (($identity_id = @ (int) $_POST['identity_id']) && $name
+             && ($objIdentity = $modIdentity->getIdentityById($identity_id))
+             && ($objIdentity->connected_user_id === $stResult['user_id'])) {
+                $modIdentity->updateIdentityById($identity_id, ['name' => $name]);
+            }
+            // response
+            apiResponse(['authorization' => [
+                'user_id' => $stResult['user_id'],
+                'token'   => $stResult['token'],
+            ]]);
+        }
+        apiError(401, 'invalid_token', 'Invalid Token');
+    }
+
+
     public function doResetPassword() {
         // get models
         $modUser     = $this->getModelByName('user');
