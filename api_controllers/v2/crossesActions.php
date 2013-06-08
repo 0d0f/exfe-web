@@ -454,21 +454,21 @@ class CrossesActions extends ActionController {
         if(intval($cross_id) > 0) {
             $cross = $crossHelper->getCross($cross_id, true);
             // call Gobus {
-            $draft = isset($cross->attribute)
-                  && isset($cross->attribute['state'])
-                  && $cross->attribute['state'] === 'draft';
+            $oldDraft = isset($old_cross->attribute)
+                     && isset($old_cross->attribute['state'])
+                     && $old_cross->attribute['state'] === 'draft';
+            $draft    = isset($cross->attribute)
+                     && isset($cross->attribute['state'])
+                     && $cross->attribute['state']     === 'draft' ?: $oldDraft;
             if (!$draft) {
                 $modQueue = $this->getModelByName('Queue');
-                $oldDraft = isset($old_cross->attribute)
-                         && isset($old_cross->attribute['state'])
-                         && $old_cross->attribute['state'] === 'draft';
                 if ($oldDraft) {
                     $modQueue->despatchInvitation(
                         $cross, $cross->exfee, (int) $result['uid'] ?: -$by_identity_id, $by_identity_id
                     );
                 } else {
                     $modQueue->despatchUpdate(
-                        $cross, $old_cross, [], [], $result['uid'] ?: -$by_identity_id, $by_identity_id
+                        $cross, $old_cross, [], [],  $result['uid'] ?: -$by_identity_id, $by_identity_id
                     );
                 }
             }
