@@ -247,7 +247,7 @@ class UsersActions extends ActionController {
                 }
             } else {
                 $refere   = @ trim($_POST['refere']) ?: '';
-                $workflow = $refere ? ['callback' => ['url' => $refere]];
+                $workflow = $refere ? ['callback' => ['url' => $refere]] : [];
                 $viResult = $modUser->verifyIdentity($objIdentity, 'VERIFY', $user_id, null, '', '', $workflow);
                 if ($viResult && $viResult['url']) {
                     apiResponse(['action' => 'REDIRECT', 'url' => $viResult['url']]);
