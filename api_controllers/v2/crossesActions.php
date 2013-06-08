@@ -303,7 +303,13 @@ class CrossesActions extends ActionController {
                     $invitation['identity_id']
                 );
                 $result['read_only'] = false;
-                $result['action'] = 'SETUP';
+                if ($usInvToken) {
+                    $result['action'] = 'SETUP';
+                } else if (isset($invitation['raw_valid'])) {
+                    $result['action'] = $invitation['raw_valid'] ? 'SETUP' : 'SIGNIN';
+                } else {
+                    $result['action'] = 'SIGNIN';
+                }
 
                 // setup user by sms {
                 if ($bySmsToken && !isset($user_infos['CONNECTED'])) {
