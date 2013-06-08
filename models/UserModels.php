@@ -528,7 +528,6 @@ class UserModels extends DataModel {
                 // make new token
                 $actResult = $result['token'] = $hlpExfeAuth->create(
                     $resource, $data, $expireSec, $short
-
                 );
             }
             // return
