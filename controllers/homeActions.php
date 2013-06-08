@@ -100,6 +100,8 @@ class HomeActions extends ActionController {
         $modMap        = $this->getModelByName('Map');
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
+        var_dump($oauthIfo);
+        exit();
         $oauthRst      = null;
         if ($oauthIfo) {
             $oauthRst  = ['authorization' => null];
