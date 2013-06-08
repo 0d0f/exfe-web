@@ -220,8 +220,6 @@ class OAuthActions extends ActionController {
         $oauthToken = $modOauth->getFacebookOAuthToken(
             $modOauth->getFacebookOAuthCode()
         );
-        print_r( $oauthToken );
-        exit();
         if ($oauthToken) {
             $rawIdentity = $modOauth->getFacebookProfile($oauthToken['oauth_token']);
             if ($rawIdentity) {
