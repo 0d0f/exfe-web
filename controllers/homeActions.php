@@ -102,8 +102,6 @@ class HomeActions extends ActionController {
         $oauthIfo      = $modOauth->getSession();
         $oauthRst      = null;
         if ($oauthIfo) {
-        var_dump($oauthIfo);
-        exit();
             $oauthRst  = ['authorization' => null];
             if ($oauthIfo['oauth_signin']) {
                 $oauthRst['authorization']   = $oauthIfo['oauth_signin'];
