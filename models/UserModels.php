@@ -880,17 +880,17 @@ class UserModels extends DataModel {
              WHERE `userid` = {$user_id}
              AND   `status` = 3"
         );
-        if ($aftStatus && sizeof($aftStatus) === 1) {
-            require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
-            httpKit::request(
-                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-              . base64_url_encode(
-                    SITE_URL . "/v3/bus/tutorials/1?identity_id={$identity_id}"
-                ),
-                ['update' => 'once', 'ontime' => time()], [],
-                false, false, 3, 3, 'txt'
-            );
-        }
+        // if ($aftStatus && sizeof($aftStatus) === 1) {
+        //     require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+        //     httpKit::request(
+        //         EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+        //       . base64_url_encode(
+        //             SITE_URL . "/v3/bus/tutorials/1?identity_id={$identity_id}"
+        //         ),
+        //         ['update' => 'once', 'ontime' => time()], [],
+        //         false, false, 3, 3, 'txt'
+        //     );
+        // }
         // }
         return true;
     }
