@@ -226,24 +226,39 @@ class UsersActions extends ActionController {
             $modUser     = $this->getModelByName('User');
             // get invitation
             if (!($objInvitation = $modExfee->getRawInvitationByToken($strInvToken))
-             || !($objInvitation['valid'])
              || !($objIdentity   = $modIdentity->getIdentityById($objInvitation['identity_id']))) {
                 apiError(400, 'error_invitation_token', '');
             }
             // get target user identity status
-            $userIdentityStatus = $modUser->getUserIdentityInfoByIdentityId($objInvitation['identity_id']);
-            if ($userIdentityStatus && isset($userIdentityStatus['REVOKED'])) {
-                $status = 'REVOKED';
+            if ($objInvitation['valid']) {
+                $userIdentityStatus = $modUser->getUserIdentityInfoByIdentityId($objInvitation['identity_id']);
+                if ($userIdentityStatus && isset($userIdentityStatus['REVOKED'])) {
+                    $status = 'REVOKED';
+                } else {
+                    $status = 'CONNECTED';
+                }
+                if ($modUser->setUserIdentityStatus(
+                    $user_id, $objInvitation['identity_id'], array_search(
+                        $status, $modUser->arrUserIdentityStatus
+                    )
+                )) {
+                    $objIdentity->connected_user_id = $user_id;
+                    apiResponse(['status' => [$objInvitation['identity_id'] => $objIdentity]]);
+                }
             } else {
-                $status = 'CONNECTED';
-            }
-            if ($modUser->setUserIdentityStatus(
-                $user_id, $objInvitation['identity_id'], array_search(
-                    $status, $modUser->arrUserIdentityStatus
-                )
-            )) {
-                $objIdentity->connected_user_id = $user_id;
-                apiResponse(['status' => [$objInvitation['identity_id'] => $objIdentity]]);
+                $refere   = @ trim($_POST['refere']) ?: '';
+                $workflow = $refere ? ['callback' => ['url' => $refere]] : [];
+                $viResult = $modUser->verifyIdentity($objIdentity, 'VERIFY', $user_id, null, '', '', $workflow);
+                if ($viResult && $viResult['url']) {
+                    apiResponse(['action' => 'REDIRECT', 'url' => $viResult['url']]);
+                } else if ($viResult && $viResult['token']) {
+                    $user = $modUser->getUserById($user_id);
+                    $modIdentity->sendVerification(
+                        'Verify', $objIdentity,
+                        $viResult['token'], false, $user->name ?: ''
+                    );
+                    apiResponse(['action' => 'VERIFYING']);
+                }
             }
             apiError(500, 'server_error');
         // 提交一个 Token 的时候，需要保证该 Token 是新鲜的
