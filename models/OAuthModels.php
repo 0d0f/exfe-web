@@ -2,8 +2,8 @@
 
 $libPath = dirname(dirname(__FILE__)) . '/lib/';
 
-require_once "{$libPath}OAuth.php";
-require_once "{$libPath}TwitterOAuth.php";
+require_once "{$libPath}/twitteroauth/OAuth.php";
+require_once "{$libPath}/twitteroauth/twitteroauth.php";
 require_once "{$libPath}facebook.php";
 require_once "{$libPath}Instagram.php";
 require_once "{$libPath}tmhOAuth.php";
