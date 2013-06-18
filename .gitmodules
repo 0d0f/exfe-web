@@ -1,0 +1,9 @@
+[submodule "instagram-php-oauth"]
+    path = third_party_libraries/instagram-php-oauth
+    url = https://github.com/michaelhelmick/instagram-php-oauth.git
+[submodule "tmhOAuth"]
+    path = third_party_libraries/tmhOAuth
+    url =  https://github.com/themattharris/tmhOAuth.git
+[submodule "twitteroauth"]
+    path = third_party_libraries/twitteroauth
+    url = https://github.com/abraham/twitteroauth.git
