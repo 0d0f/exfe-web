@@ -9,8 +9,7 @@
   <meta name="description" content="EXFE, the group utility for gathering." />
   <meta name="copyright" content="Copyright &copy; 2013 EXFE Inc" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <link rel="shortcut icon" href="/static/img/favicon.png" />
-  <link rel="apple-touch-icon" href="/static/img/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
   <style type="text/css">
     body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td,hr,button,img { margin: 0; padding:0; border: 0; }
     html, body { height: 100%; overflow: hidden; }
