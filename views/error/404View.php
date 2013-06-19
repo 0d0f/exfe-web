@@ -63,7 +63,7 @@
 
   <noscript>EXFE.COM can't load if JavaScript is disabled</noscript>
 
-  <?php include 'google_analytics.php'; ?>
+  <?php include 'share/google_analytics.php'; ?>
   <script type="text/javascript">
     document.title = 'EXFE - 404';
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
