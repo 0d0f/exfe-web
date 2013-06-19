@@ -821,6 +821,13 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
+        /////////////
+        error_log('//////////////////////////////////////////////');
+        error_log($_SERVER['REQUEST_URI']);
+        ////////////
+
+
+
         // init models
         $modIdentity = $this->getModelByName('Identity');
         $modUser     = $this->getModelByName('User');
@@ -1067,9 +1074,6 @@ class BusActions extends ActionController {
                 $this->jsonError(500, 'unknow_step_id');
                 return;
         }
-        /////////////
-        error_log($_SERVER['REQUEST_URI']);
-        ////////////
         if ($result) {
             $this->jsonResponse($result);
             nextStep();
