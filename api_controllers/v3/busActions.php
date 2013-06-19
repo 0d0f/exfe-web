@@ -1050,12 +1050,9 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
             case 17:
-                if (preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)) {
-                    $result = $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
-                } else {
-                    $result = new stdClass;
-                    $step_id--;
-                }
+                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)
+                        ? $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
+                        : new stdClass;
                 break;
             case 18:
                 $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
