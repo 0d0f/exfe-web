@@ -851,7 +851,7 @@ class BusActions extends ActionController {
                 false, false, 3, 3, 'txt'
             );
         };
-        function editExfee($exfee, $cross_id, $invitation, $by_identity) use ($modExfee) {
+        $editExfee = function ($exfee, $cross_id, $invitation, $by_identity) use ($modExfee) {
             $exfee->invitations = [$invitation];
             $udeResult = $modExfee->updateExfee(
                 $exfee, $by_identity->id, $by_identity->connected_user_id
@@ -981,7 +981,7 @@ class BusActions extends ActionController {
         // steps
         switch ($step_id) {
             case 2:
-                $result = editExfee($exfee, $cross_id, new Invitation(
+                $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botFrontier, $botFrontier, $botFrontier,
                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                 ), $botFrontier);
@@ -990,7 +990,7 @@ class BusActions extends ActionController {
                 $result = post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
                 break;
             case 4:
-                $result = editExfee($exfee, $cross_id, new Invitation(
+                $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botCashbox, $botCashbox, $botCashbox,
                     'DECLINED', 'EXFE', '', $now, $now, false, 0, []
                 ), $botCashbox);
@@ -1027,7 +1027,7 @@ class BusActions extends ActionController {
                 break;
             case 13:
                 if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)) {
-                    $result = editExfee($exfee, $cross_id, new Invitation(
+                    $result = $editExfee($exfee, $cross_id, new Invitation(
                         0, $botCashbox, $bot233, $bot233,
                         'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                     ), $botCashbox);
@@ -1041,7 +1041,7 @@ class BusActions extends ActionController {
                 $result = post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
                 break;
             case 15:
-                $result = editExfee($exfee, $cross_id, new Invitation(
+                $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botClarus, $botCashbox, $botCashbox,
                     'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
                 ), $botCashbox);
