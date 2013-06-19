@@ -837,7 +837,7 @@ class BusActions extends ActionController {
         $modExfee    = $this->getModelByName('Exfee');
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
-        $nextStep = function () use ($step_id, $cross_id, $exfee_id, $identity_id, $now, $delay) {
+        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5) {
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(
@@ -846,25 +846,25 @@ class BusActions extends ActionController {
                   . "&exfee_id={$exfee_id}"
                   . "&identity_id={$identity_id}"
                 ),
-                ['update' => 'once', 'ontime' => $now ], [],
+                ['update' => 'once', 'ontime' => time()], [],
              // ['update' => 'once', 'ontime' => $now + $delay], [],
                 false, false, 3, 3, 'txt'
             );
         };
-        $editExfee = function ($invitation, $by_identity) use ($exfee, $cross_id, $now) {
+        function editExfee($exfee, $cross_id, $invitation, $by_identity) {
             $exfee->invitations = [$invitation];
             $udeResult = $modExfee->updateExfee(
                 $exfee, $by_identity->id, $by_identity->connected_user_id
             );
             $objCross = $hlpCross->getCross($cross_id);
             saveUpdate($cross_id, ['exfee' => [
-                'updated_at'  => date('Y-m-d H:i:s', $now),
+                'updated_at'  => date('Y-m-d H:i:s', time()),
                 'identity_id' => $by_identity->id,
             ]]);
             touchCross($cross_id, $by_identity->connected_user_id);
             return $udeResult ? $objCross : null;
         };
-        $post = function ($identity, $content) use ($cross_id, $exfee_id) {
+        function post($cross_id, $exfee_id, $identity, $content) {
             $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
             $objPost->by_identity_id = $identity->id;
             $pstResult = $modConv->addPost($objPost);
@@ -942,8 +942,7 @@ class BusActions extends ActionController {
                 $exfee_id = $objCross->exfee->id;
                 touchCross($cross_id, $bot233->connected_user_id);
                 $this->jsonResponse($objCross);
-                $delay = 60;
-                $nextStep();
+                nextStep($step_id, $cross_id, $exfee_id, $identity_id, 60);
                 return;
             }
             $this->jsonError(500, 'internal_server_error');
@@ -982,53 +981,53 @@ class BusActions extends ActionController {
         // steps
         switch ($step_id) {
             case 2:
-                $result = $editExfee(new Invitation(
+                $result = editExfee($exfee, $cross_id, new Invitation(
                     0, $botFrontier, $botFrontier, $botFrontier,
                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                 ), $botFrontier);
                 break;
             case 3:
-                $result = $post($botFrontier, 'woof woof~');
+                $result = post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
                 break;
             case 4:
-                $result = $editExfee(new Invitation(
+                $result = editExfee($exfee, $cross_id, new Invitation(
                     0, $botCashbox, $botCashbox, $botCashbox,
                     'DECLINED', 'EXFE', '', $now, $now, false, 0, []
                 ), $botCashbox);
                 break;
             case 5:
-                $result = $post($botCashbox, 'Can we do this later?');
+                $result = post($cross_id, $exfee_id, $botCashbox, 'Can we do this later?');
                 break;
             case 6:
-                $result = $post($bot233, "Hey Cashbox be kind, can't you eat later?");
+                $result = post($cross_id, $exfee_id, $bot233, "Hey Cashbox be kind, can't you eat later?");
                 break;
             case 7:
-                $result = $post($bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
+                $result = post($cross_id, $exfee_id, $bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
                 break;
             case 8:
-                $result = $post($bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
+                $result = post($cross_id, $exfee_id, $bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
                 break;
             case 9:
-                $result = $post($botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
+                $result = post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
                 break;
             case 10:
 ////////////// @%Identity% ///////////////
-                $result = $post($bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
+                $result = post($cross_id, $exfee_id, $bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
                 break;
             case 11:
-                $result = $post($botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
+                $result = post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
                 break;
             case 12:
                 $delay  = 60 * 2;
                 $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
                 $needPw = $passwd && !$passwd['encrypted_password'];
                 $result = $needPw
-                        ? $post($botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
+                        ? post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
                         : new stdClass;
                 break;
             case 13:
                 if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)) {
-                    $result = $editExfee(new Invitation(
+                    $result = editExfee($exfee, $cross_id, new Invitation(
                         0, $botCashbox, $bot233, $bot233,
                         'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                     ), $botCashbox);
@@ -1039,33 +1038,33 @@ class BusActions extends ActionController {
                 }
                 break;
             case 14:
-                $result = $post($botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
+                $result = post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
                 break;
             case 15:
-                $result = $editExfee(new Invitation(
+                $result = editExfee($exfee, $cross_id, new Invitation(
                     0, $botClarus, $botCashbox, $botCashbox,
                     'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
                 ), $botCashbox);
                 break;
             case 16:
-                $result = $post($botClarus, 'moof~');
+                $result = post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
             case 17:
                 if (preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)) {
-                    $result = $post($botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
+                    $result = post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
                 } else {
                     $result = new stdClass;
                     $step_id--;
                 }
                 break;
             case 18:
-                $result = $post($bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
+                $result = post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
                 break;
             case 19:
-                $result = $post($botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
+                $result = post($cross_id, $exfee_id, $botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
                 break;
             case 20:
-                $result = $post($botClarus, 'moof!');
+                $result = post($cross_id, $exfee_id, $botClarus, 'moof!');
                 return;
             default:
                 $this->jsonError(500, 'unknow_step_id');
@@ -1073,7 +1072,7 @@ class BusActions extends ActionController {
         }
         if ($result) {
             $this->jsonResponse($result);
-            $nextStep();
+            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay);
             return;
         }
         $this->jsonError(500, 'internal_server_error');
