@@ -1067,6 +1067,9 @@ class BusActions extends ActionController {
                 $this->jsonError(500, 'unknow_step_id');
                 return;
         }
+        /////////////
+        error_log($_SERVER['REQUEST_URI']);
+        ////////////
         if ($result) {
             $this->jsonResponse($result);
             nextStep();
