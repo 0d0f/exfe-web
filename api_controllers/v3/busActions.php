@@ -838,7 +838,6 @@ class BusActions extends ActionController {
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
         function nextStep() {
-            global $step_id, $cross_id, $exfee_id, $identity_id, $now, $delay;
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(
@@ -853,7 +852,6 @@ class BusActions extends ActionController {
             );
         }
         function exfee($invitation, $by_identity) {
-            global $exfee, $cross_id, $now;
             $exfee->invitations = [$invitation];
             $udeResult = $modExfee->updateExfee(
                 $exfee, $by_identity->id, $by_identity->connected_user_id
@@ -867,7 +865,6 @@ class BusActions extends ActionController {
             return $udeResult ? $objCross : null;
         }
         function post($identity, $content) {
-            global $cross_id, $exfee_id;
             $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
             $objPost->by_identity_id = $identity->id;
             $pstResult = $modConv->addPost($objPost);
