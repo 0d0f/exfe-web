@@ -15,5 +15,4 @@
 <?php if (($sms_token = $this->getVar('sms_token'))) { ?>
   <meta name="sms-token" content="<?php echo htmlentities(json_encode($sms_token)); ?>" />
 <?php } ?>
-  <link rel="shortcut icon" href="/static/img/favicon.png" />
-  <link rel="apple-touch-icon" href="/static/img/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
