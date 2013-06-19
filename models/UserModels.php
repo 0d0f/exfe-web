@@ -528,7 +528,6 @@ class UserModels extends DataModel {
                 // make new token
                 $actResult = $result['token'] = $hlpExfeAuth->create(
                     $resource, $data, $expireSec, $short
-
                 );
             }
             // return
@@ -710,23 +709,34 @@ class UserModels extends DataModel {
         // change password
         if (($curToken = $hlpExfeAuth->keyGet($token))
           && $curToken['data']['token_type'] === 'verification_token') {
-            $resource  = ['token_type'  => $curToken['data']['token_type'],
-                          'action'      => $curToken['data']['action'],
-                          'identity_id' => $curToken['data']['identity_id']];
-            $cpResult  = $this->setUserPassword(
-                $curToken['data']['user_id'], $password, $name
+            $cpResult  = $this->setUserPasswordAndSignin(
+                $curToken['data']['user_id'], $password, $name,
+                $curToken['data']['identity_id'],
+                $curToken['data']['action']
             );
             if ($cpResult) {
-                $hlpExfeAuth->resourceUpdate($resource, 0);
-                $siResult = $this->rawSignin($curToken['data']['user_id']);
-                if ($siResult) {
-                    return [
-                        'user_id'     => $siResult['user_id'],
-                        'token'       => $siResult['token'],
-                        'identity_id' => $curToken['data']['identity_id'],
-                        'action'      => $curToken['data']['action'],
-                    ];
-                }
+                $hlpExfeAuth->resourceUpdate([
+                    'token_type'  => $curToken['data']['token_type'],
+                    'action'      => $curToken['data']['action'],
+                    'identity_id' => $curToken['data']['identity_id'],
+                ], 0);
+                return $cpResult;
+            }
+        }
+        return null;
+    }
+
+
+    public function setUserPasswordAndSignin($user_id, $password, $name, $identity_id = 0, $action = '') {
+        $cpResult  =  $this->setUserPassword($user_id, $password, $name);
+        if ($cpResult) {
+            if (($siResult = $this->rawSignin($user_id))) {
+                return [
+                    'user_id'     => $siResult['user_id'],
+                    'token'       => $siResult['token'],
+                    'identity_id' => $identity_id,
+                    'action'      => $action,
+                ];
             }
         }
         return null;
@@ -864,6 +874,24 @@ class UserModels extends DataModel {
             "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
         );
         delCache("users:{$user_id}");
+        // tutorials {
+        $aftStatus = $this->getAll(
+            "SELECT * FROM `user_identity`
+             WHERE `userid` = {$user_id}
+             AND   `status` = 3"
+        );
+        // if ($aftStatus && sizeof($aftStatus) === 1) {
+        //     require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+        //     httpKit::request(
+        //         EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+        //       . base64_url_encode(
+        //             SITE_URL . "/v3/bus/tutorials/1?identity_id={$identity_id}"
+        //         ),
+        //         ['update' => 'once', 'ontime' => time()], [],
+        //         false, false, 3, 3, 'txt'
+        //     );
+        // }
+        // }
         return true;
     }
 
