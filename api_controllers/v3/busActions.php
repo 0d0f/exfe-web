@@ -851,7 +851,7 @@ class BusActions extends ActionController {
                 false, false, 3, 3, 'txt'
             );
         };
-        $editExfee = function ($exfee, $cross_id, $invitation, $by_identity) use ($modExfee) {
+        $editExfee = function ($exfee, $cross_id, $invitation, $by_identity) use ($modExfee, $hlpCross) {
             $exfee->invitations = [$invitation];
             $udeResult = $modExfee->updateExfee(
                 $exfee, $by_identity->id, $by_identity->connected_user_id
