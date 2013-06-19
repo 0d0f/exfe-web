@@ -1050,7 +1050,7 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
             case 17:
-                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)
+                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename))
                         ? $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
                         : new stdClass;
                 break;
