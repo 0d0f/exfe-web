@@ -864,7 +864,7 @@ class BusActions extends ActionController {
             touchCross($cross_id, $by_identity->connected_user_id);
             return $udeResult ? $objCross : null;
         };
-        function post($cross_id, $exfee_id, $identity, $content) {
+        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv) {
             $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
             $objPost->by_identity_id = $identity->id;
             $pstResult = $modConv->addPost($objPost);
@@ -987,7 +987,7 @@ class BusActions extends ActionController {
                 ), $botFrontier);
                 break;
             case 3:
-                $result = post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
                 break;
             case 4:
                 $result = $editExfee($exfee, $cross_id, new Invitation(
@@ -996,26 +996,26 @@ class BusActions extends ActionController {
                 ), $botCashbox);
                 break;
             case 5:
-                $result = post($cross_id, $exfee_id, $botCashbox, 'Can we do this later?');
+                $result = $post($cross_id, $exfee_id, $botCashbox, 'Can we do this later?');
                 break;
             case 6:
-                $result = post($cross_id, $exfee_id, $bot233, "Hey Cashbox be kind, can't you eat later?");
+                $result = $post($cross_id, $exfee_id, $bot233, "Hey Cashbox be kind, can't you eat later?");
                 break;
             case 7:
-                $result = post($cross_id, $exfee_id, $bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
+                $result = $post($cross_id, $exfee_id, $bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
                 break;
             case 8:
-                $result = post($cross_id, $exfee_id, $bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
+                $result = $post($cross_id, $exfee_id, $bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
                 break;
             case 9:
-                $result = post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
                 break;
             case 10:
 ////////////// @%Identity% ///////////////
-                $result = post($cross_id, $exfee_id, $bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
+                $result = $post($cross_id, $exfee_id, $bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
                 break;
             case 11:
-                $result = post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
                 break;
             case 12:
                 $delay  = 60 * 2;
@@ -1038,7 +1038,7 @@ class BusActions extends ActionController {
                 }
                 break;
             case 14:
-                $result = post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
+                $result = $post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
                 break;
             case 15:
                 $result = $editExfee($exfee, $cross_id, new Invitation(
@@ -1047,24 +1047,24 @@ class BusActions extends ActionController {
                 ), $botCashbox);
                 break;
             case 16:
-                $result = post($cross_id, $exfee_id, $botClarus, 'moof~');
+                $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
             case 17:
                 if (preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)) {
-                    $result = post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
+                    $result = $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
                 } else {
                     $result = new stdClass;
                     $step_id--;
                 }
                 break;
             case 18:
-                $result = post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
+                $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
                 break;
             case 19:
-                $result = post($cross_id, $exfee_id, $botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
+                $result = $post($cross_id, $exfee_id, $botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
                 break;
             case 20:
-                $result = post($cross_id, $exfee_id, $botClarus, 'moof!');
+                $result = $post($cross_id, $exfee_id, $botClarus, 'moof!');
                 return;
             default:
                 $this->jsonError(500, 'unknow_step_id');
