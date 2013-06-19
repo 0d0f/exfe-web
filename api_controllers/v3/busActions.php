@@ -821,16 +821,23 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
+        /////////////
+        error_log('//////////////////////////////////////////////');
+        error_log($_SERVER['REQUEST_URI']);
+        ////////////
+
+
+
         // init models
         $modIdentity = $this->getModelByName('Identity');
+        $modUser     = $this->getModelByName('User');
         $modTime     = $this->getModelByName('Time');
         $modBkg      = $this->getModelByName('Background');
         $modConv     = $this->getModelByName('Conversation');
         $modExfee    = $this->getModelByName('Exfee');
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
-        function next() {
-            global $step_id, $cross_id, $exfee_id, $identity_id, $now, $delay;
+        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5) {
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(
@@ -839,19 +846,31 @@ class BusActions extends ActionController {
                   . "&exfee_id={$exfee_id}"
                   . "&identity_id={$identity_id}"
                 ),
-                ['update' => 'once', 'ontime' => $now ], [],
+                ['update' => 'once', 'ontime' => time()], [],
              // ['update' => 'once', 'ontime' => $now + $delay], [],
                 false, false, 3, 3, 'txt'
             );
-        }
-        function post($identity, $content) {
-            global $cross_id, $exfee_id;
+        };
+        $editExfee = function ($exfee, $cross_id, $invitation, $by_identity) use ($modExfee, $hlpCross) {
+            $exfee->invitations = [$invitation];
+            $udeResult = $modExfee->updateExfee(
+                $exfee, $by_identity->id, $by_identity->connected_user_id
+            );
+            $objCross = $hlpCross->getCross($cross_id);
+            saveUpdate($cross_id, ['exfee' => [
+                'updated_at'  => date('Y-m-d H:i:s', time()),
+                'identity_id' => $by_identity->id,
+            ]]);
+            touchCross($cross_id, $by_identity->connected_user_id);
+            return $udeResult ? $objCross : null;
+        };
+        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv) {
             $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
             $objPost->by_identity_id = $identity->id;
             $pstResult = $modConv->addPost($objPost);
             touchCross($cross_id, $identity->connected_user_id);
             return $pstResult && $pstResult['post'] ? $pstResult['post'] : null;
-        }
+        };
         // get inputs
         $params      = $this->params;
         $now         = time();
@@ -878,8 +897,6 @@ class BusActions extends ActionController {
         }
         // gather
         if ($step_id === 1) {
-            // 2m  233 gather "Explore EXFE" with Cashbox and Frontier. Time: Today.  Place: Online, exfe.com
-            // Desc: Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.
             $objCross = new stdClass;
             $objCross->title       = 'Explore EXFE';
             $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
@@ -916,18 +933,16 @@ class BusActions extends ActionController {
                 ),
             ];
             $gtResult = $hlpCross->gatherCross(
-                $objCross, $btAIdentity->id,
-                $btAIdentity->connected_user_id > 0
-              ? $btAIdentity->connected_user_id : 0
+                $objCross, $bot233->id,
+                $bot233->connected_user_id > 0 ? $bot233->connected_user_id : 0
             );
             $cross_id = @ (int) $gtResult['cross_id'];
             if ($cross_id > 0) {
                 $objCross = $hlpCross->getCross($cross_id);
                 $exfee_id = $objCross->exfee->id;
-                touchCross($cross_id, $btAIdentity->connected_user_id);
+                touchCross($cross_id, $bot233->connected_user_id);
                 $this->jsonResponse($objCross);
-                $delay = 60;
-                next();
+                nextStep($step_id, $cross_id, $exfee_id, $identity_id, 60);
                 return;
             }
             $this->jsonError(500, 'internal_server_error');
@@ -938,7 +953,7 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'no_cross_id');
             return;
         }
-        if (!($exfeeId  = @ (int) $params['exfee_id'])) {
+        if (!($exfee_id = @ (int) $params['exfee_id'])) {
             $this->jsonError(500, 'no_exfee_id');
             return;
         }
@@ -948,7 +963,7 @@ class BusActions extends ActionController {
             return;
         }
         // get exfee
-        if (!($exfee    = $modExfee->getExfeeById($exfeeId))) {
+        if (!($exfee    = $modExfee->getExfeeById($exfee_id))) {
             $this->jsonError(500, 'exfee_error');
             return;
         }
@@ -963,184 +978,101 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'user_leaved');
             return;
         }
+        // steps
         switch ($step_id) {
-            case 2: // +1m Frontier is accepted.
+            case 2:
+                $result = $editExfee($exfee, $cross_id, new Invitation(
+                    0, $botFrontier, $botFrontier, $botFrontier,
+                    'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                ), $botFrontier);
                 break;
-            case 3: // +5s Frontier: woof woof~
-                $result = post($botFrontier, 'woof woof~');
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 3:
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
                 break;
-            case 4: // +5s Cashbox is unavailable.
+            case 4:
+                $result = $editExfee($exfee, $cross_id, new Invitation(
+                    0, $botCashbox, $botCashbox, $botCashbox,
+                    'DECLINED', 'EXFE', '', $now, $now, false, 0, []
+                ), $botCashbox);
                 break;
-            case 5: // +5s Cashbox: Can we do this later?
-                $result = post($botCashbox, 'Can we do this later?');
-                if ($result) {
-                    $this->jsonResponse($result);
-                    next();
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 5:
+                $result = $post($cross_id, $exfee_id, $botCashbox, 'Can we do this later?');
                 break;
-            case 6: // +5s 233: Hey Cashbox be kind, can't you eat later?
-                $result = post($bot233, "Hey Cashbox be kind, can't you eat later?");
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 6:
+                $result = $post($cross_id, $exfee_id, $bot233, "Hey Cashbox be kind, can't you eat later?");
                 break;
-            ////////////////////////////////////////////////////////////////////
-            case 7: // +5s 233: Well %NAME%. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.
-                $result = post($bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 7:
+                $result = $post($cross_id, $exfee_id, $bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
                 break;
-            case 8: // +5s 233: Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.
-                $result = post($bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 8:
+                $result = $post($cross_id, $exfee_id, $bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
                 break;
-            case 9: // +5s Frontier: BTW, ·X· is a gathering, pronounced as "cross".
-                $result = post($botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 9:
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
                 break;
-            case 10: // +5s 233: Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.
+            case 10:
 ////////////// @%Identity% ///////////////
-                $result = post($bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
-                if ($result) {
-                    $this->jsonResponse($result);
+                $result = $post($cross_id, $exfee_id, $bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
+                break;
+            case 11:
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
+                break;
+            case 12:
+                $delay  = 60 * 2;
+                $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
+                $needPw = $passwd && !$passwd['encrypted_password'];
+                $result = $needPw
+                        ? post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
+                        : new stdClass;
+                break;
+            case 13:
+                if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)) {
+                    $result = $editExfee($exfee, $cross_id, new Invitation(
+                        0, $botCashbox, $bot233, $bot233,
+                        'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                    ), $botCashbox);
                 } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
+                    $result = new stdClass;
+                    $delay  = 60 * 2;
+                    $step_id--;
                 }
                 break;
-            case 11: // +5s Frontier: You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.
-                $result = post($botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 14:
+                $result = $post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
                 break;
-            case 12: // +5s (未设密码) Frontier: Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?
-//////////////设置密码///////////////
-                $delay = 60 * 2;
-                $result = post($botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?');
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
-                break;
-            // (·X·被touch后) ///////////////////////////////////////////////////
-            case 13: // 2m  233 set Cashbox accepted.
-//////////////cross被touch之后///////////////
-                break;
-            case 14: // +5s Cashbox: My friend Cowdog is joining us to welcome %NAME%.
-                $result = post($botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
-                break;
-            case 15: // +5s Cashbox invites Clarus.
-                $exfee->invitations = [new Invitation(
+            case 15:
+                $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botClarus, $botCashbox, $botCashbox,
                     'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
-                )];
-                $udeResult = $modExfee->updateExfee(
-                    $exfee, $botCashbox->id,
-                    $botCashbox->connected_user_id
-                );
-                if ($udeResult) {
-                    $objCross = $hlpCross->getCross($cross_id);
-                    saveUpdate($cross_id, ['exfee' => [
-                        'updated_at'  => date('Y-m-d H:i:s', $now),
-                        'identity_id' => $botCashbox->id,
-                    ]]);
-                    touchCross($cross_id, $botCashbox->connected_user_id);
-                    $this->jsonResponse($objCross);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+                ), $botCashbox);
                 break;
-            case 16: // +5s Clarus: moof~
-                $result = post($botClarus, 'moof~');
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 16:
+                $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
-            case 17: // +5s （无头像）Frontier: Hey %NAME%, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.
-////////////// 无头像 ///////////////
-                $result = post($botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 17:
+                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)
+                        ? $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.")
+                        : new stdClass;
                 break;
-            case 18: // +5s 233: Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!
-                $result = post($bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 18:
+                $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
                 break;
-            case 19: // +5s Cashbox: Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.
-                $result = post($botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
-                if ($result) {
-                    $this->jsonResponse($result);
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 19:
+                $result = $post($cross_id, $exfee_id, $botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
                 break;
-            case 20: // +5s Clarus: moof!
-                $result = post($botClarus, 'moof!');
-                if ($result) {
-                    $this->jsonResponse($result);
-                    return;
-                } else {
-                    $this->jsonError(500, 'internal_server_error');
-                    return;
-                }
+            case 20:
+                $result = $post($cross_id, $exfee_id, $botClarus, 'moof!');
                 return;
             default:
                 $this->jsonError(500, 'unknow_step_id');
                 return;
         }
-        next();
+        if ($result) {
+            $this->jsonResponse($result);
+            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay);
+            return;
+        }
+        $this->jsonError(500, 'internal_server_error');
     }
 
 }
