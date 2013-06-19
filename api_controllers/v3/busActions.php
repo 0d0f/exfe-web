@@ -830,7 +830,7 @@ class BusActions extends ActionController {
         $modExfee    = $this->getModelByName('Exfee');
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
-        function next() {
+        function nextStep() {
             global $step_id, $cross_id, $exfee_id, $identity_id, $now, $delay;
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
@@ -939,7 +939,7 @@ class BusActions extends ActionController {
                 touchCross($cross_id, $bot233->connected_user_id);
                 $this->jsonResponse($objCross);
                 $delay = 60;
-                next();
+                nextStep();
                 return;
             }
             $this->jsonError(500, 'internal_server_error');
@@ -1069,7 +1069,7 @@ class BusActions extends ActionController {
         }
         if ($result) {
             $this->jsonResponse($result);
-            next();
+            nextStep();
             return;
         }
         $this->jsonError(500, 'internal_server_error');
