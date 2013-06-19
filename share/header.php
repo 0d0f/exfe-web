@@ -16,6 +16,5 @@
 <?php if (($oauth = $this->getVar('oauth'))) { ?>
   <meta name="authorization" content="<?php echo htmlentities(json_encode($oauth)); ?>" />
 <?php } ?>
-  <link rel="shortcut icon" href="/static/img/favicon.png" />
-  <link rel="apple-touch-icon" href="/static/img/favicon.png" />
+  <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
   <link rel="stylesheet" media="screen" type="text/css" href="/static/css/exfe.min.css?<?php echo STATIC_CODE_TIMESTAMP; ?>" />
