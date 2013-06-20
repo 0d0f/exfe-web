@@ -36,7 +36,7 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = CONTROLLER_DIR . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            header('location: /error/404');
+            header('location: /404');
             return;
         }
         require_once $ctlFile;
@@ -61,7 +61,7 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = API_CONTROLLER_DIR . '/' . $version . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            header('location: /error/404');
+            header('location: /404');
             return;
         }
         require_once $ctlFile;
