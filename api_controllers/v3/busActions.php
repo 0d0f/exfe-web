@@ -821,13 +821,6 @@ class BusActions extends ActionController {
 
 
     public function doTutorials() {
-        /////////////
-        error_log('//////////////////////////////////////////////');
-        error_log($_SERVER['REQUEST_URI']);
-        ////////////
-
-
-
         // init models
         $modIdentity = $this->getModelByName('Identity');
         $modUser     = $this->getModelByName('User');
@@ -1011,8 +1004,7 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
                 break;
             case 10:
-////////////// @%Identity% ///////////////
-                $result = $post($cross_id, $exfee_id, $bot233, 'Thanks buddy. @%Identity% To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.');
+                $result = $post($cross_id, $exfee_id, $bot233, "Thanks buddy. @{$objIdentity->name} To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.");
                 break;
             case 11:
                 $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
