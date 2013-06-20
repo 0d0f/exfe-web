@@ -573,7 +573,7 @@ class OAuthActions extends ActionController {
                 ]);
                 $twitterConn->request(
                     'POST',
-                    $twitterConn->url('1/friendships/create'),
+                    $twitterConn->url('1.1/friendships/create'),
                     ['screen_name' => TWITTER_OFFICE_ACCOUNT]
                 );
                 apiResponse(new stdClass);
