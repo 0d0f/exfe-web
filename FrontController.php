@@ -13,7 +13,7 @@ class FrontController {
             if (preg_match('/^HTTP_.*$/', $sI)) {
                 $sI = strtolower(preg_replace('/^HTTP_(.*)$/', '$1', $sI));
                 // @todo debug for @googollee by @leask{
-                error_log("HEADER: {$sI} = {$sItem}");
+                // error_log("HEADER: {$sI} = {$sItem}");
                 // }
                 $params[$sI] = $sItem;
             }
