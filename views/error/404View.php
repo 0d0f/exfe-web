@@ -63,7 +63,7 @@
 
   <noscript>EXFE.COM can't load if JavaScript is disabled</noscript>
 
-  <?php include 'share/footer.php'; ?>
+  <?php include 'share/google_analytics.php'; ?>
   <script type="text/javascript">
     document.title = 'EXFE - 404';
     // http://paulirish.com/2011/requestanimationframe-for-smart-animating/
@@ -88,7 +88,9 @@
       , maskImg = document.getElementById('404mask')
       , mctx = mask.getContext('2d')
       , degress = Math.PI / 180
+      , imageData = {}
       , angle = 0
+      , i = 0
       , p0
       , d0
       , p1
@@ -97,14 +99,20 @@
       , l1
       , l2
       , l3
-      , j
-      , i = 0;
+      , j;
 
     animate();
 
     function animate () {
-      draw(angle);
-      angle += 3;
+      var p = imageData[angle];
+      if (p) {
+        ctx.clearRect(0, 0, w, w);
+        ctx.putImageData(p, 0, 0);
+      } else {
+        draw(angle);
+      }
+      angle += 4;
+      if (angle > 360) { angle = 4; }
       requestAnimFrame(animate, 0);
     }
 
@@ -152,7 +160,7 @@
         d0[j + 3] *= d1[j] / 255;
       }
 
-      ctx.putImageData(p0, 0, 0);
+      ctx.putImageData(imageData[angle] = p0, 0, 0);
       d1.length = d0.length = l0 = l1 = l2 = l3 = i = j = 0;
       p1 = p0 = null;
     }
