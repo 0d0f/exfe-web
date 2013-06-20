@@ -154,7 +154,7 @@ class OAuthModels extends DataModel {
             TWITTER_ACCESS_TOKEN,
             TWITTER_ACCESS_TOKEN_SECRET
         );
-        $twitterUser = $twitterConn->get('users/show.json', ['screen_name' => $external_username]);
+        $twitterUser = $twitterConn->get('users/show', ['screen_name' => $external_username]);
         if ($twitterUser && @$twitterUser->id) {
             return new Identity(
                 0,
