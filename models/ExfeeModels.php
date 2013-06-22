@@ -463,31 +463,26 @@ class ExfeeModels extends DataModel {
             return null;
         }
         // init
-        $items      = 0;
-        $soft_quota = false;
-        $hard_quota = false;
-        $added      = [];
+        $items  = 0;
+        $added  = [];
+        $hQuota = false;
         // add invitations
         foreach ($invitations as $iI => $iItem) {
-            if ($iItem->rsvp_status !== 'REMOVED'
-             && $iItem->rsvp_status !== 'NOTIFICATION') {
-                $items++;
-                if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
-                    $soft_quota = true;
-                }
-                if ($items > EXFEE_QUOTA_HARD_LIMIT) {
-                    $hard_quota = true;
-                    continue;
-                }
+            $rawId = @$iItem->external_username ?: "_{$iItem->identity->id}_";
+            $id    = @strtolower("{$rawId}@{$iItem->provider}");
+            if (!$id || isset($added[$id]) || !in_array($iItem->rsvp_status, [
+                'NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED'
+            ])) {
+                unset($invitations[$iI]);
+                continue;
             }
-            $strId = (isset($iItem->identity->id)                ? $iItem->identity->id                : '') . '_'
-                   . (isset($iItem->identity->provider)          ? $iItem->identity->provider          : '') . '_'
-                   . (isset($iItem->identity->external_id)       ? $iItem->identity->external_id       : '') . '_'
-                   . (isset($iItem->identity->external_username) ? $iItem->identity->external_username : '');
-            if (!isset($added[$strId])) {
-                $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
-                $added[$strId] = true;
+            $added[$id] = true;
+            if (++$items > EXFEE_QUOTA_HARD_LIMIT) {
+                $hQuota = true;
+                unset($invitations[$iI]);
+                continue;
             }
+            $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
         }
         $this->updateExfeeTime($exfee_id);
         // call Gobus {
@@ -500,8 +495,8 @@ class ExfeeModels extends DataModel {
         // return
         return [
             'exfee_id'   => $exfee_id,
-            'soft_quota' => $soft_quota,
-            'hard_quota' => $hard_quota,
+            'soft_quota' => sizeof($invitations) > EXFEE_QUOTA_SOFT_LIMIT,
+            'hard_quota' => $hQuota,
         ];
     }
 
