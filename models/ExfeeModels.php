@@ -364,7 +364,8 @@ class ExfeeModels extends DataModel {
                 `invited_by`       =  {$by_identity_id},
                 `by_identity_id`   =  {$by_identity_id},
                 `host`             =  {$host},
-                `mates`            =  {$mates}";
+                `mates`            =  {$mates},
+                `grouping`         =  {$invitation->grouping}";
         $dbResult = $this->query($sql);
         // save relations
         if ($user_id) {
@@ -468,8 +469,8 @@ class ExfeeModels extends DataModel {
         $hQuota = false;
         // add invitations
         foreach ($invitations as $iI => $iItem) {
-            $rawId = @$iItem->external_username ?: "_{$iItem->identity->id}_";
-            $id    = @strtolower("{$rawId}@{$iItem->provider}");
+            $rawId = @$iItem->identity->external_username ?: "_{$iItem->identity->id}_";
+            $id    = @strtolower("{$rawId}@{$iItem->identity->provider}");
             if (!$id || isset($added[$id]) || !in_array($iItem->rsvp_status, [
                 'NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED'
             ])) {
@@ -482,8 +483,30 @@ class ExfeeModels extends DataModel {
                 unset($invitations[$iI]);
                 continue;
             }
+            $iItem->grouping = $iI;
             $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
         }
+        // add notifications
+        $strRegExp = '/(.*)@([^@]+)/';
+        foreach ($invitations as $iI => $iItem) {
+            foreach (@$iItem->notification_identities ?: [] as $tarId) {
+                $tarId    = strtolower($tarId);
+                $identity = new stdClass;
+                $identity->external_username = preg_replace($strRegExp, '$1', $tarId);
+                $identity->provider          = preg_replace($strRegExp, '$2', $tarId);
+                if (isset($added[$tarId])
+                 || !$identity->external_username
+                 || !$identity->provider) {
+                    continue;
+                }
+                $iItem = deepClone($iItem);
+                $iItem->grouping = $iI;
+                $iItem->identity = $identity;
+                $iItem->response = 'NOTIFICATION';
+                $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
+            }
+        }
+        // updated exfee time
         $this->updateExfeeTime($exfee_id);
         // call Gobus {
         $hlpCross = $this->getHelperByName('cross');
