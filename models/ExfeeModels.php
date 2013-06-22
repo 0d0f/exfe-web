@@ -15,15 +15,16 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getRawExfeeById($id) {
-        $key = "exfee:{$id}";
-        $rawExfee = getCache($key);
-        if (!$rawExfee) {
-            $rawExfee = $this->getAll(
-                "SELECT * FROM `invitations`
-                 WHERE `exfee_id` = {$id} AND `state` <> 4"
-            );
-            setCache($key, $rawExfee);
+    public function getRawExfeeById($id, $withRemoved = false) {
+        $strSql = "SELECT * FROM `invitations` WHERE `exfee_id` = {$id}";
+        if ($withRemoved) {
+            $rawExfee = $this->getAll($strSql);
+        } else {
+            $key = "exfee:{$id}";
+            if (!($rawExfee = getCache($key))) {
+                $rawExfee = $this->getAll("{$strSql} AND `state` <> 4");
+                setCache($key, $rawExfee);
+            }
         }
         return $rawExfee;
     }
@@ -31,34 +32,134 @@ class ExfeeModels extends DataModel {
 
     public function getExfeeById($id, $withRemoved = false, $withToken = false) {
         // init
-        $exfee_updated_at = '';
         $hlpIdentity = $this->getHelperByName('identity');
-        // get invitations
-        $rawExfee = $withRemoved
-                  ? $this->getAll("SELECT * FROM `invitations` WHERE `exfee_id` = {$id}")
-                  : $this->getRawExfeeById($id);
+        $weights     = [
+            'ACCEPTED'     => 0,
+            'INTERESTED'   => 1,
+            'DECLINED'     => 2,
+            'IGNORED'      => 3,
+            'REMOVED'      => 4,
+            'NORESPONSE'   => 5,
+            'NOTIFICATION' => 6
+        ];
+        // get raw exfee
+        $rawExfee = $this->getRawExfeeById($id, $withRemoved);
         if (!$rawExfee) {
             return null;
         }
         $objExfee = new Exfee($id);
-        $objExfee->hosts = [];
-        $exfee_updated_at = $rawExfee[0]['exfee_updated_at'];
+        $objExfee->hosts  = [];
+        $objExfee->updated_at = "{$rawExfee[0]['exfee_updated_at']} +0000";
+        // sort invitations with connected user
         $users    = [];
-        $weights  = ['ACCEPTED' => 0, 'INTERESTED'   => 1, 'DECLINED'   => 2, 'IGNORED' => 3,
-                     'REMOVED'  => 4, 'NOTIFICATION' => 5, 'NORESPONSE' => 6];
+        $chkedIdt = [];
         foreach ($rawExfee as $ei => $eItem) {
-            $objIdentity  = $hlpIdentity->getIdentityById($eItem['identity_id']);
-            $oivIdentity  = $hlpIdentity->getIdentityById($eItem['invited_by']);
-            $oByIdentity  = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
-            if (!$objIdentity || !$oByIdentity) {
+            $rawExfee[$ei]['identity']     = $hlpIdentity->getIdentityById($eItem['identity_id']);
+            $rawExfee[$ei]['identity_inv'] = $hlpIdentity->getIdentityById($eItem['invited_by']);
+            $rawExfee[$ei]['identity_upd'] = $hlpIdentity->getIdentityById($eItem['by_identity_id']);
+            $rawExfee[$ei]['rsvp']         = $this->rsvp_status[$eItem['state']];
+            $rawExfee[$ei]['rsvp_weight']  = $weights[$rawExfee[$ei]['rsvp']];
+            if (isset($chkedIdt[$eItem['identity_id']])
+             || !$rawExfee[$ei]['identity']
+             || !$rawExfee[$ei]['identity_upd']) {
+                unset($rawExfee[$ei]);
+                continue;
+            }
+            if ($eItem['host']) {
+                $objExfee->hosts[] = $rawExfee[$ei]['identity']->connected_user_id;
+            }
+            $chkedIdt[$eItem['identity_id']] = true;
+            if (($user_id = $rawExfee[$ei]['identity']->connected_user_id) > 0) {
+                if (!isset($users[$user_id])) {
+                    $users[$user_id] = [
+                        'grouping'    => [],
+                        'invitations' => [],
+                        'top_rsvp_id' => 0,
+                        'rsvp_weight' => sizeof($weights),
+                    ];
+                }
+                if ($eItem['grouping']) {
+                    $users[$user_id]['grouping'][] = $eItem['grouping'];
+                }
+                $users[$user_id]['invitations'][] = $ei;
+                if ($rawExfee[$ei]['rsvp_weight'] < $users[$user_id]['rsvp_weight']) {
+                    $users[$user_id]['top_rsvp_id'] = $ei;
+                    $users[$user_id]['rsvp_weight'] = $rawExfee[$ei]['rsvp_weight'];
+                }
+            }
+        }
+        // sort grouped invitations without connected user
+        $groups = [];
+        foreach ($rawExfee as $ei => $eItem) {
+            if ($eItem['identity']->connected_user_id > 0 || !$eItem['grouping']) {
+                continue;
+            }
+            $found = false;
+            foreach ($users as $uI => $uItem) {
+                if (in_array($eItem['grouping'], $uItem['grouping'])) {
+                    $users[$uI]['invitations'][] = $ei;
+                    if ($eItem['rsvp_weight'] < $users[$uI]['rsvp_weight']) {
+                        $users[$uI]['top_rsvp_id'] = $ei;
+                        $users[$uI]['rsvp_weight'] = $eItem['rsvp_weight'];
+                    }
+                    $found = true;
+                    continue;
+                }
+            }
+            if (!$found) {
+                if (!isset($groups[$eItem['grouping']])) {
+                    $groups[$eItem['grouping']] = [
+                        'invitations' => [],
+                        'top_rsvp_id' => 0,
+                        'rsvp_weight' => sizeof($weights),
+                    ];
+                }
+                $groups[$eItem['grouping']]['invitations'][] = $ei;
+                if ($eItem['rsvp_weight'] < $groups[$eItem['grouping']]['rsvp_weight']) {
+                    $groups[$eItem['grouping']]['top_rsvp_id'] = $ei;
+                    $groups[$eItem['grouping']]['rsvp_weight'] = $eItem['rsvp_weight'];
+                }
+            }
+        }
+        // add invitations with connetced user or grouped into exfee
+        foreach (array_merge($users, $groups) as $uItem) {
+            $rsvp = $rawExfee[$uItem['top_rsvp_id']]['rsvp'] !== 'NOTIFICATION'
+                  ? $rawExfee[$uItem['top_rsvp_id']]['rsvp']  :  'NORESPONSE';
+            $notificationIds = [];
+            foreach ($uItem['invitations'] as $invItem) {
+                if ($invItem !== $uItem['top_rsvp_id']) {
+                    $identity = $rawExfee[$invItem]['identity'];
+                    $notificationIds[] = "{$identity->external_username}@{$identity->provider}";
+                }
+            }
+            $objExfee->invitations[] = new Invitation(
+                $rawExfee[$uItem['top_rsvp_id']]['id'],
+                $rawExfee[$uItem['top_rsvp_id']]['identity'],
+                $rawExfee[$uItem['top_rsvp_id']]['identity_inv'],
+                $rawExfee[$uItem['top_rsvp_id']]['identity_upd'],
+                $rsvp,
+                $rawExfee[$uItem['top_rsvp_id']]['via'],
+                $withToken ? $rawExfee[$uItem['top_rsvp_id']]['token'] : '',
+                $rawExfee[$uItem['top_rsvp_id']]['created_at'],
+                $rawExfee[$uItem['top_rsvp_id']]['updated_at'],
+                $rawExfee[$uItem['top_rsvp_id']]['host'],
+                $rawExfee[$uItem['top_rsvp_id']]['mates'],
+                $rawExfee[$uItem['top_rsvp_id']]['remark']
+              ? explode(';', $rawExfee[$uItem['top_rsvp_id']]['remark']) : [],
+                $notificationIds
+            );
+        }
+        // add other invitations into exfee
+        foreach ($rawExfee as $eItem) {
+            if ($eItem['identity']->connected_user_id > 0 || $eItem['grouping']) {
                 continue;
             }
             $objExfee->invitations[] = new Invitation(
                 $eItem['id'],
-                $objIdentity,
-                $oivIdentity,
-                $oByIdentity,
-                $this->rsvp_status[$eItem['state']],
+                $eItem['identity'],
+                $eItem['identity_inv'],
+                $eItem['identity_upd'],
+                $eItem['rsvp'] === 'NOTIFICATION' ? 'NORESPONSE' : $eItem['rsvp'],
                 $eItem['via'],
                 $withToken ? $eItem['token'] : '',
                 $eItem['created_at'],
@@ -67,34 +168,6 @@ class ExfeeModels extends DataModel {
                 $eItem['mates'],
                 $eItem['remark'] ? explode(';', $eItem['remark']) : []
             );
-            if ($eItem['host']) {
-                $objExfee->hosts[] = $objIdentity->connected_user_id;
-            }
-            // getting litest rsvp status
-            if (($user_id = $objIdentity->connected_user_id) > 0) {
-                $idx = sizeof($objExfee->invitations) - 1;
-                if (isset($users[$user_id])) {
-                    $logW = $weights[$users[$user_id]->rsvp_status];
-                    $curW = $weights[$objExfee->invitations[$idx]->rsvp_status];
-                    $logO = $users[$user_id]->identity->order;
-                    $curO = $objExfee->invitations[$idx]->identity->order;
-                    if ($curW < $logW || ($curW === $logW && $curO < $logO)) {
-                        $users[$user_id] = $objExfee->invitations[$idx];
-                    }
-                } else {
-                    $users[$user_id] = $objExfee->invitations[$idx];
-                }
-            }
-        }
-        // clean invitations
-        foreach ($users as $user_inv) {
-            foreach ($objExfee->invitations as $i => $invitation) {
-                if ($user_inv->id                          !== $invitation->id
-                 && $user_inv->identity->connected_user_id === $invitation->identity->connected_user_id
-                 && $invitation->rsvp_status               !== 'REMOVED') {
-                    $objExfee->invitations[$i]->rsvp_status = 'NOTIFICATION';
-                }
-            }
         }
         // get exfee name
         $ifoExfee = $this->getRow("SELECT * FROM `exfees` WHERE `id` = {$id}");
