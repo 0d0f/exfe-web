@@ -35,7 +35,7 @@ class Invitation extends EFObject {
         $id                      = 0,
         $identity                = null,
         $invited_by              = null,
-        $by_identity             = null,
+        $by_identity             = null, // @todo: $by_identity to be changed in v3
         $rsvp_status             = '',
         $via                     = '',
         $token                   = '',
@@ -45,7 +45,7 @@ class Invitation extends EFObject {
         $mates                   = 0,
         $remark                  = [],
         $notification_identities = []
-    ) { // @todo: $by_identity to be changed in v3
+    ) {
         parent::__construct($id, 'invitation');
 
         $updated_at                    = $updated_at
