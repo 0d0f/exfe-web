@@ -178,7 +178,6 @@ class ExfeeModels extends DataModel {
             $objExfee->name = "{$rawCross['title']}";
         }
         // return
-        $objExfee->updated_at = $exfee_updated_at . ' +0000';
         $objExfee->summary();
         return $objExfee;
     }
