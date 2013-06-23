@@ -552,6 +552,12 @@ class ExfeeModels extends DataModel {
                  WHERE  `id`   =  {$exfee->id}"
             );
         }
+        // get max grouping id;
+        $maxGrouping = 0;
+        foreach ($old_cross->exfee->invitations as $fmItem) {
+            $maxGrouping = $fmItem->grouping > $maxGrouping
+                         ? $fmItem->grouping : $maxGrouping;
+        }
         // updated invitations
         $oldUserIds = [];
         if (isset($exfee->invitations) && is_array($exfee->invitations)) {
@@ -568,13 +574,13 @@ class ExfeeModels extends DataModel {
                 }
                 // if no identity id, skip it
                 if (!$toItem->identity->id) {
+                    unset($exfee->invitations[$toI]);
                     continue;
                 }
                 // find out the existing invitation
                 $exists = false;
                 foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
-                    if (!in_array($fmItem->identity->connected_user_id, $oldUserIds)
-                     && $this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4) {
+                    if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4) {
                         $oldUserIds[] = $fmItem->identity->connected_user_id;
                     }
                     if ((int) $toItem->identity->id === $fmItem->identity->id) {
@@ -619,17 +625,21 @@ class ExfeeModels extends DataModel {
                 }
                 // add new invitation if it's a new invitation
                 if (!$exists) {
-                    if ($toItem->rsvp_status !== 'REMOVED'
-                     && $toItem->rsvp_status !== 'NOTIFICATION') {
-                        $items++;
-                        if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
-                            $soft_quota = true;
-                        }
-                        if ($items > EXFEE_QUOTA_HARD_LIMIT) {
-                            $hard_quota = true;
-                            continue;
-                        }
+                    if ($toItem->rsvp_status && !in_array($toItem->rsvp_status, [
+                        'NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED'
+                    ])) {
+                        continue;
                     }
+                    $items++;
+                    if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
+                        $soft_quota = true;
+                    }
+                    if ($items > EXFEE_QUOTA_HARD_LIMIT) {
+                        $hard_quota = true;
+                        unset($exfee->invitations[$toI]);
+                        continue;
+                    }
+                    $toItem->grouping = ++$maxGrouping;
                     $newInvId[] = $this->addInvitationIntoExfee(
                         $toItem, $exfee->id, $by_identity_id, $user_id
                     );
@@ -666,7 +676,7 @@ class ExfeeModels extends DataModel {
             'exfee_id'   => $exfee->id,
             'soft_quota' => $soft_quota,
             'hard_quota' => $hard_quota,
-            'changed'    => $changed
+            'changed'    => $changed,
         ];
     }
 
