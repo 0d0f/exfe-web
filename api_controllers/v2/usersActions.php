@@ -947,9 +947,7 @@ class UsersActions extends ActionController {
         foreach ($cross_list as $i => $cross) {
             $archived = false;
             foreach ($cross->exfee->invitations as $invitation) {
-                if ($invitation->identity->connected_user_id === $uid
-                 && $invitation->rsvp_status                 !== 'REMOVED'
-                 && $invitation->rsvp_status                 !== 'NOTIFICATION') {
+                if ($invitation->identity->connected_user_id === $uid) {
                     if (in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
@@ -1022,8 +1020,6 @@ class UsersActions extends ActionController {
                 $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
                      && in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
@@ -1042,8 +1038,6 @@ class UsersActions extends ActionController {
                 $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
                      && in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
@@ -1062,8 +1056,6 @@ class UsersActions extends ActionController {
                 $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
                      && in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;

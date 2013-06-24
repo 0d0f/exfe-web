@@ -757,6 +757,11 @@ class ExfeeModels extends DataModel {
         $arrResult = [];
         $actResult = true;
         foreach ($rsvps as $rsvp) {
+            // @todo v2 to v3 only {
+            if (isset($rsvp->rsvp_status)) {
+                $rsvp->response = $rsvp->rsvp_status;
+            }
+            // }
             $itm = $this->updateRsvpByExfeeId($exfee_id, $rsvp);
             if ($itm) {
                 $arrResult[] = $itm;
