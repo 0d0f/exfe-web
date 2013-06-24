@@ -281,18 +281,12 @@ class PhotoxActions extends ActionController {
             $modExfee = $this->getModelByName('Exfee');
             $exfee_id = $modExfee->getExfeeIdByCrossId($cross_id);
             $exfee    = $modExfee->getExfeeById($exfee_id);
-            $bak_id   = 0;
             foreach ($exfee->invitations as $invitation) {
                 if ($invitation->identity->connected_user_id === $user_id) {
-                    if ($invitation->rsvp_status === 'NOTIFICATION') {
-                        $bak_id      = $invitation->identity->id;
-                    } else {
-                        $identity_id = $invitation->identity->id;
-                        break;
-                    }
+                    $identity_id = $invitation->identity->id;
+                    break;
                 }
             }
-            $identity_id = $identity_id ?: $bak_id;
             if (!$identity_id) {
                 apiError(400, 'server_error');
             }
@@ -442,18 +436,12 @@ class PhotoxActions extends ActionController {
         $modExfee = $this->getModelByName('Exfee');
         $exfee_id = $modExfee->getExfeeIdByCrossId($cross_id);
         $exfee    = $modExfee->getExfeeById($exfee_id);
-        $bak_id   = 0;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->connected_user_id === $user_id) {
-                if ($invitation->rsvp_status === 'NOTIFICATION') {
-                    $bak_id      = $invitation->identity->id;
-                } else {
-                    $identity_id = $invitation->identity->id;
-                    break;
-                }
+                $identity_id = $invitation->identity->id;
+                break;
             }
         }
-        $identity_id = $identity_id ?: $bak_id;
         if (!$identity_id) {
             apiError(403, 'not_authorized', "The PhotoX you're requesting is private.");
         }

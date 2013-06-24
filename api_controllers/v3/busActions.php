@@ -242,7 +242,7 @@ class BusActions extends ActionController {
                 break;
             }
             foreach ($old_exfee->invitations as $invitation) {
-                if ($invitation->rsvp_status == $priority
+                if ($invitation->response == $priority
                  && ($invitation->identity->connected_user_id === $user_id
                   || $invitation->identity->id                === $identity_id)) {
                     $by_identity = $invitation->identity;
@@ -431,7 +431,7 @@ class BusActions extends ActionController {
                 break;
             }
             foreach ($cross->exfee->invitations as $invitation) {
-                if ($invitation->rsvp_status === $priority
+                if ($invitation->response === $priority
                  && ($invitation->identity->connected_user_id === $user_id
                   || $invitation->identity->id                === $identity_id)) {
                     $by_identity = $invitation->identity;
