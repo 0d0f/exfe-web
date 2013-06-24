@@ -25,8 +25,8 @@ class IdentityHelper extends ActionController {
     }
 
 
-    public function getIdentityByProviderAndExternalUsername($provider, $external_username) {
-        return $this->modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
+    public function getIdentityByProviderAndExternalUsername($provider, $external_username, $get_id_only = false) {
+        return $this->modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username, $get_id_only);
     }
 
 

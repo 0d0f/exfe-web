@@ -48,7 +48,7 @@ class ExfeeModels extends DataModel {
             return null;
         }
         $objExfee = new Exfee($id);
-        $objExfee->hosts  = [];
+        $objExfee->hosts      = [];
         $objExfee->updated_at = "{$rawExfee[0]['exfee_updated_at']} +0000";
         // sort invitations with connected user
         $users    = [];
@@ -127,7 +127,8 @@ class ExfeeModels extends DataModel {
                   ? $rawExfee[$uItem['top_rsvp_id']]['rsvp']  :  'NORESPONSE';
             $notificationIds = [];
             foreach ($uItem['invitations'] as $invItem) {
-                if ($invItem !== $uItem['top_rsvp_id']) {
+                if ($invItem !== $uItem['top_rsvp_id']
+                 && $rawExfee[$invItem]->rsvp !== 'REMOVED') {
                     $identity = $rawExfee[$invItem]['identity'];
                     $notificationIds[] = "{$identity->external_username}@{$identity->provider}";
                 }
@@ -347,7 +348,7 @@ class ExfeeModels extends DataModel {
         // make invitation token
         $invToken    = $this->makeExfeeToken();
         // translate rsvp status
-        $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        $rsvp_status = $this->getIndexOfRsvpStatus($invitation->response);
         // get host boolean
         $host        = intval($invitation->host);
         // get mates tinyint
@@ -396,7 +397,7 @@ class ExfeeModels extends DataModel {
           . ', `token_used_at` = 0'
         ) : '';
         // translate rsvp status
-        $rsvp_status = $this->getIndexOfRsvpStatus($invitation->rsvp_status);
+        $rsvp_status = $this->getIndexOfRsvpStatus($invitation->response);
         // get host boolean
         $host        = intval($invitation->host);
         // get mates tinyint
@@ -426,7 +427,7 @@ class ExfeeModels extends DataModel {
     public function updateRsvpByExfeeId($exfee_id, $rsvp) {
         // base check
         $identity_id    = (int)$rsvp->identity_id;
-        $rsvp_status    = $this->getIndexOfRsvpStatus($rsvp->rsvp_status);
+        $rsvp_status    = $this->getIndexOfRsvpStatus($rsvp->response);
         $by_identity_id = (int)$rsvp->by_identity_id;
         // update database
         if ($identity_id && $rsvp_status && $by_identity_id) {
@@ -471,9 +472,13 @@ class ExfeeModels extends DataModel {
         foreach ($invitations as $iI => $iItem) {
             $rawId = @$iItem->identity->external_username ?: "_{$iItem->identity->id}_";
             $id    = @strtolower("{$rawId}@{$iItem->identity->provider}");
-            if (!$id || isset($added[$id]) || !in_array($iItem->rsvp_status, [
+            if (isset($iItem->rsvp_status)) { // @todo for v2 to v3 only
+                $iItem->response = $iItem->rsvp_status;
+            }
+            if (!$id || isset($added[$id])
+            || ($iItem->response && !in_array($iItem->response, [
                 'NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED'
-            ])) {
+            ]))) {
                 unset($invitations[$iI]);
                 continue;
             }
@@ -525,25 +530,15 @@ class ExfeeModels extends DataModel {
 
 
     public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false) {
-        // get helper
+        // load helpers
+        $hlpCross    = $this->getHelperByName('cross');
         $hlpIdentity = $this->getHelperByName('identity');
-        // base check
+        // basic check
         if (!$exfee || !$exfee->id || !$by_identity_id) {
             return null;
         }
-        // get old cross
-        $hlpCross   = $this->getHelperByName('cross');
-        $cross_id   = $this->getCrossIdByExfeeId($exfee->id);
-        $old_cross  = $hlpCross->getCross($cross_id, true, true);
-        $items      = $old_cross->exfee->items;
-        $soft_quota = false;
-        $hard_quota = false;
-        $changed    = false;
-        // raw actions
-        $newInvId = [];
-        $addExfee = [];
-        $delExfee = [];
-        // updated name
+        // update name
+        $changed     = false;
         if (isset($exfee->name)) {
             $exfee->name = formatTitle($exfee->name, 233);
             $changed = $this->query(
@@ -552,71 +547,119 @@ class ExfeeModels extends DataModel {
                  WHERE  `id`   =  {$exfee->id}"
             );
         }
-        // get max grouping id;
-        $maxGrouping = 0;
-        foreach ($old_cross->exfee->invitations as $fmItem) {
-            $maxGrouping = $fmItem->grouping > $maxGrouping
-                         ? $fmItem->grouping : $maxGrouping;
-        }
-        // updated invitations
-        $oldUserIds = [];
-        if (isset($exfee->invitations) && is_array($exfee->invitations)) {
+        // init
+        $cross_id   = $this->getCrossIdByExfeeId($exfee->id);
+        $old_cross  = $hlpCross->getCross($cross_id, true, true);
+        $soft_quota = false;
+        $hard_quota = false;
+        $newInvId   = [];
+        $addExfee   = [];
+        $delExfee   = [];
+        $oldExfee   = $this->getRawExfeeById($exfee->id, true);
+        $added      = [];
+        $items      = $old_cross->exfee->items;
+        $strRegExp  = '/(.*)@([^@]+)/';
+        //
+        if (isset($exfee->invitations) && is_array($exfee->invitations) && $oldExfee) {
+            // complete invitations datas
             foreach ($exfee->invitations as $toI => $toItem) {
                 // adding new identity
                 if (!$hlpIdentity->checkIdentityById($toItem->identity->id)) {
-                    $toItem->identity->id = $hlpIdentity->addIdentity(
-                        ['provider'          => $toItem->identity->provider,
-                         'external_id'       => $toItem->identity->external_id,
-                         'name'              => $toItem->identity->name,
-                         'external_username' => $toItem->identity->external_username,
-                         'avatar_filename'   => $toItem->identity->avatar_filename]
-                    );
+                    $exfee->invitations[$toI]->identity->id = $hlpIdentity->addIdentity([
+                        'provider'          => $toItem->identity->provider,
+                        'external_id'       => $toItem->identity->external_id,
+                        'name'              => $toItem->identity->name,
+                        'external_username' => $toItem->identity->external_username,
+                        'avatar_filename'   => $toItem->identity->avatar_filename,
+                    ]);
                 }
-                // if no identity id, skip it
-                if (!$toItem->identity->id) {
+                // if no identity id or duplicate, skip it
+                if (!$toItem->identity->id
+                 || isset($added[$exfee->invitations[$toI]->identity->id])) {
                     unset($exfee->invitations[$toI]);
                     continue;
                 }
+                $added[$exfee->invitations[$toI]->identity->id] = true;
+                // upgraded invitation object // @todo for v2 to v3 only
+                if (isset($toItem->rsvp_status)) {
+                    $exfee->invitations[$toI]->response = $toItem->rsvp_status;
+                }
+                // expending notification identities
+                foreach ($toItem->notification_identities ?: [] as $ti => $tarId) {
+                    $tarId = strtolower($tarId);
+                    $external_username = preg_replace($strRegExp, '$1', $tarId);
+                    $provider          = preg_replace($strRegExp, '$2', $tarId);
+                    $idtId = $hlpIdentity->addIdentity([
+                        'provider'          => $provider,
+                        'external_username' => $external_username,
+                        'external_id'       => '',
+                        'name'              => '',
+                        'avatar_filename'   => '',
+                    ]);
+                    if ($idtId && !isset($added[$idtId])) {
+                        $added[$idtId]        = true;
+                        $ntItem = deepClone($toItem);
+                        $ntItem->identity->id = $idtId;
+                        $ntItem->response     = $ntItem->response !== 'REMOVED'
+                                              ? 'NOTIFICATION'     :  'REMOVED';
+                        $ntItem->grouping_ref = $toI;
+                        $exfee->invitations[] = $ntItem;
+                    }
+                }
+            }
+            // get current user ids
+            $oldUserIds = [];
+            foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
+                if ($fmItem->response !== 'REMOVED') {
+                    $oldUserIds[] = $fmItem->identity->connected_user_id;
+                }
+            }
+            // get current rsvp status
+            foreach ($oldExfee as $fmI => $fmItem) {
+                $oldExfee[$fmI]['response'] = $this->rsvp_status[$fmItem['state']];
+            }
+            // update invitations
+            $maxGrouping = 0;
+            foreach ($exfee->invitations as $toI => $toItem) {
                 // find out the existing invitation
                 $exists = false;
-                foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
-                    if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4) {
-                        $oldUserIds[] = $fmItem->identity->connected_user_id;
-                    }
-                    if ((int) $toItem->identity->id === $fmItem->identity->id) {
+                foreach ($oldExfee as $fmItem) {
+                    // update existing invitaion
+                    if ((int) $toItem->identity->id === (int) $fmItem['identity_id']) {
                         $exists = true;
-                        // update existing invitaion
-                        $toItem->id = $fmItem->id;
-                        // 邮件编辑 cross 不删除人 {
-                        if ($keepRsvp && !isset($toItem->rsvp_status)) {
-                            $toItem->rsvp_status = $fmItem->rsvp_status !== 4
-                                                 ? $fmItem->rsvp_status  :  0;
+                        $toItem->id = $fmItem['id'];
+                        $exfee->invitations[$toI]->grouping
+                      = $toItem->grouping = $fmItem['grouping'] ?: ++$maxGrouping;
+                        // 邮件编辑 cross 不删除人
+                        if ($keepRsvp && !isset($toItem->response)) {
+                            $toItem->response
+                          = $fmItem['response'] !== 'REMOVED'
+                          ? $fmItem['response']  :  'NORESPONSE';
                         }
-                        // }
                         // delete exfee
-                        if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) !== 4
-                         && $this->getIndexOfRsvpStatus($toItem->rsvp_status) === 4) {
-                            $delExfee[]  = $fmItem;
+                        if ($fmItem['response'] !== 'REMOVED'
+                         && $toItem->response   === 'REMOVED') {
+                            $delExfee[]  = $fmItem['id'];
                         }
                         // update exfee token
-                        if ($this->getIndexOfRsvpStatus($fmItem->rsvp_status) === 4
-                         && $this->getIndexOfRsvpStatus($toItem->rsvp_status) !== 4) {
-                            $newInvId[]  = $fmItem->id;
+                        if ($fmItem['response'] === 'REMOVED'
+                         && $toItem->response   !== 'REMOVED') {
+                            $newInvId[]  = $fmItem['id'];
                             $updateToken = true;
                         } else {
                             $updateToken = false;
                         }
                         if ($rsvp_only) {
-                            if ($fmItem->rsvp_status  !== $toItem->rsvp_status) {
-                                $toItem->host  = (bool) $fmItem->host;
-                                $toItem->mates = (int)  $fmItem->mates;
+                            if ($fmItem['response'] !== $toItem->response) {
+                                $toItem->host  = (bool) $fmItem['host'];
+                                $toItem->mates = (int)  $fmItem['mates'];
                                 $this->updateInvitation($toItem, $by_identity_id, $updateToken);
                                 $changed = true;
                             }
                         } else {
-                            if ($fmItem->rsvp_status  !== $toItem->rsvp_status
-                             || (bool) $fmItem->host  !== (bool) $toItem->host
-                             || (int)  $fmItem->mates !== (int)  $toItem->mates) {
+                            if ($fmItem['response'] !== $toItem->response
+                             || (bool) $fmItem['host']  !== (bool) $toItem->host
+                             || (int)  $fmItem['mates'] !== (int)  $toItem->mates) {
                                 $this->updateInvitation($toItem, $by_identity_id, $updateToken);
                                 $changed = true;
                             }
@@ -625,21 +668,28 @@ class ExfeeModels extends DataModel {
                 }
                 // add new invitation if it's a new invitation
                 if (!$exists) {
-                    if ($toItem->rsvp_status && !in_array($toItem->rsvp_status, [
-                        'NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED'
+                    if ($toItem->response && !in_array($toItem->response, [
+                        'NORESPONSE', 'ACCEPTED', 'INTERESTED', 'DECLINED', 'NOTIFICATION'
                     ])) {
                         continue;
                     }
-                    $items++;
-                    if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
-                        $soft_quota = true;
+                    if ($toItem->response !== 'NOTIFICATION') {
+                        $items++;
+                        if ($items > EXFEE_QUOTA_SOFT_LIMIT) {
+                            $soft_quota = true;
+                        }
+                        if ($items > EXFEE_QUOTA_HARD_LIMIT) {
+                            $hard_quota = true;
+                            unset($exfee->invitations[$toI]);
+                            continue;
+                        }
                     }
-                    if ($items > EXFEE_QUOTA_HARD_LIMIT) {
-                        $hard_quota = true;
-                        unset($exfee->invitations[$toI]);
-                        continue;
+                    if (isset($toItem->grouping_ref)
+                     && isset($exfee->invitations[$toItem->grouping_ref]->grouping)) {
+                        $toItem->grouping = $exfee->invitations[$toItem->grouping_ref]->grouping;
                     }
-                    $toItem->grouping = ++$maxGrouping;
+                    $exfee->invitations[$toI]->grouping
+                  = $toItem->grouping = @$toItem->grouping ?: ++$maxGrouping;
                     $newInvId[] = $this->addInvitationIntoExfee(
                         $toItem, $exfee->id, $by_identity_id, $user_id
                     );
@@ -656,6 +706,19 @@ class ExfeeModels extends DataModel {
                 if (in_array($eItem->id, $newInvId)
                  && !in_array($eItem->identity->connected_user_id, $oldUserIds)) {
                     $addExfee[] = $eItem;
+                }
+            }
+            $inxExfee  = [];
+            foreach ($delExfee as $deI => $deItem) {
+                $found = false;
+                foreach ($old_cross->exfee->invitations as $odItem) {
+                    if ((int) $deItem === $odItem->id) {
+                        $delExfee[$deI] = $odItem;
+                        $found = true;
+                    }
+                    if (!$found) {
+                        unset($delExfee[$deI]);
+                    }
                 }
             }
             $hlpQueue->despatchUpdate(
