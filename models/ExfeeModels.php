@@ -615,11 +615,13 @@ class ExfeeModels extends DataModel {
                 }
             }
             // get current rsvp status
+            $maxGrouping = 0;
             foreach ($oldExfee as $fmI => $fmItem) {
                 $oldExfee[$fmI]['response'] = $this->rsvp_status[$fmItem['state']];
+                $maxGrouping = $fmItem['grouping'] > $maxGrouping
+                             ? $fmItem['grouping'] : $maxGrouping;
             }
             // update invitations
-            $maxGrouping = 0;
             foreach ($exfee->invitations as $toI => $toItem) {
                 // find out the existing invitation
                 $exists = false;
