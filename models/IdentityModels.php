@@ -6,7 +6,7 @@ class IdentityModels extends DataModel {
 
     public $providers = [
         'authenticate' => ['twitter', 'facebook', 'flickr', 'dropbox', 'instagram', 'google'],
-        'verification' => ['phone', 'email'],
+        'verification' => ['phone', 'email', 'wechat'],
     ];
 
 
@@ -296,6 +296,11 @@ class IdentityModels extends DataModel {
                     return null;
                 }
                 break;
+            case 'wechat':
+                if (!$external_id || !$external_username) {
+                    return null;
+                }
+                break;
             case 'phone':
                 if (!$external_id && !$external_username) {
                     return null;
@@ -378,6 +383,7 @@ class IdentityModels extends DataModel {
                 case 'flickr':
                 case 'instagram':
                 case 'google':
+                case 'wechat':
                     // @todo by @leaskh
                     break;
                 default:
