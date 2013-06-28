@@ -568,6 +568,7 @@ class BusActions extends ActionController {
             case 'twitter':
             case 'facebook':
             case 'google':
+            case 'wechat':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
                     $objRecipient->provider, $objRecipient->external_username, true
                 );

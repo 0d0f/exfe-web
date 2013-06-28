@@ -81,6 +81,7 @@ class UsersActions extends ActionController {
         switch ($provider = @trim($_POST['provider'])) {
             case 'email':
             case 'phone':
+            case 'wechat':
                 if (!($external_username = trim($_POST['external_username']))) {
                     apiError(400, 'no_external_username', '');
                 }
