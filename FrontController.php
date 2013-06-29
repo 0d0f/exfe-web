@@ -12,6 +12,9 @@ class FrontController {
         foreach ($_SERVER as $sI => $sItem) {
             if (preg_match('/^HTTP_.*$/', $sI)) {
                 $sI = strtolower(preg_replace('/^HTTP_(.*)$/', '$1', $sI));
+                // @todo debug for @googollee by @leask{
+                // error_log("HEADER: {$sI} = {$sItem}");
+                // }
                 $params[$sI] = $sItem;
             }
         }
@@ -33,7 +36,7 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = CONTROLLER_DIR . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            header('location: /error/404');
+            header('location: /404');
             return;
         }
         require_once $ctlFile;
@@ -58,7 +61,7 @@ class FrontController {
         $controller = "{$controllerName}Actions";
         $ctlFile    = API_CONTROLLER_DIR . '/' . $version . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
-            header('location: /error/404');
+            header('location: /404');
             return;
         }
         require_once $ctlFile;

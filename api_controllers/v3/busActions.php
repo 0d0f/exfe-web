@@ -242,7 +242,7 @@ class BusActions extends ActionController {
                 break;
             }
             foreach ($old_exfee->invitations as $invitation) {
-                if ($invitation->rsvp_status == $priority
+                if ($invitation->response == $priority
                  && ($invitation->identity->connected_user_id === $user_id
                   || $invitation->identity->id                === $identity_id)) {
                     $by_identity = $invitation->identity;
@@ -431,7 +431,7 @@ class BusActions extends ActionController {
                 break;
             }
             foreach ($cross->exfee->invitations as $invitation) {
-                if ($invitation->rsvp_status === $priority
+                if ($invitation->response === $priority
                  && ($invitation->identity->connected_user_id === $user_id
                   || $invitation->identity->id                === $identity_id)) {
                     $by_identity = $invitation->identity;
@@ -568,6 +568,7 @@ class BusActions extends ActionController {
             case 'twitter':
             case 'facebook':
             case 'google':
+            case 'wechat':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
                     $objRecipient->provider, $objRecipient->external_username, true
                 );
@@ -823,210 +824,248 @@ class BusActions extends ActionController {
     public function doTutorials() {
         // init models
         $modIdentity = $this->getModelByName('Identity');
+        $modUser     = $this->getModelByName('User');
         $modTime     = $this->getModelByName('Time');
         $modBkg      = $this->getModelByName('Background');
         $modConv     = $this->getModelByName('Conversation');
         $modExfee    = $this->getModelByName('Exfee');
         $hlpCross    = $this->getHelperByName('cross');
+        // init functions
+        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5) {
+            httpKit::request(
+                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+              . base64_url_encode(
+                    SITE_URL . '/v3/bus/tutorials/' . ($step_id + 1)
+                  . "?cross_id={$cross_id}"
+                  . "&exfee_id={$exfee_id}"
+                  . "&identity_id={$identity_id}"
+                ),
+                ['update' => 'once', 'ontime' => time()], [],
+             // ['update' => 'once', 'ontime' => $now + $delay], [],
+                false, false, 3, 3, 'txt'
+            );
+        };
+        $editExfee = function ($exfee, $cross_id, $invitation, $by_identity) use ($modExfee, $hlpCross) {
+            $exfee->invitations = [$invitation];
+            $udeResult = $modExfee->updateExfee(
+                $exfee, $by_identity->id, $by_identity->connected_user_id
+            );
+            $objCross = $hlpCross->getCross($cross_id);
+            saveUpdate($cross_id, ['exfee' => [
+                'updated_at'  => date('Y-m-d H:i:s', time()),
+                'identity_id' => $by_identity->id,
+            ]]);
+            touchCross($cross_id, $by_identity->connected_user_id);
+            return $udeResult ? $objCross : null;
+        };
+        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv) {
+            $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
+            $objPost->by_identity_id = $identity->id;
+            $pstResult = $modConv->addPost($objPost);
+            touchCross($cross_id, $identity->connected_user_id);
+            return $pstResult && $pstResult['post'] ? $pstResult['post'] : null;
+        };
         // get inputs
         $params      = $this->params;
         $now         = time();
-        if (!($stepId      = @ (int) $params['id'])) {
+        $delay       = 5;
+        if (!($step_id     = @ (int) $params['id'])) {
             $this->jsonError(500, 'no_step_id');
             return;
         }
-        if (!($identityId  = @ (int) $params['identity_id'])) {
+        if (!($identity_id = @ (int) $params['identity_id'])) {
             $this->jsonError(500, 'no_identity_id');
             return;
         }
-        if (!($objIdentity = $modIdentity->getIdentityById($identityId))) {
+        if (!($objIdentity = $modIdentity->getIdentityById($identity_id))) {
             $this->jsonError(500, 'identity_error');
             return;
         }
         // check robots
-        if (!($btAIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_A))
-         || !($btBIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_B))
-         || !($btCIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_C))
-         || !($btDIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_D))
-         || !($btEIdentity = $modIdentity->getIdentityById(TUTORIAL_BOT_E))) {
+        if (!($bot233      = $modIdentity->getIdentityById(TUTORIAL_BOT_A))
+         || !($botFrontier = $modIdentity->getIdentityById(TUTORIAL_BOT_B))
+         || !($botCashbox  = $modIdentity->getIdentityById(TUTORIAL_BOT_C))
+         || !($botClarus   = $modIdentity->getIdentityById(TUTORIAL_BOT_D))) {
             $this->jsonError(500, 'robot_error');
             return;
         }
-        switch ($stepId) {
-            case 1: // gather
-                $objCross = new stdClass;
-                $objCross->title       = 'Watch the Star Trek Movie!';
-                $objCross->description = 'Star Trek Into Darkness';
-                $objCross->by_identity = $objIdentity;
-                $objCross->time        = $modTime->parseTimeString('tomorrow', '+00:00');
-                $objCross->place       = new Place(
-                    0, '星美国际影城', '中国上海市浦东新区陆家嘴东路168号',
-                    '121.49984399999994', '31.237148',
-                    'google', '0281fa8a12a90a47c8c8bc697c4f525deaffc526',
-                    $now, $now
-                );
-                $objCross->attribute   = new stdClass;
-                $objCross->attribute->state = 'published';
-                $objBackground         = new stdClass;
-                $allBgs = $modBkg->getAllBackground();
-                $objCross->widget      = [
-                    new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
-                ];
-                $objCross->type        = 'Cross';
-                $objCross->exfee       = new Exfee;
-                $objCross->exfee->invitations = [
-                    new Invitation(
-                        0, $btAIdentity, $btAIdentity, $btAIdentity,
-                        'ACCEPTED', 'EXFE', '', $now, $now, true,  0, []
-                    ),
-                    new Invitation(
-                        0, $objIdentity, $btAIdentity, $btAIdentity,
-                        'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
-                    ),
-                ];
-                $gtResult = $hlpCross->gatherCross(
-                    $objCross, $btAIdentity->id,
-                    $btAIdentity->connected_user_id > 0
-                  ? $btAIdentity->connected_user_id : 0
-                );
-                $cross_id = @ (int) $gtResult['cross_id'];
-                if ($cross_id > 0) {
-                    $objCross = $hlpCross->getCross($cross_id);
-                    // fire step 2 {
-                    httpKit::request(
-                        EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-                      . base64_url_encode(
-                            SITE_URL . '/v3/bus/tutorials/2'
-                          . "?cross_id={$cross_id}"
-                          . "&exfee_id={$objCross->exfee->id}"
-                          . "&identity_id={$objIdentity->id}"
-                        ),
-                        ['update' => 'once', 'ontime' => $now], [],
-                        false, false, 3, 3, 'txt'
-                    );
-                    // }
-                    touchCross($cross_id, $btAIdentity->connected_user_id);
-                    $this->jsonResponse($objCross);
-                    return;
-                }
-                $this->jsonError(500, 'internal_server_error');
+        // gather
+        if ($step_id === 1) {
+            $objCross = new stdClass;
+            $objCross->title       = 'Explore EXFE';
+            $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
+            $objCross->by_identity = $bot233;
+            $objCross->time        = $modTime->parseTimeString('Today', '+00:00');
+            $objCross->place       = new Place(
+                0, 'Online', 'exfe.com', '', '', '', '', $now, $now
+            );
+            $objCross->attribute   = new stdClass;
+            $objCross->attribute->state = 'published';
+            $objBackground         = new stdClass;
+            $allBgs = $modBkg->getAllBackground();
+            $objCross->widget      = [
+                new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
+            ];
+            $objCross->type        = 'Cross';
+            $objCross->exfee       = new Exfee;
+            $objCross->exfee->invitations = [
+                new Invitation(
+                    0, $bot233,      $bot233, $bot233,
+                    'ACCEPTED',   'EXFE', '', $now, $now, true,  0, []
+                ),
+                new Invitation(
+                    0, $objIdentity, $bot233, $bot233,
+                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+                ),
+                new Invitation(
+                    0, $botFrontier, $bot233, $bot233,
+                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+                ),
+                new Invitation(
+                    0, $botCashbox,  $bot233, $bot233,
+                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+                ),
+            ];
+            $gtResult = $hlpCross->gatherCross(
+                $objCross, $bot233->id,
+                $bot233->connected_user_id > 0 ? $bot233->connected_user_id : 0
+            );
+            $cross_id = @ (int) $gtResult['cross_id'];
+            if ($cross_id > 0) {
+                $objCross = $hlpCross->getCross($cross_id);
+                $exfee_id = $objCross->exfee->id;
+                touchCross($cross_id, $bot233->connected_user_id);
+                $this->jsonResponse($objCross);
+                nextStep($step_id, $cross_id, $exfee_id, $identity_id, 60);
+                return;
+            }
+            $this->jsonError(500, 'internal_server_error');
+            return;
+        }
+        // get inputs
+        if (!($cross_id = @ (int) $params['cross_id'])) {
+            $this->jsonError(500, 'no_cross_id');
+            return;
+        }
+        if (!($exfee_id = @ (int) $params['exfee_id'])) {
+            $this->jsonError(500, 'no_exfee_id');
+            return;
+        }
+        // get cross
+        if (!($objCross = $hlpCross->getCross($cross_id))) {
+            $this->jsonError(500, 'cross_error');
+            return;
+        }
+        // get exfee
+        if (!($exfee    = $modExfee->getExfeeById($exfee_id))) {
+            $this->jsonError(500, 'exfee_error');
+            return;
+        }
+        $leaved = true;
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->id === $identity_id) {
+                $leaved = false;
                 break;
+            }
+        }
+        if ($leaved) {
+            $this->jsonError(500, 'user_leaved');
+            return;
+        }
+        // steps
+        switch ($step_id) {
             case 2:
+                $result = $editExfee($exfee, $cross_id, new Invitation(
+                    0, $botFrontier, $botFrontier, $botFrontier,
+                    'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                ), $botFrontier);
+                break;
             case 3:
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
+                break;
             case 4:
-                // get inputs
-                if (!($cross_id     = @ (int) $params['cross_id'])) {
-                    $this->jsonError(500, 'no_cross_id');
-                    return;
-                }
-                if (!($exfeeId      = @ (int) $params['exfee_id'])) {
-                    $this->jsonError(500, 'no_exfee_id');
-                    return;
-                }
-                // get cross
-                if (!($objCross     = $hlpCross->getCross($cross_id))) {
-                    $this->jsonError(500, 'cross_error');
-                    return;
-                }
-                // get exfee
-                if (!($exfee        = $modExfee->getExfeeById($exfeeId))) {
-                    $this->jsonError(500, 'exfee_error');
-                    return;
-                }
-                $leaved = true;
-                foreach ($exfee->invitations as $invitation) {
-                    if ($invitation->identity->id === $identityId) {
-                        $leaved = false;
-                        break;
-                    }
-                }
-                if ($leaved) {
-                    $this->jsonError(500, 'user_leaved');
-                    return;
-                }
-                switch ($stepId) {
-                    case 2: // invite
-                        $exfee->invitations = [new Invitation(
-                            0, $btBIdentity, $btAIdentity, $btAIdentity,
-                            'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
-                        )];
-                        $udeResult = $modExfee->updateExfee(
-                            $exfee, $btAIdentity->id,
-                            $btAIdentity->connected_user_id
-                        );
-                        if ($udeResult) {
-                            $objCross = $hlpCross->getCross($cross_id);
-                            // fire step 3 {
-                            httpKit::request(
-                                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-                              . base64_url_encode(
-                                    SITE_URL . '/v3/bus/tutorials/3'
-                                  . "?cross_id={$cross_id}"
-                                  . "&exfee_id={$objCross->exfee->id}"
-                                  . "&identity_id={$objIdentity->id}"
-                                ),
-                                ['update' => 'once', 'ontime' => $now], [],
-                                false, false, 3, 3, 'txt'
-                            );
-                            // }
-                            saveUpdate(
-                                $cross_id,
-                                ['exfee' => [
-                                    'updated_at'  => date('Y-m-d H:i:s', $now),
-                                    'identity_id' => $btAIdentity->id,
-                                ]]
-                            );
-                            touchCross(
-                                $cross_id, $btAIdentity->connected_user_id
-                            );
-                            $this->jsonResponse($objCross);
-                            return;
-                        }
-                        $this->jsonError(500, 'internal_server_error');
-                        break;
-                    case 3: // conversation
-                        $objPost = new Post(
-                            0, $btAIdentity, '喵喵~~', $exfeeId, 'exfee'
-                        );
-                        $objPost->by_identity_id = $btAIdentity->id;
-                        $pstResult = $modConv->addPost($objPost);
-                        if ($pstResult && $pstResult['post']) {
-                            // fire step 4 {
-                            httpKit::request(
-                                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-                              . base64_url_encode(
-                                    SITE_URL . '/v3/bus/tutorials/4'
-                                  . "?cross_id={$cross_id}"
-                                  . "&exfee_id={$objCross->exfee->id}"
-                                  . "&identity_id={$objIdentity->id}"
-                                ),
-                                ['update' => 'once', 'ontime' => $now], [],
-                                false, false, 3, 3, 'txt'
-                            );
-                            // }
-                            touchCross($cross_id, $btAIdentity->connected_user_id);
-                            $this->jsonResponse($pstResult['post']);
-                            return;
-                        }
-                        $this->jsonError(500, 'internal_server_error');
-                        break;
-                    case 4: // conversation
-                        $objPost = new Post(
-                            0, $btBIdentity, '汪汪~~', $exfeeId, 'exfee'
-                        );
-                        $objPost->by_identity_id = $btBIdentity->id;
-                        $pstResult = $modConv->addPost($objPost);
-                        if ($pstResult && $pstResult['post']) {
-                            touchCross($cross_id, $btBIdentity->connected_user_id);
-                            $this->jsonResponse($pstResult['post']);
-                            return;
-                        }
-                        $this->jsonError(500, 'internal_server_error');
+                $result = $editExfee($exfee, $cross_id, new Invitation(
+                    0, $botCashbox, $botCashbox, $botCashbox,
+                    'DECLINED', 'EXFE', '', $now, $now, false, 0, []
+                ), $botCashbox);
+                break;
+            case 5:
+                $result = $post($cross_id, $exfee_id, $botCashbox, 'Can we do this later?');
+                break;
+            case 6:
+                $result = $post($cross_id, $exfee_id, $bot233, "Hey Cashbox be kind, can't you eat later?");
+                break;
+            case 7:
+                $result = $post($cross_id, $exfee_id, $bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
+                break;
+            case 8:
+                $result = $post($cross_id, $exfee_id, $bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
+                break;
+            case 9:
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
+                break;
+            case 10:
+                $result = $post($cross_id, $exfee_id, $bot233, "Thanks buddy. @{$objIdentity->name} To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.");
+                break;
+            case 11:
+                $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
+                break;
+            case 12:
+                $delay  = 60 * 2;
+                $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
+                $needPw = $passwd && !$passwd['encrypted_password'];
+                $result = $needPw
+                        ? post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
+                        : new stdClass;
+                break;
+            case 13:
+                if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)) {
+                    $result = $editExfee($exfee, $cross_id, new Invitation(
+                        0, $botCashbox, $bot233, $bot233,
+                        'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                    ), $botCashbox);
+                } else {
+                    $result = new stdClass;
+                    $delay  = 60 * 2;
+                    $step_id--;
                 }
                 break;
+            case 14:
+                $result = $post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
+                break;
+            case 15:
+                $result = $editExfee($exfee, $cross_id, new Invitation(
+                    0, $botClarus, $botCashbox, $botCashbox,
+                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+                ), $botCashbox);
+                break;
+            case 16:
+                $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
+                break;
+            case 17:
+                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)
+                        ? $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.")
+                        : new stdClass;
+                break;
+            case 18:
+                $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
+                break;
+            case 19:
+                $result = $post($cross_id, $exfee_id, $botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
+                break;
+            case 20:
+                $result = $post($cross_id, $exfee_id, $botClarus, 'moof!');
+                return;
             default:
                 $this->jsonError(500, 'unknow_step_id');
+                return;
         }
+        if ($result) {
+            $this->jsonResponse($result);
+            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay);
+            return;
+        }
+        $this->jsonError(500, 'internal_server_error');
     }
 
 }

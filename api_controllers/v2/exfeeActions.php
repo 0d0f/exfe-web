@@ -180,17 +180,15 @@ class ExfeeActions extends ActionController {
         $cur_invitation_id = 0;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->connected_user_id === $result['uid']) {
-                switch ($invitation->rsvp_status) {
-                    case 'NORESPONSE':
-                    case 'ACCEPTED':
-                    case 'INTERESTED':
-                    case 'DECLINED':
-                    case 'IGNORED':
-                        $cur_invitation = $invitation;
-                }
+                $cur_invitation = $invitation;
+                break;
             }
-            if ($invitation->identity->id === $identity->id) {
-                $cur_invitation_id = $invitation->id;
+        }
+        $rawExfee = $this->getRawExfeeById($exfee->id, true);
+        foreach ($rawExfee as $reItem) {
+            if ((int) $reItem['identity_id'] === $identity->id) {
+                $cur_invitation_id = (int) $reItem['id'];
+                break;
             }
         }
         if (!$cur_invitation) {
@@ -211,7 +209,7 @@ class ExfeeActions extends ActionController {
             if ($cur_invitation->identity->id === $identity->id) {
                 $rmv_result = true;
             } else {
-                $cur_invitation->rsvp_status = 'REMOVED';
+                $cur_invitation->response = 'REMOVED';
                 $rmv_result = $modExfee->updateInvitation($cur_invitation, $identity->id);
             }
         }
@@ -285,17 +283,14 @@ class ExfeeActions extends ActionController {
                 $cur_identity_id = 0;
                 foreach ($exfee->invitations as $invitation) {
                     if ($invitation->identity->connected_user_id === (int) $result['uid']) {
-                        switch ($invitation->rsvp_status) {
-                            case 'NORESPONSE':
-                            case 'ACCEPTED':
-                            case 'INTERESTED':
-                            case 'DECLINED':
-                            case 'IGNORED':
-                                $cur_invitation = $invitation;
-                        }
+                        $cur_invitation = $invitation;
+                        break;
                     }
-                    if ($invitation->identity->id === $rawIdentity->id) {
-                        $cur_identity_id = $rawIdentity->id;
+                }
+                $rawExfee = $this->getRawExfeeById($exfee->id, true);
+                foreach ($rawExfee as $reItem) {
+                    if ((int) $reItem['identity_id'] === $rawIdentity->id) {
+                        $cur_invitation_id = (int) $reItem['id'];
                         break;
                     }
                 }
@@ -304,10 +299,10 @@ class ExfeeActions extends ActionController {
                 }
                 $objInvitation = new stdClass;
                 $objInvitation->id = 0;
-                $objInvitation->identity    = $rawIdentity;
-                $objInvitation->rsvp_status = 'NOTIFICATION';
-                $objInvitation->host        = $cur_invitation->host;
-                $objInvitation->mates       = $cur_invitation->mates;
+                $objInvitation->identity = $rawIdentity;
+                $objInvitation->response = 'NOTIFICATION';
+                $objInvitation->host     = $cur_invitation->host;
+                $objInvitation->mates    = $cur_invitation->mates;
                 $result = $modExfee->addInvitationIntoExfee(
                     $objInvitation, $exfee->id, $cur_invitation->identity->id, (int) $result['uid']
                 );

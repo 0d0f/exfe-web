@@ -81,6 +81,7 @@ class UsersActions extends ActionController {
         switch ($provider = @trim($_POST['provider'])) {
             case 'email':
             case 'phone':
+            case 'wechat':
                 if (!($external_username = trim($_POST['external_username']))) {
                     apiError(400, 'no_external_username', '');
                 }
@@ -947,9 +948,7 @@ class UsersActions extends ActionController {
         foreach ($cross_list as $i => $cross) {
             $archived = false;
             foreach ($cross->exfee->invitations as $invitation) {
-                if ($invitation->identity->connected_user_id === $uid
-                 && $invitation->rsvp_status                 !== 'REMOVED'
-                 && $invitation->rsvp_status                 !== 'NOTIFICATION') {
+                if ($invitation->identity->connected_user_id === $uid) {
                     if (in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
@@ -1022,8 +1021,6 @@ class UsersActions extends ActionController {
                 $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
                      && in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
@@ -1042,8 +1039,6 @@ class UsersActions extends ActionController {
                 $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
                      && in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
@@ -1062,8 +1057,6 @@ class UsersActions extends ActionController {
                 $archived = false;
                 foreach ($cross->exfee->invitations as $iI => $invitation) {
                     if ($invitation->identity->connected_user_id === $user_id
-                     && $invitation->rsvp_status                 !== 'REMOVED'
-                     && $invitation->rsvp_status                 !== 'NOTIFICATION'
                      && in_array('ARCHIVED', $invitation->remark)) {
                         $archived = true;
                         break;
