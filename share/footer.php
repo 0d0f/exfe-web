@@ -1,5 +1,7 @@
 <?php
 
+include 'copyright.php';
+
 echo "  <script>\n";
 include 'ftconfig.php';
 echo "  </script>\n";
