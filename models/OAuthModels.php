@@ -148,29 +148,25 @@ class OAuthModels extends DataModel {
         if (!$external_username) {
             return null;
         }
-        $twitterConn = new tmhOAuth([
-            'consumer_key'    => TWITTER_CONSUMER_KEY,
-            'consumer_secret' => TWITTER_CONSUMER_SECRET,
-        ]);
-        $responseCode = $twitterConn->request(
-            'GET', $twitterConn->url('1/users/show'),
-            ['screen_name' => $external_username]
+        $twitterConn = new TwitterOAuth(
+            TWITTER_CONSUMER_KEY,
+            TWITTER_CONSUMER_SECRET,
+            TWITTER_ACCESS_TOKEN,
+            TWITTER_ACCESS_TOKEN_SECRET
         );
-        if ($responseCode === 200) {
-            $twitterUser = (array) json_decode(
-                $twitterConn->response['response'], true
-            );
+        $twitterUser = $twitterConn->get('users/show', ['screen_name' => $external_username]);
+        if ($twitterUser && @$twitterUser->id) {
             return new Identity(
                 0,
-                $twitterUser['name'],
+                $twitterUser->name,
                 '',
-                $twitterUser['description'],
+                $twitterUser->description,
                 'twitter',
                 0,
-                $twitterUser['id'],
-                $twitterUser['screen_name'],
+                $twitterUser->id,
+                $twitterUser->screen_name,
                 $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
-                    $twitterUser['profile_image_url']
+                    $twitterUser->profile_image_url
                 )
             );
         }
@@ -870,7 +866,7 @@ class OAuthModels extends DataModel {
                 ]);
                 $twitterConn->request(
                     'GET',
-                    $twitterConn->url('1/friendships/exists'),
+                    $twitterConn->url('1.1/friendships/exists'),
                     ['screen_name_a' => $objIdentity->external_username,
                      'screen_name_b' => TWITTER_OFFICE_ACCOUNT]
                 );

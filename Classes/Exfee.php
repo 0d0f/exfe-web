@@ -23,8 +23,7 @@ class Exfee extends EFObject {
 
     public function summary() {
         foreach ($this->invitations as $invI => $invItem) {
-            if ($invItem->rsvp_status === 'REMOVED'
-             || $invItem->rsvp_status === 'NOTIFICATION') {
+            if ($invItem->rsvp_status === 'REMOVED') {
                 continue;
             }
             // @todo: 需要处理身份冲突时的 fallback。

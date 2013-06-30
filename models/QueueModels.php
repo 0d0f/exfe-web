@@ -166,6 +166,7 @@ class QueueModels extends DataModel {
 
     public function getToInvitationsByExfee($cross, $by_user_id, $event, $incExfee = [], $excExfee = [], $host_only = false) {
         $hlpDevice       = $this->getHelperByName('Device');
+        $hlpIdentity     = $this->getHelperByName('Identity');
         $hlpConversation = $this->getHelperByName('Conversation');
         $hlpMute         = $this->getHelperByName('Mute');
         $head2           = [];
@@ -177,6 +178,7 @@ class QueueModels extends DataModel {
         $chkUser         = [];
         $userPerProvider = [];
         $gotInvitation   = [];
+        $strRegExp       = '/(.*)@([^@]+)/';
         foreach ($incExfee as $ieI => $ieItem) {
             $incExfee[$ieI]->inc = true;
         }
@@ -212,6 +214,22 @@ class QueueModels extends DataModel {
             }
             // }
             $gotInvitation[] = deepClone($invitation);
+            // getting notification identities {
+            foreach ($invitation->notification_identities ?: [] as $tarId) {
+                $tarId    = strtolower($tarId);
+                $external_username = preg_replace($strRegExp, '$1', $tarId);
+                $provider          = preg_replace($strRegExp, '$2', $tarId);
+                $identity = $hlpIdentity->getIdentityByProviderAndExternalUsername(
+                    $provider, $external_username
+                );
+                if ($identity) {
+                    $identity->connected_user_id = $invitation->identity->connected_user_id;
+                    $tmpInvitation = deepClone($invitation);
+                    $tmpInvitation->identity = $identity;
+                    $gotInvitation[] = $tmpInvitation;
+                }
+            }
+            // }
             if ($invitation->identity->connected_user_id > 0
             && !$chkUser[$invitation->identity->connected_user_id]) {
                 // get mobile identities
