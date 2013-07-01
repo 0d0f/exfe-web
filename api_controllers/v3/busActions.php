@@ -127,7 +127,7 @@ class BusActions extends ActionController {
         );
         // }
 
-        $rspData = ['cross_id' => $cross_id];
+        $rspData = $crossHelper->getCross($cross_id);
         touchCross($cross_id, $user_id);
 
         if (@$gthResult['over_quota']) {
