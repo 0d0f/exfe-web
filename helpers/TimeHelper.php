@@ -19,4 +19,9 @@ class TimeHelper extends ActionController {
         return $this->modTime->getTimezoneNameByRaw($timezone);
     }
 
+
+    public function convertFacebookTimezone($num) {
+        return $this->modTime->convertFacebookTimezone($num);
+    }
+
 }
