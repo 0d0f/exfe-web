@@ -33,6 +33,7 @@
       font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
       font-size: 14px;
       line-height: 20px;
+      -webkit-font-smoothing: antialiased;
     }
     .navbar {
         margin-bottom: 24px;
@@ -62,8 +63,25 @@
         position: relative;
     }
     .navbar .brand {
-        margin-left: 20px;
+        height: 50px;
+        margin-left: 40px;
         padding: 0;
+        display: inline-block;
+        line-height: 50px;
+    }
+    .navbar .brand img {
+      margin-top: 9px;
+      vertical-align: top;
+    }
+    .navbar .brand span {
+      display: inline-block;
+      height: 100%;
+      margin-right: 5px;
+      margin-left: 10px;
+      font-size: 24px;
+      font-weight: 300;
+      color: #3a6ea5;
+      text-shadow: 0 1px 1px rgba(255,255,255,0.75),0 0 6px rgba(210,226,244,0.5);
     }
     .navbar .nav {
         z-index: 1001;
@@ -162,8 +180,7 @@
       <div class="container" id="app-menus">
 
         <!--  EXFE LOGO -->
-        <a href="/" class="brand" data-link><img src="/static/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
-        <!--a href="/" class="version" data-widget="dialog" data-dialog-type="sandbox">Rome</a-->
+        <a href="/" class="brand" data-link><img src="/static/img/exfe_flat_64.png" width="32" height="32" alt="EXFE" /><span>EXFE</span></a>
 
         <div class="nav-collapse" role="navigation">
           <ul class="nav pull-right">
