@@ -8,6 +8,8 @@ abstract class ActionController {
 
     protected $params     = [];
 
+    // protected $
+
     protected $viewData   = [];
 
     protected $httpStatus = [
