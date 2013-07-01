@@ -3,7 +3,7 @@
     <div class="navbar-bg"></div>
     <div class="navbar-inner">
       <div class="container" id="app-menus">
-        <a href="/" class="brand" data-link><img src="/static/img/exfe-logo.png" width="140" height="50" alt="EXFE" /></a>
+        <a href="/" class="brand" data-link><img src="/static/img/exfe_flat_64.png" width="32" height="32" alt="EXFE" /><span>EXFE</span></a>
         <a href="/" class="version" data-widget="dialog" data-dialog-type="sandbox">Rome</a>
 
         <div class="nav-collapse" role="navigation">
