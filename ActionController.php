@@ -8,7 +8,9 @@ abstract class ActionController {
 
     protected $params     = [];
 
-    // protected $
+    protected $timezone   = '';
+
+    protected $local      = '';
 
     protected $viewData   = [];
 
@@ -90,6 +92,32 @@ abstract class ActionController {
         }
         $this->action = $action;
         $this->params = $params;
+        foreach ($params as $pI => $pItem) {
+            switch ($pI) {
+                case 'accept_language':
+                    if (($pItem = explode(',', $pItem))
+                     && ($pItem = $pItem[0])
+                     && ($pItem = explode(';', $pItem))
+                     && ($pItem = $pItem[0])) {
+                        switch ($pItem) {
+                            case 'zh-hant':
+                                $pItem = 'zh-tw';
+                                break;
+                            case 'zh-hans':
+                                $pItem = 'zh-cn';
+                        }
+                        $this->local    = mysql_real_escape_string($pItem);
+                    }
+                    break;
+                case 'accept_timezone':
+                    if (($pItem = explode(',', $pItem))
+                     && ($pItem = $pItem[0])
+                     && ($pItem = explode(';', $pItem))
+                     && ($pItem = $pItem[0])) {
+                        $this->timezone = mysql_real_escape_string($pItem);
+                    }
+            }
+        }
         $this->$actionMethod();
     }
 
