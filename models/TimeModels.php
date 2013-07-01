@@ -24,6 +24,17 @@ class TimeModels extends DataModel {
     }
 
 
+    public function convertFacebookTimezone($num) {
+        // http://stackoverflow.com/questions/9204818/how-to-convert-facebook-time-zone-to-a-custom-string
+        $res = ($num < 0 ? '-' : '+') . (abs($num) < 10 ? '0' : '') . abs((int)$num) . ':';
+        // --> -05:
+        $mins = round((abs($num) - abs((int)$num)) * 60);
+        // --> 30
+        $res .= ($mins < 10 ? '0' : '') . $mins;
+        return $res;
+    }
+
+
     public function parseTimeString($origin_string, $timezone = '') {
         // check timezone
         if (preg_match('/^[+-][0-9]{2}:[0-9]{2}(\ [a-z]{1,5})?$/i', $timezone)) {

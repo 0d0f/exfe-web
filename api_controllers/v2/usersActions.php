@@ -158,9 +158,13 @@ class UsersActions extends ActionController {
         }
         // }
         // adding
-        if (($adResult = $modIdentity->addIdentity(
-            ['provider' => $provider, 'external_username' => $external_username],
-            $user_id, 2, true, false,
+        $user = $modUser->getUserById($user_id);
+        if (($adResult = $modIdentity->addIdentity([
+                'provider'          => $provider,
+                'external_username' => $external_username,
+                'locale'            => $user->locale,
+                'timezone'          => $user->timezone,
+            ], $user_id, 2, true, false,
             strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback']),
             $workflow
         ))) {
@@ -794,7 +798,13 @@ class UsersActions extends ActionController {
                 apiError(400, 'weak_password', 'password must be longer than four');
             }
             if (!($user_id = $modUser->addUser($password, $name))
-             || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
+             || !$modIdentity->addIdentity([
+                    'provider'          => $provider,
+                    'external_username' => $external_username,
+                    'name'              => $name,
+                    'locale'            => $this->locale,
+                    'timezone'          => $this->timezone
+                ], $user_id)) {
                 apiError(500, 'failed', 'failed while signing up new user');
             }
         }

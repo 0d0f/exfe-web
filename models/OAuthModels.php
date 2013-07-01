@@ -88,7 +88,12 @@ class OAuthModels extends DataModel {
                     $rawTwitterUserInfo['screen_name'],
                     $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
                         $rawTwitterUserInfo['profile_image_url']
-                    )
+                    ),
+                    '',
+                    '',
+                    0,
+                    false,
+                    strtolower(trim($rawTwitterUserInfo['lang']))
                 );
             }
         }
@@ -291,6 +296,9 @@ class OAuthModels extends DataModel {
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = json_decode($data, true)) && !isset($rawIdentity['error'])) {
+            $hlpTime  = $this->getHelperByName('Time');
+            $timezone = $hlpTime->convertFacebookTimezone($rawIdentity['timezone']);
+            $timezone = $hlpTime->getTimezoneNameByRaw($timezone);
             return new Identity(
                 0,
                 $rawIdentity['name'],
@@ -300,7 +308,13 @@ class OAuthModels extends DataModel {
                 0,
                 $rawIdentity['id'],
                 $rawIdentity['username'],
-                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large"
+                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large",
+                '',
+                '',
+                0,
+                false,
+                strtolower(trim($rawIdentity['locale'])),
+                $timezone
             );
         }
         return null;

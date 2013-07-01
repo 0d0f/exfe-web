@@ -10,6 +10,8 @@ class User extends EFObject {
 
     public $timezone          = null;
 
+    public $locale            = null;
+
     public $identities        = null;
 
     public $devices           = null;
@@ -27,7 +29,8 @@ class User extends EFObject {
         $identities        = [],
         $devices           = [],
         $created_at        = '',
-        $updated_at        = ''
+        $updated_at        = '',
+        $locale            = ''
     ) {
         parent::__construct($id, 'user');
 
@@ -44,7 +47,7 @@ class User extends EFObject {
         $this->devices         = $devices;
         $this->created_at      = $created_at . ' +0000';
         $this->updated_at      = $updated_at . ' +0000';
-
+        $this->locale          = $locale;
     }
 
 }
