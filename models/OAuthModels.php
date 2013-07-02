@@ -787,14 +787,16 @@ class OAuthModels extends DataModel {
         );
         // 身份不存在，创建新身份
         if (!$objIdentity) {
-            $identity_id = $hlpIdentity->addIdentity(
-                ['provider'          => $rawIdentity->provider,
-                 'external_id'       => $rawIdentity->external_id,
-                 'name'              => $rawIdentity->name,
-                 'bio'               => $rawIdentity->bio,
-                 'external_username' => $rawIdentity->external_username,
-                 'avatar_filename'   => $rawIdentity->avatar_filename]
-            );
+            $identity_id = $hlpIdentity->addIdentity([
+                'provider'          => $rawIdentity->provider,
+                'external_id'       => $rawIdentity->external_id,
+                'name'              => $rawIdentity->name,
+                'bio'               => $rawIdentity->bio,
+                'external_username' => $rawIdentity->external_username,
+                'avatar_filename'   => $rawIdentity->avatar_filename,
+                'locale'            => @$rawIdentity->locale,
+                'timezone'          => @$rawIdentity->timezone,
+            ]);
             $objIdentity = $hlpIdentity->getIdentityById($identity_id);
         }
         if (!$objIdentity) {
