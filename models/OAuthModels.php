@@ -768,6 +768,11 @@ class OAuthModels extends DataModel {
                         $plusProfile['id'],
                         $googleProfile['email'],
                         $plusProfile['image']
+                        '',
+                        '',
+                        0,
+                        false,
+                        strtolower(trim($plusProfile['locale']))
                     ),
                     'oauth_token' => $token,
                 ];
