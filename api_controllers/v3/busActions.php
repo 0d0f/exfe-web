@@ -274,7 +274,9 @@ class BusActions extends ActionController {
         $cross_id = $rawResult = true;
         $cross_id = $crossHelper->editCross($cross, $by_identity->id);
         if (isset($cross->exfee)) {
-            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true);
+            $timezone  = @$cross->time->begin_at->timezone
+                      ?: @$curCross->time->begin_at->timezone;
+            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true, $timezone);
         }
         if (!$cross_id || !$rawResult) {
             $this->jsonError(500, 'internal_server_error');
