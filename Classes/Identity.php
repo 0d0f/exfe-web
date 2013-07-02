@@ -81,8 +81,8 @@ class Identity extends EFObject {
         $this->updated_at        = $updated_at . ' +0000';
         $this->order             = (int)     $order;
         $this->unreachable       = (boolean) $unreachable;
-        $this->locale            = $locale;
-        $this->timezone          = $timezone;
+        $this->locale            = $locale   ?: '';
+        $this->timezone          = $timezone ?: '';
 
         if (!$this->name) {
             switch ($this->provider) {

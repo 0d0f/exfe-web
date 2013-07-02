@@ -71,7 +71,9 @@ class IdentityModels extends DataModel {
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at'],
                 0,
-                $rawIdentity['unreachable']
+                $rawIdentity['unreachable'],
+                $rawIdentity['locale'],
+                $rawIdentity['timezone']
             );
             $objIdentity->order = $rawUserIdentity && isset($rawUserIdentity['order']) ? (int) $rawUserIdentity['order'] : 999;
             if ($status !== null) {

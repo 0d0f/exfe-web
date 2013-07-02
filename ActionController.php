@@ -106,7 +106,7 @@ abstract class ActionController {
                             case 'zh-hans':
                                 $pItem = 'zh-cn';
                         }
-                        $this->local    = mysql_real_escape_string(strtolower(trim($pItem)));
+                        $this->locale   = mysql_real_escape_string(strtolower(trim($pItem)));
                     }
                     break;
                 case 'accept_timezone':

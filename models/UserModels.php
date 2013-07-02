@@ -94,7 +94,8 @@ class UserModels extends DataModel {
                 [],
                 [],
                 $rawUser['created_at'],
-                $rawUser['updated_at']
+                $rawUser['updated_at'],
+                $rawUser['locale']
             );
             if ($withCrossQuantity) {
                 $user->cross_quantity = 0;
@@ -145,7 +146,9 @@ class UserModels extends DataModel {
                             $item['updated_at'],
                             $item['updated_at'],
                             0,
-                            $item['unreachable']
+                            $item['unreachable'],
+                            $item['locale'],
+                            $item['timezone']
                         );
                         $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
                                                   ?: ($user->avatar_filename
@@ -870,8 +873,27 @@ class UserModels extends DataModel {
                     `updated_at` = NOW()"
         );
         delCache("user_identity:identity_{$identity_id}");
+        $sqlAppend = '';
+        if ($status > 1) {
+             $rawIdentity = $this->getRow(
+                "SELECT * FROM `identities` WHERE `id` = {$identity_id}"
+            );
+            $rawUsers    = $this->getRow(
+                "SELECT * FROM `users`      WHERE `id` = {$user_id}"
+            );
+            if ($rawIdentity && $rawUsers) {
+                if (!$rawUsers['locale']   && $rawIdentity['locale']) {
+                    $sqlAppend .= ", `locale`   = '{$rawIdentity['locale']}'";
+                }
+                if (!$rawUsers['timezone'] && $rawIdentity['timezone']) {
+                    $sqlAppend .= ", `timezone` = '{$rawIdentity['timezone']}'";
+                }
+            }
+        }
         $this->query(
-            "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
+            "UPDATE `users`
+             SET    `updated_at` = NOW() {$sqlAppend}
+             WHERE  `id`         = {$user_id}"
         );
         delCache("users:{$user_id}");
         // tutorials {
