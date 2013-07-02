@@ -47,7 +47,7 @@ class User extends EFObject {
         $this->devices         = $devices;
         $this->created_at      = $created_at . ' +0000';
         $this->updated_at      = $updated_at . ' +0000';
-        $this->locale          = $locale;
+        $this->locale          = $locale   ?: '';
     }
 
 }
