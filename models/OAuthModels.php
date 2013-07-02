@@ -767,7 +767,7 @@ class OAuthModels extends DataModel {
                         0,
                         $plusProfile['id'],
                         $googleProfile['email'],
-                        $plusProfile['image']
+                        $plusProfile['image'],
                         '',
                         '',
                         0,
