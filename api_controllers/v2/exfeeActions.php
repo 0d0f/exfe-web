@@ -71,7 +71,7 @@ class ExfeeActions extends ActionController {
                 $modTime  = $this->getModelByName('Time');
                 $timezone = $modTime->getTimezoneNameByRaw($rawCross['timezone']);
             }
-            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid'], false, $rawCross['state'] === 0, false, $timezone); // draft
+            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid'], false, (int) $rawCross['state'] === 0, false, $timezone); // draft
             if ($cross_id && $udResult['changed']) {
                 saveUpdate(
                     $cross_id,
@@ -137,7 +137,7 @@ class ExfeeActions extends ActionController {
         }
         // do it
         $rawCross  = $modCross->getCross($cross_id);
-        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'], $rawCross['state'] === 0)) {
+        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'], (int) $rawCross['state'] === 0)) {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
