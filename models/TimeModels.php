@@ -5,7 +5,7 @@ class TimeModels extends DataModel {
     public function getTimezoneNameBy($offset) {
         foreach (DateTimeZone::listAbbreviations() as $group) {
             foreach ($group as $timezone) {
-                if ($timezone['offset'] === $offset) {
+                if ($timezone['offset'] === $offset && !$timezone['dst']) {
                     return $timezone['timezone_id'];
                 }
             }
@@ -21,6 +21,34 @@ class TimeModels extends DataModel {
                   ? ($diffHour + $diffMin)
                   : ($diffHour - $diffMin);
         return $this->getTimezoneNameBy($timeDiff);
+    }
+
+
+    public function getDigitalTimezoneBy($timezoneName) {
+        $timezoneName = strtolower(trim($timezoneName));
+        $timezoneDiff = null;
+        foreach (DateTimeZone::listAbbreviations() as $group) {
+            if ($timezoneDiff !== null) {
+                break;
+            }
+            foreach ($group as $timezone) {
+                if (strtolower(trim($timezone['timezone_id'])) === $timezoneName
+                && !$timezone['dst']) {
+                    $timezoneDiff = $timezone['offset'];
+                    break;
+                }
+            }
+        }
+        if ($timezoneDiff === null) {
+            return '';
+        } else {
+            return $this->getDigitalTimezoneByRaw($timezoneDiff);
+        }
+    }
+
+
+    public function getDigitalTimezoneByRaw($offset) {
+        return $this->convertFacebookTimezone($offset / 60 / 60);
     }
 
 
