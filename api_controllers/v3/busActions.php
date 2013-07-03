@@ -50,7 +50,9 @@ class BusActions extends ActionController {
         $cross_str = @file_get_contents('php://input');
         $cross = json_decode($cross_str);
         $chkCross = $crossHelper->validateCross($cross);
-        if ($chkCross['error']) {
+        if ($chkCross['error']
+        || !$cross->exfee
+        || !$cross->exfee->invitations) {
             $this->jsonError(400, 'cross_error', $chkCross['error'][0]);
             return;
         }
