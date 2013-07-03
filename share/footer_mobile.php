@@ -1,23 +1,17 @@
 <?php
 
-$frontConfigFile = 'static/package.json';
-$frontConfigJson = file_get_contents($frontConfigFile);
-$frontConfigData = json_decode($frontConfigJson);
-
-if (!$frontConfigData) {
-    header('location: /500');
-    return;
-}
-
-$filename = preg_replace(
-    '/{{version}}/',
-    $frontConfigData->mobile->version,
+$jsname = preg_replace(
+    '/{{sha1}}/',
+    $frontConfigData->mobile->sha1,
     JS_DEBUG ? $frontConfigData->mobile->files->dev : $frontConfigData->mobile->files->pro
 );
 
+$cssname = $frontConfigData->css->exfemobilemin;
+
 echo "  <script>\n";
 include 'ftconfig.php';
-echo "window._ENV_.JSFILE = '${filename}'";
+echo "window._ENV_.JSFILE = '${jsname}'";
+echo "window._ENV_.CSSFILE = '${cssname}'";
 echo "  </script>\n";
 echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js' async></script>";
 echo "\n";
