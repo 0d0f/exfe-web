@@ -10,8 +10,8 @@ $cssname = $frontConfigData->css->exfemobilemin;
 
 echo "  <script>\n";
 include 'ftconfig.php';
-echo "window._ENV_.JSFILE = '${jsname}'";
-echo "window._ENV_.CSSFILE = '${cssname}'";
+echo "window._ENV_.JSFILE = '${jsname}';";
+echo "window._ENV_.CSSFILE = '${cssname}';";
 echo "  </script>\n";
 echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js' async></script>";
 echo "\n";
