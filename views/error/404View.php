@@ -1,3 +1,10 @@
+<?php
+  $frontConfigData = json_decode(file_get_contents('static/package.json'));
+  if (!$frontConfigData) {
+      header('location: /500');
+      return;
+  }
+?>
 <?php include "share/header.php" ?>
 <style>
   body {
@@ -36,6 +43,12 @@
   }
   .wrapper {
     margin-top: -13px;
+  }
+  .navbar {
+    display: block;
+  }
+  .navbar .version {
+    display: none;
   }
 </style>
 </head>
