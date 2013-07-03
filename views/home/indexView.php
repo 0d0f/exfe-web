@@ -1,4 +1,13 @@
-<?php include "share/header.php" ?>
+<?php
+  $frontConfigData = json_decode(file_get_contents('static/package.json'));
+
+  if (!$frontConfigData) {
+      header('location: /500');
+      return;
+  }
+
+  include "share/header.php";
+?>
 </head>
 <body>
   <?php include "share/nav.php" ?>

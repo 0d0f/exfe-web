@@ -17,4 +17,4 @@
   <meta name="authorization" content="<?php echo htmlentities(json_encode($oauth)); ?>" />
 <?php } ?>
   <link rel="icon" type="image/x-icon" href="/static/img/favicon.ico" />
-  <link rel="stylesheet" media="screen" type="text/css" href="/static/css/exfe.min.css?<?php echo STATIC_CODE_TIMESTAMP; ?>" />
+  <link rel="stylesheet" media="screen" type="text/css" href="/static/css/<?php echo $frontConfigData->css->exfemin; ?>" />
