@@ -902,7 +902,8 @@ class BusActions extends ActionController {
             $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
             $objCross->by_identity = $bot233;
             $objCross->time        = $modTime->parseTimeString(
-                'Today', $modTime->getDigitalTimezoneBy($objIdentity->timezone)
+                'Today',
+                $modTime->getDigitalTimezoneBy($objIdentity->timezone) ?: '+00:00 GMT'
             );
             $objCross->place       = new Place(
                 0, 'Online', 'exfe.com', '', '', '', '', $now, $now
