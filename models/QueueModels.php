@@ -28,14 +28,15 @@ class QueueModels extends DataModel {
 
 
     public function makeRecipientByInvitation($invitation) {
+        $hlpTime = $this->getHelperByName('Time');
         return new Recipient(
             $invitation->identity->id,
             $invitation->identity->connected_user_id,
             $invitation->identity->name,
             $invitation->identity->auth_data ?: '',
-            '',
+            $hlpTime->getDigitalTimezoneBy($invitation->identity->timezone),
             $invitation->token ?: '',
-            '',
+            $invitation->identity->locale,
             $invitation->identity->provider,
             $invitation->identity->external_id,
             $invitation->identity->external_username
@@ -56,8 +57,12 @@ class QueueModels extends DataModel {
 
     public function pushJobToQueue($queue, $service, $method, $invitations, $data = []) {
         $tos  = [];
+        $invTimezone = '';
         foreach ($invitations as $invitation) {
             $tos[] = $this->makeRecipientByInvitation($invitation);
+            if ($invitation->identity->timezone && (!$invTimezone || $invitation->host)) {
+                $invTimezone = $invitation->identity->timezone;
+            }
         }
         if (isset($data['cross'])) {
             $data['cross']->exfee->invitations     = $this->cleanInvitations(
@@ -140,7 +145,7 @@ class QueueModels extends DataModel {
             case 'Digest':
                 $type   = 'always';
                 $rmTime = $this->getRemindTimeBy($data['cross']->time);
-                $ontime = $this->getDigestTimeBy($data['cross']->time);
+                $ontime = $this->getDigestTimeBy($invTimezone, $data['cross']->time);
                 // 明天发生的活动，撤回 remind 通知 {
                 if ($rmTime === $ontime) {
                     $this->fireBus(
@@ -378,14 +383,17 @@ class QueueModels extends DataModel {
     }
 
 
-    public function getDigestTimeBy($crossTime) {
-        if ($crossTime
+    public function getDigestTimeBy($timezoneName, $crossTime) {
+        if (!$timezoneName
+         && $crossTime
          && $crossTime->begin_at
          && $crossTime->begin_at->timezone) {
             $hlpTime = $this->getHelperByName('Time');
             $timezoneName = $hlpTime->getTimezoneNameByRaw(
                 $crossTime->begin_at->timezone
             );
+        }
+        if ($timezoneName) {
             @date_default_timezone_set($timezoneName);
         }
         $time = strtotime('tomorrow') + 60 * 60 * 6; // at 6pm;
