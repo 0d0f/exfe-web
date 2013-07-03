@@ -22,6 +22,7 @@ class HomeActions extends ActionController {
         // return;
 
         // rsvp
+        $modCross = $this->getModelByName('Cross');
         $modExfee = $this->getModelByName('Exfee');
         $modUser  = $this->getModelByName('User');
         $token = mysql_real_escape_string($_GET['token']);
@@ -35,8 +36,10 @@ class HomeActions extends ActionController {
                 $rsvp->identity_id    = $objToken['identity_id'];
                 $rsvp->rsvp_status    = 'ACCEPTED';
                 $rsvp->by_identity_id = $objToken['identity_id'];
+                $rawCross = $modCross->getCross($objToken['cross_id']);
                 $modExfee->updateExfeeRsvpById(
-                    $objToken['exfee_id'], [$rsvp], $objToken['identity_id'], $user_id
+                    $objToken['exfee_id'], [$rsvp], $objToken['identity_id'],
+                    $user_id, (int) $rawCross['state'] === 0
                 );
                 touchCross($objToken['cross_id'], $user_id);
                 header("location: /#!token={$token}");
