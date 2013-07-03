@@ -664,7 +664,11 @@ class ExfeeModels extends DataModel {
                         // delete exfee
                         if ($fmItem['response'] !== 'REMOVED'
                          && $toItem->response   === 'REMOVED') {
-                            $delExfee[]  = $fmItem['id'];
+                            if ($fmItem['host']) { // @todo: 将来需要检查是否是最后一个 host
+                                $toItem->response = $fmItem['response'];
+                            } else {
+                                $delExfee[]       = $fmItem['id'];
+                            }
                         }
                         // update exfee token
                         if ($fmItem['response'] === 'REMOVED'
