@@ -896,11 +896,14 @@ class BusActions extends ActionController {
         }
         // gather
         if ($step_id === 1) {
+            $modTime  = $this->getModelByName('Time');
             $objCross = new stdClass;
             $objCross->title       = 'Explore EXFE';
             $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
             $objCross->by_identity = $bot233;
-            $objCross->time        = $modTime->parseTimeString('Today', '+00:00');
+            $objCross->time        = $modTime->parseTimeString(
+                'Today', $modTime->getDigitalTimezoneBy($objIdentity->timezone)
+            );
             $objCross->place       = new Place(
                 0, 'Online', 'exfe.com', '', '', '', '', $now, $now
             );
