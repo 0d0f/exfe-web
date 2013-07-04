@@ -44,8 +44,63 @@ class VoteModels extends DataModel {
     }
 
 
-    public function getVoteById($id) {
+    public function getVoteById($id, $withResponses = false) {
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $rawVote     = $this->getRow("SELECT * FROM `votes` WHERE `id` = {$id}");
+        $created_by  = $hlpIdentity->getIdentityById($rawVote['created_by']);
+        $updated_by  = $hlpIdentity->getIdentityById($rawVote['updated_by']);
+        if ($rawVote && $created_by && $updated_by) {
+            $vote = new Vote(
+                $rawVote['status'],
+                $rawVote['title'],
+                $rawVote['description'],
+                $rawVote['vote_type'],
+                $created_by,
+                $updated_by,
+                $rawVote['created_at'],
+                $rawVote['updated_at']
+            );
+            $rawOptions = $this->getAll(
+                "SELECT * FROM `vote_options` WHERE `vote_id` = {$id}"
+            );
+            $optionIds  = [];
+            foreach ($rawOptions ?: [] as $item) {
+                $created_by = $hlpIdentity->getIdentityById($item['created_by']);
+                $updated_by = $hlpIdentity->getIdentityById($item['updated_by']);
+                $optionIds[]     = $item['id'];
+                $vote->options[] = new Option(
+                    $item['title'],
+                    $item['data'],
+                    $created_by,
+                    $updated_by,
+                    $item['created_at'],
+                    $item['updated_at']
+                );
+            }
+            if ($withResponses) {
+                $vote->responses = $this->getResponsesByVoteId($optionIds);
+            }
+            return $vote;
+        }
+        return null;
+    }
 
+
+    public function getResponsesByVoteId($vote_ids) {
+        $hlpIdentity  = $this->getHelperByName('Identity');
+        $rawResponses = $hlpIdentity->getResponsesByObjectTypeAndObjectIds(
+            'vote', $vote_ids
+        );
+        $result = [];
+        foreach ($rawResponses ?: [] as $rsItem) {
+            if ($rsItem->response = 'AGREE') {
+                if (!isset($result["{$rsItem->object_id}"])) {
+                    $result["{$rsItem->object_id}"] = [];
+                }
+                $result["{$rsItem->object_id}"][] = $rsItem;
+            }
+        }
+        return $result;
     }
 
 
