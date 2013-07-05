@@ -69,7 +69,7 @@ class FrontController {
         $controller->setName($controllerName);
         $params = [];
         $action = 'index';
-        if (sizeof($arrPath) === 1) {
+        if (sizeof($arrPath) === 1 || preg_match('/^[0-9]+$/', $arrPath[0])) {
             if (preg_match('/^\d+$/', $arrPath[0])) {
                 $action       = 'index';
                 $params['id'] = $arrPath[0];
