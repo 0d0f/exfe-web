@@ -47,56 +47,23 @@ class VotesActions extends ActionController {
                 break;
             }
         }
-
-
-
-
-
-
-
-
-        // check identity
-        if ($stream_id) {
-
-
-
-            if (!$identity_id) {
-                apiError(400, 'server_error');
-            }
-        } else {
-            $identity_id = @ (int) $_POST['identity_id'];
-            if (!$identity_id) {
-                apiError(400, 'no_identity_id', ''); // 需要输入identity_id
-            }
-            $modIdentity = $this->getModelByName('Identity');
-            $identity = $modIdentity->getIdentityById($identity_id);
-            if (!$identity || $identity->connected_user_id !== $user_id) {
-                apiError(400, 'can_not_be_verify', 'This identity does not belong to current user.');
-            }
+        if (!$identity_id) {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        $strPost  = @ file_get_contents('php://input');
-        $objVote  = @ json_decode($strPost);
+        $strPost  = @file_get_contents('php://input');
+        $objVote  = @json_decode($strPost);
         if (!$objVote) {
             apiError(400, 'error_vote');
         }
-        $title    = @ $objVote->title;
-        $desc     = @ $objVote->description;
-        $
+        $options  = @$objVote->options;
+        $vote_id  = $modVote->createVote(
+            $cross_id, $identity_id, @$objVote->title, @$objVote->description
+        );
+        if ($vote_id) {
+            foreach (@$objVote->options ?: [] as $option) {
+                addVoteOption($vote_id, $identity_id, $data);
+            }
+        }
     }
 
 
