@@ -15,6 +15,7 @@ class Option extends EFObject {
     public $updated_at = null;
 
     public function __construct(
+        $id         = 0,
         $title      = '',
         $data       = '',
         $created_by = null,
@@ -22,7 +23,7 @@ class Option extends EFObject {
         $created_at = '',
         $updated_at = ''
     ) {
-        parent::__construct(0, 'option');
+        parent::__construct($id, 'option');
 
         $created_at       = $created_at ?: date('Y-m-d H:i:s');
         $updated_at       = $updated_at && $updated_at !== '0000-00-00 00:00:00'

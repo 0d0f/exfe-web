@@ -19,4 +19,9 @@ class ResponseHelper extends ActionController {
         return $this->modResponse->responseToObject($object_type, $object_id, $identity_id, $response);
     }
 
+
+    public function clearResponseBy($object_type, $object_ids, $identity_id) {
+        return $this->modResponse->clearResponseBy($object_type, $object_ids, $identity_id);
+    }
+
 }
