@@ -47,7 +47,7 @@ class FrontController {
             $action = $arrPath[0];
         }
         $params = $this->getParams($params);
-        $controller->dispatchAction($action, $params);
+        $controller->dispatchAction($action, $params, $arrPath);
     }
 
 
@@ -76,6 +76,7 @@ class FrontController {
             } else {
                 $action       = $arrPath[0];
             }
+            array_shift($arrPath);
         } else {
             if (in_array($controllerName, ['bus', 'gobus'])) {
                 $action       = $arrPath[0];
@@ -84,9 +85,11 @@ class FrontController {
                 $action       = $arrPath[1];
                 $params['id'] = $arrPath[0];
             }
+            array_shift($arrPath);
+            array_shift($arrPath);
         }
         $params = $this->getParams($params);
-        $controller->dispatchAction($action, $params);
+        $controller->dispatchAction($action, $params, $arrPath);
     }
 
 
