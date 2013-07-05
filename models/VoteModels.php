@@ -110,7 +110,7 @@ class VoteModels extends DataModel {
         );
         $result = [];
         foreach ($rawResponses ?: [] as $rsItem) {
-            if ($rsItem->response = 'AGREE') {
+            if ($rsItem->response === 'AGREE') {
                 if (!isset($result["{$rsItem->object_id}"])) {
                     $result["{$rsItem->object_id}"] = [];
                 }
@@ -196,7 +196,7 @@ class VoteModels extends DataModel {
         $identity_id = (int) $identity_id;
         $strTitle    = @mysql_real_escape_string(trim($title));
         $strData     = @mysql_real_escape_string(json_encode($data));
-        if ($vote_id && $identity_id) {
+        if ($id && $identity_id) {
             $sqlAppend = '';
             if ($title !== null) {
                 $sqlAppend .= ", `title` = '{$strTitle}'";
@@ -212,7 +212,7 @@ class VoteModels extends DataModel {
                     $upResult = $this->query(
                         "UPDATE `vote_options` SET
                          `updated_by` = {$identity_id},
-                         `updated_at` = NOW() {$sql}
+                         `updated_at` = NOW() {$sqlAppend}
                          WHERE `id`   = {$id}"
                     );
                     if ($upResult) {
@@ -229,7 +229,7 @@ class VoteModels extends DataModel {
     public function removeVoteOption($id, $identity_id) {
         $id          = (int) $id;
         $identity_id = (int) $identity_id;
-        if ($vote_id && $identity_id) {
+        if ($id && $identity_id) {
             $dbResult = $this->getRow(
                 "SELECT `vote_id` FROM `vote_options` WHERE `id` = {$id}"
             );
