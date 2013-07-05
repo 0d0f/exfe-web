@@ -665,8 +665,9 @@ class BusActions extends ActionController {
             $hlpCross = $this->getHelperByName('Cross');
             $exfee_id = $modCross->getExfeeByCrossId($id);
             if (!$user_id) {
-                $this->jsonError(403, 'forbidden');
-                return;
+                // for wechat
+                // $this->jsonError(403, 'forbidden');
+                // return;
             } else if ($user_id > 0) {
                 $userids = $modExfee->getUserIdsByExfeeId($exfee_id, true);
                 if (!in_array($user_id, $userids)) {
