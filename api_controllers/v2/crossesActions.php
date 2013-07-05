@@ -34,7 +34,7 @@ class CrossesActions extends ActionController {
                 $votes    = [];
                 foreach ($vote_ids ?: [] as $vid) {
                     if (($vote = $modVote->getVoteById($vid))
-                      && $vote->status !== 'DELETEDx') {
+                      && $vote->status !== 'DELETED') {
                         $votes[] = $vote;
                     }
                 }
