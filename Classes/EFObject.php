@@ -12,6 +12,8 @@ require_once 'Recipient.php';
 require_once 'Photo.php';
 require_once 'PhotoX.php';
 require_once 'Response.php';
+require_once 'Vote.php';
+require_once 'Option.php';
 
 
 abstract class EFobject{

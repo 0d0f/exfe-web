@@ -7,6 +7,7 @@ class VoteModels extends DataModel {
         $identity_id = (int) $identity_id;
         $title       = @mysql_real_escape_string(trim($title));
         $description = @mysql_real_escape_string(trim($description));
+        $type        = @mysql_real_escape_string(trim($type));
         if ($cross_id && $identity_id) {
             $isResult = $this->query(
                 "INSERT INTO `votes` SET
@@ -44,13 +45,28 @@ class VoteModels extends DataModel {
     }
 
 
-    public function getVoteById($id, $withResponses = false) {
+    public function getCrossIdByVoteId($vote_id) {
+        $vote_id = (int) $vote_id;
+        if ($vote_id) {
+            $dbResult = $this->getRow(
+                "SELECT `cross_id` FROM `votes` WHERE `id` = {$vote_id}"
+            );
+            if ($dbResult && @$dbResult['cross_id']) {
+                return (int) @$dbResult['cross_id'];
+            }
+        }
+        return null;
+    }
+
+
+    public function getVoteById($id, $withResponses = true) {
         $hlpIdentity = $this->getHelperByName('Identity');
         $rawVote     = $this->getRow("SELECT * FROM `votes` WHERE `id` = {$id}");
         $created_by  = $hlpIdentity->getIdentityById($rawVote['created_by']);
         $updated_by  = $hlpIdentity->getIdentityById($rawVote['updated_by']);
         if ($rawVote && $created_by && $updated_by) {
             $vote = new Vote(
+                $rawVote['id'],
                 $rawVote['status'],
                 $rawVote['title'],
                 $rawVote['description'],
@@ -69,6 +85,7 @@ class VoteModels extends DataModel {
                 $updated_by = $hlpIdentity->getIdentityById($item['updated_by']);
                 $optionIds[]     = $item['id'];
                 $vote->options[] = new Option(
+                    $item['id'],
                     $item['title'],
                     $item['data'],
                     $created_by,
@@ -87,8 +104,8 @@ class VoteModels extends DataModel {
 
 
     public function getResponsesByVoteId($vote_ids) {
-        $hlpIdentity  = $this->getHelperByName('Identity');
-        $rawResponses = $hlpIdentity->getResponsesByObjectTypeAndObjectIds(
+        $hlpResponse  = $this->getHelperByName('Response');
+        $rawResponses = $hlpResponse->getResponsesByObjectTypeAndObjectIds(
             'vote', $vote_ids
         );
         $result = [];
@@ -159,7 +176,7 @@ class VoteModels extends DataModel {
                 "INSERT INTO `vote_options` SET
                  `title`      = '{$title}',
                  `data`       = '{$data}',
-                 `vote_id`    = '{$vote_id}',
+                 `vote_id`    =  {$vote_id},
                  `created_by` =  {$identity_id},
                  `updated_by` =  {$identity_id},
                  `created_at` =  NOW(),
@@ -231,9 +248,19 @@ class VoteModels extends DataModel {
 
 
     public function vote($id, $identity_id, $action = 'AGREE') {
-        if (in_array($action, ['', 'AGREE', 'DISAGREE'])) {
+        if (in_array($action, ['', 'AGREE'])) {
             $hlpResponse = $this->getHelperByName('Response');
-            return $hlpResponse->rresponseToObject('vote', $id, $identity_id, $action);
+            if ($action === 'AGREE') {
+                $rawOptions = $this->getAll(
+                    "SELECT * FROM `vote_options` WHERE `vote_id` = {$id}"
+                );
+                $optionIds  = [];
+                foreach ($rawOptions ?: [] as $item) {
+                    $optionIds[] = $item['id'];
+                }
+                $hlpResponse->clearResponseBy('vote', $optionIds, $identity_id);
+            }
+            return $hlpResponse->responseToObject('vote', $id, $identity_id, $action);
         }
         return null;
     }

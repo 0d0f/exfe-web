@@ -21,6 +21,13 @@ class HomeActions extends ActionController {
         // print_r($pris);
         // return;
 
+        $modVote = $this->getModelByName('Vote');
+        // echo $modVote->createVote(100699, 668, 'Leask', 'Desc demo');
+        // echo $modVote->addVoteOption(4, 668, ['a' => 1], 'My');
+        // $vote = $modVote->getVoteById(4);
+        // print_r($vote);
+        // exit();
+
         // rsvp
         $modCross = $this->getModelByName('Cross');
         $modExfee = $this->getModelByName('Exfee');
