@@ -8,6 +8,8 @@ abstract class ActionController {
 
     protected $params     = [];
 
+    protected $tails      = [];
+
     protected $timezone   = '';
 
     protected $local      = '';
@@ -84,7 +86,7 @@ abstract class ActionController {
     }
 
 
-    public function dispatchAction($action, $params = []) {
+    public function dispatchAction($action, $params = [], $tails = []) {
         $actionMethod = 'do' . ucfirst($action);
         if (!method_exists($this, $actionMethod)) {
             header('HTTP/1.1 404 Not Found');
@@ -92,6 +94,7 @@ abstract class ActionController {
         }
         $this->action = $action;
         $this->params = $params;
+        $this->tails  = $tails;
         foreach ($params as $pI => $pItem) {
             switch ($pI) {
                 case 'accept_language':
