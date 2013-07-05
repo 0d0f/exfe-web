@@ -42,7 +42,8 @@ class VotesActions extends ActionController {
         $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
         $exfee       = $modExfee->getExfeeById($exfee_id);
         foreach ($exfee->invitations as $invitation) {
-            if ($invitation->identity->connected_user_id === $user_id) {
+            if ($invitation->identity->connected_user_id ===  $result['uid']
+             || $invitation->identity->id                === @$result['by_identity_id']) {
                 $identity_id = $invitation->identity->id;
                 break;
             }
@@ -61,14 +62,58 @@ class VotesActions extends ActionController {
         );
         if ($vote_id) {
             foreach (@$objVote->options ?: [] as $option) {
-                addVoteOption($vote_id, $identity_id, $data);
+                $modVote->addVoteOption(
+                    $vote_id, $identity_id, @$option->data, @$option->title
+                );
+            }
+            $objVote = $modVote->getVoteById($vote_id);
+            if ($objVote) {
+                apiResponse(['vote' => $objVote]);
             }
         }
+        apiError(400, 'error_vote');
     }
 
 
     public function doUpdate() {
-
+        $modVote  = $this->getModelByName('Vote');
+        $hlpCheck = $this->getHelperByName('check');
+        $modExfee = $this->getModelByName('Exfee');
+        $params   = $this->params;
+        $vote_id  = @ (int) $params['id'];
+        $cross_id = $modVote->getCrossIdByVoteId($vote_id);
+        $result   = $hlpCheck->isAPIAllow('cross', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+            }
+        }
+        $identity_id = 0;
+        $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
+        $exfee       = $modExfee->getExfeeById($exfee_id);
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->connected_user_id ===  $result['uid']
+             || $invitation->identity->id                === @$result['by_identity_id']) {
+                $identity_id = $invitation->identity->id;
+                break;
+            }
+        }
+        if (!$identity_id) {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+        }
+        $strPost  = @file_get_contents('php://input');
+        $objVote  = @json_decode($strPost);
+        if (!$objVote) {
+            apiError(400, 'error_vote');
+        }
+        if ($modVote->updateVote(
+            $vote_id, $identity_id, @$objVote->title, @$objVote->description
+        ) && ($objVote = $modVote->getVoteById($vote_id))) {
+            apiResponse(['vote' => $objVote]);
+        }
+        apiError(400, 'error_vote');
     }
 
 
