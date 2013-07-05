@@ -17,7 +17,7 @@ class VotesActions extends ActionController {
             }
         }
         $objVote = $modVote->getVoteById($vote_id);
-        if ($objVote) {
+        if ($objVote && $objVote->status !== 'DELETED') {
             apiResponse(['vote' => $objVote]);
         }
         apiError(404, 'not_found', "The Vote you're requesting is not found.");
@@ -118,12 +118,76 @@ class VotesActions extends ActionController {
 
 
     public function doClose() {
-
+        $modVote  = $this->getModelByName('Vote');
+        $hlpCheck = $this->getHelperByName('check');
+        $modExfee = $this->getModelByName('Exfee');
+        $params   = $this->params;
+        $vote_id  = @ (int) $params['id'];
+        $cross_id = $modVote->getCrossIdByVoteId($vote_id);
+        $result   = $hlpCheck->isAPIAllow('cross', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+            }
+        }
+        $identity_id = 0;
+        $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
+        $exfee       = $modExfee->getExfeeById($exfee_id);
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->connected_user_id ===  $result['uid']
+             || $invitation->identity->id                === @$result['by_identity_id']) {
+                $identity_id = $invitation->identity->id;
+                break;
+            }
+        }
+        if (!$identity_id) {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+        }
+        if ($modVote->updateVote(
+            $vote_id, $identity_id, null, null, 3
+        ) && ($objVote = $modVote->getVoteById($vote_id))) {
+            apiResponse(['vote' => $objVote]);
+        }
+        apiError(400, 'error_vote');
     }
 
 
     public function doDelete() {
-
+        $modVote  = $this->getModelByName('Vote');
+        $hlpCheck = $this->getHelperByName('check');
+        $modExfee = $this->getModelByName('Exfee');
+        $params   = $this->params;
+        $vote_id  = @ (int) $params['id'];
+        $cross_id = $modVote->getCrossIdByVoteId($vote_id);
+        $result   = $hlpCheck->isAPIAllow('cross', $params['token'], ['cross_id' => $cross_id]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+            }
+        }
+        $identity_id = 0;
+        $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
+        $exfee       = $modExfee->getExfeeById($exfee_id);
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->connected_user_id ===  $result['uid']
+             || $invitation->identity->id                === @$result['by_identity_id']) {
+                $identity_id = $invitation->identity->id;
+                break;
+            }
+        }
+        if (!$identity_id) {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+        }
+        if ($modVote->updateVote(
+            $vote_id, $identity_id, null, null, 4
+        )) {
+            apiResponse(['vote_id' => $vote_id]);
+        }
+        apiError(400, 'error_vote');
     }
 
 
