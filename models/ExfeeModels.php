@@ -329,18 +329,20 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id, $user_id = 0) {
+    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id, $user_id = 0, $locale = '', $timezone = '') {
         // init
         $hlpIdentity = $this->getHelperByName('identity');
         // adding new identity
         if (!$hlpIdentity->checkIdentityById($invitation->identity->id)) {
-            $invitation->identity->id = $hlpIdentity->addIdentity(
-                ['provider'          => $invitation->identity->provider,
-                 'external_id'       => $invitation->identity->external_id,
-                 'name'              => $invitation->identity->name,
-                 'external_username' => $invitation->identity->external_username,
-                 'avatar_filename'   => $invitation->identity->avatar_filename]
-            );
+            $invitation->identity->id = $hlpIdentity->addIdentity([
+                'provider'          => $invitation->identity->provider,
+                'external_id'       => $invitation->identity->external_id,
+                'name'              => $invitation->identity->name,
+                'external_username' => $invitation->identity->external_username,
+                'avatar_filename'   => $invitation->identity->avatar_filename,
+                'locale'            => $locale,
+                'timezone'          => $timezone,
+            ]);
         }
         if (!$invitation->identity->id) {
             return null;
@@ -459,7 +461,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function addExfee($exfee_id, $invitations, $by_identity_id, $user_id = 0, $draft = false) {
+    public function addExfee($exfee_id, $invitations, $by_identity_id, $user_id = 0, $draft = false, $locale = '', $timezone = '') {
         // basic check
         if (!is_array($invitations) || !$by_identity_id) {
             return null;
@@ -468,6 +470,16 @@ class ExfeeModels extends DataModel {
         $items  = 0;
         $added  = [];
         $hQuota = false;
+        if (!$locale || !$timezone) {
+            foreach ($invitations as $iItem) {
+                if (!$locale   && @$iItem->identity->locale) {
+                    $locale   = $iItem->identity->locale;
+                }
+                if (!$timezone && @$iItem->identity->timezone) {
+                    $timezone = $iItem->identity->timezone;
+                }
+            }
+        }
         // add invitations
         foreach ($invitations as $iI => $iItem) {
             $rawId = @$iItem->identity->external_username ?: "_{$iItem->identity->id}_";
@@ -489,7 +501,7 @@ class ExfeeModels extends DataModel {
                 continue;
             }
             $iItem->grouping = $iI;
-            $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
+            $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id, $locale, $timezone);
         }
         // add notifications
         $strRegExp = '/(.*)@([^@]+)/';
@@ -508,7 +520,7 @@ class ExfeeModels extends DataModel {
                 $iItem->grouping = $iI;
                 $iItem->identity = $identity;
                 $iItem->response = 'NOTIFICATION';
-                $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id);
+                $this->addInvitationIntoExfee($iItem, $exfee_id, $by_identity_id, $user_id, $locale, $timezone);
             }
         }
         // updated exfee time
@@ -529,7 +541,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false) {
+    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false, $timezone = '') {
         // load helpers
         $hlpCross    = $this->getHelperByName('cross');
         $hlpIdentity = $this->getHelperByName('identity');
@@ -559,8 +571,22 @@ class ExfeeModels extends DataModel {
         $added      = [];
         $items      = $old_cross->exfee->items;
         $strRegExp  = '/(.*)@([^@]+)/';
+        $locale     = '';
         //
         if (isset($exfee->invitations) && is_array($exfee->invitations) && $oldExfee) {
+            // get current exfee infos
+            $oldUserIds = [];
+            foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
+                if ($fmItem->response !== 'REMOVED') {
+                    $oldUserIds[] = $fmItem->identity->connected_user_id;
+                }
+                if (!$timezone && $fmItem->identity->timezone) {
+                    $timezone = $fmItem->identity->timezone;
+                }
+                if (!$locale   && $fmItem->identity->locale) {
+                    $locale   = $fmItem->identity->locale;
+                }
+            }
             // complete invitations datas
             foreach ($exfee->invitations as $toI => $toItem) {
                 // adding new identity
@@ -571,6 +597,8 @@ class ExfeeModels extends DataModel {
                         'name'              => $toItem->identity->name,
                         'external_username' => $toItem->identity->external_username,
                         'avatar_filename'   => $toItem->identity->avatar_filename,
+                        'timezone'          => $timezone,
+                        'locale'            => $locale,
                     ]);
                 }
                 // if no identity id or duplicate, skip it
@@ -595,6 +623,8 @@ class ExfeeModels extends DataModel {
                         'external_id'       => '',
                         'name'              => '',
                         'avatar_filename'   => '',
+                        'timezone'          => $timezone,
+                        'locale'            => $locale,
                     ]);
                     if ($idtId && !isset($added[$idtId])) {
                         $added[$idtId]        = true;
@@ -605,13 +635,6 @@ class ExfeeModels extends DataModel {
                         $ntItem->grouping_ref = $toI;
                         $exfee->invitations[] = $ntItem;
                     }
-                }
-            }
-            // get current user ids
-            $oldUserIds = [];
-            foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
-                if ($fmItem->response !== 'REMOVED') {
-                    $oldUserIds[] = $fmItem->identity->connected_user_id;
                 }
             }
             // get current rsvp status
@@ -641,7 +664,11 @@ class ExfeeModels extends DataModel {
                         // delete exfee
                         if ($fmItem['response'] !== 'REMOVED'
                          && $toItem->response   === 'REMOVED') {
-                            $delExfee[]  = $fmItem['id'];
+                            if ($fmItem['host']) { // @todo: 将来需要检查是否是最后一个 host
+                                $toItem->response = $fmItem['response'];
+                            } else {
+                                $delExfee[]       = $fmItem['id'];
+                            }
                         }
                         // update exfee token
                         if ($fmItem['response'] === 'REMOVED'
@@ -693,7 +720,7 @@ class ExfeeModels extends DataModel {
                     $exfee->invitations[$toI]->grouping
                   = $toItem->grouping = @$toItem->grouping ?: ++$maxGrouping;
                     $newInvId[] = $this->addInvitationIntoExfee(
-                        $toItem, $exfee->id, $by_identity_id, $user_id
+                        $toItem, $exfee->id, $by_identity_id, $user_id, $locale, $timezone
                     );
                     $changed = true;
                 }

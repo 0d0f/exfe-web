@@ -50,7 +50,9 @@ class BusActions extends ActionController {
         $cross_str = @file_get_contents('php://input');
         $cross = json_decode($cross_str);
         $chkCross = $crossHelper->validateCross($cross);
-        if ($chkCross['error']) {
+        if ($chkCross['error']
+        || !$cross->exfee
+        || !$cross->exfee->invitations) {
             $this->jsonError(400, 'cross_error', $chkCross['error'][0]);
             return;
         }
@@ -127,7 +129,10 @@ class BusActions extends ActionController {
         );
         // }
 
-        $rspData = ['cross_id' => $cross_id];
+        $rspData = $crossHelper->getCross($cross_id);
+        if (!$rspData->updated) {
+            $rspData->updated = new stdClass;
+        }
         touchCross($cross_id, $user_id);
 
         if (@$gthResult['over_quota']) {
@@ -271,7 +276,9 @@ class BusActions extends ActionController {
         $cross_id = $rawResult = true;
         $cross_id = $crossHelper->editCross($cross, $by_identity->id);
         if (isset($cross->exfee)) {
-            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true);
+            $timezone  = @$cross->time->begin_at->timezone
+                      ?: @$curCross->time->begin_at->timezone;
+            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true, $timezone);
         }
         if (!$cross_id || !$rawResult) {
             $this->jsonError(500, 'internal_server_error');
@@ -658,8 +665,9 @@ class BusActions extends ActionController {
             $hlpCross = $this->getHelperByName('Cross');
             $exfee_id = $modCross->getExfeeByCrossId($id);
             if (!$user_id) {
-                $this->jsonError(403, 'forbidden');
-                return;
+                // for wechat
+                // $this->jsonError(403, 'forbidden');
+                // return;
             } else if ($user_id > 0) {
                 $userids = $modExfee->getUserIdsByExfeeId($exfee_id, true);
                 if (!in_array($user_id, $userids)) {
@@ -891,11 +899,15 @@ class BusActions extends ActionController {
         }
         // gather
         if ($step_id === 1) {
+            $modTime  = $this->getModelByName('Time');
             $objCross = new stdClass;
             $objCross->title       = 'Explore EXFE';
             $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
             $objCross->by_identity = $bot233;
-            $objCross->time        = $modTime->parseTimeString('Today', '+00:00');
+            $objCross->time        = $modTime->parseTimeString(
+                'Today',
+                $modTime->getDigitalTimezoneBy($objIdentity->timezone) ?: '+00:00 GMT'
+            );
             $objCross->place       = new Place(
                 0, 'Online', 'exfe.com', '', '', '', '', $now, $now
             );

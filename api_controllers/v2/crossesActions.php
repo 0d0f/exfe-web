@@ -28,11 +28,24 @@ class CrossesActions extends ActionController {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
-            if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
-                apiError(304, 'Cross Not Modified.');
+            if ($this->tails && @$this->tails[0] === 'widgets') {
+                $modVote  = $this->getModelByName('Vote');
+                $vote_ids = $modVote->getVoteIdsByCrossId($params['id']);
+                $votes    = [];
+                foreach ($vote_ids ?: [] as $vid) {
+                    if (($vote = $modVote->getVoteById($vid))
+                      && $vote->status !== 'DELETED') {
+                        $votes[] = $vote;
+                    }
+                }
+                apiResponse(['widgets' => $votes]);
+            } else {
+                if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
+                    apiError(304, 'Cross Not Modified.');
+                }
+                touchCross($params['id'], $result['uid']);
+                apiResponse(['cross' => $cross]);
             }
-            touchCross($params['id'], $result['uid']);
-            apiResponse(['cross' => $cross]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
     }

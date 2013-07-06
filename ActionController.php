@@ -8,6 +8,12 @@ abstract class ActionController {
 
     protected $params     = [];
 
+    protected $tails      = [];
+
+    protected $timezone   = '';
+
+    protected $local      = '';
+
     protected $viewData   = [];
 
     protected $httpStatus = [
@@ -80,7 +86,7 @@ abstract class ActionController {
     }
 
 
-    public function dispatchAction($action, $params = []) {
+    public function dispatchAction($action, $params = [], $tails = []) {
         $actionMethod = 'do' . ucfirst($action);
         if (!method_exists($this, $actionMethod)) {
             header('HTTP/1.1 404 Not Found');
@@ -88,6 +94,33 @@ abstract class ActionController {
         }
         $this->action = $action;
         $this->params = $params;
+        $this->tails  = $tails;
+        foreach ($params as $pI => $pItem) {
+            switch ($pI) {
+                case 'accept_language':
+                    if (($pItem = explode(',', $pItem))
+                     && ($pItem = $pItem[0])
+                     && ($pItem = explode(';', $pItem))
+                     && ($pItem = $pItem[0])) {
+                        switch ($pItem) {
+                            case 'zh-hant':
+                                $pItem = 'zh-tw';
+                                break;
+                            case 'zh-hans':
+                                $pItem = 'zh-cn';
+                        }
+                        $this->locale   = mysql_real_escape_string(strtolower(trim($pItem)));
+                    }
+                    break;
+                case 'accept_timezone':
+                    if (($pItem = explode(',', $pItem))
+                     && ($pItem = $pItem[0])
+                     && ($pItem = explode(';', $pItem))
+                     && ($pItem = $pItem[0])) {
+                        $this->timezone = mysql_real_escape_string($pItem);
+                    }
+            }
+        }
         $this->$actionMethod();
     }
 

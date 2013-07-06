@@ -71,7 +71,9 @@ class IdentityModels extends DataModel {
                 $rawIdentity['created_at'],
                 $rawIdentity['updated_at'],
                 0,
-                $rawIdentity['unreachable']
+                $rawIdentity['unreachable'],
+                $rawIdentity['locale'],
+                $rawIdentity['timezone']
             );
             $objIdentity->order = $rawUserIdentity && isset($rawUserIdentity['order']) ? (int) $rawUserIdentity['order'] : 999;
             if ($status !== null) {
@@ -283,6 +285,8 @@ class IdentityModels extends DataModel {
         $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
         $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
         $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        $locale            = @mysql_real_escape_string(trim($identityDetail['locale']));
+        $timezone          = @mysql_real_escape_string(trim($identityDetail['timezone']));
         switch ($provider) {
             case 'flickr':
                 break;
@@ -399,7 +403,9 @@ class IdentityModels extends DataModel {
                  `name`              = '{$name}',
                  `bio`               = '{$bio}',
                  `avatar_file_name`  = '{$avatar_filename}',
-                 `external_username` = '{$external_username}'"
+                 `external_username` = '{$external_username}',
+                 `locale`            = '{$locale}',
+                 `timezone`          = '{$timezone}'"
             );
             $id = intval($dbResult['insert_id']);
             delCache("identities:{$id}");

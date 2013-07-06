@@ -47,7 +47,7 @@ class FrontController {
             $action = $arrPath[0];
         }
         $params = $this->getParams($params);
-        $controller->dispatchAction($action, $params);
+        $controller->dispatchAction($action, $params, $arrPath);
     }
 
 
@@ -69,24 +69,28 @@ class FrontController {
         $controller->setName($controllerName);
         $params = [];
         $action = 'index';
-        if (sizeof($arrPath) === 1) {
-            if (preg_match('/^\d+$/', $arrPath[0])) {
-                $action       = 'index';
-                $params['id'] = $arrPath[0];
-            } else {
-                $action       = $arrPath[0];
+
+        //objects/id
+        if (preg_match('/^\d+$/', $arrPath[0])) {
+            $params['id'] = array_shift($arrPath);
+
+        //objects/id/action
+            if ($arrPath) {
+                $action = array_shift($arrPath);
             }
+
+        //objects/action
         } else {
-            if (in_array($controllerName, ['bus', 'gobus'])) {
-                $action       = $arrPath[0];
-                $params['id'] = $arrPath[1];
-            } else {
-                $action       = $arrPath[1];
-                $params['id'] = $arrPath[0];
+            $action = array_shift($arrPath);
+
+        //objects/action/id
+            if ($arrPath) {
+                $params['id'] = array_shift($arrPath);
             }
         }
+
         $params = $this->getParams($params);
-        $controller->dispatchAction($action, $params);
+        $controller->dispatchAction($action, $params, $arrPath);
     }
 
 

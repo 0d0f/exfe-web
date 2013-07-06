@@ -3,25 +3,8 @@
 class HomeActions extends ActionController {
 
     public function doIndex() {
-        // token debuging {
-        // $modAuth = $this->getModelByName('ExfeAuth');
-        // $a = $modAuth->create(['a' => 1, 'b' => 2], ['c' => 3, 'd' => 4], 10000, true);
-        // $a = $modAuth->keyGet('8602');
-        // $a = $modAuth->resourceGet(['a' => 1, 'b' => 2]);
-        // $a = $modAuth->keyUpdate('8602', ['xxx' => 1, 'yyyyy' => 2], 44444444);
-        // $a = $modAuth->resourceUpdate(['a' => 1, 'b' => 2], ['xxx' => 1, 'KKKKKKKKKKK' => 2], 44444444);
-        // $a = $modAuth->keyExpire('8602');
-        // $a = $modAuth->resourceExpire(['a' => 1, 'b' => 2]);
-        // return;
-        // token debuging }
-
-        // $mod = $this->getModelByName('Photo');
-        // $pris = $mod->getAlbumsFromFacebook(391);
-        // //$pris = $mod->getPhotosFromFacebook(391, 10150805288363636);
-        // print_r($pris);
-        // return;
-
         // rsvp
+        $modCross = $this->getModelByName('Cross');
         $modExfee = $this->getModelByName('Exfee');
         $modUser  = $this->getModelByName('User');
         $token = mysql_real_escape_string($_GET['token']);
@@ -35,8 +18,10 @@ class HomeActions extends ActionController {
                 $rsvp->identity_id    = $objToken['identity_id'];
                 $rsvp->rsvp_status    = 'ACCEPTED';
                 $rsvp->by_identity_id = $objToken['identity_id'];
+                $rawCross = $modCross->getCross($objToken['cross_id']);
                 $modExfee->updateExfeeRsvpById(
-                    $objToken['exfee_id'], [$rsvp], $objToken['identity_id'], $user_id
+                    $objToken['exfee_id'], [$rsvp], $objToken['identity_id'],
+                    $user_id, (int) $rawCross['state'] === 0
                 );
                 touchCross($objToken['cross_id'], $user_id);
                 header("location: /#!token={$token}");

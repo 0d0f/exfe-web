@@ -66,7 +66,12 @@ class ExfeeActions extends ActionController {
         if ($exfee && is_object($exfee)) {
             $exfee->id = $exfee_id;
             $rawCross  = $modCross->getCross($cross_id);
-            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid'], false, $rawCross['state'] === 0); // draft
+            $timezone  = '';
+            if ($rawCross['timezone']) {
+                $modTime  = $this->getModelByName('Time');
+                $timezone = $modTime->getTimezoneNameByRaw($rawCross['timezone']);
+            }
+            $udResult  = $modExfee->updateExfee($exfee, $by_identity_id, $result['uid'], false, (int) $rawCross['state'] === 0, false, $timezone); // draft
             if ($cross_id && $udResult['changed']) {
                 saveUpdate(
                     $cross_id,
@@ -132,7 +137,7 @@ class ExfeeActions extends ActionController {
         }
         // do it
         $rawCross  = $modCross->getCross($cross_id);
-        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'], $rawCross['state'] === 0)) {
+        if ($actResult = $modExfee->updateExfeeRsvpById($exfee_id, $rsvp, $by_identity_id, $result['uid'], (int) $rawCross['state'] === 0)) {
             if ($cross_id) {
                 saveUpdate(
                     $cross_id,
@@ -250,12 +255,15 @@ class ExfeeActions extends ActionController {
         switch ($provider) {
             case 'phone':
             case 'email':
+                $user = $modUser->getUserById((int) $result['uid']);
                 $rawIdentity = $modIdentity->getIdentityByProviderAndExternalUsername($provider, $external_username);
                 if (!$rawIdentity) {
                     $identity_id = $modIdentity->addIdentity([
                         'provider'          => $provider,
                         'external_id'       => $external_username,
                         'external_username' => $external_username,
+                        'locale'            => $user->locale   ?: $this->local,
+                        'timezone'          => $user->timezone ?: $this->timezone,
                     ]);
                     $rawIdentity = $modIdentity->getIdentityById($identity_id);
                 }
@@ -265,7 +273,6 @@ class ExfeeActions extends ActionController {
                 if ($rawIdentity->connected_user_id !== (int) $result['uid']) {
                     $viResult = $modUser->verifyIdentity($rawIdentity, 'VERIFY', (int) $result['uid']);
                     if ($viResult) {
-                        $user = $modUser->getUserById((int) $result['uid']);
                         $modIdentity->sendVerification(
                             'Verify',
                             $rawIdentity,

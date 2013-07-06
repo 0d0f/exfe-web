@@ -26,6 +26,10 @@ class Identity extends EFObject {
 
     public $unreachable       = false;
 
+    public $locale            = null;
+
+    public $timezone          = null;
+
 
     static function parseEmail($email) {
         $email = trim($email);
@@ -54,7 +58,9 @@ class Identity extends EFObject {
         $created_at        = '',
         $updated_at        = '',
         $order             = 0,
-        $unreachable       = false
+        $unreachable       = false,
+        $locale            = '',
+        $timezone          = ''
     ) {
         parent::__construct($id, 'identity');
 
@@ -75,6 +81,8 @@ class Identity extends EFObject {
         $this->updated_at        = $updated_at . ' +0000';
         $this->order             = (int)     $order;
         $this->unreachable       = (boolean) $unreachable;
+        $this->locale            = $locale   ?: '';
+        $this->timezone          = $timezone ?: '';
 
         if (!$this->name) {
             switch ($this->provider) {

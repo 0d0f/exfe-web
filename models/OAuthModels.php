@@ -88,7 +88,12 @@ class OAuthModels extends DataModel {
                     $rawTwitterUserInfo['screen_name'],
                     $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
                         $rawTwitterUserInfo['profile_image_url']
-                    )
+                    ),
+                    '',
+                    '',
+                    0,
+                    false,
+                    strtolower(trim($rawTwitterUserInfo['lang']))
                 );
             }
         }
@@ -291,6 +296,9 @@ class OAuthModels extends DataModel {
         $data = curl_exec($objCurl);
         curl_close($objCurl);
         if ($data && ($rawIdentity = json_decode($data, true)) && !isset($rawIdentity['error'])) {
+            $hlpTime  = $this->getHelperByName('Time');
+            $timezone = $hlpTime->convertFacebookTimezone($rawIdentity['timezone']);
+            $timezone = $hlpTime->getTimezoneNameByRaw($timezone);
             return new Identity(
                 0,
                 $rawIdentity['name'],
@@ -300,7 +308,13 @@ class OAuthModels extends DataModel {
                 0,
                 $rawIdentity['id'],
                 $rawIdentity['username'],
-                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large"
+                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large",
+                '',
+                '',
+                0,
+                false,
+                strtolower(trim($rawIdentity['locale'])),
+                $timezone
             );
         }
         return null;
@@ -753,7 +767,12 @@ class OAuthModels extends DataModel {
                         0,
                         $plusProfile['id'],
                         $googleProfile['email'],
-                        $plusProfile['image']
+                        $plusProfile['image'],
+                        '',
+                        '',
+                        0,
+                        false,
+                        strtolower(trim($plusProfile['locale']))
                     ),
                     'oauth_token' => $token,
                 ];
@@ -773,14 +792,16 @@ class OAuthModels extends DataModel {
         );
         // 身份不存在，创建新身份
         if (!$objIdentity) {
-            $identity_id = $hlpIdentity->addIdentity(
-                ['provider'          => $rawIdentity->provider,
-                 'external_id'       => $rawIdentity->external_id,
-                 'name'              => $rawIdentity->name,
-                 'bio'               => $rawIdentity->bio,
-                 'external_username' => $rawIdentity->external_username,
-                 'avatar_filename'   => $rawIdentity->avatar_filename]
-            );
+            $identity_id = $hlpIdentity->addIdentity([
+                'provider'          => $rawIdentity->provider,
+                'external_id'       => $rawIdentity->external_id,
+                'name'              => $rawIdentity->name,
+                'bio'               => $rawIdentity->bio,
+                'external_username' => $rawIdentity->external_username,
+                'avatar_filename'   => $rawIdentity->avatar_filename,
+                'locale'            => @$rawIdentity->locale,
+                'timezone'          => @$rawIdentity->timezone,
+            ]);
             $objIdentity = $hlpIdentity->getIdentityById($identity_id);
         }
         if (!$objIdentity) {
