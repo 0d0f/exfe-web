@@ -58,7 +58,10 @@ class ConversationActions extends ActionController {
         $exfee_id = $params['id'];
         // get raw post
         $post_str = @file_get_contents('php://input');
-        $post     = json_decode($post_str);
+        $post     = @json_decode($post_str);
+        if (!$post) {
+            apiError(400, 'error_post');
+        }
         $post->postable_type = 'exfee';
         $post->postable_id   = $exfee_id;
         // check auth
