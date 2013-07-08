@@ -182,7 +182,7 @@ class UsersActions extends ActionController {
             }
 
         }
-        apiError(400, 'failed', '');
+        apiError(500, 'failed', '');
     }
 
 
