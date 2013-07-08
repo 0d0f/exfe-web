@@ -273,8 +273,9 @@ class BusActions extends ActionController {
         }
 
         // update crosss
-        $cross_id = $rawResult = true;
-        $cross_id = $crossHelper->editCross($cross, $by_identity->id);
+        $cross_rs  = $crossHelper->editCross($cross, $by_identity->id);
+        $cross_id  = $cross_rs && $cross_rs['cross_id'] ? $cross_rs['cross_id'] : 0;
+        $rawResult = true;
         if (isset($cross->exfee)) {
             $timezone  = @$cross->time->begin_at->timezone
                       ?: @$curCross->time->begin_at->timezone;

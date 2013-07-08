@@ -468,10 +468,10 @@ class CrossesActions extends ActionController {
         if ($chkCross['error']) {
             apiError(400, 'cross_error', $chkCross['error'][0]);
         }
-        $cross_id=$crossHelper->editCross($cross, $by_identity_id);
-
-        if(intval($cross_id) > 0) {
-            $cross = $crossHelper->getCross($cross_id, true);
+        $cross_rs = $crossHelper->editCross($cross, $by_identity_id);
+        if ($cross_rs) {
+            $cross_id = $cross_rs['cross_id'];
+            $cross    = $crossHelper->getCross($cross_id, true);
             // call Gobus {
             $oldDraft = isset($old_cross->attribute)
                      && isset($old_cross->attribute['state'])
@@ -483,12 +483,16 @@ class CrossesActions extends ActionController {
                 $modQueue = $this->getModelByName('Queue');
                 if ($oldDraft) {
                     $modQueue->despatchInvitation(
-                        $cross, $cross->exfee, (int) $result['uid'] ?: -$by_identity_id, $by_identity_id
+                        $cross, $cross->exfee,
+                        (int) $result['uid'] ?: -$by_identity_id, $by_identity_id
                     );
                 } else {
-                    $modQueue->despatchUpdate(
-                        $cross, $old_cross, [], [],  $result['uid'] ?: -$by_identity_id, $by_identity_id
-                    );
+                    if ($cross_rs['notification']) {
+                        $modQueue->despatchUpdate(
+                            $cross, $old_cross, [], [],
+                            $result['uid'] ?: -$by_identity_id, $by_identity_id
+                        );
+                    }
                 }
             }
             // }
