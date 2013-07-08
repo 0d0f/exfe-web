@@ -168,6 +168,9 @@ class UsersActions extends ActionController {
             strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback']),
             $workflow
         ))) {
+            if ($adResult === -1) {
+                apiError(400, 'duplicate', '');
+            }
             $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
             if ($adResult['identity_id'] > 0) {
                 $objIdentity = $modIdentity->getIdentityById($adResult['identity_id'], $user_id);
