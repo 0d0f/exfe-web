@@ -18,6 +18,8 @@ if (JS_DEBUG) {
     rawAddScript($filename);
 }
 
+echo "<script src='/static/js/exroutex/0.1.64/exroutex.js'></script>";
+
 // Google Analytics
 include 'google_analytics.php';
 
