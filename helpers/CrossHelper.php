@@ -182,10 +182,10 @@ class CrossHelper extends ActionController {
             $place_id = $placeData->addPlace($place);
         }
 
-        $cross_id  = $crossData->addCross($cross, $place_id, $exfee_id, $by_identity_id, $old_cross);
+        $cross_rs  = $crossData->addCross($cross, $place_id, $exfee_id, $by_identity_id, $old_cross);
         $exfeeData = $this->getModelByName('exfee');
         $exfeeData->updateExfeeTime($exfee_id);
-        return $cross_id;
+        return $cross_rs;
     }
 
 

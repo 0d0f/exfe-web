@@ -416,7 +416,7 @@ class IdentityModels extends DataModel {
                 // verify
                 if ($status === 2) {
                     if ($user_id === $hlpUder->getUserIdByIdentityId($id)) {
-                        return null;
+                        return -1;
                     }
                     // verify identity
                     $objIdentity = $this->getIdentityById($id);
