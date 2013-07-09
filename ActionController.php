@@ -113,6 +113,7 @@ abstract class ActionController {
                     }
                     break;
                 case 'accept_timezone':
+                case 'Accept-Timezone':
                     if (($pItem = explode(',', $pItem))
                      && ($pItem = $pItem[0])
                      && ($pItem = explode(';', $pItem))
