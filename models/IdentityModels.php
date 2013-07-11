@@ -141,10 +141,43 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
-        return preg_replace(
-            '/normal(\.[a-z]{1,5})$/i', 'reasonably_small$1', $strUrl
-        );
+    public function getTwitterAvatarBySmallAvatar($strUrl) {
+        $strReg = '/normal(\.[a-z]{1,5})$/i';
+        return [
+            'original' => preg_replace($strReg, 'original$1',         $strUrl),
+            '320_320'  => preg_replace($strReg, 'original$1',         $strUrl),
+            '80_80'    => preg_replace($strReg, 'reasonably_small$1', $strUrl),
+        ];
+    }
+
+
+    public function getGoogleAvatarBySmallAvatar($strUrl) {
+        $strUrl = preg_replace('/^([^?]*)\?(.*)$/', '$1', $strUrl);
+        return [
+            'original' =>  $url,
+            '320_320'  => "{$url}?sz=320",
+            '80_80'    => "{$url}?sz=80",
+        ];
+    }
+
+
+    // public function getFlickrAvatarById($user_id) {
+    //     $url = "http://www.flickr.com/buddyicons/{$user_id}";
+    //     return [
+    //         'original' => "{$url}_b.jpg",
+    //         '320_320'  => "{$url}_n.jpg",
+    //         '80_80'    => "{$url}_t.jpg",
+    //     ];
+    // }
+
+
+    public function getFacebookAvatar($external_id) {
+        $url = "https://graph.facebook.com/{$external_id}/picture?width=";
+        return [
+            'original' => "{$url}2048&height=2048",
+            '320_320'  => "{$url}320&height=320",
+            '80_80'    => "{$url}80&height=80",
+        ];
     }
 
 
@@ -192,8 +225,13 @@ class IdentityModels extends DataModel {
         // improve data
         switch ($identityDetail['provider']) {
             case 'twitter':
-                $identityDetail['avatar_filename'] = $this->getTwitterLargeAvatarBySmallAvatar(
+                $identityDetail['avatar'] = $this->getTwitterAvatarBySmallAvatar(
                     $identityDetail['avatar_filename']
+                );
+                break;
+            case 'facebook':
+                $identityDetail['avatar'] = $this->getFacebookAvatar(
+                    $identityDetail['external_id']
                 );
         }
         // check old identity
@@ -205,12 +243,15 @@ class IdentityModels extends DataModel {
         $wasId = intval($rawIdentity['id']);
         // update identity
         $chgId = $wasId > 0 ? $wasId : $id;
+        if (is_array($identityDetail['avatar'])) {
+            $identityDetail['avatar'] = json_encode($identityDetail['avatar']);
+        }
         $this->query(
             "UPDATE `identities`
              SET `external_identity` = '{$identityDetail['external_id']}',
                  `name`              = '{$identityDetail['name']}',
                  `bio`               = '{$identityDetail['bio']}',
-                 `avatar_file_name`  = '{$identityDetail['avatar_filename']}',
+                 `avatar_file_name`  = '{$identityDetail['avatar']}',
                  `external_username` = '{$identityDetail['external_username']}',
                  `updated_at`        = NOW()
              WHERE `id` = {$chgId}"////////////$nickname pending
@@ -230,17 +271,27 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function getGravatarUrlByExternalUsername($external_username, $format = '', $fallback = '') {
+    public function getAllSizeGravatarUrlByExternalUsername($external_username) {
+        return [
+            'original' => $this->getGravatarUrlByExternalUsername($external_username, 2048),
+            '320_320'  => $this->getGravatarUrlByExternalUsername($external_username, 320),
+            '80_80'    => $this->getGravatarUrlByExternalUsername($external_username, 80),
+        ];
+    }
+
+
+    public function getGravatarUrlByExternalUsername($external_username, $size = 80, $format = '', $fallback = '') {
         return $external_username
              ? ('http://www.gravatar.com/avatar/' . md5(strtolower($external_username))
               . ($format   ? ".{$format}"     : '')
-              . ($fallback ? "?d={$fallback}" : ''))
+              . ($size     ? "?s={$size}"     : '?s=80')
+              . ($fallback ? "&d={$fallback}" : ''))
              : '';
     }
 
 
     public function getGravatarByExternalUsername($external_username) {
-        $url = $this->getGravatarUrlByExternalUsername($external_username, '', '404');
+        $url = $this->getGravatarUrlByExternalUsername($external_username, 0, '', '404');
         if ($url) {
             $objCurl  = curl_init();
             curl_setopt($objCurl, CURLOPT_URL, $url);
@@ -252,10 +303,10 @@ class IdentityModels extends DataModel {
             $httpCode = curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
             if ($httpCode === 200) {
-                return $this->getGravatarUrlByExternalUsername($external_username);
+                return getAllSizeGravatarUrlByExternalUsername($external_username);
             }
         }
-        return '';
+        return null;
     }
 
 
@@ -269,7 +320,7 @@ class IdentityModels extends DataModel {
      *     $name,
      *     $nickname,
      *     $bio,
-     *     $avatar_filename,
+     *     $avatar,
      * }
      * if ($user_id === 0) without adding it to a user
      */
@@ -284,9 +335,24 @@ class IdentityModels extends DataModel {
         $name              = @mysql_real_escape_string(trim($identityDetail['name']));
         $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
         $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
-        $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
         $locale            = @mysql_real_escape_string(trim($identityDetail['locale']));
         $timezone          = @mysql_real_escape_string(trim($identityDetail['timezone']));
+        $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        if (@$identityDetail['avatar'] && is_array($identityDetail['avatar'])) {
+            $avatar        = [
+                'original' => @mysql_real_escape_string(trim($identityDetail['avatar']['original'])),
+                '320_320'  => @mysql_real_escape_string(trim($identityDetail['avatar']['320_320'])),
+                '80_80'    => @mysql_real_escape_string(trim($identityDetail['avatar']['80_80'])),
+            ];
+        } else if ($avatar_filename) {
+            $avatar        = [
+                'original' => $avatar_filename,
+                '320_320'  => $avatar_filename,
+                '80_80'    => $avatar_filename,
+            ];
+        } else {
+            $avatar        = null;
+        }
         switch ($provider) {
             case 'flickr':
                 break;
@@ -355,21 +421,21 @@ class IdentityModels extends DataModel {
             switch ($provider) {
                 case 'email':
                     $external_id = $external_username = $external_id ?: $external_username;
-                    $avatar_filename = $this->getGravatarByExternalUsername($external_username);
+                    $avatar      = $this->getGravatarByExternalUsername($external_username);
                     break;
                 case 'phone':
                     $external_id = $external_username = $external_id ?: $external_username;
-                    $avatar_filename = '';
+                    $avatar      = '';
                     break;
                 case 'twitter':
                     $rawIdentity = $hlpOAuth->getTwitterProfileByExternalUsername(
                         $external_username
                     );
                     if ($rawIdentity) {
-                        $external_id     = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
-                        $name            = mysql_real_escape_string(trim($rawIdentity->name));
-                        $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
-                        $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
+                        $external_id = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
+                        $name        = mysql_real_escape_string(trim($rawIdentity->name));
+                        $bio         = mysql_real_escape_string(trim($rawIdentity->bio));
+                        $avatar      = $rawIdentity->avatar;
                     }
                     break;
                 case 'facebook':
@@ -377,10 +443,10 @@ class IdentityModels extends DataModel {
                         $external_username
                     );
                     if ($rawIdentity) {
-                        $external_id     = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
-                        $name            = mysql_real_escape_string(trim($rawIdentity->name));
-                        $bio             = mysql_real_escape_string(trim($rawIdentity->bio));
-                        $avatar_filename = mysql_real_escape_string(trim($rawIdentity->avatar_filename));
+                        $external_id = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
+                        $name        = mysql_real_escape_string(trim($rawIdentity->name));
+                        $bio         = mysql_real_escape_string(trim($rawIdentity->bio));
+                        $avatar      = $rawIdentity->avatar;
                     }
                     break;
                 case 'dropbox':
@@ -395,6 +461,7 @@ class IdentityModels extends DataModel {
             }
             // insert new identity into database
             $name = formatName($name);
+            $avatar_filename = $avatar_filename ? json_encode($avatar_filename) : '';
             $dbResult = $this->query(
                 "INSERT INTO `identities` SET
                  `provider`          = '{$provider}',
@@ -557,12 +624,13 @@ class IdentityModels extends DataModel {
     }
 
 
-    public function updateAvatarById($identity_id, $avatar_filename = '') {
+    public function updateAvatarById($identity_id, $avatar) {
         if ($identity_id) {
             delCache("identities:{$identity_id}");
+            $avatar = $avatar ? json_encode($avatar) : '';
             return $this->query(
                 "UPDATE `identities`
-                 SET    `avatar_file_name` = '{$avatar_filename}',
+                 SET    `avatar_file_name` = '{$avatar}',
                         `updated_at`       =  NOW()
                  WHERE  `id`               =  {$identity_id}"
             );

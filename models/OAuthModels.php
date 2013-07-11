@@ -78,21 +78,13 @@ class OAuthModels extends DataModel {
               = gettype($rawTwitterUserInfo) === 'object'
               ? (array) $rawTwitterUserInfo : $rawTwitterUserInfo;
                 return new Identity(
-                    0,
-                    $rawTwitterUserInfo['name'],
-                    '',
+                    0, $rawTwitterUserInfo['name'], '',
                     $rawTwitterUserInfo['description'],
-                    'twitter',
-                    0,
-                    $rawTwitterUserInfo['id'],
+                    'twitter', 0, $rawTwitterUserInfo['id'],
                     $rawTwitterUserInfo['screen_name'],
-                    $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
+                    $hlpIdentity->getTwitterAvatarBySmallAvatar(
                         $rawTwitterUserInfo['profile_image_url']
-                    ),
-                    '',
-                    '',
-                    0,
-                    false,
+                    ), '', '', 0, false,
                     strtolower(trim($rawTwitterUserInfo['lang']))
                 );
             }
@@ -162,15 +154,9 @@ class OAuthModels extends DataModel {
         $twitterUser = $twitterConn->get('users/show', ['screen_name' => $external_username]);
         if ($twitterUser && @$twitterUser->id) {
             return new Identity(
-                0,
-                $twitterUser->name,
-                '',
-                $twitterUser->description,
-                'twitter',
-                0,
-                $twitterUser->id,
-                $twitterUser->screen_name,
-                $hlpIdentity->getTwitterLargeAvatarBySmallAvatar(
+                0, $twitterUser->name, '', $twitterUser->description, 'twitter',
+                0, $twitterUser->id, $twitterUser->screen_name,
+                $hlpIdentity->getTwitterAvatarBySmallAvatar(
                     $twitterUser->profile_image_url
                 )
             );
@@ -297,24 +283,16 @@ class OAuthModels extends DataModel {
         curl_close($objCurl);
         if ($data && ($rawIdentity = json_decode($data, true)) && !isset($rawIdentity['error'])) {
             $hlpTime  = $this->getHelperByName('Time');
+            $hlpIdent = $this->getHelperByName('Identity');
             $timezone = $hlpTime->convertFacebookTimezone($rawIdentity['timezone']);
             $timezone = $hlpTime->getTimezoneNameByRaw($timezone);
+            $avatar   = $hlpIdent->getFacebookAvatar($rawIdentity['id']);
             return new Identity(
-                0,
-                $rawIdentity['name'],
-                '',
+                0, $rawIdentity['name'], '',
                 array_key_exists('bio', $rawIdentity) ? $rawIdentity['bio'] : '',
-                'facebook',
-                0,
-                $rawIdentity['id'],
-                $rawIdentity['username'],
-                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large",
-                '',
-                '',
-                0,
-                false,
-                strtolower(trim($rawIdentity['locale'])),
-                $timezone
+                'facebook', 0, $rawIdentity['id'], $rawIdentity['username'],
+                $avatar, '', '', 0, false,
+                strtolower(trim($rawIdentity['locale'])), $timezone
             );
         }
         return null;
@@ -339,17 +317,18 @@ class OAuthModels extends DataModel {
         // }
         $data = curl_exec($objCurl);
         curl_close($objCurl);
-        if ($data && ($rawIdentity = (array) json_decode($data))) {
+        if ($data && ($rawIdentity = json_decode($data, true)) && !isset($rawIdentity['error'])) {
+            $hlpTime  = $this->getHelperByName('Time');
+            $hlpIdent = $this->getHelperByName('Identity');
+            $timezone = $hlpTime->convertFacebookTimezone($rawIdentity['timezone']);
+            $timezone = $hlpTime->getTimezoneNameByRaw($timezone);
+            $avatar   = $hlpIdent->getFacebookAvatar($rawIdentity['id']);
             return new Identity(
-                0,
-                $rawIdentity['name'],
-                '',
+                0, $rawIdentity['name'], '',
                 array_key_exists('bio', $rawIdentity) ? $rawIdentity['bio'] : '',
-                'facebook',
-                0,
-                $rawIdentity['id'],
-                $rawIdentity['username'],
-                "https://graph.facebook.com/{$rawIdentity['id']}/picture?type=large"
+                'facebook', 0, $rawIdentity['id'], $rawIdentity['username'],
+                $avatar, '', '', 0, false,
+                strtolower(trim($rawIdentity['locale'])), $timezone
             );
         }
         return null;
@@ -493,15 +472,8 @@ class OAuthModels extends DataModel {
             // pack identity
             if ($data && ($data = json_decode($data, true))) {
                 return new Identity(
-                    0,
-                    $data['display_name'],
-                    '',
-                    '',
-                    'dropbox',
-                    0,
-                    $data['uid'],
-                    $data['email'],
-                    ''
+                    0, $data['display_name'], '', '', 'dropbox',
+                    0, $data['uid'], $data['email'], ''
                 );
             }
         }
@@ -535,15 +507,14 @@ class OAuthModels extends DataModel {
         if ($profile && isset($profile->access_token) && isset($profile->user)) {
             return [
                 'identity'    => new Identity(
-                    0,
-                    $profile->user->full_name,
-                    '',
-                    $profile->user->bio,
-                    'instagram',
-                    0,
-                    $profile->user->id,
+                    0, $profile->user->full_name, '', $profile->user->bio,
+                    'instagram', 0, $profile->user->id,
                     $profile->user->username,
-                    $profile->user->profile_picture
+                    [
+                        'original' => $profile->user->profile_picture,
+                        '320_320'  => $profile->user->profile_picture,
+                        '80_80'    => $profile->user->profile_picture,
+                    ]
                 ),
                 'oauth_token' => ['oauth_token' => $profile->access_token],
             ];
@@ -654,17 +625,12 @@ class OAuthModels extends DataModel {
                  && isset($data['oauth_token_secret'])
                  && isset($data['user_nsid'])
                  && isset($data['username'])) {
+                    $avatar = "http://www.flickr.com/buddyicons/{$data['user_nsid']}.jpg";
                     return [
                         'identity'    => new Identity(
-                            0,
-                            $data['fullname'],
-                            '',
-                            '',
-                            'flickr',
-                            0,
-                            $data['user_nsid'],
-                            $data['username'],
-                            "http://www.flickr.com/buddyicons/{$data['user_nsid']}.jpg"
+                            0, $data['fullname'], '', '', 'flickr',
+                            0, $data['user_nsid'], $data['username'],
+                            ['original' => $avatar, '320_320' => $avatar, '80_80' => $avatar]
                         ),
                         'oauth_token' => [
                             'oauth_token'        => $data['oauth_token'],
@@ -754,24 +720,17 @@ class OAuthModels extends DataModel {
             $plusProfile   = $plus->people->get('me');
             $googleProfile = $oauth2->userinfo_v2_me->get();
             if ($plusProfile && $googleProfile) {
-                $plusProfile['image'] = preg_replace(
-                    '/^([^?]*)\?(.*)$/', '$1', $plusProfile['image']['url']
+                $hlpIdentity = $this->getHelperByName('Identity');
+                $avatar = $hlpIdentity->getGoogleAvatarBySmallAvatar(
+                    $plusProfile['image']['url']
                 );
                 return [
                     'identity'    => new Identity(
-                        0,
-                        $plusProfile['displayName'],
+                        0, $plusProfile['displayName'],
                         $plusProfile['name']['givenName'],
                         $plusProfile['aboutMe'] ?: $plusProfile['tagline'],
-                        'google',
-                        0,
-                        $plusProfile['id'],
-                        $googleProfile['email'],
-                        $plusProfile['image'],
-                        '',
-                        '',
-                        0,
-                        false,
+                        'google', 0, $plusProfile['id'],
+                        $googleProfile['email'], $avatar, '', '', 0, false,
                         strtolower(trim($plusProfile['locale']))
                     ),
                     'oauth_token' => $token,
@@ -798,7 +757,7 @@ class OAuthModels extends DataModel {
                 'name'              => $rawIdentity->name,
                 'bio'               => $rawIdentity->bio,
                 'external_username' => $rawIdentity->external_username,
-                'avatar_filename'   => $rawIdentity->avatar_filename,
+                'avatar'            => $rawIdentity->avatar,
                 'locale'            => @$rawIdentity->locale,
                 'timezone'          => @$rawIdentity->timezone,
             ]);
