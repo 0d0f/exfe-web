@@ -86,7 +86,8 @@ class AvatarActions extends ActionController {
                     $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
                     $size      = explode('_', $i);
                     $movResult = $objLibImage->resizeImage(
-                        $_FILES['original']['tmp_name'], $size[0], $size[1], $full_path
+                        $_FILES['original']['tmp_name'],
+                        (int) $size[0], (int) $size[1], $full_path
                     );
                 } else {
                     $filename  = "{$fnmHashed['filename']}.{$item}";

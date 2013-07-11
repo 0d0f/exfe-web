@@ -105,13 +105,16 @@ class Identity extends EFObject {
         if (is_array($avatar)) {
             $this->avatar_filename = $avatar['80_80'];
             $this->avatar          = $avatar;
-        } else {
+        } else if ($avatar) {
             $this->avatar_filename = $avatar;
             $this->avatar          = [
                 'original' => $avatar,
                 '320_320'  => $avatar,
                 '80_80'    => $avatar,
             ];
+        } else {
+            $this->avatar_filename = '';
+            $this->avatar          = null;
         }
     }
 
