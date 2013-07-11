@@ -13,7 +13,7 @@ class BusActions extends ActionController {
         $name              = isset($_POST['name'])              ? mysql_real_escape_string($_POST['name'])              : '';
         $nickname          = isset($_POST['nickname'])          ? mysql_real_escape_string($_POST['nickname'])          : '';
         $bio               = isset($_POST['bio'])               ? mysql_real_escape_string($_POST['bio'])               : '';
-        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string($_POST['avatar_filename'])   : '';
+        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string($_POST['avatar_filename'])   : ''; // @todo submit by array @leask to @googollee
         $external_username = isset($_POST['external_username']) ? mysql_real_escape_string($_POST['external_username']) : '';
         // check data
         if (!$id || !$provider || !$external_id) {
@@ -22,7 +22,7 @@ class BusActions extends ActionController {
         }
         // do update
         $modIdentity = $this->getModelByName('Identity');
-        $id = $modIdentity->updateIdentityByGobus($id, array(
+        $id = $modIdentity->updateIdentityByGobus($id, [
             'provider'          => $provider,
             'external_id'       => $external_id,
             'name'              => $name,
@@ -30,7 +30,7 @@ class BusActions extends ActionController {
             'bio'               => $bio,
             'avatar_filename'   => $avatar_filename,
             'external_username' => $external_username,
-        ));
+        ]);
         // return
         if (!$id) {
             $this->jsonError(500, 'internal_server_error');
@@ -72,6 +72,7 @@ class BusActions extends ActionController {
                 'external_id'       => $cross->by_identity->external_id,
                 'name'              => $cross->by_identity->name,
                 'external_username' => $cross->by_identity->external_username,
+                'avatar'            => $cross->by_identity->avatar,
                 'avatar_filename'   => $cross->by_identity->avatar_filename
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
@@ -192,7 +193,8 @@ class BusActions extends ActionController {
                 'external_id'       => $cross->by_identity->external_id,
                 'name'              => $cross->by_identity->name,
                 'external_username' => $cross->by_identity->external_username,
-                'avatar_filename'   => $cross->by_identity->avatar_filename
+                'avatar'            => $cross->by_identity->avatar,
+                'avatar_filename'   => $cross->by_identity->avatar_filename,
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
         }
@@ -1056,9 +1058,9 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
             case 17:
-                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)
-                        ? $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.")
-                        : new stdClass;
+                $result = $objIdentity->avatar && !preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar['80_80'])
+                        ? new stdClass
+                        : $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
                 break;
             case 18:
                 $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
