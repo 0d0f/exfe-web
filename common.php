@@ -186,9 +186,6 @@ function getHashedFilePath($filename = '') {
 
 function getAvatarUrl($filename) {
     $strReg = '/^http(s)*:\/\/.+$/i';
-    $url    = implode('/', [
-        IMG_URL, substr($filename, 0, 1), substr($filename, 1, 2)
-    ]) . '/';
     if (!$filename) {
         return null;
     } else if (preg_match($strReg, $filename)) {
@@ -202,14 +199,20 @@ function getAvatarUrl($filename) {
                  '320_320'  => $filename,
                  '80_80'    => $filename,
              ];
-    } else if (($avatar = @json_decode($filename)) && is_array($avatar)) {
+    } else if (($avatar = @json_decode($filename, true)) && is_array($avatar)) {
         foreach ($avatar as $aI => $aItem) {
+            $url = implode('/', [
+                IMG_URL, substr($aItem, 0, 1), substr($aItem, 1, 2)
+            ]) . '/';
             if (!preg_match($strReg, $aItem)) {
-                $avatar[$aI] = "{$url}{$aI}_{$filename}";
+                $avatar[$aI] = "{$url}{$aI}_{$aItem}";
             }
         }
         return $avatar;
     }
+    $url = implode('/', [
+        IMG_URL, substr($filename, 0, 1), substr($filename, 1, 2)
+    ]) . '/';
     return [
         'original' => "{$url}original_{$filename}",
         '320_320'  => "{$url}320_320_{$filename}",

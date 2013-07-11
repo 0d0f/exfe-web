@@ -142,7 +142,7 @@ class UserModels extends DataModel {
                             $identity_infos[$item['id']]['status'] === 'CONNECTED' || $identity_infos[$item['id']]['status'] === 'REMOVED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
-                            $item['avatar_file_name'],
+                            getAvatarUrl($item['avatar_file_name']),
                             $item['updated_at'],
                             $item['updated_at'],
                             0,
@@ -150,9 +150,9 @@ class UserModels extends DataModel {
                             $item['locale'],
                             $item['timezone']
                         );
-                        $identity->avatar  = getAvatarUrl($identity->avatar_filename)
-                                          ?: ($user->avatar
-                                          ?: getDefaultAvatarUrl($identity->name));
+                        if (!$identity->avatar) {
+                            $identity->avatar = $user->avatar ?: getDefaultAvatarUrl($identity->name);
+                        }
                         $identity->avatar_filename = $identity->avatar['80_80'];
                         $identity->status  = $identity_infos[$identity->id]['status'];
                         if ($identity->status === 'VERIFYING') {
