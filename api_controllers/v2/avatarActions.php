@@ -72,7 +72,7 @@ class AvatarActions extends ActionController {
         }
 
         // save file
-        require_once "{$curDir}/../../xbgutilitie/libimage.php";
+        require_once dirname(__FILE__) . "/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         $apiResult = ['avatar' => []];
         if ($intImg) {
