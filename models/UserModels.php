@@ -150,9 +150,10 @@ class UserModels extends DataModel {
                             $item['locale'],
                             $item['timezone']
                         );
-                        $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
-                                                  ?: ($user->avatar_filename
-                                                  ?: getDefaultAvatarUrl($identity->name));
+                        $identity->avatar  = getAvatarUrl($identity->avatar_filename)
+                                          ?: ($user->avatar
+                                          ?: getDefaultAvatarUrl($identity->name));
+                        $identity->avatar_filename = $identity->avatar['80_80'];
                         $identity->status  = $identity_infos[$identity->id]['status'];
                         if ($identity->status === 'VERIFYING') {
                             // remove timeout verifying {
@@ -189,7 +190,6 @@ class UserModels extends DataModel {
                             $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']] = [];
                         }
                         $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']][$identity->id] = $identity;
-
                     }
                     ksort($sorting_identities);
                     foreach ($sorting_identities as $soryByCreated) {
@@ -203,6 +203,7 @@ class UserModels extends DataModel {
                     }
                     $user->name            = $user->name            ?: $user->identities[0]->name;
                     $user->bio             = $user->bio             ?: $user->identities[0]->bio;
+                    $user->avatar          = $user->avatar          ?: $user->identities[0]->avatar;
                     $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
@@ -959,12 +960,13 @@ class UserModels extends DataModel {
     }
 
 
-    public function updateAvatarById($user_id, $avatar_filename = '') {
+    public function updateAvatarById($user_id, $avatar = null) {
         if ($user_id) {
             delCache("users:{$user_id}");
+            $avatar = $avatar ? json_encode($avatar) : '';
             return $this->query(
                 "UPDATE `users`
-                 SET    `avatar_file_name` = '{$avatar_filename}',
+                 SET    `avatar_file_name` = '{$avatar}',
                         `updated_at`       =  NOW()
                  WHERE  `id`               =  {$user_id}"
             );

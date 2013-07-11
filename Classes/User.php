@@ -2,52 +2,66 @@
 
 class User extends EFObject {
 
-    public $name              = null;
+    public $name            = null;
 
-    public $bio               = null;
+    public $bio             = null;
 
-    public $avatar_filename   = null;
+    public $avatar          = null;
 
-    public $timezone          = null;
+    public $avatar_filename = null;
 
-    public $locale            = null;
+    public $timezone        = null;
 
-    public $identities        = null;
+    public $locale          = null;
 
-    public $devices           = null;
+    public $identities      = null;
 
-    public $created_at        = null;
+    public $devices         = null;
 
-    public $updated_at        = null;
+    public $created_at      = null;
+
+    public $updated_at      = null;
+
 
     public function __construct(
-        $id                = 0,
-        $name              = '',
-        $bio               = '',
-        $avatar_filename   = '',
-        $timezone          = '',
-        $identities        = [],
-        $devices           = [],
-        $created_at        = '',
-        $updated_at        = '',
-        $locale            = ''
+        $id         = 0,
+        $name       = '',
+        $bio        = '',
+        $avatar     = null,
+        $timezone   = '',
+        $identities = [],
+        $devices    = [],
+        $created_at = '',
+        $updated_at = '',
+        $locale     = ''
     ) {
         parent::__construct($id, 'user');
 
-        $created_at            = $created_at ?:  '0000-00-00 00:00:00';
-        $updated_at            = $updated_at
-                              && $updated_at !== '0000-00-00 00:00:00'
-                               ? $updated_at : $created_at;
+        $created_at       = $created_at ?:  '0000-00-00 00:00:00';
+        $updated_at       = $updated_at
+                         && $updated_at !== '0000-00-00 00:00:00'
+                          ? $updated_at : $created_at;
 
-        $this->name            = $name ?: '';
-        $this->bio             = $bio  ?: '';
-        $this->avatar_filename = $avatar_filename;
-        $this->timezone        = $timezone ?: '';
-        $this->identities      = $identities;
-        $this->devices         = $devices;
-        $this->created_at      = $created_at . ' +0000';
-        $this->updated_at      = $updated_at . ' +0000';
-        $this->locale          = $locale   ?: '';
+        $this->name       = $name ?: '';
+        $this->bio        = $bio  ?: '';
+        $this->timezone   = $timezone ?: '';
+        $this->identities = $identities;
+        $this->devices    = $devices;
+        $this->created_at = $created_at . ' +0000';
+        $this->updated_at = $updated_at . ' +0000';
+        $this->locale     = $locale   ?: '';
+
+        if (is_array($avatar)) {
+            $this->avatar_filename = $avatar['80_80'];
+            $this->avatar          = $avatar;
+        } else {
+            $this->avatar_filename = $avatar;
+            $this->avatar          = [
+                'original' => $avatar,
+                '320_320'  => $avatar,
+                '80_80'    => $avatar,
+            ];
+        }
     }
 
 }

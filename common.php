@@ -161,13 +161,13 @@ function saveUpdate($cross_id, $updated) {
 
 function getHashedFilePath($filename = '') {
     // do hash
-    $hashed_name = md5(json_encode(array(
+    $hashed_name = md5(json_encode([
         'action'    => 'save_file',
         'file_name' => $filename,
         'microtime' => Microtime(),
         'random'    => Rand(0, Time()),
         'unique_id' => Uniqid(),
-    )));
+    ]));
     // get path
     $hashed_path
   = IMG_FOLDER
@@ -184,20 +184,47 @@ function getHashedFilePath($filename = '') {
 }
 
 
-function getAvatarUrl($raw_avatar, $size = '80_80') {
-    return $raw_avatar
-         ? (preg_match('/^http(s)*:\/\/.+$/i', $raw_avatar)
-          ? $raw_avatar
-          : (IMG_URL
-           . '/' . substr($raw_avatar, 0, 1)
-           . '/' . substr($raw_avatar, 1, 2)
-           . '/' . "{$size}_{$raw_avatar}"))
-         : '';
+function getAvatarUrl($filename) {
+    $strReg = '/^http(s)*:\/\/.+$/i';
+    $url    = implode('/', [
+        IMG_URL, substr($filename, 0, 1), substr($filename, 1, 2)
+    ]) . '/';
+    if (!$filename) {
+        return null;
+    } else if (preg_match($strReg, $filename)) {
+        return preg_match('/^http(s)*:\/\/www\.gravatar\.com\/.+$/i', $filename)
+             ? [
+                 'original' => "$filename?s=2048",
+                 '320_320'  => "$filename?s=320",
+                 '80_80'    => "$filename?s=80",
+             ] : [
+                 'original' => $filename,
+                 '320_320'  => $filename,
+                 '80_80'    => $filename,
+             ];
+    } else if (($avatar = @json_decode($filename)) && is_array($avatar)) {
+        foreach ($avatar as $aI => $aItem) {
+            if (!preg_match($strReg, $aItem)) {
+                $avatar[$aI] = "{$url}{$aI}_{$filename}";
+            }
+        }
+        return $avatar;
+    }
+    return [
+        'original' => "{$url}original_{$filename}",
+        '320_320'  => "{$url}320_320_{$filename}",
+        '80_80'    => "{$url}80_80_{$filename}",
+    ];
 }
 
 
 function getDefaultAvatarUrl($name) {
-    return $name ? (API_URL . '/v2/avatar/default?name=' . urlencode($name)) : '';
+    $url = API_URL . '/v2/avatar/default?name=' . urlencode($name) . '&size=';
+    return $name ? [
+        'original' => "{$url}original",
+        '320_320'  => "{$url}320_320",
+        '80_80'    => "{$url}80_80",
+    ] : null;
 }
 
 

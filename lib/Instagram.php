@@ -15,7 +15,7 @@
  */
 
 /**
- *	This is class written to work with Instagram OAuth methods. It 
+ *	This is class written to work with Instagram OAuth methods. It
  *	authorizes a user and will let you make requests to Instagram API.
  *
  * 	Last Edit: May 28th, 2011
@@ -27,16 +27,16 @@
 class Instagram {
     private $apiBase = 'https://api.instagram.com/';
     private $apiUrl = 'https://api.instagram.com/v1/';
-    
+
     protected $client_id;
     protected $client_secret;
     protected $access_token;
-    
+
     public function accessTokenUrl()  { return $this->apiBase.'oauth/access_token/'; }
     public function authorizeUrl($redirect_uri, $scope = array('basic'), $response_type = 'code'){
         return $this->apiBase.'oauth/authorize/?client_id='.$this->client_id.'&redirect_uri='.$redirect_uri.'&response_type='.$response_type.'&scope='.implode('+', $scope);
     }
-    
+
     public function __construct($client_id='', $client_secret='', $access_token = '')
     {
         if(empty($client_id) || empty($client_secret)){
@@ -46,7 +46,7 @@ class Instagram {
         $this->client_secret = $client_secret;
         $this->access_token = $access_token;
     }
-    
+
     private function urlEncodeParams($params)
     {
         $postdata = '';
@@ -56,40 +56,50 @@ class Instagram {
                 $postdata .= '&'.$key.'='.urlencode($value);
             }
         }
-        
+
         return $postdata;
     }
-    
+
     public function http($url, $params, $method)
     {
         $c = curl_init();
-        
+
         // If they are authenticated and there is a access token passed, send it along with the request
         // If the access token is invalid, an error will be raised upon the request
         if($this->access_token){
             $url = $url.'?access_token='.$this->access_token;
         }
-        
+
         // If the request is a GET and we need to pass along more params, "URL Encode" them.
         if($method == 'GET'){
             $url = $url.$this->urlEncodeParams($params);
         }
-        
+
         curl_setopt($c, CURLOPT_URL, $url);
-        
+
         if($method == 'POST'){
             curl_setopt($c, CURLOPT_POST, True);
             curl_setopt($c, CURLOPT_POSTFIELDS, $params);
         }
-        
+
         if($method == 'DELETE'){
             curl_setopt($c, CURLOPT_CUSTOMREQUEST, 'DELETE');
         }
-        
+
         curl_setopt($c, CURLOPT_RETURNTRANSFER, True);
-        
+
+        // anti-gfw by @leask {
+        // if (PROXY_TYPE && PROXY_ADDR && PROXY_PORT) {
+        //   curl_setopt($c, CURLOPT_PROXY, PROXY_ADDR);
+        //   curl_setopt($c, CURLOPT_PROXYPORT, PROXY_PORT);
+        //   if (PROXY_TYPE === 'socks') {
+        //     curl_setopt($c, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+        //   }
+        // }
+        // }
+
         $r = json_decode(curl_exec($c));
-        
+
         // Throw an error if maybe an access token expired or wasn't right
         // or if an ID doesn't exist or something
         if(isset($r->meta->error_type)){
@@ -97,23 +107,23 @@ class Instagram {
         }
         return $r;
     }
-    
+
     // Giving you some easy functions (get, post, delete)
     public function get($endpoint, $params=array(), $method='GET'){
         return $this->http($this->apiUrl.$endpoint, $params, $method);
     }
-    
+
     public function post($endpoint, $params=array(), $method='POST'){
         return $this->http($this->apiUrl.$endpoint, $params, $method);
     }
-    
+
     public function delete($endpoint, $params=array(), $method='DELETE'){
         return $this->http($this->apiUrl.$endpoint, $params, $method);
     }
-    
+
     public function getAccessToken($code, $redirect_uri, $grant_type = 'authorization_code'){
         $rsp = $this->http($this->accessTokenUrl(), array('client_id' => $this->client_id, 'client_secret' => $this->client_secret, 'grant_type' => $grant_type, 'redirect_uri' => $redirect_uri, 'code' => $code), 'POST');
-        
+
         return $rsp;
     }
 }

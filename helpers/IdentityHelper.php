@@ -35,8 +35,23 @@ class IdentityHelper extends ActionController {
     }
 
 
-    public function getTwitterLargeAvatarBySmallAvatar($strUrl) {
-        return $this->modIdentity->getTwitterLargeAvatarBySmallAvatar($strUrl);
+    public function getTwitterAvatarBySmallAvatar($strUrl) {
+        return $this->modIdentity->getTwitterAvatarBySmallAvatar($strUrl);
+    }
+
+
+    public function getGoogleAvatarBySmallAvatar($strUrl) {
+        return $this->modIdentity->getGoogleAvatarBySmallAvatar($strUrl);
+    }
+
+
+    public function getGravatarUrlByExternalUsername($external_username, $size = 80, $format = '', $fallback = '') {
+        return $this->modIdentity->getGravatarUrlByExternalUsername($external_username, $size, $format, $fallback);
+    }
+
+
+    public function getFacebookAvatar($external_id) {
+        return $this->modIdentity->getFacebookAvatar($external_id);
     }
 
 
