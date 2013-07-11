@@ -53,8 +53,6 @@ class FrontController {
 
     public function rockApi($controllerName, $arrPath = [], $version = 'v2') {
         header('Content-Type: application/json; charset=UTF-8');
-        header('Access-Control-Allow-Origin: ' . SITE_URL);
-        header('Access-Control-Allow-Credentials: true');
         if ($_GET['ssid']) {
             session_id($_GET['ssid']);
         }
@@ -95,6 +93,12 @@ class FrontController {
 
 
     public function dispatch() {
+        header('Access-Control-Allow-Origin: ' . SITE_URL);
+        header('Access-Control-Allow-Credentials: true');
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header('HTTP/1.1 204 No Content');
+            return;
+        }
         $route   = isset($_GET['_route']) ? $_GET['_route'] : $_SERVER['REQUEST_URI'];
         $arrPath = explode(
             '/', strtolower(current(explode('?', $route)))

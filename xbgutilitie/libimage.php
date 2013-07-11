@@ -5,7 +5,7 @@ class libImage {
 
     public function resizeImage($srcFile, $toWidth, $toHeight, $toFile = '', $toQuality = 100) {
         $tinfo = '';
-        $data  = GetImageSize($srcFile,$tinfo);
+        $data  = GetImageSize($srcFile, $tinfo);
         switch ($data[2]) {
             case 1:
                 $curImage = ImageCreateFromGIF($srcFile);
