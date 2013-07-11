@@ -75,34 +75,42 @@ class AvatarActions extends ActionController {
         require_once dirname(__FILE__) . "/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         $apiResult = ['avatar' => []];
+        $iconFiles = [];
         if ($intImg) {
             // hash filename
             if (!($fnmHashed = getHashedFilePath(Uniqid()))) {
                 apiError(500, 'error_saving_image', 'Error while saving image.');
             }
+            $originFilename  = '';
             foreach ($sizes as $i => $item) {
                 if ($item === 'new') {
                     $filename  = "{$fnmHashed['filename']}.jpg";
                     $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
                     $size      = explode('_', $i);
                     $movResult = $objLibImage->resizeImage(
-                        $_FILES['original']['tmp_name'],
-                        (int) $size[0], (int) $size[1], $full_path
+                        $originFilename, $size[0], $size[1], $full_path
                     );
                 } else {
                     $filename  = "{$fnmHashed['filename']}.{$item}";
                     $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
+                    if ($i === 'original') {
+                        $originFilename = $full_path;
+                    }
                     $movResult = isset($_FILES[$i])
                                ? move_uploaded_file($_FILES[$i]['tmp_name'], $full_path)
                                : false;
                 }
                 if ($movResult) {
                     $apiResult['avatar'][$i] = $filename;
+                    $iconFiles[$i]           = $filename;
                     continue;
                 }
                 apiError(500, 'error_saving_image', 'Error while saving image.');
             }
-            $apiResult['avatar']  = getAvatarUrl($apiResult['avatar']);
+            foreach ($apiResult['avatar'] as $aI => $aItem) {
+                $url = implode('/', [IMG_URL, substr($aItem, 0, 1), substr($aItem, 1, 2)]) . '/';
+                $apiResult['avatar'][$aI] = "{$url}{$aI}_{$aItem}";
+            }
         } else {
             if ($identity->provider === 'email') {
                 $apiResult['avatar'] = $modIdentity->getGravatarByExternalUsername(
@@ -115,11 +123,11 @@ class AvatarActions extends ActionController {
         if ($identity_id) {
             $apiResult['type']        = 'identity';
             $apiResult['identity_id'] = $identity_id;
-            $dbResult = $modIdentity->updateAvatarById($identity_id, $apiResult['avatar']);
+            $dbResult = $modIdentity->updateAvatarById($identity_id, $iconFiles);
         } else {
             $apiResult['type']        = 'user';
             $apiResult['user_id']     = $user_id;
-            $dbResult = $modUser->updateAvatarById($user_id, $apiResult['avatar']);
+            $dbResult = $modUser->updateAvatarById($user_id, $iconFiles);
         }
 
         // get default avatar
