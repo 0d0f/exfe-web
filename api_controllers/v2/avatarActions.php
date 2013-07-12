@@ -60,7 +60,7 @@ class AvatarActions extends ActionController {
                     case 'jpeg':
                         break;
                     default:
-                        apiError(400, "error_{$i}_image_format", "Error {$i} size image format.");
+                        apiError(400, "error_image_format", "Error {$i} image format.");
                 }
             } else if ($i !== 'original' && $sizes['original']) {
                 $intImg++;
