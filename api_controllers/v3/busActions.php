@@ -40,6 +40,62 @@ class BusActions extends ActionController {
     }
 
 
+    public function doRecipients() {
+        $identity_id = @strtolower(trim($_GET['identity_id']));
+        if (!$identity_id) {
+            $this->jsonError(400, 'error_identity_id');
+            return;
+        }
+        $modUser     = $this->getModelByName('User');
+        $modIdentity = $this->getModelByName('Identity');
+        $modDevice   = $this->getModelByName('Device');
+        $modTime     = $this->getModelByName('Time');
+        $strReg      = '/(.*)@([^\@]*)/';
+        $external_username = preg_replace($strReg, '$1', $identity_id);
+        $provider          = preg_replace($strReg, '$2', $identity_id);
+        $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $external_username, true
+        );
+        if (!$identity_id) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $user_id     = $modUser->getUserIdByIdentityId($identity_id);
+        if (!$user_id) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $objUser = $modUser->getUserById($user_id);
+        if (!$objUser || !$objUser->identities) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $devices = $modDevice->getDevicesByUserid(
+            $user_id, $objUser->identities[0]
+        );
+        $recipients = [];
+        foreach (array_merge($objUser->identities, $devices) as $idItem) {
+            $recipients[] = new Recipient(
+                $idItem->id,
+                $idItem->connected_user_id,
+                $idItem->name,
+                $idItem->auth_data ?: '',
+                $modTime->getDigitalTimezoneBy($objUser->timezone),
+                '', // cross invitation token
+                $objUser->locale,
+                $idItem->provider,
+                $idItem->external_id,
+                $idItem->external_username
+            );
+        }
+        if (!$recipients) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $this->jsonResponse($recipients);
+    }
+
+
     public function doGather() {
         // init models
         $modIdentity = $this->getModelByName('identity');
