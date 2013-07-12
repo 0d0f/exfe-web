@@ -217,7 +217,7 @@ class UsersActions extends ActionController {
                     apiError(400, 'error_browsing_identity_token', '');
             }
             if (time() - $last_authenticate > 60 * 15) { // in 15 mins
-                apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
+                apiError(401, 'token_staled', 'reauthenticate is needed');
             }
             $fromUserId = $objBsToken['data']['user_id'];
         // 通过邀请 token 合并用户
@@ -358,7 +358,7 @@ class UsersActions extends ActionController {
         if ($result['check']) {
             // @todo: 端木说这里可以有，但是产品还没到这一步，为了省事就……
             // if (!$result['fresh']) {
-            //     apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            //     apiError(401, 'token_staled', ''); // 需要重新鉴权
             // }
             $user_id = $result['uid'];
         } else {
@@ -1291,7 +1291,7 @@ class UsersActions extends ActionController {
         if ($rstVerify) {
         } else if ($rstVerify === null) {
             if (!$result['fresh']) {
-                apiError(401, 'authenticate_timeout', '');
+                apiError(401, 'token_staled', '');
             }
         } else {
             apiError(403, 'invalid_current_password', ''); // 密码错误
