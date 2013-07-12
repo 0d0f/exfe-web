@@ -1287,20 +1287,19 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // collecting post data
-        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
-        if ($rstVerify) {
-        } else if ($rstVerify === null) {
-            if (!$result['fresh']) {
-                apiError(401, 'token_staled', '');
-            }
-        } else {
-            apiError(403, 'invalid_current_password', ''); // 密码错误
-        }
         if (strlen($newPassword = $_POST['new_password']) === 0) {
             apiError(400, 'no_new_password', ''); // 请输入新密码
         }
         if (!validatePassword($newPassword)) {
             apiError(400, 'weak_password', 'password must be longer than four');
+        }
+        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
+        if ($rstVerify) {
+        } else if ($result['fresh'] && !isset($_POST['current_password'])) {
+        } else if (isset($_POST['current_password'])) {
+            apiError(403, 'invalid_current_password', ''); // 密码错误
+        } else {
+            apiError(401, 'token_staled', '');
         }
         // set password
         if ($modUser->setUserPassword($user_id, $newPassword)) {
