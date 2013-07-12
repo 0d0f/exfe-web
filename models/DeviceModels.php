@@ -119,24 +119,22 @@ class DeviceModels extends DataModel {
              AND    `status`  = 1"
         ) : [];
         if ($mainIdentity) {
-            if ($rawResult) {
-                foreach ($rawResult as $rI => $rItem) {
-                    $rawResult[$rI] = new Identity(
-                        -$rItem['id'],
-                        $mainIdentity->name,
-                        $rItem['name'],
-                        $mainIdentity->bio,
-                        $rItem['os_name'],
-                        $rItem['user_id'],
-                        $rItem['push_token'],
-                        $rItem['udid'],
-                        '',
-                        $rItem['first_connected_at'],
-                        $rItem['last_connected_at'],
-                        0,
-                        $rItem['unreachable']
-                    );
-                }
+            foreach ($rawResult ?: [] as $rI => $rItem) {
+                $rawResult[$rI] = new Identity(
+                    -$rItem['id'],
+                    $mainIdentity->name,
+                    $rItem['name'],
+                    $mainIdentity->bio,
+                    $rItem['os_name'],
+                    $rItem['user_id'],
+                    $rItem['push_token'],
+                    $rItem['udid'],
+                    '',
+                    $rItem['first_connected_at'],
+                    $rItem['last_connected_at'],
+                    0,
+                    $rItem['unreachable']
+                );
             }
         }
         return $rawResult;
