@@ -19,6 +19,7 @@ class RelationModels extends DataModel {
                         case 'phone':
                             $identity->external_id       = mysql_real_escape_string(strtolower($identity->external_id));
                             $identity->external_username = mysql_real_escape_string(strtolower($identity->external_username));
+                            $avatar = $identity->avatar ? json_encode($identity->avatar) : '';
                             $isResult = $this->query(
                                 "INSERT INTO `user_relations` SET
                                  `userid`            =  {$userid},
@@ -27,7 +28,7 @@ class RelationModels extends DataModel {
                                  `external_identity` = '{$identity->external_id}',
                                  `external_username` = '{$identity->external_username}',
                                  `provider`          = '{$identity->provider}',
-                                 `avatar_filename`   = '{$identity->avatar_filename}'"
+                                 `avatar_filename`   = '{$avatar}'"
                             );
                             $this->buildIdentityIndex($userid, [
                                 'name'              => $identity->name,
@@ -63,6 +64,12 @@ class RelationModels extends DataModel {
             if ($curRelation) {
                 return (int) $curRelation['id'];
             }
+            $avatar = '';
+            if (isset($identity->avatar) && is_array($identity->avatar)) {
+                $avatar = json_encode($identity->avatar);
+            } else if (isset($identity->avatar_filename) && $identity->avatar_filename) {
+                $avatar = $identity->avatar_filename;
+            }
             $strSQL   = "INSERT INTO `user_relations` SET
                          `userid`            =  {$userid},
                          `r_identityid`      =  0,
@@ -70,7 +77,7 @@ class RelationModels extends DataModel {
                          `external_identity` = '{$identity->external_id}',
                          `external_username` = '{$identity->external_username}',
                          `provider`          = '{$identity->provider}',
-                         `avatar_filename`   = '{$identity->avatar_filename}'";
+                         `avatar_filename`   = '{$avatar}'";
             $isResult = $this->query($strSQL);
             if (!($isId = (int) $isResult) && DEBUG) {
                 error_log(json_encode(['user_id' => $userid, 'identity' => $identity, 'sql' => $strSQL]));
@@ -139,24 +146,22 @@ class RelationModels extends DataModel {
             );
             if ($rawRelation) {
                 $rawRelation['external_username'] = $rawRelation['external_username'] ?: $rawRelation['external_identity'];
+                $rawRelation['avatar_filename']   = getAvatarUrl($rawRelation['avatar_filename']);
                 if (!$rawRelation['avatar_filename']) {
                     $rawRelation['avatar_filename'] = getDefaultAvatarUrl($rawRelation['name']);
                     if ($rawRelation['provider'] === 'email') {
-                        $rawRelation['avatar_filename']
-                      = 'http://www.gravatar.com/avatar/'
-                      . md5($rawRelation['external_identity'])
-                      . '?d='
-                      . urlencode($rawRelation['avatar_filename']);
+                        $hlpIdentity = $this->getModelByName('Identity');
+                        $md5Identity = md5($rawRelation['external_identity']);
+                        $rawRelation['avatar_filename'] = [
+                            'original' => $hlpIdentity->getGravatarUrlByExternalUsername($md5Identity, 2048, '', $rawRelation['avatar_filename']['original']),
+                            '320_320'  => $hlpIdentity->getGravatarUrlByExternalUsername($md5Identity, 320,  '', $rawRelation['avatar_filename']['320_320']),
+                            '80_80'    => $hlpIdentity->getGravatarUrlByExternalUsername($md5Identity, 80,   '', $rawRelation['avatar_filename']['80_80']),
+                        ];
                     }
                 }
                 return new Identity(
-                    0,
-                    $rawRelation['name'],
-                    '',
-                    '',
-                    $rawRelation['provider'],
-                    0,
-                    $rawRelation['external_identity'],
+                    0, $rawRelation['name'], '', '', $rawRelation['provider'],
+                    0, $rawRelation['external_identity'],
                     $rawRelation['external_username'],
                     $rawRelation['avatar_filename']
                 );

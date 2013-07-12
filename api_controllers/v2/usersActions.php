@@ -256,7 +256,11 @@ class UsersActions extends ActionController {
             } else {
                 $refere   = @ trim($_POST['refere']) ?: '';
                 $workflow = $refere ? ['callback' => ['url' => $refere]] : [];
-                $viResult = $modUser->verifyIdentity($objIdentity, 'VERIFY', $user_id, null, '', '', $workflow);
+                $viResult = $modUser->verifyIdentity(
+                    $objIdentity, 'VERIFY', $user_id, null,
+                    strtolower(@trim($_POST['device'])),
+                    trim(@$_POST['device_callback']), $workflow
+                );
                 if ($viResult && $viResult['url']) {
                     apiResponse(['action' => 'REDIRECT', 'url' => $viResult['url']]);
                 } else if ($viResult && $viResult['token']) {
@@ -503,7 +507,9 @@ class UsersActions extends ActionController {
                     break;
                 case 'AUTHENTICATE':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'VERIFY', $user_id, $args
+                        $identity, 'VERIFY', $user_id, $args,
+                        strtolower(@trim($_POST['device'])),
+                        trim(@$_POST['device_callback'])
                     );
                     if ($viResult) {
                         $rtResult['url']    = $viResult['url'];
@@ -552,7 +558,9 @@ class UsersActions extends ActionController {
                     apiError(400, 'identity_is_being_verified', 'Can not reset password, because identity is being verified.');
                 case 'SIGN_IN':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'SET_PASSWORD', $raw_flag['user_id']
+                        $identity, 'SET_PASSWORD', $raw_flag['user_id'], null,
+                        strtolower(@trim($_POST['device'])),
+                        trim(@$_POST['device_callback'])
                     );
                     if ($viResult) {
                         if (isset($viResult['url'])) {

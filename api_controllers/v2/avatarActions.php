@@ -43,7 +43,7 @@ class AvatarActions extends ActionController {
             }
         }
         // check images
-        $sizes  = ['original' => '', '80_80' => ''];
+        $sizes  = ['original' => '', '320_320' => '', '80_80' => ''];
         $intImg = 0;
         foreach ($sizes as $i => $item) {
             if (isset($_FILES[$i])) {
@@ -60,37 +60,60 @@ class AvatarActions extends ActionController {
                     case 'jpeg':
                         break;
                     default:
-                        apiError(400, "error_{$i}_image_format", "Error {$i} size image format.");
+                        apiError(400, "error_image_format", "Error {$i} image format.");
                 }
+            } else if ($i !== 'original' && $sizes['original']) {
+                $intImg++;
+                $sizes[$i] = 'new';
             }
         }
         if ($intImg && $intImg !== count($sizes)) {
-            apiError(400, "missing_some_sizes", "All size of images must be provided.");
+            apiError(400, "missing_original_sizes", "Original image must be provided.");
         }
 
         // save file
-        $apiResult = array('avatars' => array());
+        require_once dirname(__FILE__) . "/../../xbgutilitie/libimage.php";
+        $objLibImage = new libImage;
+        $apiResult = ['avatar' => []];
+        $iconFiles = [];
         if ($intImg) {
             // hash filename
             if (!($fnmHashed = getHashedFilePath(Uniqid()))) {
                 apiError(500, 'error_saving_image', 'Error while saving image.');
             }
+            $originFilename  = '';
             foreach ($sizes as $i => $item) {
-                $filename  = "{$fnmHashed['filename']}.{$item}";
-                $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
-                $movResult = isset($_FILES[$i])
-                           ? move_uploaded_file($_FILES[$i]['tmp_name'], $full_path)
-                           : false;
+                if ($item === 'new') {
+                    $filename  = "{$fnmHashed['filename']}.jpg";
+                    $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
+                    $size      = explode('_', $i);
+                    $movResult = $objLibImage->resizeImage(
+                        $originFilename, $size[0], $size[1], $full_path
+                    );
+                } else {
+                    $filename  = "{$fnmHashed['filename']}.{$item}";
+                    $full_path = "{$fnmHashed['path']}/{$i}_{$filename}";
+                    if ($i === 'original') {
+                        $originFilename = $full_path;
+                    }
+                    $movResult = isset($_FILES[$i])
+                               ? move_uploaded_file($_FILES[$i]['tmp_name'], $full_path)
+                               : false;
+                }
                 if ($movResult) {
-                    $apiResult['avatars'][$i] = getAvatarUrl($filename, $i);
+                    $apiResult['avatar'][$i] = $filename;
+                    $iconFiles[$i]           = $filename;
                     continue;
                 }
                 apiError(500, 'error_saving_image', 'Error while saving image.');
             }
+            foreach ($apiResult['avatar'] as $aI => $aItem) {
+                $url = implode('/', [IMG_URL, substr($aItem, 0, 1), substr($aItem, 1, 2)]) . '/';
+                $apiResult['avatar'][$aI] = "{$url}{$aI}_{$aItem}";
+            }
         } else {
-            $filename = '';
             if ($identity->provider === 'email') {
-                $filename = $modIdentity->getGravatarByExternalUsername(
+                $apiResult['avatar'] = $modIdentity->getGravatarByExternalUsername(
                     $identity->external_username
                 );
             }
@@ -100,26 +123,25 @@ class AvatarActions extends ActionController {
         if ($identity_id) {
             $apiResult['type']        = 'identity';
             $apiResult['identity_id'] = $identity_id;
-            $dbResult = $modIdentity->updateAvatarById($identity_id, $filename);
+            $dbResult = $modIdentity->updateAvatarById($identity_id, $iconFiles);
         } else {
             $apiResult['type']        = 'user';
             $apiResult['user_id']     = $user_id;
-            $dbResult = $modUser->updateAvatarById($user_id, $filename);
+            $dbResult = $modUser->updateAvatarById($user_id, $iconFiles);
         }
 
         // get default avatar
-        if (!$intImg) {
+        if (!$apiResult['avatar']) {
             $default_avatar
           = $identity_id
-          ? $modIdentity->getIdentityById($identity_id, $user_id)->avatar_filename
-          : $modUser->getUserById($user_id)->avatar_filename;
-            foreach ($sizes as $i => $item) {
-                $apiResult['avatars'][$i] = $default_avatar;
-            }
+          ? $modIdentity->getIdentityById($identity_id, $user_id)->avatar
+          : $modUser->getUserById($user_id)->avatar;
+            $apiResult['avatar']  = $default_avatar;
         }
 
         // return
         if ($dbResult) {
+            $apiResult['avatars'] = $apiResult['avatar'];
             apiResponse($apiResult);
         }
         apiError(500, 'error_saving_image', 'Error while saving image.');
