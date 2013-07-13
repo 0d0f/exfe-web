@@ -69,6 +69,13 @@ class CrossesActions extends ActionController {
     }
 
 
+    public function freeInvitations() {
+        $params = $this->params;
+        $cross_id = @ (int) $params['id'];
+
+    }
+
+
     public function doCheckInvitationToken() {
         // load models
         $modExfee   = $this->getModelByName('exfee');

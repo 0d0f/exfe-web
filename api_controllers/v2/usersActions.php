@@ -237,6 +237,10 @@ class UsersActions extends ActionController {
              || !($objIdentity   = $modIdentity->getIdentityById($objInvitation['identity_id']))) {
                 apiError(400, 'error_invitation_token', '');
             }
+            // check Smith token
+            if ($objInvitation['identity_id'] === SMITH_BOT_A) {
+                apiError(403, 'FORBIDDEN', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
+            }
             // get target user identity status
             if ($objInvitation['valid']) {
                 $userIdentityStatus = $modUser->getUserIdentityInfoByIdentityId($objInvitation['identity_id']);
@@ -746,6 +750,10 @@ class UsersActions extends ActionController {
         // get invitation data
         $invToken   = trim($_POST['invitation_token']);
         $invitation = $modExfee->getRawInvitationByToken($invToken);
+        // check Smith token
+        if ($invitation['identity_id'] === SMITH_BOT_A) {
+            apiError(403, 'FORBIDDEN', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
+        }
         // 如果 token 有效
         if ($invitation && $invitation['valid']) {
             // get user info by invitation token
