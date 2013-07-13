@@ -133,7 +133,7 @@ class ExfeeModels extends DataModel {
                     $notificationIds[] = "{$identity->external_username}@{$identity->provider}";
                 }
             }
-            $objExfee->invitations[] = new Invitation(
+            $objInvitation = new Invitation(
                 $rawExfee[$uItem['top_rsvp_id']]['id'],
                 $rawExfee[$uItem['top_rsvp_id']]['identity'],
                 $rawExfee[$uItem['top_rsvp_id']]['identity_inv'],
@@ -149,13 +149,17 @@ class ExfeeModels extends DataModel {
               ? explode(';', $rawExfee[$uItem['top_rsvp_id']]['remark']) : [],
                 $notificationIds
             );
+            if ($withToken) {
+                $objInvitation->token_used_at = $rawExfee[$uItem['top_rsvp_id']]['token_used_at'];
+            }
+            $objExfee->invitations[] = $objInvitation;
         }
         // add other invitations into exfee
         foreach ($rawExfee as $eItem) {
             if ($eItem['identity']->connected_user_id > 0 || $eItem['grouping']) {
                 continue;
             }
-            $objExfee->invitations[] = new Invitation(
+            $objInvitation = new Invitation(
                 $eItem['id'],
                 $eItem['identity'],
                 $eItem['identity_inv'],
@@ -169,6 +173,10 @@ class ExfeeModels extends DataModel {
                 $eItem['mates'],
                 $eItem['remark'] ? explode(';', $eItem['remark']) : []
             );
+            if ($withToken) {
+                $objInvitation->token_used_at = $eItem['token_used_at'];
+            }
+            $objExfee->invitations[] = $objInvitation;
         }
         // get exfee name
         $ifoExfee = $this->getRow("SELECT * FROM `exfees` WHERE `id` = {$id}");
@@ -181,6 +189,14 @@ class ExfeeModels extends DataModel {
         // return
         $objExfee->summary();
         return $objExfee;
+    }
+
+
+    public function checkInvitationTokenTime($rawInvitation) {
+        return $rawInvitation['identity_id'] === SMITH_BOT_A
+            || (($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
+              || time() - strtotime($rawInvitation['token_used_at']) < 233)
+             && (time() - strtotime($rawInvitation['created_at']))   < (60 * 60 * 24 * 7)); // 7 days
     }
 
 
@@ -199,9 +215,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['exfee_id']       = (int) $rawInvitation['exfee_id'];
                 $rawInvitation['cross_id']       = $this->getCrossIdByExfeeId($rawInvitation['exfee_id']);
                 $rawInvitation['valid']          = $rawInvitation['state'] !== 4
-                                                && ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
-                                                 || time() - strtotime($rawInvitation['token_used_at']) < 233)
-                                                && (time() - strtotime($rawInvitation['created_at']))   < (60 * 60 * 24 * 7); // 7 days
+                                                && $this->checkInvitationTokenTime($rawInvitation);
                 return $rawInvitation;
             }
         }
@@ -226,9 +240,7 @@ class ExfeeModels extends DataModel {
                 $rawInvitation['exfee_id']       = (int) $rawInvitation['exfee_id'];
                 $rawInvitation['cross_id']       = (int) $cross_id;
                 $rawInvitation['valid']          = true;
-                $rawInvitation['raw_valid']      = ($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
-                                                 || time() - strtotime($rawInvitation['token_used_at']) < 233)
-                                                && (time() - strtotime($rawInvitation['created_at']))   < (60 * 60 * 24 * 7); // 7 days
+                $rawInvitation['raw_valid']      = $this->checkInvitationTokenTime($rawInvitation);
                 return $rawInvitation;
             }
         }

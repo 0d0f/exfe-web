@@ -239,7 +239,7 @@ class UsersActions extends ActionController {
             }
             // check Smith token
             if ($objInvitation['identity_id'] === SMITH_BOT_A) {
-                apiError(403, 'FORBIDDEN', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
+                apiError(403, 'forbidden', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
             }
             // get target user identity status
             if ($objInvitation['valid']) {
