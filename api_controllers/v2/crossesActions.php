@@ -146,7 +146,10 @@ class CrossesActions extends ActionController {
             }
             // used token
             if ($invitation['valid']) {
-                $modExfee->usedToken($invToken);
+                // check Smith token
+                if ($invitation['identity_id'] !== SMITH_BOT_A) {
+                    $modExfee->usedToken($invToken);
+                }
                 if (!$acsToken) {
                     $crossAccessToken = $modCross->generateCrossAccessToken(
                         $invitation['cross_id'], $invitation['identity_id'],
