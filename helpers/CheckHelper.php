@@ -21,6 +21,7 @@ class CheckHelper extends ActionController {
                 );
                 if ($invitation) {
                     switch ($api) {
+                        case 'cross':
                         case 'cross_edit':
                             if ((int) $args['cross_id'] === $invitation['cross_id']) {
                                 return [
