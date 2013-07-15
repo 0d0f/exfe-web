@@ -9,7 +9,6 @@ class IconsActions extends ActionController {
         $fontDir   = "{$curDir}/../../default_avatar_portrait/";
         require_once "{$curDir}/../../lib/httpkit.php";
         require_once "{$curDir}/../../xbgutilitie/libimage.php";
-
         $objLibImage = new libImage;
         // config
         $config = [
@@ -25,9 +24,7 @@ class IconsActions extends ActionController {
             'font_size'     => 30,
             'font_top'      => -5,
             'font_width'    => 30,
-            'min_font_size' => 20,
         ];
-
         // grep inputs
         $params  = $this->params;
         $content = @mb_substr(trim($params['content']) ?: 'P', 0, 2, 'UTF-8');
@@ -37,7 +34,8 @@ class IconsActions extends ActionController {
                  ? (in_array($color, $config['colors']) ? $color : '')
                  : $config['default_color'];
         if (!$color) {
-            // 404
+            header('HTTP/1.1 404 Not Found');
+            return;
         }
         // get background
         $background = @ imagecreatefrompng($config["{$color}_image"]);
@@ -47,7 +45,6 @@ class IconsActions extends ActionController {
             $config['font_color'][1],
             $config['font_color'][2]
         );
-
         // calcular font size
         $ftSize += $config['font_size'] + 1;
         do {
@@ -62,12 +59,12 @@ class IconsActions extends ActionController {
             imagecreatetruecolor($config['width'], $config['height']),
             $ftSize, 0, 0, $config['height'], $font_color, $font, 'x'
         );
+        // draw text
         imagettftext(
             $background, $ftSize, 0, ($config['width'] - $fWidth) / 2,
             ($config['height'] + $posArr[1] - $posArr[7]) / 2 + $config['font_top'],
             $font_color, $font, $content
         );
-
         // render
         header('Pragma: no-cache');
         header('Cache-Control: no-cache');
@@ -77,7 +74,6 @@ class IconsActions extends ActionController {
         imagesavealpha($background, true);
         imagepng($background);
         imagedestroy($image);
-
     }
 
 }
