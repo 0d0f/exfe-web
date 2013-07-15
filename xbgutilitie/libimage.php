@@ -220,4 +220,64 @@ class libImage {
         imagedestroy($im_tmp);
     }
 
+
+    public function getImageCache($cachePath, $url, $period = 604800, $asImage = false, $format = 'png') { // 60 * 60 * 24 * 7
+        if ($cachePath && $url && $period) {
+            $hash = md5($url);
+            $dir  = $cachePath
+                  . '/' . substr($hash, 0, 1)
+                  . '/' . substr($hash, 1, 2);
+            $file = "{$dir}/{$hash}.{$format}";
+            if (file_exists($file) && time() - filemtime($file) <= $period) {
+                if ($asImage) {
+                    switch ($format) {
+                        case 'gif':
+                            return @ImageCreateFromGIF($file);
+                        case 'jpg':
+                        case 'jpeg':
+                            return @ImageCreateFromJpeg($file);
+                        case 'png':
+                        default:
+                            return @ImageCreateFromPNG($file);
+                    }
+                } else {
+                    if (($rsFile = @fopen($file, 'rb'))) {
+                        return $rsFile;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public function setImageCache($cachePath, $url, $image, $format = 'png', $quality = 100) {
+        if ($cachePath && $url && $image) {
+            $hash = md5($url);
+            $dir  = $cachePath
+                  . '/' . substr($hash, 0, 1)
+                  . '/' . substr($hash, 1, 2);
+            if (!is_dir($dir)) {
+                if (!mkdir($dir, 0777, true)) {
+                    return false;
+                }
+            }
+            $file = "{$dir}/{$hash}.{$format}";
+            if (file_exists($file)) {
+                unlink($file);
+            }
+            switch ($format) {
+                case 'gif':
+                    return @ImageGif($image, $file);
+                case 'jpg':
+                case 'jpeg':
+                    return @ImageJpeg($image, $file, $quality);
+                case 'png':
+                default:
+                    return @ImagePng($image, $file);
+            }
+        }
+        return false;
+    }
+
 }

@@ -237,6 +237,10 @@ class UsersActions extends ActionController {
              || !($objIdentity   = $modIdentity->getIdentityById($objInvitation['identity_id']))) {
                 apiError(400, 'error_invitation_token', '');
             }
+            // check Smith token
+            if ($objInvitation['identity_id'] === SMITH_BOT_A) {
+                apiError(403, 'forbidden', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
+            }
             // get target user identity status
             if ($objInvitation['valid']) {
                 $userIdentityStatus = $modUser->getUserIdentityInfoByIdentityId($objInvitation['identity_id']);
@@ -746,6 +750,10 @@ class UsersActions extends ActionController {
         // get invitation data
         $invToken   = trim($_POST['invitation_token']);
         $invitation = $modExfee->getRawInvitationByToken($invToken);
+        // check Smith token
+        if ($invitation['identity_id'] === SMITH_BOT_A) {
+            apiError(403, 'FORBIDDEN', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
+        }
         // 如果 token 有效
         if ($invitation && $invitation['valid']) {
             // get user info by invitation token
@@ -1287,20 +1295,19 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // collecting post data
-        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
-        if ($rstVerify) {
-        } else if ($rstVerify === null) {
-            if (!$result['fresh']) {
-                apiError(401, 'token_staled', '');
-            }
-        } else {
-            apiError(403, 'invalid_current_password', ''); // 密码错误
-        }
         if (strlen($newPassword = $_POST['new_password']) === 0) {
             apiError(400, 'no_new_password', ''); // 请输入新密码
         }
         if (!validatePassword($newPassword)) {
             apiError(400, 'weak_password', 'password must be longer than four');
+        }
+        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
+        if ($rstVerify) {
+        } else if ($result['fresh'] && !isset($_POST['current_password'])) {
+        } else if (isset($_POST['current_password'])) {
+            apiError(403, 'invalid_current_password', ''); // 密码错误
+        } else {
+            apiError(401, 'token_staled', '');
         }
         // set password
         if ($modUser->setUserPassword($user_id, $newPassword)) {
