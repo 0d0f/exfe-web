@@ -975,6 +975,7 @@ class UserModels extends DataModel {
 
 
     public function makeDefaultAvatar($name, $asimage = false) {
+        require_once dirname(__FILE__) . "/../xbgutilitie/libimage.php";
         // image config
         $specification = [
             'width'      => 160,
@@ -1000,6 +1001,29 @@ class UserModels extends DataModel {
             [255, 255, 255],
         ];
         $ftSize = 64;
+        // header
+        if (!$asimage) {
+            header('Pragma: no-cache');
+            header('Cache-Control: no-cache');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-type: image/png');
+        }
+        // try cache
+        $objLibImage  = new libImage;
+        $cache_url    = "/v2/avatar/default?name={$name}";
+        $cache_period = 60 * 60 * 24 * 3;
+        $cache  = $objLibImage->getImageCache(
+            IMG_CACHE_PATH, $cache_url, $cache_period, $asimage
+        );
+        if ($cache) {
+            if ($asimage) {
+                return $cache;
+            }
+            fpassthru($cache);
+            fclose($cache);
+            return;
+        }
+        // get rendom color index
         $strHsh = md5($name);
         $intHsh = 0;
         for ($i = 0; $i < 3; $i++) {
@@ -1052,14 +1076,11 @@ class UserModels extends DataModel {
         } while ($fWidth > $specification['font-width']);
         $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, 'x');
         imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2 + $leftPd, ($specification['height'] + $posArr[1] - $posArr[7]) / 2, $fColor, $ftFile, $name);
+        $objLibImage->setImageCache(IMG_CACHE_PATH, $cache_url, $image);
         if ($asimage) {
             return $image;
         }
         // show image
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
         $actResult = imagepng($image);
         imagedestroy($image);
         // return
