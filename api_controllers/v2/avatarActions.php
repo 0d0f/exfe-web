@@ -174,7 +174,22 @@ class AvatarActions extends ActionController {
             'mates-max'      => 9,
             'mates-sprite-x' => 44,
             'mates-sprite-y' => 44,
+            'period'         => 604800, // 60 * 60 * 24 * 7
         ];
+        // header
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        // try cache
+        $rsImage = $objLibImage->getImageCache(
+            IMG_CACHE_PATH, $this->route, $config['period']
+        );
+        if ($rsImage) {
+            fpassthru($rsImage);
+            fclose($rsImage);
+            return;
+        }
         // get source image
         $params = $this->params;
         $params['url'] = $_GET['url'] ? base64_url_decode($_GET['url']) : '';
@@ -259,11 +274,8 @@ class AvatarActions extends ActionController {
             );
         }
         // render
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
         imagepng($image);
+        $objLibImage->setImageCache(IMG_CACHE_PATH, $this->route, $image);
         imagedestroy($image);
     }
 
