@@ -2,7 +2,7 @@
 
 class IconsActions extends ActionController {
 
-    public function doMark() {
+    public function doMapMark() {
         // init requirement
         $curDir    = dirname(__FILE__);
         $resDir    = "{$curDir}/../../static/img/";
