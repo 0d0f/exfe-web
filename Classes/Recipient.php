@@ -48,7 +48,7 @@ class Recipient extends EFObject {
         $this->external_id       = $external_id;
         $this->external_username = $external_username;
 
-        if ($provider === 'phone' && preg_match('/\+86.*/', $external_id)) {
+        if (preg_match('/phone/', $provider) && preg_match('/\+86.*/', $external_id)) {
             $this->language = 'zh_cn';
         }
     }
