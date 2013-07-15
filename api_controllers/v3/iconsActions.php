@@ -24,7 +24,22 @@ class IconsActions extends ActionController {
             'font_size'     => 30,
             'font_top'      => -5,
             'font_width'    => 30,
+            'period'        => 604800, // 60 * 60 * 24 * 7
         ];
+        // header
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/png');
+        // try cache
+        $rsImage = $objLibImage->getImageCache(
+            IMG_CACHE_PATH, $this->route, $config['period']
+        );
+        if ($rsImage) {
+            fpassthru($rsImage);
+            fclose($rsImage);
+            return;
+        }
         // grep inputs
         $params  = $this->params;
         $content = @mb_substr(trim($params['content']) ?: 'P', 0, 2, 'UTF-8');
@@ -37,10 +52,10 @@ class IconsActions extends ActionController {
             header('HTTP/1.1 404 Not Found');
             return;
         }
-        // get background
-        $background = @ imagecreatefrompng($config["{$color}_image"]);
+        // render background
+        $image      = @imagecreatefrompng($config["{$color}_image"]);
         $font_color = imagecolorallocate(
-            $background,
+            $image,
             $config['font_color'][0],
             $config['font_color'][1],
             $config['font_color'][2]
@@ -61,18 +76,15 @@ class IconsActions extends ActionController {
         );
         // draw text
         imagettftext(
-            $background, $ftSize, 0, ($config['width'] - $fWidth) / 2,
+            $image, $ftSize, 0, ($config['width'] - $fWidth) / 2,
             ($config['height'] + $posArr[1] - $posArr[7]) / 2 + $config['font_top'],
             $font_color, $font, $content
         );
         // render
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
-        imagealphablending($background, false);
-        imagesavealpha($background, true);
-        imagepng($background);
+        imagealphablending($image, false);
+        imagesavealpha($image, true);
+        imagepng($image);
+        $objLibImage->setImageCache(IMG_CACHE_PATH, $this->route, $image);
         imagedestroy($image);
     }
 

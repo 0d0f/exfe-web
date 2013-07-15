@@ -220,4 +220,43 @@ class libImage {
         imagedestroy($im_tmp);
     }
 
+
+    public function getImageCache($cachePath, $url, $period = 604800) { // 60 * 60 * 24 * 7
+        if ($cachePath && $url && $period) {
+            $hash = md5($url);
+            $dir  = $cachePath
+                  . '/' . substr($hash, 0, 1)
+                  . '/' . substr($hash, 1, 2);
+            $file = "{$dir}/{$hash}.png";
+            if (file_exists($file)
+             && time() - filemtime($file) <= $period
+             && ($rsFile = @fopen($file, 'rb'))) {
+                return $rsFile;
+            }
+        }
+        return null;
+    }
+
+
+    public function setImageCache($cachePath, $url, $image) {
+        if ($cachePath && $url && $image) {
+            $hash = md5($url);
+            $dir  = $cachePath
+                  . '/' . substr($hash, 0, 1)
+                  . '/' . substr($hash, 1, 2);
+            if (!is_dir($dir)) {
+                if (!mkdir($dir, 0777, true)) {
+                    return false;
+                }
+            }
+            $file = "{$dir}/{$hash}.png";
+            if (file_exists($file)) {
+                unlink($file);
+            }
+            $result = ImagePng($image, $file);
+            return $result;
+        }
+        return false;
+    }
+
 }

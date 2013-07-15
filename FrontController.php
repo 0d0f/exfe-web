@@ -32,7 +32,7 @@ class FrontController {
     }
 
 
-    public function rockWeb($controllerName, $arrPath = []) {
+    public function rockWeb($controllerName, $arrPath = [], $route = '') {
         $controller = "{$controllerName}Actions";
         $ctlFile    = CONTROLLER_DIR . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
@@ -42,6 +42,7 @@ class FrontController {
         require_once $ctlFile;
         $controller = new $controller();
         $controller->setName($controllerName);
+        $controller->route = $route;
         $action = 'index';
         if ($arrPath) {
             $action = $arrPath[0];
@@ -51,7 +52,7 @@ class FrontController {
     }
 
 
-    public function rockApi($controllerName, $arrPath = [], $version = 'v2') {
+    public function rockApi($controllerName, $arrPath = [], $version = 'v2', $route = '') {
         header('Content-Type: application/json; charset=UTF-8');
         if ($_GET['ssid']) {
             session_id($_GET['ssid']);
@@ -65,6 +66,7 @@ class FrontController {
         require_once $ctlFile;
         $controller = new $controller();
         $controller->setName($controllerName);
+        $controller->route = $route;
         $params = [];
         $action = 'index';
 
@@ -110,10 +112,10 @@ class FrontController {
             unset($arrPath[$last]);
         }
         if (!$first) {
-            $this->rockWeb('home', $arrPath);
+            $this->rockWeb('home', $arrPath, $route);
         } else if (preg_match('/^v\d+$/', $first)) {
             $controller = array_shift($arrPath);
-            $this->rockApi($controller, $arrPath, $first);
+            $this->rockApi($controller, $arrPath, $first, $route);
         } else if ($arrPath[0] === '500') {
             header('location: /500');
             return;
