@@ -24,7 +24,24 @@ class MailsActions extends ActionController {
             'ribbon-image'     => "{$curDir}/../../static/img/ribbon_280@2x.png",
             'ribbon-padding'   => 7,
             'jpeg-quality'     => 100,
+            'period'           => 604800, // 60 * 60 * 24 * 7
         ];
+
+        // header
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/jpeg');
+
+        // try cache
+        $rsImage = $objLibImage->getImageCache(
+            IMG_CACHE_PATH, $this->route, $config['period'], false, 'jpg'
+        );
+        if ($rsImage) {
+            fpassthru($rsImage);
+            fclose($rsImage);
+            return;
+        }
 
         // grep inputs
         $params     = $this->params;
@@ -121,11 +138,8 @@ class MailsActions extends ActionController {
         );
 
         // render
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/jpeg');
         imagejpeg($image, null, $config['jpeg-quality']);
+        $objLibImage->setImageCache(IMG_CACHE_PATH, $this->route, $image, 'jpg', $config['jpeg-quality']);
         imagedestroy($image);
     }
 
