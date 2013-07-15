@@ -16,14 +16,14 @@ class IconsActions extends ActionController {
             'blue_image'    => "{$resDir}map_mark_blue@2x.png",
             'colors'        => ['blur', 'red'],
             'default_color' => 'blue',
-            'width'         => 52,
-            'height'        => 72,
+            'width'         => 48,
+            'height'        => 68,
             'font'          => "{$fontDir}OpenSans-Bold.ttf",
             'font_cjk'      => "{$fontDir}wqy-microhei.ttc",
             'font_color'    => [255, 254, 254, 1],
-            'font_size'     => 30,
+            'font_size'     => 26,
             'font_top'      => -5,
-            'font_width'    => 30,
+            'font_width'    => 26,
             'period'        => 604800, // 60 * 60 * 24 * 7
         ];
         // header
