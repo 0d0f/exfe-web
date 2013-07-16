@@ -60,7 +60,6 @@ class MapModels extends DataModel {
         } else {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-        // $ip='114.92.189.33';
         // recheck
         return preg_match($ip_pattern, $ip) ? $ip : '';
     }

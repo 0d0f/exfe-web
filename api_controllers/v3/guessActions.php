@@ -9,26 +9,56 @@ class GuessActions extends ActionController {
         $params  = $this->params;
         $content = @trim($params['content']);
         if (!$content) {
-            // 400 bad req
+            $this->jsonError(400, 'empty_content');
+            return;
         }
-        $modMap = $this->getModelByName('Map');
-        $location = $modMap->getCurrentLocation();
+        $latitude  = @trim($params['latitude']);
+        $longitude = @trim($params['longitude']);
+        if (!$latitude || !$longitude) {
+            $modMap = $this->getModelByName('Map');
+            $location = $modMap->getCurrentLocation();
+            if ($location) {
+                $latitude  = $location['latitude'];
+                $longitude = $location['longitude'];
+            }
+        }
 
-        var_dump($location);
-        exit();
+$latitude  = '31.178636';
+$longitude = '121.535699';
+
+        if (!$latitude || !$longitude) {
+            $this->jsonError(400, 'unknow_location');
+            return;
+        }
 
         $result = httpKit::request(
             'https://maps.googleapis.com/maps/api/place/nearbysearch/json',
             [
                 'key'      => 'AIzaSyDGQgOgDUO_sBPwA42wnMgM6yd6Osi6ck8',
-                'location' => '31.250543878922706,121.6255542',
-                'radius'   => 50000,
+                'location' => "{$latitude},{$longitude}",
                 'sensor'   => 'false',
-                'language' => 'zh_cn',
-            ], null, false, false, 3, 3, 'txt', true);
+                'language' => $this->locale,
+                'keyword'  => $content,
+                'rankby'   => 'distance',
+            ], null, false, false, 3, 3, 'txt', true
+        );
 
-        print_r($result['json']);
-
+        if ($result
+        && @$result['json']
+        && @$result['json']['results']) {
+            $place = new Place(
+                0,
+                $result['json']['results'][0]['name'],
+                $result['json']['results'][0]['vicinity'],
+                $result['json']['results'][0]['geometry']['location']['lng'],
+                $result['json']['results'][0]['geometry']['location']['lat'],
+                'google',
+                $result['json']['results'][0]['id']
+            );
+            $this->jsonResponse($place);
+            return;
+        }
+        $this->jsonError(404, 'not_found');
     }
 
 }
