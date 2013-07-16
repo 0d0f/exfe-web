@@ -23,9 +23,6 @@ function makeImgs($path, $file) {
         if (file_exists($target)) {
             unlink($target);
         }
-        if (file_exists($jpg)) {
-            unlink($jpg);
-        }
         if (@$objLibImage->resizeImage($source, 320, 320, $target)) {
             echo ' [OK]';
         } else {
