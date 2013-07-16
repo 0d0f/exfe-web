@@ -10,7 +10,6 @@ error_reporting(E_ALL ^ E_NOTICE);
 $binFolder = 'bin';
 
 $sources = [
-    'avatar_upgrade.php', // @todo removeing!
     'ActionController.php',
     'api_controllers',
     'common.php',
