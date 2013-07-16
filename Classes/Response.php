@@ -2,8 +2,6 @@
 
 class Response extends EFObject {
 
-    public $id          = null;
-
     public $object_type = null;
 
     public $object_id   = null;

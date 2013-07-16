@@ -32,7 +32,7 @@ class FrontController {
     }
 
 
-    public function rockWeb($controllerName, $arrPath = []) {
+    public function rockWeb($controllerName, $arrPath = [], $route = '') {
         $controller = "{$controllerName}Actions";
         $ctlFile    = CONTROLLER_DIR . '/' . $controller . '.php';
         if (!is_file($ctlFile)) {
@@ -42,19 +42,18 @@ class FrontController {
         require_once $ctlFile;
         $controller = new $controller();
         $controller->setName($controllerName);
+        $controller->route = $route;
         $action = 'index';
         if ($arrPath) {
             $action = $arrPath[0];
         }
         $params = $this->getParams($params);
-        $controller->dispatchAction($action, $params);
+        $controller->dispatchAction($action, $params, $arrPath);
     }
 
 
-    public function rockApi($controllerName, $arrPath = [], $version = 'v2') {
+    public function rockApi($controllerName, $arrPath = [], $version = 'v2', $route = '') {
         header('Content-Type: application/json; charset=UTF-8');
-        header('Access-Control-Allow-Origin: ' . SITE_URL);
-        header('Access-Control-Allow-Credentials: true');
         if ($_GET['ssid']) {
             session_id($_GET['ssid']);
         }
@@ -67,30 +66,41 @@ class FrontController {
         require_once $ctlFile;
         $controller = new $controller();
         $controller->setName($controllerName);
+        $controller->route = $route;
         $params = [];
         $action = 'index';
-        if (sizeof($arrPath) === 1) {
-            if (preg_match('/^\d+$/', $arrPath[0])) {
-                $action       = 'index';
-                $params['id'] = $arrPath[0];
-            } else {
-                $action       = $arrPath[0];
+
+        //objects/id
+        if (preg_match('/^\d+$/', $arrPath[0])) {
+            $params['id'] = array_shift($arrPath);
+
+        //objects/id/action
+            if ($arrPath) {
+                $action = array_shift($arrPath);
             }
+
+        //objects/action
         } else {
-            if (in_array($controllerName, ['bus', 'gobus'])) {
-                $action       = $arrPath[0];
-                $params['id'] = $arrPath[1];
-            } else {
-                $action       = $arrPath[1];
-                $params['id'] = $arrPath[0];
+            $action = array_shift($arrPath);
+
+        //objects/action/id
+            if ($arrPath) {
+                $params['id'] = array_shift($arrPath);
             }
         }
+
         $params = $this->getParams($params);
-        $controller->dispatchAction($action, $params);
+        $controller->dispatchAction($action, $params, $arrPath);
     }
 
 
     public function dispatch() {
+        header('Access-Control-Allow-Origin: ' . SITE_URL);
+        header('Access-Control-Allow-Credentials: true');
+        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+            header('HTTP/1.1 204 No Content');
+            return;
+        }
         $route   = isset($_GET['_route']) ? $_GET['_route'] : $_SERVER['REQUEST_URI'];
         $arrPath = explode(
             '/', strtolower(current(explode('?', $route)))
@@ -102,10 +112,10 @@ class FrontController {
             unset($arrPath[$last]);
         }
         if (!$first) {
-            $this->rockWeb('home', $arrPath);
+            $this->rockWeb('home', $arrPath, $route);
         } else if (preg_match('/^v\d+$/', $first)) {
             $controller = array_shift($arrPath);
-            $this->rockApi($controller, $arrPath, $first);
+            $this->rockApi($controller, $arrPath, $first, $route);
         } else if ($arrPath[0] === '500') {
             header('location: /500');
             return;

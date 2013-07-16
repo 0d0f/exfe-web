@@ -94,7 +94,8 @@ class UserModels extends DataModel {
                 [],
                 [],
                 $rawUser['created_at'],
-                $rawUser['updated_at']
+                $rawUser['updated_at'],
+                $rawUser['locale']
             );
             if ($withCrossQuantity) {
                 $user->cross_quantity = 0;
@@ -141,15 +142,18 @@ class UserModels extends DataModel {
                             $identity_infos[$item['id']]['status'] === 'CONNECTED' || $identity_infos[$item['id']]['status'] === 'REMOVED' ? $rawUser['id'] : - $item['id'],
                             $item['external_identity'],
                             $item['external_username'],
-                            $item['avatar_file_name'],
+                            getAvatarUrl($item['avatar_file_name']),
                             $item['updated_at'],
                             $item['updated_at'],
                             0,
-                            $item['unreachable']
+                            $item['unreachable'],
+                            $item['locale'],
+                            $item['timezone']
                         );
-                        $identity->avatar_filename = getAvatarUrl($identity->avatar_filename)
-                                                  ?: ($user->avatar_filename
-                                                  ?: getDefaultAvatarUrl($identity->name));
+                        if (!$identity->avatar) {
+                            $identity->avatar = $user->avatar ?: getDefaultAvatarUrl($identity->name);
+                        }
+                        $identity->avatar_filename = $identity->avatar['80_80'];
                         $identity->status  = $identity_infos[$identity->id]['status'];
                         if ($identity->status === 'VERIFYING') {
                             // remove timeout verifying {
@@ -186,7 +190,6 @@ class UserModels extends DataModel {
                             $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']] = [];
                         }
                         $sorting_identities[$identity_infos[$identity->id]['order']][$identity_infos[$identity->id]['updated_at']][$identity->id] = $identity;
-
                     }
                     ksort($sorting_identities);
                     foreach ($sorting_identities as $soryByCreated) {
@@ -200,6 +203,7 @@ class UserModels extends DataModel {
                     }
                     $user->name            = $user->name            ?: $user->identities[0]->name;
                     $user->bio             = $user->bio             ?: $user->identities[0]->bio;
+                    $user->avatar          = $user->avatar          ?: $user->identities[0]->avatar;
                     $user->avatar_filename = $user->avatar_filename ?: $user->identities[0]->avatar_filename;
                     if ($withCrossQuantity) {
                         $cross_quantity = $this->getRow(
@@ -870,8 +874,27 @@ class UserModels extends DataModel {
                     `updated_at` = NOW()"
         );
         delCache("user_identity:identity_{$identity_id}");
+        $sqlAppend = '';
+        if ($status > 1) {
+             $rawIdentity = $this->getRow(
+                "SELECT * FROM `identities` WHERE `id` = {$identity_id}"
+            );
+            $rawUsers    = $this->getRow(
+                "SELECT * FROM `users`      WHERE `id` = {$user_id}"
+            );
+            if ($rawIdentity && $rawUsers) {
+                if (!$rawUsers['locale']   && $rawIdentity['locale']) {
+                    $sqlAppend .= ", `locale`   = '{$rawIdentity['locale']}'";
+                }
+                if (!$rawUsers['timezone'] && $rawIdentity['timezone']) {
+                    $sqlAppend .= ", `timezone` = '{$rawIdentity['timezone']}'";
+                }
+            }
+        }
         $this->query(
-            "UPDATE `users` SET `updated_at` = NOW() WHERE `id` = {$user_id}"
+            "UPDATE `users`
+             SET    `updated_at` = NOW() {$sqlAppend}
+             WHERE  `id`         = {$user_id}"
         );
         delCache("users:{$user_id}");
         // tutorials {
@@ -937,12 +960,13 @@ class UserModels extends DataModel {
     }
 
 
-    public function updateAvatarById($user_id, $avatar_filename = '') {
+    public function updateAvatarById($user_id, $avatar = null) {
         if ($user_id) {
             delCache("users:{$user_id}");
+            $avatar = $avatar ? json_encode($avatar) : '';
             return $this->query(
                 "UPDATE `users`
-                 SET    `avatar_file_name` = '{$avatar_filename}',
+                 SET    `avatar_file_name` = '{$avatar}',
                         `updated_at`       =  NOW()
                  WHERE  `id`               =  {$user_id}"
             );
@@ -951,6 +975,7 @@ class UserModels extends DataModel {
 
 
     public function makeDefaultAvatar($name, $asimage = false) {
+        require_once dirname(__FILE__) . "/../xbgutilitie/libimage.php";
         // image config
         $specification = [
             'width'      => 160,
@@ -976,6 +1001,29 @@ class UserModels extends DataModel {
             [255, 255, 255],
         ];
         $ftSize = 64;
+        // header
+        if (!$asimage) {
+            header('Pragma: no-cache');
+            header('Cache-Control: no-cache');
+            header('Content-Transfer-Encoding: binary');
+            header('Content-type: image/png');
+        }
+        // try cache
+        $objLibImage  = new libImage;
+        $cache_url    = "/v2/avatar/default?name={$name}";
+        $cache_period = 60 * 60 * 24 * 3;
+        $cache  = $objLibImage->getImageCache(
+            IMG_CACHE_PATH, $cache_url, $cache_period, $asimage
+        );
+        if ($cache) {
+            if ($asimage) {
+                return $cache;
+            }
+            fpassthru($cache);
+            fclose($cache);
+            return;
+        }
+        // get rendom color index
         $strHsh = md5($name);
         $intHsh = 0;
         for ($i = 0; $i < 3; $i++) {
@@ -1028,14 +1076,11 @@ class UserModels extends DataModel {
         } while ($fWidth > $specification['font-width']);
         $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, 'x');
         imagettftext($image, $ftSize, 0, ($specification['width'] - $fWidth) / 2 + $leftPd, ($specification['height'] + $posArr[1] - $posArr[7]) / 2, $fColor, $ftFile, $name);
+        $objLibImage->setImageCache(IMG_CACHE_PATH, $cache_url, $image);
         if ($asimage) {
             return $image;
         }
         // show image
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
         $actResult = imagepng($image);
         imagedestroy($image);
         // return

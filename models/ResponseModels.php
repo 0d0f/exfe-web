@@ -103,6 +103,29 @@ class ResponseModels extends DataModel {
     }
 
 
+    public function clearResponseBy($object_type, $object_ids, $identity_id) {
+        $object_ids = implode(', ', $object_ids);
+        if ($object_type && $object_ids && $identity_id) {
+            $options = $this->getOptionsByObjectType($object_type);
+            if ($options) {
+                $opt_idx = isset($options['value'][''])
+                         ? $options['value'][''] : null;
+                if ($opt_idx) {
+                    return $this->query(
+                        "UPDATE `responses`
+                         SET    `response_id`    = {$opt_idx},
+                                `updated_at`     = NOW()
+                         WHERE  `object_type`    = '{$object_type}'
+                         AND    `object_id`     in ({$object_ids})
+                         AND    `by_identity_id` =  {$identity_id}"
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+
     public function getOptionsByObjectType($object_type) {
         if ($object_type) {
             $result = $this->getAll(

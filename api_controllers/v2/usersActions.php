@@ -158,12 +158,19 @@ class UsersActions extends ActionController {
         }
         // }
         // adding
-        if (($adResult = $modIdentity->addIdentity(
-            ['provider' => $provider, 'external_username' => $external_username],
-            $user_id, 2, true, false,
+        $user = $modUser->getUserById($user_id);
+        if (($adResult = $modIdentity->addIdentity([
+                'provider'          => $provider,
+                'external_username' => $external_username,
+                'locale'            => $user->locale,
+                'timezone'          => $user->timezone,
+            ], $user_id, 2, true, false,
             strtolower(@trim($_POST['device'])), trim(@$_POST['device_callback']),
             $workflow
         ))) {
+            if ($adResult === -1) {
+                apiError(400, 'duplicate', '');
+            }
             $rtResult = ['identity' => null, 'action' => 'VERIFYING'];
             if ($adResult['identity_id'] > 0) {
                 $objIdentity = $modIdentity->getIdentityById($adResult['identity_id'], $user_id);
@@ -175,7 +182,7 @@ class UsersActions extends ActionController {
             }
 
         }
-        apiError(400, 'failed', '');
+        apiError(500, 'failed', '');
     }
 
 
@@ -210,7 +217,7 @@ class UsersActions extends ActionController {
                     apiError(400, 'error_browsing_identity_token', '');
             }
             if (time() - $last_authenticate > 60 * 15) { // in 15 mins
-                apiError(401, 'authenticate_timeout', 'reauthenticate is needed');
+                apiError(401, 'token_staled', 'reauthenticate is needed');
             }
             $fromUserId = $objBsToken['data']['user_id'];
         // 通过邀请 token 合并用户
@@ -229,6 +236,10 @@ class UsersActions extends ActionController {
             if (!($objInvitation = $modExfee->getRawInvitationByToken($strInvToken))
              || !($objIdentity   = $modIdentity->getIdentityById($objInvitation['identity_id']))) {
                 apiError(400, 'error_invitation_token', '');
+            }
+            // check Smith token
+            if ($objInvitation['identity_id'] === SMITH_BOT_A) {
+                apiError(403, 'forbidden', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
             }
             // get target user identity status
             if ($objInvitation['valid']) {
@@ -249,7 +260,11 @@ class UsersActions extends ActionController {
             } else {
                 $refere   = @ trim($_POST['refere']) ?: '';
                 $workflow = $refere ? ['callback' => ['url' => $refere]] : [];
-                $viResult = $modUser->verifyIdentity($objIdentity, 'VERIFY', $user_id, null, '', '', $workflow);
+                $viResult = $modUser->verifyIdentity(
+                    $objIdentity, 'VERIFY', $user_id, null,
+                    strtolower(@trim($_POST['device'])),
+                    trim(@$_POST['device_callback']), $workflow
+                );
                 if ($viResult && $viResult['url']) {
                     apiResponse(['action' => 'REDIRECT', 'url' => $viResult['url']]);
                 } else if ($viResult && $viResult['token']) {
@@ -347,7 +362,7 @@ class UsersActions extends ActionController {
         if ($result['check']) {
             // @todo: 端木说这里可以有，但是产品还没到这一步，为了省事就……
             // if (!$result['fresh']) {
-            //     apiError(401, 'authenticate_timeout', ''); // 需要重新鉴权
+            //     apiError(401, 'token_staled', ''); // 需要重新鉴权
             // }
             $user_id = $result['uid'];
         } else {
@@ -496,7 +511,9 @@ class UsersActions extends ActionController {
                     break;
                 case 'AUTHENTICATE':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'VERIFY', $user_id, $args
+                        $identity, 'VERIFY', $user_id, $args,
+                        strtolower(@trim($_POST['device'])),
+                        trim(@$_POST['device_callback'])
                     );
                     if ($viResult) {
                         $rtResult['url']    = $viResult['url'];
@@ -545,7 +562,9 @@ class UsersActions extends ActionController {
                     apiError(400, 'identity_is_being_verified', 'Can not reset password, because identity is being verified.');
                 case 'SIGN_IN':
                     $viResult = $modUser->verifyIdentity(
-                        $identity, 'SET_PASSWORD', $raw_flag['user_id']
+                        $identity, 'SET_PASSWORD', $raw_flag['user_id'], null,
+                        strtolower(@trim($_POST['device'])),
+                        trim(@$_POST['device_callback'])
                     );
                     if ($viResult) {
                         if (isset($viResult['url'])) {
@@ -731,6 +750,10 @@ class UsersActions extends ActionController {
         // get invitation data
         $invToken   = trim($_POST['invitation_token']);
         $invitation = $modExfee->getRawInvitationByToken($invToken);
+        // check Smith token
+        if ($invitation['identity_id'] === SMITH_BOT_A) {
+            apiError(403, 'FORBIDDEN', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
+        }
         // 如果 token 有效
         if ($invitation && $invitation['valid']) {
             // get user info by invitation token
@@ -794,7 +817,13 @@ class UsersActions extends ActionController {
                 apiError(400, 'weak_password', 'password must be longer than four');
             }
             if (!($user_id = $modUser->addUser($password, $name))
-             || !$modIdentity->addIdentity(['provider' => $provider, 'external_username' => $external_username, 'name' => $name], $user_id)) {
+             || !$modIdentity->addIdentity([
+                    'provider'          => $provider,
+                    'external_username' => $external_username,
+                    'name'              => $name,
+                    'locale'            => $this->locale,
+                    'timezone'          => $this->timezone
+                ], $user_id)) {
                 apiError(500, 'failed', 'failed while signing up new user');
             }
         }
@@ -1266,20 +1295,19 @@ class UsersActions extends ActionController {
             apiError(401, 'no_signin', ''); // 需要登录
         }
         // collecting post data
-        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
-        if ($rstVerify) {
-        } else if ($rstVerify === null) {
-            if (!$result['fresh']) {
-                apiError(401, 'authenticate_timeout', '');
-            }
-        } else {
-            apiError(403, 'invalid_current_password', ''); // 密码错误
-        }
         if (strlen($newPassword = $_POST['new_password']) === 0) {
             apiError(400, 'no_new_password', ''); // 请输入新密码
         }
         if (!validatePassword($newPassword)) {
             apiError(400, 'weak_password', 'password must be longer than four');
+        }
+        $rstVerify = $modUser->verifyUserPassword($user_id, $_POST['current_password']);
+        if ($rstVerify) {
+        } else if ($result['fresh'] && !isset($_POST['current_password'])) {
+        } else if (isset($_POST['current_password'])) {
+            apiError(403, 'invalid_current_password', ''); // 密码错误
+        } else {
+            apiError(401, 'token_staled', '');
         }
         // set password
         if ($modUser->setUserPassword($user_id, $newPassword)) {

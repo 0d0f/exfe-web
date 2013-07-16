@@ -18,6 +18,8 @@ class Identity extends EFObject {
 
     public $avatar_filename   = null;
 
+    public $avatar            = null;
+
     public $created_at        = null;
 
     public $updated_at        = null;
@@ -25,6 +27,10 @@ class Identity extends EFObject {
     public $order             = null;
 
     public $unreachable       = false;
+
+    public $locale            = null;
+
+    public $timezone          = null;
 
 
     static function parseEmail($email) {
@@ -50,11 +56,13 @@ class Identity extends EFObject {
         $connected_user_id = 0,
         $external_id       = '',
         $external_username = '',
-        $avatar_filename   = '',
+        $avatar            = null,
         $created_at        = '',
         $updated_at        = '',
         $order             = 0,
-        $unreachable       = false
+        $unreachable       = false,
+        $locale            = '',
+        $timezone          = ''
     ) {
         parent::__construct($id, 'identity');
 
@@ -70,11 +78,12 @@ class Identity extends EFObject {
         $this->connected_user_id = (int)     $connected_user_id;
         $this->external_id       = (string)  $external_id;
         $this->external_username = $external_username;
-        $this->avatar_filename   = $avatar_filename;
         $this->created_at        = $created_at . ' +0000';
         $this->updated_at        = $updated_at . ' +0000';
         $this->order             = (int)     $order;
         $this->unreachable       = (boolean) $unreachable;
+        $this->locale            = $locale   ?: '';
+        $this->timezone          = $timezone ?: '';
 
         if (!$this->name) {
             switch ($this->provider) {
@@ -91,6 +100,21 @@ class Identity extends EFObject {
                 default:
                     $this->name = $this->external_username;
             }
+        }
+
+        if (is_array($avatar)) {
+            $this->avatar_filename = $avatar['80_80'];
+            $this->avatar          = $avatar;
+        } else if ($avatar) {
+            $this->avatar_filename = $avatar;
+            $this->avatar          = [
+                'original' => $avatar,
+                '320_320'  => $avatar,
+                '80_80'    => $avatar,
+            ];
+        } else {
+            $this->avatar_filename = '';
+            $this->avatar          = null;
         }
     }
 

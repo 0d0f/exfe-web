@@ -43,13 +43,13 @@ class Recipient extends EFObject {
         $this->auth_data         = $auth_data;
         $this->timezone          = $timezone;
         $this->token             = $token;
-        $this->language          = $language ?: 'en_US';
+        $this->language          = $language ?: 'en_us';
         $this->provider          = $provider;
         $this->external_id       = $external_id;
         $this->external_username = $external_username;
 
-        if ($provider === 'phone' && preg_match('/\+86.*/', $external_id)) {
-            $this->language = 'zh_CN';
+        if (preg_match('/phone/', $provider) && preg_match('/\+86.*/', $external_id)) {
+            $this->language = 'zh_cn';
         }
     }
 

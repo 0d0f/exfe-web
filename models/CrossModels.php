@@ -179,7 +179,11 @@ class CrossModels extends DataModel {
                 saveUpdate($cross->id, $cross_updated);
             }
 
-            return $cross->id;
+            return [
+                'cross_id'     => $cross->id,
+                'notification' => !(sizeof($cross_updated)       === 1
+                                && array_keys($cross_updated)[0] === 'background')
+            ];
         }
 
         return 0;

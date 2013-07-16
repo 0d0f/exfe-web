@@ -13,7 +13,7 @@ class BusActions extends ActionController {
         $name              = isset($_POST['name'])              ? mysql_real_escape_string($_POST['name'])              : '';
         $nickname          = isset($_POST['nickname'])          ? mysql_real_escape_string($_POST['nickname'])          : '';
         $bio               = isset($_POST['bio'])               ? mysql_real_escape_string($_POST['bio'])               : '';
-        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string($_POST['avatar_filename'])   : '';
+        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string($_POST['avatar_filename'])   : ''; // @todo submit by array @leask to @googollee
         $external_username = isset($_POST['external_username']) ? mysql_real_escape_string($_POST['external_username']) : '';
         // check data
         if (!$id || !$provider || !$external_id) {
@@ -22,7 +22,7 @@ class BusActions extends ActionController {
         }
         // do update
         $modIdentity = $this->getModelByName('Identity');
-        $id = $modIdentity->updateIdentityByGobus($id, array(
+        $id = $modIdentity->updateIdentityByGobus($id, [
             'provider'          => $provider,
             'external_id'       => $external_id,
             'name'              => $name,
@@ -30,13 +30,69 @@ class BusActions extends ActionController {
             'bio'               => $bio,
             'avatar_filename'   => $avatar_filename,
             'external_username' => $external_username,
-        ));
+        ]);
         // return
         if (!$id) {
             $this->jsonError(500, 'internal_server_error');
             return;
         }
         $this->jsonResponse(['identity_id' => $id]);
+    }
+
+
+    public function doRecipients() {
+        $identity_id = @strtolower(trim($_GET['identity_id']));
+        if (!$identity_id) {
+            $this->jsonError(400, 'error_identity_id');
+            return;
+        }
+        $modUser     = $this->getModelByName('User');
+        $modIdentity = $this->getModelByName('Identity');
+        $modDevice   = $this->getModelByName('Device');
+        $modTime     = $this->getModelByName('Time');
+        $strReg      = '/(.*)@([^\@]*)/';
+        $external_username = preg_replace($strReg, '$1', $identity_id);
+        $provider          = preg_replace($strReg, '$2', $identity_id);
+        $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $external_username, true
+        );
+        if (!$identity_id) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $user_id     = $modUser->getUserIdByIdentityId($identity_id);
+        if (!$user_id) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $objUser = $modUser->getUserById($user_id);
+        if (!$objUser || !$objUser->identities) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $devices = $modDevice->getDevicesByUserid(
+            $user_id, $objUser->identities[0]
+        );
+        $recipients = [];
+        foreach (array_merge($objUser->identities, $devices) as $idItem) {
+            $recipients[] = new Recipient(
+                $idItem->id,
+                $idItem->connected_user_id,
+                $idItem->name,
+                $idItem->auth_data ?: '',
+                $modTime->getDigitalTimezoneBy($objUser->timezone),
+                '', // cross invitation token
+                $objUser->locale,
+                $idItem->provider,
+                $idItem->external_id,
+                $idItem->external_username
+            );
+        }
+        if (!$recipients) {
+            $this->jsonError(404, 'recipient_not_found');
+            return;
+        }
+        $this->jsonResponse($recipients);
     }
 
 
@@ -50,7 +106,9 @@ class BusActions extends ActionController {
         $cross_str = @file_get_contents('php://input');
         $cross = json_decode($cross_str);
         $chkCross = $crossHelper->validateCross($cross);
-        if ($chkCross['error']) {
+        if ($chkCross['error']
+        || !$cross->exfee
+        || !$cross->exfee->invitations) {
             $this->jsonError(400, 'cross_error', $chkCross['error'][0]);
             return;
         }
@@ -70,6 +128,7 @@ class BusActions extends ActionController {
                 'external_id'       => $cross->by_identity->external_id,
                 'name'              => $cross->by_identity->name,
                 'external_username' => $cross->by_identity->external_username,
+                'avatar'            => $cross->by_identity->avatar,
                 'avatar_filename'   => $cross->by_identity->avatar_filename
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
@@ -127,7 +186,10 @@ class BusActions extends ActionController {
         );
         // }
 
-        $rspData = ['cross_id' => $cross_id];
+        $rspData = $crossHelper->getCross($cross_id);
+        if (!$rspData->updated) {
+            $rspData->updated = new stdClass;
+        }
         touchCross($cross_id, $user_id);
 
         if (@$gthResult['over_quota']) {
@@ -187,7 +249,8 @@ class BusActions extends ActionController {
                 'external_id'       => $cross->by_identity->external_id,
                 'name'              => $cross->by_identity->name,
                 'external_username' => $cross->by_identity->external_username,
-                'avatar_filename'   => $cross->by_identity->avatar_filename
+                'avatar'            => $cross->by_identity->avatar,
+                'avatar_filename'   => $cross->by_identity->avatar_filename,
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
         }
@@ -268,10 +331,13 @@ class BusActions extends ActionController {
         }
 
         // update crosss
-        $cross_id = $rawResult = true;
-        $cross_id = $crossHelper->editCross($cross, $by_identity->id);
+        $cross_rs  = $crossHelper->editCross($cross, $by_identity->id);
+        $cross_id  = $cross_rs && $cross_rs['cross_id'] ? $cross_rs['cross_id'] : 0;
+        $rawResult = true;
         if (isset($cross->exfee)) {
-            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true);
+            $timezone  = @$cross->time->begin_at->timezone
+                      ?: @$curCross->time->begin_at->timezone;
+            $rawResult = $modExfee->updateExfee($cross->exfee, $by_identity->id, $user_id, true, $draft, true, $timezone);
         }
         if (!$cross_id || !$rawResult) {
             $this->jsonError(500, 'internal_server_error');
@@ -658,8 +724,9 @@ class BusActions extends ActionController {
             $hlpCross = $this->getHelperByName('Cross');
             $exfee_id = $modCross->getExfeeByCrossId($id);
             if (!$user_id) {
-                $this->jsonError(403, 'forbidden');
-                return;
+                // for wechat
+                // $this->jsonError(403, 'forbidden');
+                // return;
             } else if ($user_id > 0) {
                 $userids = $modExfee->getUserIdsByExfeeId($exfee_id, true);
                 if (!in_array($user_id, $userids)) {
@@ -891,11 +958,15 @@ class BusActions extends ActionController {
         }
         // gather
         if ($step_id === 1) {
+            $modTime  = $this->getModelByName('Time');
             $objCross = new stdClass;
             $objCross->title       = 'Explore EXFE';
             $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
             $objCross->by_identity = $bot233;
-            $objCross->time        = $modTime->parseTimeString('Today', '+00:00');
+            $objCross->time        = $modTime->parseTimeString(
+                'Today',
+                $modTime->getDigitalTimezoneBy($objIdentity->timezone) ?: '+00:00 GMT'
+            );
             $objCross->place       = new Place(
                 0, 'Online', 'exfe.com', '', '', '', '', $now, $now
             );
@@ -1043,9 +1114,9 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
                 break;
             case 17:
-                $result = preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar_filename)
-                        ? $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.")
-                        : new stdClass;
+                $result = $objIdentity->avatar && !preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar['80_80'])
+                        ? new stdClass
+                        : $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
                 break;
             case 18:
                 $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
