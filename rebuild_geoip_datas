@@ -2,11 +2,12 @@
 <?php
 // by @leaskh
 
-error_reporting(E_ALL ^ E_NOTICE);
-ini_set('max_input_time', 3600);
-ini_set('memory_limit', '1024M');
-
 require_once dirname(__FILE__) . '/common.php';
+
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set('max_execution_time', 3600);
+ini_set('max_input_time',     3600);
+ini_set('memory_limit',    '1024M');
 
 
 class UpgradeGeoipDatas extends DataModel {
