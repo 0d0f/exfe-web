@@ -61,6 +61,8 @@ class libImage {
                 ImageJpeg($newImage, $toFile, $toQuality);
                 break;
             case 'png':
+                imagealphablending($newImage, false);
+                imagesavealpha($newImage, true);
                 ImagePng($newImage, $toFile);
                 break;
             default:
