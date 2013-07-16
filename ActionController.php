@@ -98,16 +98,17 @@ abstract class ActionController {
         foreach ($params as $pI => $pItem) {
             switch ($pI) {
                 case 'accept_language':
+                    $pItem = preg_replace('/-/', '_', $pItem);
                     if (($pItem = explode(',', $pItem))
                      && ($pItem = $pItem[0])
                      && ($pItem = explode(';', $pItem))
                      && ($pItem = $pItem[0])) {
                         switch ($pItem) {
-                            case 'zh-hant':
-                                $pItem = 'zh-tw';
+                            case 'zh_hant':
+                                $pItem = 'zh_tw';
                                 break;
-                            case 'zh-hans':
-                                $pItem = 'zh-cn';
+                            case 'zh_hans':
+                                $pItem = 'zh_cn';
                         }
                         $this->locale   = mysql_real_escape_string(strtolower(trim($pItem)));
                     }
