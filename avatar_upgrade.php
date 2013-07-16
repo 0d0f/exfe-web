@@ -19,8 +19,12 @@ function makeImgs($path, $file) {
         echo "Checking 320 version of image : {$source} ";
         $pureName = preg_replace('/^original_(.*)\.[^\.]+$/i', '$1', $file);
         $target   = "{$path}/320_320_{$pureName}.png";
+        $jpg      = "{$path}/320_320_{$pureName}.jpg";
         if (file_exists($target)) {
             unlink($target);
+        }
+        if (file_exists($jpg)) {
+            unlink($jpg);
         }
         if (@$objLibImage->resizeImage($source, 320, 320, $target)) {
             echo ' [OK]';
