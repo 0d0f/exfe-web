@@ -22,7 +22,7 @@ class IconsActions extends ActionController {
             'font_cjk'      => "{$fontDir}wqy-microhei.ttc",
             'font_color'    => [255, 254, 254, 1],
             'font_size'     => 26,
-            'font_top'      => -5,
+            'font_top'      => -6,
             'font_width'    => 26,
             'period'        => 604800, // 60 * 60 * 24 * 7
         ];
