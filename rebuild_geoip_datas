@@ -2,11 +2,12 @@
 <?php
 // by @leaskh
 
-error_reporting(E_ALL ^ E_NOTICE);
-ini_set('max_input_time', 3600);
-ini_set('memory_limit', '1024M');
-
 require_once dirname(__FILE__) . '/common.php';
+
+error_reporting(E_ALL ^ E_NOTICE);
+ini_set('max_execution_time', 3600);
+ini_set('max_input_time',     3600);
+ini_set('memory_limit',    '1024M');
 
 
 class UpgradeGeoipDatas extends DataModel {
@@ -23,7 +24,7 @@ class UpgradeGeoipDatas extends DataModel {
         echo "Start processing IP Address datas:\r\n";
         $start_time = time();
         $this->query("DELETE FROM `geoip_blocks`");
-        $filename = 'doc/GeoLiteCity_20121106/GeoLiteCity-Blocks.csv';
+        $filename = 'third_party_libraries/GeoLiteCity_20121106/GeoLiteCity-Blocks.csv';
         $file_handle = fopen($filename, "r");
         $i = 0;
         while (!feof($file_handle)) {
@@ -71,7 +72,7 @@ class UpgradeGeoipDatas extends DataModel {
         echo "Start processing City Location datas:\r\n";
         $start_time = time();
         $this->query("DELETE FROM `geoip_locations`");
-        $filename = 'doc/GeoLiteCity_20121106/GeoLiteCity-Location.csv';
+        $filename = 'third_party_libraries/GeoLiteCity_20121106/GeoLiteCity-Location.csv';
         $file_handle = fopen($filename, "r");
         $i = 0;
         while (!feof($file_handle)) {

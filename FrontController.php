@@ -75,13 +75,11 @@ class FrontController {
             $params['id'] = array_shift($arrPath);
 
         //objects/id/action
-            if ($arrPath) {
-                $action = array_shift($arrPath);
-            }
+            $action = $arrPath ? array_shift($arrPath) : $action;
 
         //objects/action
         } else {
-            $action = array_shift($arrPath);
+            $action = $arrPath ? array_shift($arrPath) : $action;
 
         //objects/action/id
             if ($arrPath) {
