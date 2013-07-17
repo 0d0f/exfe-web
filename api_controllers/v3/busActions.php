@@ -331,6 +331,7 @@ class BusActions extends ActionController {
         }
 
         // update crosss
+        $cross->exfee_id = $old_exfee->id;
         $cross_rs  = $crossHelper->editCross($cross, $by_identity->id);
         $cross_id  = $cross_rs && $cross_rs['cross_id'] ? $cross_rs['cross_id'] : 0;
         $rawResult = true;
