@@ -298,7 +298,7 @@ class CrossesActions extends ActionController {
             if (!$user_id
              && $invitation['valid']
              && isset($user_infos['CONNECTED'])) {
-                if ($usInvToken) {
+                if ($usInvToken && $invitation['identity_id'] !== SMITH_BOT_A) {
                     $result['authorization'] = $modUser->rawSignin(
                         $user_infos['CONNECTED'][0]['user_id']
                     );
