@@ -59,6 +59,8 @@ class VotesActions extends ActionController {
         $options  = @$objVote->options;
         $vote_id  = $modVote->createVote(
             $cross_id, $identity_id, @$objVote->title, @$objVote->description
+            in_array(@$objVote->choice, ['radio', 'multiple'])
+          ? @$objVote->choice : 'radio', @$objVote->anonymous
         );
         if ($vote_id) {
             foreach (@$objVote->options ?: [] as $option) {
@@ -110,6 +112,8 @@ class VotesActions extends ActionController {
         }
         if ($modVote->updateVote(
             $vote_id, $identity_id, @$objVote->title, @$objVote->description
+            in_array(@$objVote->choice, ['radio', 'multiple'])
+          ? @$objVote->choice : 'radio', @$objVote->anonymous
         )) {
             $objVote = $modVote->getVoteById($vote_id);
             if ($objVote && $objVote->status !== 'DELETED') {
@@ -149,7 +153,7 @@ class VotesActions extends ActionController {
             apiError(403, 'not_authorized', "The Vote you're requesting is private.");
         }
         if ($modVote->updateVote(
-            $vote_id, $identity_id, null, null, 3
+            $vote_id, $identity_id, null, null, null, null, 3
         )) {
             $objVote = $modVote->getVoteById($vote_id);
             if ($objVote && $objVote->status !== 'DELETED') {
@@ -189,7 +193,7 @@ class VotesActions extends ActionController {
             apiError(403, 'not_authorized', "The Vote you're requesting is private.");
         }
         if ($modVote->updateVote(
-            $vote_id, $identity_id, null, null, 4
+            $vote_id, $identity_id, null, null, null, null, 4
         )) {
             apiResponse(['vote_id' => $vote_id]);
         }

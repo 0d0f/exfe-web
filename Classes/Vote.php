@@ -18,6 +18,10 @@ class Vote extends EFObject {
 
     public $updated_at  = null;
 
+    public $choice      = '';
+
+    public $anonymous   = null;
+
     public $options     = [];
 
 
@@ -27,6 +31,8 @@ class Vote extends EFObject {
         $title       = '',
         $description = '',
         $vote_type   = '',
+        $choice      = 'radio', // radio / multiple
+        $anonymous   = false,
         $created_by  = null,
         $updated_by  = null,
         $created_at  = '',
@@ -46,6 +52,8 @@ class Vote extends EFObject {
         $this->vote_type   = $vote_type;
         $this->created_by  = $created_by;
         $this->updated_by  = $updated_by;
+        $this->choice      = $choice;
+        $this->anonymous   = $anonymous;
         $this->created_at  = $created_at . ' +0000';
         $this->updated_at  = $updated_at . ' +0000';
     }
