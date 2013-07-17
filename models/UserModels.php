@@ -953,6 +953,9 @@ class UserModels extends DataModel {
         if (isset($user['name'])) {
             $update_sql .= " `name` = '{$user['name']}', ";
         }
+        if (isset($user['bio'])) {
+            $update_sql .= " `bio`  = '{$user['bio']}', ";
+        }
         delCache("users:{$user_id}");
         return $update_sql
              ? $this->query("UPDATE `users` SET {$update_sql} `updated_at` = NOW() WHERE `id` = {$user_id}")
