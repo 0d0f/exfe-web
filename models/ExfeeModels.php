@@ -61,7 +61,8 @@ class ExfeeModels extends DataModel {
             $rawExfee[$ei]['rsvp_weight']  = $weights[$rawExfee[$ei]['rsvp']];
             if (isset($chkedIdt[$eItem['identity_id']])
              || !$rawExfee[$ei]['identity']
-             || !$rawExfee[$ei]['identity_upd']) {
+             || !$rawExfee[$ei]['identity_upd']
+             || (!$withRemoved && (int) $eItem['identity_id'] === SMITH_BOT_A)) {
                 unset($rawExfee[$ei]);
                 continue;
             }
