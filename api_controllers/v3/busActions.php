@@ -188,7 +188,7 @@ class BusActions extends ActionController {
         );
         // }
 
-        $rspData = $crossHelper->getCross($cross_id);
+        $rspData = $crossHelper->getCross($cross_id, true);
         if (!$rspData->updated) {
             $rspData->updated = new stdClass;
         }
@@ -350,7 +350,7 @@ class BusActions extends ActionController {
         $rtResult = [
             'cross_id' => $cross_id,
             'exfee_id' => $rawResult['exfee_id'],
-            'cross'    => $hlpCross->getCross($cross_id)
+            'cross'    => $hlpCross->getCross($cross_id, true)
         ];
         touchCross($cross_id, $user_id);
         if ($rawResult['soft_quota'] || $rawResult['hard_quota']) {
