@@ -309,6 +309,18 @@ class CrossesActions extends ActionController {
                     $result['action'] = 'SIGNIN';
                 }
                 $result['read_only'] = false;
+                if ($invitation['identity_id'] === SMITH_BOT_A) {
+                    $result['free_identities'] = [];
+                    foreach ($result['cross']->exfee->invitations as $invItem) {
+                        if ($invItem->identity->id !== SMITH_BOT_A
+                            // && $invitation->identity->
+                            // @todo check provider as wechat
+                            ) {
+                            $invItem->identity->free = $invItem->token_used_at === '0000-00-00 00:00:00';
+                            $result['free_identities'][] = $invItem->identity;
+                        }
+                    }
+                }
                 touchCross(
                     $invitation['cross_id'],
                     $user_infos['CONNECTED'][0]['user_id']
