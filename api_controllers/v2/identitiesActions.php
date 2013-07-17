@@ -107,7 +107,6 @@ class IdentitiesActions extends ActionController {
                             break;
                         case 'facebook':
                             if ($identityItem->external_username) {
-                                //////////////////////////////////////////////////////////////////////////
                                 $rawIdentity = $modOAuth->getFacebookProfileByExternalUsername(
                                     $identityItem->external_username
                                 );
