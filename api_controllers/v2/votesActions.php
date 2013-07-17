@@ -305,7 +305,7 @@ class VotesActions extends ActionController {
                         apiError(403, 'not_authorized', "This vote in not opening currently.");
                     }
                     $action = strtolower(trim(@$_POST['vote']));
-                    $action = in_array($action, ['', 'disagree'])
+                    $action = in_array($action, ['', 'agree', 'disagree'])
                             ? $action : 'agree';
                     if ($modVote->vote(
                         $option_id, $identity_id, $action, $objVote->choice === 'multiple'
