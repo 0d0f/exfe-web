@@ -2,11 +2,13 @@
 
 class VoteModels extends DataModel {
 
-    public function createVote($cross_id, $identity_id, $title = '', $description = '', $type = '') {
+    public function createVote($cross_id, $identity_id, $title = '', $description = '', $choice = '', $anonymous = false, $type = '') {
         $cross_id    = (int) $cross_id;
         $identity_id = (int) $identity_id;
         $title       = @mysql_real_escape_string(trim($title));
         $description = @mysql_real_escape_string(trim($description));
+        $choice      = @mysql_real_escape_string(trim($choice));
+        $anonymous   = !!$anonymous ? 1 : 0;
         $type        = @mysql_real_escape_string(trim($type));
         if ($cross_id && $identity_id) {
             $isResult = $this->query(
@@ -18,6 +20,8 @@ class VoteModels extends DataModel {
                  `vote_type`   = '{$type}',
                  `created_by`  =  {$identity_id},
                  `updated_by`  =  {$identity_id},
+                 `choice`      = '{$choice}',
+                 `anonymous`   =   $anonymous,
                  `created_at`  =  NOW(),
                  `updated_at`  =  NOW()"
             );
@@ -71,6 +75,8 @@ class VoteModels extends DataModel {
                 $rawVote['title'],
                 $rawVote['description'],
                 $rawVote['vote_type'],
+                $rawVote['choice'],
+                $rawVote['anonymous'],
                 $created_by,
                 $updated_by,
                 $rawVote['created_at'],
@@ -131,12 +137,14 @@ class VoteModels extends DataModel {
     }
 
 
-    public function updateVote($id, $identity_id, $title = null, $description = null, $status = null) {
-        $id          = (int) $id;
-        $identity_id = (int) $identity_id;
-        $intStatus   = (int) $status;
-        $strTitle    = @mysql_real_escape_string(trim($title));
-        $strDesc     = @mysql_real_escape_string(trim($description));
+    public function updateVote($id, $identity_id, $title = null, $description = null, $choice = null, $anonymous = null, $status = null) {
+        $id            = (int) $id;
+        $identity_id   = (int) $identity_id;
+        $intStatus     = (int) $status;
+        $strTitle      = @mysql_real_escape_string(trim($title));
+        $strDesc       = @mysql_real_escape_string(trim($description));
+        $strChoice     = @mysql_real_escape_string(trim($choice));
+        $intAnonymous  = !!$anonymous ? 1 : 0;
         if ($id && $identity_id) {
             $sqlAppend = '';
             if ($title       !== null) {
@@ -148,6 +156,12 @@ class VoteModels extends DataModel {
             if ($status      !== null) {
                 $sqlAppend .= ", `status`      =  {$intStatus}";
             }
+            if ($choice      !== null) {
+                $sqlAppend .= ", `choice`      = '{$strChoice}'";
+            }
+            if ($anonymous   !== null) {
+                $sqlAppend .= ", `anonymous`   =  {$intAnonymous}";
+            }
             if ($sqlAppend) {
                 return $this->updateVoteRaw($id, $identity_id, $sqlAppend);
             }
@@ -157,7 +171,7 @@ class VoteModels extends DataModel {
 
 
     public function changeVoteStatus($id, $identity_id, $status) {
-        return $this->updateVote($id, $identity_id, null, null, $status);
+        return $this->updateVote($id, $identity_id, null, null, null, null, $status);
     }
 
 
