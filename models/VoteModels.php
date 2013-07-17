@@ -7,7 +7,7 @@ class VoteModels extends DataModel {
         $identity_id = (int) $identity_id;
         $title       = @mysql_real_escape_string(trim($title));
         $description = @mysql_real_escape_string(trim($description));
-        $choice      = @mysql_real_escape_string(trim($choice));
+        $choice      = @mysql_real_escape_string(strtolower(trim($choice)));
         $anonymous   = !!$anonymous ? 1 : 0;
         $type        = @mysql_real_escape_string(trim($type));
         if ($cross_id && $identity_id) {
@@ -101,7 +101,9 @@ class VoteModels extends DataModel {
                 );
             }
             if ($withResponses) {
-                $vote->responses = $this->getResponsesByVoteId($optionIds);
+                $vote->responses = $this->getResponsesByVoteId(
+                    $optionIds, $vote->anonymous
+                );
             }
             return $vote;
         }
@@ -109,16 +111,19 @@ class VoteModels extends DataModel {
     }
 
 
-    public function getResponsesByVoteId($vote_ids) {
+    public function getResponsesByVoteId($vote_ids, $anonymous = false) {
         $hlpResponse  = $this->getHelperByName('Response');
         $rawResponses = $hlpResponse->getResponsesByObjectTypeAndObjectIds(
             'vote', $vote_ids
         );
         $result = [];
         foreach ($rawResponses ?: [] as $rsItem) {
-            if ($rsItem->response === 'AGREE') {
+            if ($rsItem->response === 'agree') {
                 if (!isset($result["{$rsItem->object_id}"])) {
                     $result["{$rsItem->object_id}"] = [];
+                }
+                if ($anonymous) {
+                    $rsItem->by_identity = null;
                 }
                 $result["{$rsItem->object_id}"][] = $rsItem;
             }
@@ -143,7 +148,7 @@ class VoteModels extends DataModel {
         $intStatus     = (int) $status;
         $strTitle      = @mysql_real_escape_string(trim($title));
         $strDesc       = @mysql_real_escape_string(trim($description));
-        $strChoice     = @mysql_real_escape_string(trim($choice));
+        $strChoice     = @mysql_real_escape_string(strtolower(trim($choice)));
         $intAnonymous  = !!$anonymous ? 1 : 0;
         if ($id && $identity_id) {
             $sqlAppend = '';
@@ -261,10 +266,10 @@ class VoteModels extends DataModel {
     }
 
 
-    public function vote($id, $identity_id, $action = 'AGREE') {
-        if (in_array($action, ['', 'AGREE'])) {
+    public function vote($id, $identity_id, $action = 'agree', $multiple = false) {
+        if (in_array($action, ['', 'agree'])) {
             $hlpResponse = $this->getHelperByName('Response');
-            if ($action === 'AGREE') {
+            if ($action === 'agree' && !$multiple) {
                 $rawOptions = $this->getAll(
                     "SELECT * FROM `vote_options` WHERE `vote_id` = {$id}"
                 );
