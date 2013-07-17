@@ -327,7 +327,7 @@ class ExfeeModels extends DataModel {
                          WHERE  `exfee_id` = {$exfee_id} AND `state` <> 4";
         $rawExfee     = $this->getAll($sql);
         foreach ($rawExfee ?: [] as $eItem) {
-            $identity_ids[] = $eItem['identity_id'];
+            $identity_ids[] = (int) $eItem['identity_id'];
         }
         return $identity_ids;
     }
