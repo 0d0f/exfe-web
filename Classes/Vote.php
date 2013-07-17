@@ -45,7 +45,7 @@ class Vote extends EFObject {
         $updated_at        = $updated_at && $updated_at !== '0000-00-00 00:00:00'
                            ? $updated_at  : $created_at;
 
-        $arrStatus         = ['DRAFT', 'OPENING', 'PAUSED', 'CLOSED', 'DELETED'];
+        $arrStatus         = ['draft', 'opening', 'paused', 'closed', 'deleted'];
         $this->status      = $arrStatus[$status];
         $this->title       = $title;
         $this->description = $description;
@@ -53,7 +53,7 @@ class Vote extends EFObject {
         $this->created_by  = $created_by;
         $this->updated_by  = $updated_by;
         $this->choice      = $choice;
-        $this->anonymous   = $anonymous;
+        $this->anonymous   = !!$anonymous;
         $this->created_at  = $created_at . ' +0000';
         $this->updated_at  = $updated_at . ' +0000';
     }
