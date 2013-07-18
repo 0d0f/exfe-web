@@ -14,7 +14,7 @@ class IconsActions extends ActionController {
         $config = [
             'red_image'     => "{$resDir}map_mark_red@2x.png",
             'blue_image'    => "{$resDir}map_mark_blue@2x.png",
-            'colors'        => ['blur', 'red'],
+            'colors'        => ['blue', 'red'],
             'default_color' => 'blue',
             'width'         => 48,
             'height'        => 68,
