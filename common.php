@@ -323,8 +323,8 @@ function checkCjk($string) {
 
 // data validate by @leask {
 
-function formatName($string, $length = 30) {
-    $string = mb_substr($string, 0, $length, 'utf8');
+function formatName($string, $length = 40) {
+    $string = mb_strimwidth($string, 0, $length, '', 'utf8');
     $string = preg_replace('/\r\n|\n\r|\r|\n/', ' ',  $string);
     return $string;
 }
