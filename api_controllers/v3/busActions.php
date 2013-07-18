@@ -608,30 +608,30 @@ class BusActions extends ActionController {
         $modIdentity = $this->getModelByName('Identity');
         $modDevice   = $this->getModelByName('Device');
         // get raw data
-        if (!($str_args = @file_get_contents('php://input'))) {
+        if (!($strArgs = @file_get_contents('php://input'))) {
             $this->jsonError(500, 'no_input');
             if (DEBUG) {
                 error_log('No input!');
-                error_log($str_args);
+                error_log($strArgs);
             }
             return;
         }
         // decode json
-        $obj_args     = (array) json_decode($str_args);
-        $objRecipient = @$obj_args['recipient'];
-        $strError     = @$obj_args['error'];
-        if (!$objRecipient
-         || !$objRecipient->external_username
-         || !$objRecipient->provider) {
+        $objArgs       = (array) json_decode($strArgs);
+        $rawIdentityId = @$objArgs['identity_id'];
+        $strError      = @$objArgs['error'];
+        if (!$rawIdentityId
+         || !($external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $rawIdentityId))
+         || !($provider          = preg_replace('/^.*@([^@]*)$/', '$1', $rawIdentityId))) {
             $this->jsonError(500, 'json_error');
             if (DEBUG) {
                 error_log('JSON error!');
-                error_log($str_args);
+                error_log($strArgs);
             }
             return;
         }
-        // rawjob
-        switch ($objRecipient->provider) {
+        // rawJob
+        switch ($provider) {
             case 'email':
             case 'phone':
             case 'twitter':
@@ -639,13 +639,13 @@ class BusActions extends ActionController {
             case 'google':
             case 'wechat':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
-                    $objRecipient->provider, $objRecipient->external_username, true
+                    $provider, $external_username, true
                 );
                 if (!$identity_id) {
                     $this->jsonError(500, 'identity_not_found');
                     if (DEBUG) {
                         error_log('Identity not found!');
-                        error_log(json_encode($objRecipient));
+                        error_log(json_encode($rawIdentityId));
                     }
                     return;
                 }
@@ -656,20 +656,20 @@ class BusActions extends ActionController {
             case 'iOS':
             case 'Android':
                 $modDevice->updateDeviceReachableByUdid(
-                    $objRecipient->external_username,
-                    $objRecipient->provider, $strError
+                    $external_username,
+                    $provider, $strError
                 );
                 break;
             default:
                 $this->jsonError(500, 'unknow_provide');
                 if (DEBUG) {
                     error_log('Unknow provider!');
-                    error_log(json_encode($objRecipient));
+                    error_log(json_encode($rawIdentityId));
                 }
                 return;
         }
         // return
-        $this->jsonResponse($objRecipient);
+        $this->jsonResponse($rawIdentityId);
     }
 
 
