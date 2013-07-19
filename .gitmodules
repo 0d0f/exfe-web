@@ -13,3 +13,6 @@
 [submodule "httpkit"]
     path = third_party_libraries/httpkit
     url  = https://gist.github.com/6035051.git
+[submodule "ics.generator"]
+    path = third_party_libraries/ics.generator
+    url  = https://github.com/Leask/ics.generator.git
