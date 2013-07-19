@@ -324,4 +324,96 @@ class ExfeeActions extends ActionController {
         apiError(500, 'failed', '');
     }
 
+
+    public function doRequest() {
+        // get libs
+        $params      = $this->params;
+        $modExfee    = $this->getModelByName('exfee');
+        $modIdentity = $this->getModelByName('Identity');
+        $modRequest  = $this->getModelByName('Request');
+        $hlpCheck    = $this->getHelperByName('Check');
+        // basic check
+        if (!($exfee_id = intval($params['id']))) {
+            $cross_id = (int) @$_POST['cross_id'];
+            $invToken = @$_POST['invitation_token'] ?: '';
+            if ($cross_id && strlen($invToken) === 4) {
+                $invitation = $modExfee->getRawInvitationByExfeeIdAndToken($exfee_id, $invToken);
+            } else if ($invToken) {
+                $invitation = $modExfee->getRawInvitationByToken($invToken);
+            }
+            if ($invitation && @$invitation['exfee_id']) {
+                $exfee_id = $invitation['exfee_id'];
+            } else {
+                apiError(400, 'no_exfee_id', 'exfee_id must be provided');
+            }
+        }
+        // get cross id
+        if (!($cross_id = $modExfee->getCrossIdByExfeeId($exfee_id))) {
+            apiError(404, 'exfee_not_found', '');
+        }
+        if ($this->tails && ($request_id = (int) $this->tails[0])
+         && in_array(@$this->tails[1], ['approve', 'decline'])) {
+            // check rights
+            $result = $hlpCheck->isAPIAllow(
+                'cross', $params['token'], ['cross_id' => $cross_id]
+            );
+            if (!$result['check']) {
+                if ($result['uid']) {
+                    apiError(403, 'not_authorized', 'You are not a member of this exfee.');
+                }
+                apiError(401, 'invalid_auth', '');
+            }
+            switch ($this->tails[1]) {
+                case 'approve':
+                    $rqResult = $modRequest->approve($this->tails[0]);
+                    break;
+                case 'decline':
+                    $rqResult = $modRequest->decline($this->tails[1]);
+            }
+            if ($rqResult) {
+                apiResponse(['request' => $rqResult]);
+            }
+            apiError(400, 'invalid_request', '');
+        }
+        if (!($provider = strtolower(@$_POST['provider']))) {
+            apiError(400, 'error_provider', '');
+        }
+        if (!($username = strtolower(@$_POST['external_username']))) {
+            apiError(400, 'error_external_username', '');
+        }
+        // get identity
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $username
+        );
+        if ($identity) {
+            $identity_id = $identity->id;
+        } else {
+            $identity_id = $modIdentity->addIdentity([
+                'provider'          => $provider,
+                'external_id'       => $username,
+                'external_username' => $username,
+            ]);
+            $identity    = $modIdentity->getIdentityById($identity_id);
+        }
+        if (!$identity) {
+            $this->jsonError(500, 'identity_error');
+            return;
+        }
+        // check current status
+        $identity_ids = $modExfee->getIdentityIdsByExfeeId($exfee_id);
+        $user_ids     = $modExfee->getUserIdsByExfeeId($exfee_id);
+        if (in_array($identity_id, $identity_ids)
+         || in_array($identity->connected_user_id, $user_ids)) {
+            apiError(400, 'no_need', 'You are already in the exfee.');
+        }
+        // request
+        $request = $modRequest->request(
+            $identity_id, $exfee_id, @$_POST['message'] ?: ''
+        );
+        if ($request) {
+            apiResponse(['request' => $request]);
+        }
+        apiError(500, 'server_error');
+    }
+
 }

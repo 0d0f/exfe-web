@@ -2,15 +2,15 @@
 
 class RequestModels extends DataModel {
 
-    protected $modIdentity = null;
+    protected $hlpIdentity = null;
 
 
     protected function packRequest($rawRequest) {
         if ($rawRequest) {
-            $requested_by = $this->modIdentity->getIdentityById(
+            $requested_by = $this->hlpIdentity->getIdentityById(
                 $rawRequest['requested_by']
             );
-            $updated_by   = $this->modIdentity->getIdentityById(
+            $updated_by   = $this->hlpIdentity->getIdentityById(
                 $rawRequest['updated_by']
             );
             if ($requested_by && $updated_by) {
@@ -18,14 +18,15 @@ class RequestModels extends DataModel {
                     $rawRequest['id'], $rawRequest['exfee_id'], $requested_by,
                     $updated_by, $rawRequest['status'], $rawRequest['message'],
                     $rawRequest['requested_at'], $rawRequest['updated_at']
-                )
+                );
             }
         }
+        return null;
     }
 
 
     public function __construct() {
-        $this->modIdentity = $this->getModelByName('Identity');
+        $this->hlpIdentity = $this->getHelperByName('Identity');
     }
 
 
@@ -43,7 +44,7 @@ class RequestModels extends DataModel {
         $exfee_id    = (int) $exfee_id;
         $message     = @mysql_real_escape_string(trim($message));
         if ($identity_id && $exfee_id) {
-            $curRequest = $this->getRequestBy($identity_id, $exfee_id);
+            $curRequest = $this->getRequestBy(0, $identity_id, $exfee_id);
             $rawResult  = $curRequest ? $this->query(
                 "UPDATE `requests` SET
                  `updated_by`   =  {$identity_id},
@@ -63,27 +64,26 @@ class RequestModels extends DataModel {
                  `message`      = '{$message}'"
             );
             if ($rawResult) {
-                return $this->getRequestBy($identity_id, $exfee_id);
+                return $this->getRequestBy(0, $identity_id, $exfee_id);
             }
         }
         return null;
     }
 
 
-    public function getRequestBy($identity_id, $exfee_id) {
+    public function getRequestBy($request_id = 0, $identity_id = 0, $exfee_id = 0) {
+        $request_id  = (int) $request_id;
         $identity_id = (int) $identity_id;
         $exfee_id    = (int) $exfee_id;
-        if ($identity_id && $exfee_id) {
-            $rawResult = $this->getRow(
-                "SELECT * FROM `requests`
-                 WHERE `requested_by` = {$identity_id}
-                 AND   `exfee_id`     = {$exfee_id}"
-            );
-            if ($rawResult) {
-                return $this->packRequest($rawResult);
-            }
+        if ($request_id) {
+            $sqlAppend = "`id` = {$request_id}";
+        } else if ($identity_id && $exfee_id) {
+            $sqlAppend = "`requested_by` = {$identity_id} AND `exfee_id` = {$exfee_id}";
+        } else {
+            return null;
         }
-        return null;
+        $rawResult = $this->getRow("SELECT * FROM `requests` WHERE {$sqlAppend}");
+        return $this->packRequest($rawResult);
     }
 
 
@@ -105,29 +105,36 @@ class RequestModels extends DataModel {
     }
 
 
-    public function changeStatus($identity_id, $exfee_id, $status) {
+    public function changeStatus($request_id = 0, $identity_id = 0, $exfee_id = 0, $status = 0) {
+        $request_id  = (int) $request_id;
         $identity_id = (int) $identity_id;
         $exfee_id    = (int) $exfee_id;
         $status      = (int) $status;
-        if ($identity_id && $exfee_id) {
-            return $this->query(
-                "UPDATE `requests`
-                 SET    `status`       = {$status}
-                 WHERE  `requested_by` = {$identity_id}
-                 AND    `exfee_id`     = {$exfee_id}"
-            );
+        if ($request_id) {
+            $sqlAppend = "`id` = {$request_id}";
+        } else if ($identity_id && $exfee_id) {
+            $sqlAppend = "`requested_by` = {$identity_id} AND `exfee_id` = {$exfee_id}";
+        } else {
+            return null;
         }
-        return null;
+        $rqResult = $this->query(
+            "UPDATE `requests`
+             SET    `status` = {$status}, `updated_at` = NOW()
+             WHERE {$sqlAppend}"
+        );
+        return $rqResult
+             ? $this->getRequestBy($request_id, $identity_id, $exfee_id)
+             : false;
     }
 
 
-    public function approve($identity_id, $exfee_id) {
-        return $this->changeStatus($identity_id, $exfee_id, 1);
+    public function approve($request_id) {
+        return $this->changeStatus($request_id, 0, 0, 1);
     }
 
 
-    public function declined($identity_id, $exfee_id) {
-        return $this->changeStatus($identity_id, $exfee_id, 2);
+    public function decline($request_id) {
+        return $this->changeStatus($request_id, 0, 0, 2);
     }
 
 
