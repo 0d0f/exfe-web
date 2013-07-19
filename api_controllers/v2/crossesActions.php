@@ -29,16 +29,23 @@ class CrossesActions extends ActionController {
                     }
             }
             if ($this->tails && @$this->tails[0] === 'widgets') {
+                // votes
                 $modVote  = $this->getModelByName('Vote');
                 $vote_ids = $modVote->getVoteIdsByCrossId($params['id']);
-                $votes    = [];
+                $widgets  = [];
                 foreach ($vote_ids ?: [] as $vid) {
                     if (($vote = $modVote->getVoteById($vid))
                       && $vote->status !== 'DELETED') {
-                        $votes[] = $vote;
+                        $widgets[] = $vote;
                     }
                 }
-                apiResponse(['widgets' => $votes]);
+                // request accesses
+                $modRqst  = $this->getModelByName('Request');
+                $reqAss   = $modRqst->getRequestAccessBy($cross->exfee->id);
+                if ($reqAss) {
+                    $widgets[] = $reqAss;
+                }
+                apiResponse(['widgets' => $widgets]);
             } else {
                 if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                     apiError(304, 'Cross Not Modified.');
