@@ -16,3 +16,6 @@
 [submodule "ics.generator"]
     path = third_party_libraries/ics.generator
     url  = https://github.com/Leask/ics.generator.git
+[submodule "libtime"]
+    path = third_party_libraries/libtime
+    url  = https://gist.github.com/6038199.git
