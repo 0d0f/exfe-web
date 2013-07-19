@@ -28,31 +28,59 @@ class CrossesActions extends ActionController {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
-            if ($this->tails && @$this->tails[0] === 'widgets') {
-                // votes
-                $modVote  = $this->getModelByName('Vote');
-                $vote_ids = $modVote->getVoteIdsByCrossId($params['id']);
-                $widgets  = [];
-                foreach ($vote_ids ?: [] as $vid) {
-                    if (($vote = $modVote->getVoteById($vid))
-                      && $vote->status !== 'DELETED') {
-                        $widgets[] = $vote;
-                    }
-                }
-                // request accesses
-                $modRqst  = $this->getModelByName('Request');
-                $reqAss   = $modRqst->getRequestAccessBy($cross->exfee->id);
-                if ($reqAss) {
-                    $widgets[] = $reqAss;
-                }
-                apiResponse(['widgets' => $widgets]);
-            } else {
-                if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
-                    apiError(304, 'Cross Not Modified.');
-                }
-                touchCross($params['id'], $result['uid']);
-                apiResponse(['cross' => $cross]);
+            if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
+                apiError(304, 'Cross Not Modified.');
             }
+            touchCross($params['id'], $result['uid']);
+            apiResponse(['cross' => $cross]);
+        }
+        apiError(400, 'param_error', "The X you're requesting is not found.");
+    }
+
+
+    public function doWidgets() {
+        $params = $this->params;
+        $updated_at = $params['updated_at'];
+        if ($updated_at) {
+            $updated_at = strtotime($updated_at);
+        }
+        $checkHelper = $this->getHelperByName('check');
+        $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+        }
+        $crossHelper = $this->getHelperByName('cross');
+        $cross = $crossHelper->getCross($params['id']);
+        if ($cross) {
+            switch ($cross->attribute['state']) {
+                case 'deleted':
+                    apiError(403, 'not_authorized', "The X you're requesting is private.");
+                case 'draft':
+                    if (!in_array($result['uid'], $cross->exfee->hosts)) {
+                        apiError(403, 'not_authorized', "The X you're requesting is private.");
+                    }
+            }
+            // votes
+            $modVote  = $this->getModelByName('Vote');
+            $vote_ids = $modVote->getVoteIdsByCrossId($params['id']);
+            $widgets  = [];
+            foreach ($vote_ids ?: [] as $vid) {
+                if (($vote = $modVote->getVoteById($vid))
+                  && $vote->status !== 'DELETED') {
+                    $widgets[] = $vote;
+                }
+            }
+            // request accesses
+            $modRqst  = $this->getModelByName('Request');
+            $reqAss   = $modRqst->getRequestAccessBy($cross->exfee->id);
+            if ($reqAss) {
+                $widgets[] = $reqAss;
+            }
+            apiResponse(['widgets' => $widgets]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
     }
