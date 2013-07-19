@@ -295,10 +295,10 @@ class UserModels extends DataModel {
                 WHERE  `identityid` = {$identity_ids} AND (`status` = 3"
              . ($notConnected ? ' OR `status` = 2 OR `status` = 4' : '') . ')';
         $dbResult = $this->getAll($sql);
-        $user_ids = array();
+        $user_ids = [];
         if ($dbResult) {
             foreach ($dbResult as $uI => $uItem) {
-                $user_ids[] = $uItem['userid'];
+                $user_ids[] = (int) $uItem['userid'];
             }
         }
         return $user_ids;
@@ -952,6 +952,9 @@ class UserModels extends DataModel {
         $update_sql = '';
         if (isset($user['name'])) {
             $update_sql .= " `name` = '{$user['name']}', ";
+        }
+        if (isset($user['bio'])) {
+            $update_sql .= " `bio`  = '{$user['bio']}', ";
         }
         delCache("users:{$user_id}");
         return $update_sql

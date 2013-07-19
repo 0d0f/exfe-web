@@ -163,7 +163,9 @@ class BusActions extends ActionController {
         if (!isset($cross->attribute)) {
             $cross->attribute = new stdClass;
         }
-        $cross->attribute->state = 'draft';
+        if (!isset($cross->attribute->state)) {
+            $cross->attribute->state = 'published';
+        }
         $gthResult = $crossHelper->gatherCross($cross, $identity_id, $user_id);
         $cross_id = @$gthResult['cross_id'];
         if (!$cross_id) {
@@ -186,7 +188,7 @@ class BusActions extends ActionController {
         );
         // }
 
-        $rspData = $crossHelper->getCross($cross_id);
+        $rspData = $crossHelper->getCross($cross_id, true);
         if (!$rspData->updated) {
             $rspData->updated = new stdClass;
         }
@@ -331,6 +333,7 @@ class BusActions extends ActionController {
         }
 
         // update crosss
+        $cross->exfee_id = $old_exfee->id; // @todo: exfee_id in missing!?
         $cross_rs  = $crossHelper->editCross($cross, $by_identity->id);
         $cross_id  = $cross_rs && $cross_rs['cross_id'] ? $cross_rs['cross_id'] : 0;
         $rawResult = true;
@@ -347,7 +350,7 @@ class BusActions extends ActionController {
         $rtResult = [
             'cross_id' => $cross_id,
             'exfee_id' => $rawResult['exfee_id'],
-            'cross'    => $hlpCross->getCross($cross_id)
+            'cross'    => $hlpCross->getCross($cross_id, true)
         ];
         touchCross($cross_id, $user_id);
         if ($rawResult['soft_quota'] || $rawResult['hard_quota']) {
@@ -605,30 +608,30 @@ class BusActions extends ActionController {
         $modIdentity = $this->getModelByName('Identity');
         $modDevice   = $this->getModelByName('Device');
         // get raw data
-        if (!($str_args = @file_get_contents('php://input'))) {
+        if (!($strArgs = @file_get_contents('php://input'))) {
             $this->jsonError(500, 'no_input');
             if (DEBUG) {
                 error_log('No input!');
-                error_log($str_args);
+                error_log($strArgs);
             }
             return;
         }
         // decode json
-        $obj_args     = (array) json_decode($str_args);
-        $objRecipient = @$obj_args['recipient'];
-        $strError     = @$obj_args['error'];
-        if (!$objRecipient
-         || !$objRecipient->external_username
-         || !$objRecipient->provider) {
+        $objArgs       = (array) json_decode($strArgs);
+        $rawIdentityId = @$objArgs['identity_id'];
+        $strError      = @$objArgs['error'];
+        if (!$rawIdentityId
+         || !($external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $rawIdentityId))
+         || !($provider          = preg_replace('/^.*@([^@]*)$/', '$1', $rawIdentityId))) {
             $this->jsonError(500, 'json_error');
             if (DEBUG) {
                 error_log('JSON error!');
-                error_log($str_args);
+                error_log($strArgs);
             }
             return;
         }
-        // rawjob
-        switch ($objRecipient->provider) {
+        // rawJob
+        switch ($provider) {
             case 'email':
             case 'phone':
             case 'twitter':
@@ -636,13 +639,13 @@ class BusActions extends ActionController {
             case 'google':
             case 'wechat':
                 $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
-                    $objRecipient->provider, $objRecipient->external_username, true
+                    $provider, $external_username, true
                 );
                 if (!$identity_id) {
                     $this->jsonError(500, 'identity_not_found');
                     if (DEBUG) {
                         error_log('Identity not found!');
-                        error_log(json_encode($objRecipient));
+                        error_log(json_encode($rawIdentityId));
                     }
                     return;
                 }
@@ -653,20 +656,20 @@ class BusActions extends ActionController {
             case 'iOS':
             case 'Android':
                 $modDevice->updateDeviceReachableByUdid(
-                    $objRecipient->external_username,
-                    $objRecipient->provider, $strError
+                    $external_username,
+                    $provider, $strError
                 );
                 break;
             default:
                 $this->jsonError(500, 'unknow_provide');
                 if (DEBUG) {
                     error_log('Unknow provider!');
-                    error_log(json_encode($objRecipient));
+                    error_log(json_encode($rawIdentityId));
                 }
                 return;
         }
         // return
-        $this->jsonResponse($objRecipient);
+        $this->jsonResponse($rawIdentityId);
     }
 
 

@@ -17,7 +17,7 @@ class VotesActions extends ActionController {
             }
         }
         $objVote = $modVote->getVoteById($vote_id);
-        if ($objVote && $objVote->status !== 'DELETED') {
+        if ($objVote && $objVote->status !== 'deleted') {
             apiResponse(['vote' => $objVote]);
         }
         apiError(404, 'not_found', "The Vote you're requesting is not found.");
@@ -53,12 +53,14 @@ class VotesActions extends ActionController {
         }
         $strPost  = @file_get_contents('php://input');
         $objVote  = @json_decode($strPost);
-        if (!$objVote) {
+        if (!$objVote || (isset($objVote->status) && strtolower($objVote->status) === 'deleted')) {
             apiError(400, 'error_vote');
         }
         $options  = @$objVote->options;
         $vote_id  = $modVote->createVote(
-            $cross_id, $identity_id, @$objVote->title, @$objVote->description
+            $cross_id, $identity_id, @$objVote->title, @$objVote->description,
+            in_array(@$objVote->choice, ['radio', 'multiple'])
+          ? @$objVote->choice : 'radio', @$objVote->anonymous
         );
         if ($vote_id) {
             foreach (@$objVote->options ?: [] as $option) {
@@ -66,10 +68,7 @@ class VotesActions extends ActionController {
                     $vote_id, $identity_id, @$option->data, @$option->title
                 );
             }
-            $objVote = $modVote->getVoteById($vote_id);
-            if ($objVote && $objVote->status !== 'DELETED') {
-                apiResponse(['vote' => $objVote]);
-            }
+            apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
         }
         apiError(400, 'error_vote');
     }
@@ -90,14 +89,21 @@ class VotesActions extends ActionController {
                 apiError(403, 'not_authorized', "The Vote you're requesting is private.");
             }
         }
+        $curVote  = $modVote->getVoteById($vote_id);
+        if ($curVote->status === 'deleted') {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+        }
         $identity_id = 0;
         $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
         $exfee       = $modExfee->getExfeeById($exfee_id);
+        $host        = false;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->connected_user_id ===  $result['uid']
              || $invitation->identity->id                === @$result['by_identity_id']) {
                 $identity_id = $invitation->identity->id;
-                break;
+            }
+            if ($invitation->host) {
+                $host = true;
             }
         }
         if (!$identity_id) {
@@ -108,12 +114,23 @@ class VotesActions extends ActionController {
         if (!$objVote) {
             apiError(400, 'error_vote');
         }
+        if ((isset($objVote->choice)    && (strtolower($objVote->choice) !== $curVote->choice))
+         || (isset($objVote->anonymous) && (!!$objVote->anonymous   !==   $curVote->anonymous))
+         || (isset($objVote->status)    && (strtolower($objVote->status) !== $curVote->status))) {
+            if (!$host && $curVote->created_by !== $identity_id) {
+                apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+            }
+        }
         if ($modVote->updateVote(
-            $vote_id, $identity_id, @$objVote->title, @$objVote->description
+            $vote_id, $identity_id, @$objVote->title, @$objVote->description,
+            in_array(@$objVote->choice, ['radio', 'multiple'])
+          ? @$objVote->choice : 'radio', @$objVote->anonymous, @$objVote->status
         )) {
             $objVote = $modVote->getVoteById($vote_id);
-            if ($objVote && $objVote->status !== 'DELETED') {
-                apiResponse(['vote' => $objVote]);
+            if ($objVote && $objVote->status === 'deleted') {
+                apiResponse(['vote_id' => $vote_id]);
+            } else {
+                apiResponse(['vote'    => $objVote]);
             }
         }
         apiError(400, 'error_vote');
@@ -135,26 +152,30 @@ class VotesActions extends ActionController {
                 apiError(403, 'not_authorized', "The Vote you're requesting is private.");
             }
         }
+        $curVote = $modVote->getVoteById($vote_id);
+        if ($curVote->status === 'deleted') {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+        }
         $identity_id = 0;
         $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
         $exfee       = $modExfee->getExfeeById($exfee_id);
+        $host        = false;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->connected_user_id ===  $result['uid']
              || $invitation->identity->id                === @$result['by_identity_id']) {
                 $identity_id = $invitation->identity->id;
-                break;
+            }
+            if ($invitation->host) {
+                $host = true;
             }
         }
-        if (!$identity_id) {
+        if (!$identity_id || (!$host && $curVote->created_by !== $identity_id)) {
             apiError(403, 'not_authorized', "The Vote you're requesting is private.");
         }
         if ($modVote->updateVote(
-            $vote_id, $identity_id, null, null, 3
+            $vote_id, $identity_id, null, null, null, null, 3
         )) {
-            $objVote = $modVote->getVoteById($vote_id);
-            if ($objVote && $objVote->status !== 'DELETED') {
-                apiResponse(['vote' => $objVote]);
-            }
+            apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
         }
         apiError(400, 'error_vote');
     }
@@ -175,21 +196,28 @@ class VotesActions extends ActionController {
                 apiError(403, 'not_authorized', "The Vote you're requesting is private.");
             }
         }
+        $curVote = $modVote->getVoteById($vote_id);
+        if ($curVote->status === 'deleted') {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
+        }
         $identity_id = 0;
         $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
         $exfee       = $modExfee->getExfeeById($exfee_id);
+        $host        = false;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->connected_user_id ===  $result['uid']
              || $invitation->identity->id                === @$result['by_identity_id']) {
                 $identity_id = $invitation->identity->id;
-                break;
+            }
+            if ($invitation->host) {
+                $host = true;
             }
         }
-        if (!$identity_id) {
+        if (!$identity_id || (!$host && $curVote->created_by !== $identity_id)) {
             apiError(403, 'not_authorized', "The Vote you're requesting is private.");
         }
         if ($modVote->updateVote(
-            $vote_id, $identity_id, null, null, 4
+            $vote_id, $identity_id, null, null, null, null, 4
         )) {
             apiResponse(['vote_id' => $vote_id]);
         }
@@ -215,6 +243,10 @@ class VotesActions extends ActionController {
             } else {
                 apiError(403, 'not_authorized', "The Vote you're requesting is private.");
             }
+        }
+        $curVote = $modVote->getVoteById($vote_id);
+        if ($curVote->status === 'deleted') {
+            apiError(403, 'not_authorized', "The Vote you're requesting is private.");
         }
         $identity_id = 0;
         $exfee_id    = $modExfee->getExfeeIdByCrossId($cross_id);
@@ -244,10 +276,7 @@ class VotesActions extends ActionController {
                 }
             }
             if ($success) {
-                $objVote = $modVote->getVoteById($vote_id);
-                if ($objVote && $objVote->status !== 'DELETED') {
-                    apiResponse(['vote' => $objVote]);
-                }
+                apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
             }
             apiError(400, 'error_option');
         } else if (($option_id = $tails[0])) {
@@ -260,35 +289,28 @@ class VotesActions extends ActionController {
                         $option_id,        $identity_id,
                         @$objOption->data, @$objOption->title
                     )) {
-                        $objVote = $modVote->getVoteById($vote_id);
-                        if ($objVote && $objVote->status !== 'DELETED') {
-                            apiResponse(['vote' => $objVote]);
-                        }
+                        apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
                     }
                     apiError(400, 'error_option');
                     break;
                 case 'remove':
                     if ($modVote->removeVoteOption($option_id, $identity_id)) {
-                        $objVote = $modVote->getVoteById($vote_id);
-                        if ($objVote && $objVote->status !== 'DELETED') {
-                            apiResponse(['vote' => $objVote]);
-                        }
+                        apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
                     }
                     apiError(400, 'error_option');
                     break;
                 case 'vote':
                     $objVote = $modVote->getVoteById($vote_id);
-                    if (!$objVote || $objVote->status !== 'OPENING') {
+                    if (!$objVote || $objVote->status !== 'opening') {
                         apiError(403, 'not_authorized', "This vote in not opening currently.");
                     }
-                    $action = strtoupper(trim(@$_POST['vote']));
-                    $action = in_array($action, ['', 'DISAGREE'])
-                            ? $action : 'AGREE';
-                    if ($modVote->vote($option_id, $identity_id, $action)) {
-                        $objVote = $modVote->getVoteById($vote_id);
-                        if ($objVote && $objVote->status !== 'DELETED') {
-                            apiResponse(['vote' => $objVote]);
-                        }
+                    $action = strtolower(trim(@$_POST['vote']));
+                    $action = in_array($action, ['', 'agree', 'disagree'])
+                            ? $action : 'agree';
+                    if ($modVote->vote(
+                        $option_id, $identity_id, $action, $objVote->choice === 'multiple'
+                    )) {
+                        apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
                     }
                     apiError(400, 'error_option');
             }
