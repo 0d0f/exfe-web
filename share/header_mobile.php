@@ -9,7 +9,7 @@
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP" />
   <meta name="description" content="EXFE, the group utility for gathering." />
   <meta name="copyright" content="Copyright &copy; 2013 EXFE Inc" />
-  <meta name="viewport" content="initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 <?php if (($sms_token = $this->getVar('sms_token'))) { ?>
