@@ -561,7 +561,6 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'no_input');
             if (DEBUG) {
                 error_log('No input!');
-                error_log($str_args);
             }
             return;
         }
@@ -571,7 +570,6 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'json_error');
             if (DEBUG) {
                 error_log('JSON error!');
-                error_log($str_args);
             }
             return;
         }
@@ -594,7 +592,6 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'internal_server_error');
             if (DEBUG) {
                 error_log('Index error!');
-                error_log($str_args);
             }
             return;
         }
@@ -612,7 +609,6 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'no_input');
             if (DEBUG) {
                 error_log('No input!');
-                error_log($strArgs);
             }
             return;
         }
@@ -626,7 +622,6 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'json_error');
             if (DEBUG) {
                 error_log('JSON error!');
-                error_log($strArgs);
             }
             return;
         }
@@ -645,7 +640,6 @@ class BusActions extends ActionController {
                     $this->jsonError(500, 'identity_not_found');
                     if (DEBUG) {
                         error_log('Identity not found!');
-                        error_log(json_encode($rawIdentityId));
                     }
                     return;
                 }
@@ -664,7 +658,6 @@ class BusActions extends ActionController {
                 $this->jsonError(500, 'unknow_provide');
                 if (DEBUG) {
                     error_log('Unknow provider!');
-                    error_log(json_encode($rawIdentityId));
                 }
                 return;
         }
@@ -681,7 +674,6 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'no_input');
             if (DEBUG) {
                 error_log('No input!');
-                error_log($str_args);
             }
             return;
         }

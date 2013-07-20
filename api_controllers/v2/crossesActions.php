@@ -525,10 +525,6 @@ class CrossesActions extends ActionController {
                 apiError(403,"not_authorized","The X you're requesting is private.");
         }
 
-        if (DEBUG) {
-            error_log($cross_str);
-        }
-
         $crossHelper=$this->getHelperByName('cross');
         $chkCross = $crossHelper->validateCross($cross);
         if ($chkCross['error']) {
@@ -574,10 +570,6 @@ class CrossesActions extends ActionController {
                 apiError(401, "invalid_auth", '');
             else
                 apiError(403, "not_authorized", "The X you're requesting is private.");
-        }
-
-        if (DEBUG) {
-            error_log($cross_str);
         }
 
         $by_identity_id = (int) $result['by_identity_id'];
