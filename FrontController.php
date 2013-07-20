@@ -13,13 +13,11 @@ class FrontController {
                 $headers[$sI] = $sItem;
             }
         }
-        if (REQUEST_LOG) {
+        if (VERBOSE_LOG) {
+                error_log('ACCESS: '    . $_SERVER['REQUEST_URI'];
             if ($headers) {
                 error_log('HEADER: '    . json_encode($headers));
             }
-         // if ($_GET) {
-         //     error_log('GET: '       . json_encode($_GET));
-         // }
             if ($_POST) {
                 error_log('POST_FORM: ' . json_encode($_POST));
             } else if (($input = file_get_contents('php://input'))) {
