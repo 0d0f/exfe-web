@@ -6,19 +6,27 @@ require_once dirname(__FILE__) . '/ActionController.php';
 class FrontController {
 
     protected function getParams($params = []) {
-        foreach ($_GET as $gI => $gItem) {
-            $params[$gI] = $gItem;
-        }
+        $headers = [];
         foreach ($_SERVER as $sI => $sItem) {
             if (preg_match('/^HTTP_.*$/', $sI)) {
                 $sI = strtolower(preg_replace('/^HTTP_(.*)$/', '$1', $sI));
-                // @todo debug for @googollee by @leask{
-                // error_log("HEADER: {$sI} = {$sItem}");
-                // }
-                $params[$sI] = $sItem;
+                $headers[$sI] = $sItem;
             }
         }
-        return $params;
+        if (REQUEST_LOG) {
+            if ($headers) {
+                error_log('HEADER: '    . json_encode($headers));
+            }
+         // if ($_GET) {
+         //     error_log('GET: '       . json_encode($_GET));
+         // }
+            if ($_POST) {
+                error_log('POST_FORM: ' . json_encode($_POST));
+            } else if (($input = file_get_contents('php://input'))) {
+                error_log('POST_BODY: ' . $input);
+            }
+        }
+        return $headers + $_GET + ($params ?: []);
     }
 
 

@@ -22,13 +22,14 @@ $sources = [
     'index.php',
     'intl',
     'lib',
+    'logrotate.conf',
     'models',
     'rebuild_autocomplete_index',
     'rebuild_cache',
     'rebuild_geoip_datas',
     'share',
     'views',
-    'xbgutilitie'
+    'xbgutilitie',
 ];
 
 
