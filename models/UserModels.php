@@ -919,10 +919,13 @@ class UserModels extends DataModel {
     }
 
 
-    public function getIdentityIdByUserId($user_id){
-        $sql="SELECT identityid FROM  `user_identity` where userid=$user_id;";
-        $identity_ids=$this->getColumn($sql);
-        return $identity_ids;
+    public function getIdentityIdsByUserId($user_id) {
+        $user_id     = (int) $user_id;
+        $identityIds = $this->getColumn(
+            "SELECT `identityid`         FROM `user_identity`
+             WHERE  `userid` = {$user_id} AND `status` in (3, 4)"
+        );
+        return $identityIds ?: [];
     }
 
 
