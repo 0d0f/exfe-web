@@ -333,17 +333,6 @@ class CrossesActions extends ActionController {
             if (!$user_id
              && $invitation['valid']
              && isset($user_infos['CONNECTED'])) {
-                if ($usInvToken && $invitation['identity_id'] !== SMITH_BOT_A) {
-                    $result['authorization'] = $modUser->rawSignin(
-                        $user_infos['CONNECTED'][0]['user_id']
-                    );
-                } else {
-                    $result['browsing_identity'] = $modIdentity->getIdentityById(
-                        $invitation['identity_id']
-                    );
-                    $result['action'] = 'SIGNIN';
-                }
-                $result['read_only'] = false;
                 if ($invitation['identity_id'] === SMITH_BOT_A) {
                     $result['free_identities'] = [];
                     foreach ($result['cross']->exfee->invitations as $invItem) {
@@ -355,7 +344,20 @@ class CrossesActions extends ActionController {
                             $result['free_identities'][] = $invItem->identity;
                         }
                     }
+                    $result['action'] = 'CLAIM_IDENTITY';
+                } else {
+                    if ($usInvToken) {
+                        $result['authorization'] = $modUser->rawSignin(
+                            $user_infos['CONNECTED'][0]['user_id']
+                        );
+                    } else {
+                        $result['browsing_identity'] = $modIdentity->getIdentityById(
+                            $invitation['identity_id']
+                        );
+                        $result['action'] = 'SIGNIN';
+                    }
                 }
+                $result['read_only'] = false;
                 touchCross(
                     $invitation['cross_id'],
                     $user_infos['CONNECTED'][0]['user_id']
