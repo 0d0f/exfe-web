@@ -120,7 +120,8 @@ class CrossHelper extends ActionController {
                 $uItem['updated_at'] .= ' +0000';
                 if (($updated_at && $updated_at <= strtotime($uItem['updated_at']))
                  || !$updated_at) {
-                    $cross->updated[$uI]['updated_at'] = $uItem['updated_at'];
+                    $cross->updated[$uI]['updated_at']  = $uItem['updated_at'];
+                    $cross->updated[$uI]['by_identity'] = $identityData->getIdentityById($uItem['identity_id']);
                 }
             }
         }
