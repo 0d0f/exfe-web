@@ -393,6 +393,13 @@ class ExfeeModels extends DataModel {
                 $invitation->identity->id
             );
             if ($rv_user_id) {
+                $hlpRequest  = $this->getHelperByName('Request');
+                $identityIds = $hlpUser->getIdentityIdsByUserId($rv_user_id);
+                foreach ($identityIds as $id) {
+                    $hlpRequest->changeStatus(
+                        0, $id, $exfee_id, 1, $by_identity_id
+                    );
+                }
                 $hlpRelation->saveRelations($rv_user_id, $by_identity_id);
             }
         }
