@@ -279,6 +279,55 @@
     <div class="name">{{card.name}}</div>
   </div>
   </script>
+
+  <!-- Route-X -->
+  <script id="routex-tmpl" type="text/x-handlebars-template">
+    <div id="routex">
+      <div id="map"></div>
+      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg>
+      <div id="identities-overlay">
+        <div id="isme" class="identity">
+          <div class="abg"><img src="" alt="" class="avatar"></div>
+          <div class="detial">
+            <i class="icon icon-dot-grey"></i>
+            <span class="distance">方位？</span>
+          </div>
+        </div>
+        <div id="identities"></div>
+      </div>
+      <div id="info-wins" class="hide">
+        <div id="my-info" class="info-windown hide">
+          <div class="splitline show">秀这张“活点地图”</div>
+          <div class="splitline discover">发现更多…</div>
+          <div class="wechat">这不是我的微信账号?</div>
+        </div>
+        <div id="other-info" class="info-windown hide">
+          <div class="detial"></div>
+          <div class="update">请对方更新方位</div>
+        </div>
+      </div>
+      <div id="open-exfe"><div class="btn-openexfe"></div></div>
+      <div id="locate" class="load">
+        <div class="btn-locate">
+          <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
+        </div>
+      </div>
+      <div id="free-identities" class="hide">
+        <div id="iavatar">
+          <div>请把您自己的头像</div>
+          <img src="" alt="" class="avatar" />
+        </div>
+        <h2 id="exfee-name"></h2>
+        <div class="exfers">
+          <ul class="clearfix identities"></ul>
+          <div class="my-avatar">
+            <button class="btn no-avatar">没有我的头像?</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </script>
+
   <!--/Templates }}}-->
 
   <noscript>EXFE.COM can't load if JavaScript is disabled</noscript>
