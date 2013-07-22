@@ -76,9 +76,6 @@ class ConversationActions extends ActionController {
                 apiError(401,"invalid_auth","");
             }
         }
-        if (DEBUG) {
-            error_log($post_str);
-        }
         $post->by_identity_id = (int) $result['by_identity_id'];
         // do post
         $rstPost = $modConv->addPost($post);

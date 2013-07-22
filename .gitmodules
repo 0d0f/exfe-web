@@ -1,9 +1,24 @@
 [submodule "instagram-php-oauth"]
     path = third_party_libraries/instagram-php-oauth
-    url = https://github.com/michaelhelmick/instagram-php-oauth.git
+    url  = https://github.com/michaelhelmick/instagram-php-oauth.git
 [submodule "tmhOAuth"]
     path = third_party_libraries/tmhOAuth
-    url =  https://github.com/themattharris/tmhOAuth.git
+    url  = https://github.com/themattharris/tmhOAuth.git
 [submodule "twitteroauth"]
     path = third_party_libraries/twitteroauth
-    url = https://github.com/abraham/twitteroauth.git
+    url  = https://github.com/abraham/twitteroauth.git
+[submodule "libimage"]
+    path = third_party_libraries/libimage
+    url  = https://gist.github.com/6034990.git
+[submodule "httpkit"]
+    path = third_party_libraries/httpkit
+    url  = https://gist.github.com/6035051.git
+[submodule "ics.generator"]
+    path = third_party_libraries/ics.generator
+    url  = https://github.com/Leask/ics.generator.git
+[submodule "libtime"]
+    path = third_party_libraries/libtime
+    url  = https://gist.github.com/6038199.git
+[submodule "build"]
+    path = third_party_libraries/build
+    url  = https://gist.github.com/6037948.git

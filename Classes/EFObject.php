@@ -14,6 +14,8 @@ require_once 'PhotoX.php';
 require_once 'Response.php';
 require_once 'Vote.php';
 require_once 'Option.php';
+require_once 'Request.php';
+require_once 'Requestaccess.php';
 
 
 abstract class EFobject{

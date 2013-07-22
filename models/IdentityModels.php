@@ -351,7 +351,7 @@ class IdentityModels extends DataModel {
                 '80_80'    => $avatar_filename,
             ];
         } else {
-            $avatar        = null;
+            $avatar        = '';
         }
         switch ($provider) {
             case 'flickr':
@@ -461,7 +461,7 @@ class IdentityModels extends DataModel {
             }
             // insert new identity into database
             $name = formatName($name);
-            $avatar_filename = $avatar_filename ? json_encode($avatar_filename) : '';
+            $avatar_filename = is_array($avatar) ? json_encode($avatar) : $avatar;
             $dbResult = $this->query(
                 "INSERT INTO `identities` SET
                  `provider`          = '{$provider}',

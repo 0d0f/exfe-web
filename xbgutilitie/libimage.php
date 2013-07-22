@@ -31,11 +31,15 @@ class libImage {
         $draftWidth  = $curWidth  * $ratioX;
         $draftHeight = $curHeight * $ratioX;
         $draftImage  = imagecreatetruecolor($draftWidth, $draftHeight);
+        imagealphablending($draftImage, false);
+        imagesavealpha($draftImage, true);
         imagecopyresampled($draftImage, $curImage, 0, 0, 0, 0, $draftWidth,
                            $draftHeight, $curWidth, $curHeight);
         ImageDestroy($curImage);
 
         $newImage    = imagecreatetruecolor($toWidth, $toHeight);
+        imagealphablending($newImage, false);
+        imagesavealpha($newImage, true);
         imagecopyresampled($newImage, $draftImage, 0, 0,
                            ($draftWidth  - $toWidth)/2,
                            ($draftHeight - $toHeight)/2,
