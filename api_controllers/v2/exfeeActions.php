@@ -333,6 +333,7 @@ class ExfeeActions extends ActionController {
         $modRequest  = $this->getModelByName('Request');
         $hlpCheck    = $this->getHelperByName('Check');
         // basic check
+        $by_identity_id = 0;
         if (!($exfee_id = intval($params['id']))) {
             $cross_id = (int) @$_POST['cross_id'];
             $invToken = @$_POST['invitation_token'] ?: '';
@@ -342,6 +343,7 @@ class ExfeeActions extends ActionController {
                 $invitation = $modExfee->getRawInvitationByToken($invToken);
             }
             if ($invitation && @$invitation['exfee_id']) {
+                $by_identity_id = $invitation['identity_id'];
                 $exfee_id = $invitation['exfee_id'];
             } else {
                 apiError(400, 'no_exfee_id', 'exfee_id must be provided');
@@ -363,13 +365,23 @@ class ExfeeActions extends ActionController {
                 }
                 apiError(401, 'invalid_auth', '');
             }
-            switch ($this->tails[1]) {
-                case 'approve':
-                    $rqResult = $modRequest->approve($this->tails[0]);
-                    break;
-                case 'decline':
-                    $rqResult = $modRequest->decline($this->tails[1]);
+            if (!$by_identity_id && !($by_identity_id = @ (int) $result['by_identity_id'])) {
+                // getting current invitation
+                $exfee = $modExfee->getExfeeById($exfee_id);
+                foreach ($exfee->invitations as $invitation) {
+                    if ($invitation->identity->connected_user_id === $result['uid']) {
+                        $by_identity_id = $invitation->identity->id;
+                        break;
+                    }
+                }
             }
+            if (!$by_identity_id) {
+                apiError(401, 'invalid_auth', '');
+            }
+            $rqResult = $modRequest->changeStatus(
+                $this->tails[0], 0, 0,
+                $this->tails[1] === 'approve' ? 1 : 2, $by_identity_id
+            );
             if ($rqResult) {
                 apiResponse(['request' => $rqResult]);
             }

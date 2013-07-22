@@ -105,41 +105,30 @@ class RequestModels extends DataModel {
     }
 
 
-    public function changeStatus($request_id = 0, $identity_id = 0, $exfee_id = 0, $status = 0) {
-        $request_id  = (int) $request_id;
-        $identity_id = (int) $identity_id;
-        $exfee_id    = (int) $exfee_id;
-        $status      = (int) $status;
-        if ($request_id) {
-            $sqlAppend = "`id` = {$request_id}";
+    public function changeStatus($request_id = 0, $identity_id = 0, $exfee_id = 0, $status = 0, $by_identity_id = 0) {
+        $request_id     = (int) $request_id;
+        $identity_id    = (int) $identity_id;
+        $exfee_id       = (int) $exfee_id;
+        $status         = (int) $status;
+        $by_identity_id = (int) $by_identity_id;
+        if ($request_id && $by_identity_id) {
+            $sqlAppend  = "`id` = {$request_id}";
         } else if ($identity_id && $exfee_id) {
-            $sqlAppend = "`requested_by` = {$identity_id} AND `exfee_id` = {$exfee_id}";
+            $sqlAppend  = "`requested_by` = {$identity_id} AND `exfee_id` = {$exfee_id}";
+            $by_identity_id = $by_identity_id ?: $identity_id;
         } else {
             return null;
         }
         $rqResult = $this->query(
             "UPDATE `requests`
-             SET    `status` = {$status}, `updated_at` = NOW()
-             WHERE {$sqlAppend}"
+             SET    `status`     = {$status},
+                    `updated_by` = {$by_identity_id},
+                    `updated_at` = NOW()
+             WHERE  `status`    <> {$status} AND {$sqlAppend}"
         );
         return $rqResult
              ? $this->getRequestBy($request_id, $identity_id, $exfee_id)
              : false;
-    }
-
-
-    public function approve($request_id) {
-        return $this->changeStatus($request_id, 0, 0, 1);
-    }
-
-
-    public function decline($request_id) {
-        return $this->changeStatus($request_id, 0, 0, 2);
-    }
-
-
-    public function giveupRequest($identity_id, $exfee_id) {
-        return $this->changeStatus($identity_id, $exfee_id, 3);
     }
 
 }
