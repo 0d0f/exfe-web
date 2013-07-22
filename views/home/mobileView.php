@@ -293,6 +293,17 @@
         </div>
         <div id="identities"></div>
       </div>
+      <div id="info-wins" class="hide">
+        <div id="my-info" class="info-windown hide">
+          <div class="splitline show">秀这张“活点地图”</div>
+          <div class="splitline discover">发现更多…</div>
+          <div class="wechat">这不是我的微信账号?</div>
+        </div>
+        <div id="other-info" class="info-windown hide">
+          <div class="detial"></div>
+          <div class="update">请对方更新方位</div>
+        </div>
+      </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
         <div class="btn-locate">
@@ -307,9 +318,9 @@
         <h2 id="exfee-name"></h2>
         <div class="exfers">
           <ul class="clearfix identities"></ul>
-        </div>
-        <div class="my-avatar">
-          <button class="btn no-avatar">没有我的头像?</button>
+          <div class="my-avatar">
+            <button class="btn no-avatar">没有我的头像?</button>
+          </div>
         </div>
       </div>
     </div>
