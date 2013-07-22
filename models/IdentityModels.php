@@ -144,8 +144,8 @@ class IdentityModels extends DataModel {
     public function getTwitterAvatarBySmallAvatar($strUrl) {
         $strReg = '/normal(\.[a-z]{1,5})$/i';
         return [
-            'original' => preg_replace($strReg, 'original$1',         $strUrl),
-            '320_320'  => preg_replace($strReg, 'original$1',         $strUrl),
+            'original' => preg_replace($strReg, '$1',                 $strUrl),
+            '320_320'  => preg_replace($strReg, '$1',                 $strUrl),
             '80_80'    => preg_replace($strReg, 'reasonably_small$1', $strUrl),
         ];
     }
