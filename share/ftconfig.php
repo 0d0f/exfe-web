@@ -12,5 +12,4 @@ window._ENV_ = {
   , location: <?php echo json_encode($this->getVar('location')); ?>
   , photo_providers: ['facebook', 'dropbox', 'flickr', 'instagram']
   , timevalid: Math.abs(Math.round(+new Date() / 1000) - <?php echo Time(); ?>) < 15 * 60
-  , SMITH_ID: <?php echo SMITH_BOT_A; ?>,
 };
