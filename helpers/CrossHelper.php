@@ -74,7 +74,7 @@ class CrossHelper extends ActionController {
                     }
                 }
                 if ($uid) {
-                    $cross->touch_at = date('Y-m-d H:i:s', getCrossTouchTime($cross->id, $uid)) . ' +0000';
+                    $cross->touched_at = date('Y-m-d H:i:s', getCrossTouchTime($cross->id, $uid)) . ' +0000';
                 }
                 array_push($cross_list,$cross);
             }
