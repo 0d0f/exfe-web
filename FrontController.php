@@ -14,7 +14,6 @@ class FrontController {
             }
         }
         if (VERBOSE_LOG) {
-                error_log('ACCESS: '    . $_SERVER['REQUEST_URI']);
             if ($headers) {
                 error_log('HEADER: '    . json_encode($headers));
             }
