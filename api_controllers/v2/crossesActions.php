@@ -32,7 +32,7 @@ class CrossesActions extends ActionController {
                 apiError(304, 'Cross Not Modified.');
             }
             touchCross($params['id'], $result['uid']);
-            $cross->touch_at = date('Y-m-d H:i:s') . ' +0000';
+            $cross->touched_at = date('Y-m-d H:i:s') . ' +0000';
             apiResponse(['cross' => $cross]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
