@@ -3,6 +3,7 @@ window._ENV_ = {
     APP_MODE: '<?php echo JS_DEBUG ? 'development' : 'production'; ?>'
   , MAP_KEY: '<?php echo GOOGLE_MAP_KEY; ?>'
   , api_url: '<?php echo API_URL; ?>/v2'
+  , apiv3_url: '<?php echo API_URL; ?>/v3'
   , img_url: '<?php echo IMG_URL; ?>'
   , site_url: '<?php echo SITE_URL; ?>'
   , streaming_api_url: '<?php echo STREAMING_API_URL; ?>'
