@@ -384,7 +384,11 @@ class ExfeeModels extends DataModel {
                 `mates`            =  {$mates},
                 `grouping`         =  {$invitation->grouping}";
         $dbResult = $this->query($sql);
-        // save relations
+        // save relations and update request access
+        $hlpRequest = $this->getHelperByName('Request');
+        $hlpRequest->changeStatus(
+            0, $invitation->identity->id, $exfee_id, 1, $by_identity_id
+        );
         if ($user_id) {
             $hlpRelation = $this->getHelperByName('Relation');
             $hlpRelation->saveRelations($user_id, $invitation->identity->id);
@@ -393,6 +397,12 @@ class ExfeeModels extends DataModel {
                 $invitation->identity->id
             );
             if ($rv_user_id) {
+                $identityIds = $hlpUser->getIdentityIdsByUserId($rv_user_id);
+                foreach ($identityIds as $id) {
+                    $hlpRequest->changeStatus(
+                        0, $id, $exfee_id, 1, $by_identity_id
+                    );
+                }
                 $hlpRelation->saveRelations($rv_user_id, $by_identity_id);
             }
         }
@@ -559,6 +569,8 @@ class ExfeeModels extends DataModel {
         // load helpers
         $hlpCross    = $this->getHelperByName('cross');
         $hlpIdentity = $this->getHelperByName('identity');
+        $hlpRequest  = $this->getHelperByName('Request');
+        $hlpUser     = $this->getHelperByName('User');
         // basic check
         if (!$exfee || !$exfee->id || !$by_identity_id) {
             return null;
@@ -689,6 +701,21 @@ class ExfeeModels extends DataModel {
                         // update exfee token
                         if ($fmItem['response'] === 'REMOVED'
                          && $toItem->response   !== 'REMOVED') {
+                            $hlpRequest->changeStatus(
+                                0, $toItem->identity->id, $exfee->id,
+                                1, $by_identity_id
+                            );
+                            $rv_user_id = $hlpUser->getUserIdByIdentityId(
+                                $toItem->identity->id
+                            );
+                            if ($rv_user_id) {
+                                $identityIds = $hlpUser->getIdentityIdsByUserId($rv_user_id);
+                                foreach ($identityIds as $id) {
+                                    $hlpRequest->changeStatus(
+                                        0, $id, $exfee_id, 1, $by_identity_id
+                                    );
+                                }
+                            }
                             $newInvId[]  = $fmItem['id'];
                             $updateToken = true;
                         } else {

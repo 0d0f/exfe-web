@@ -70,4 +70,9 @@ class UserHelper extends ActionController {
         return $this->modUser->getRawUserIdentityStatusByIdentityId($identity_id);
     }
 
+
+    public function getIdentityIdsByUserId($user_id) {
+        return $this->modUser->getIdentityIdsByUserId($user_id);
+    }
+
 }
