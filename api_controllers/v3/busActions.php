@@ -883,6 +883,93 @@ class BusActions extends ActionController {
     }
 
 
+    public function doUsers() {
+        $modUser     = $this->getModelByName('User');
+        $modIdentity = $this->getModelByName('Identity');
+        $identity_id = @$_POST['identity_id'];
+        $external_id = @$_POST['external_id'];
+        if (!$identity_id
+         || !($external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $identity_id))
+         || !($provider          = preg_replace('/^.*@([^@]*)$/', '$1', $identity_id))) {
+            $this->jsonError(500, 'error_identity_id');
+            return;
+        }
+        if ($provider === 'wechat' && !$external_id) {
+            $this->jsonError(500, 'error_external_id');
+            return;
+        }
+        // check identity
+        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $external_username
+        );
+        if (!$identity) {
+            $identity_id = $modIdentity->addIdentity([
+                'provider'          => $provider,
+                'external_id'       => $external_id,
+                'external_username' => $external_username,
+            ]);
+            $identity    = $modIdentity->getIdentityById($identity_id);
+        }
+        if (!$identity) {
+            $this->jsonError(500, 'identity_error');
+            return;
+        }
+        $identity_id  = $identity->id;
+        // check user
+        $user_infos   = $modUser->getUserIdentityInfoByIdentityId($identity_id);
+        $user_id      = 0;
+        if (isset($user_infos['CONNECTED'])) {
+            $user_id  = $user_infos['CONNECTED'][0]['user_id'];
+        } else if (isset($user_infos['REVOKED'])) {
+            $user_id  = $user_infos['REVOKED'][0]['user_id'];
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+        } else {
+            $user_id  = $modUser->addUser();
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+            $identity = $modIdentity->getIdentityById($identity_id);
+            $modIdentity->sendVerification(
+                'Welcome', $identity, '', false, $identity->name ?: ''
+            );
+        }
+        if (!$user_id || !($user = $modUser->getUserById($user_id))) {
+            $this->jsonError(500, 'user_error');
+            return;
+        }
+        // return
+        $siResult = $modUser->rawSignin($user_id);
+        if ($siResult) {
+            $user->password = $siResult['password'];
+            $this->jsonResponse([
+                'user'          => $user,
+                'authorization' => [
+                    'user_id' => $siResult['user_id'],
+                    'token'   => $siResult['token'],
+                ],
+            ]);
+            return;
+        }
+        $this->jsonError(500, 'server_error');
+    }
+
+
+    public function doSetPassword() {
+        $modUser = $this->getModelByName('User');
+        if (!($user_id = (int) $_POST['user_id'])) {
+            $this->jsonError(400, 'invalid_user_id');
+            return;
+        }
+        if (!validatePassword($passwd = $_POST['password'])) {
+            $this->jsonError(400, 'invalid_password');
+            return;
+        }
+        if ($modUser->setUserPassword($user_id, $passwd)) {
+            $this->jsonResponse(['user_id' => $user_id]);
+            return;
+        }
+        $this->jsonError(400, 'bad_request');
+    }
+
+
     public function doTutorials() {
         // init models
         $modIdentity = $this->getModelByName('Identity');
