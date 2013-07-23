@@ -132,7 +132,7 @@ class CrossesActions extends ActionController {
              && (int) $this->tails[0] > 0
              && $this->tails[1] === 'itsme') {
                 $identity_id = (int) $this->tails[0];
-                if ($identity_id === SMITH_BOT_A) {
+                if (in_array($identity_id, explode(',', SMITH_BOT))) {
                     apiError(403, 'forbidden', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
                 }
                 $modCross = $this->getModelByName('Cross');
@@ -158,7 +158,7 @@ class CrossesActions extends ActionController {
             }
             $identities = [];
             foreach ($cross->exfee->invitations as $invitation) {
-                if ($invitation->identity->id !== SMITH_BOT_A
+                if (!in_array($invitation->identity->id, explode(',', SMITH_BOT))
                     // && $invitation->identity->
                     // @todo check provider as wechat
                     ) {
@@ -246,7 +246,7 @@ class CrossesActions extends ActionController {
             // used token
             if ($invitation['valid']) {
                 // check Smith token
-                if ($invitation['identity_id'] !== SMITH_BOT_A) {
+                if (!in_array($invitation['identity_id'], explode(',', SMITH_BOT))) {
                     $modExfee->usedToken($invToken);
                 }
                 if (!$acsToken) {
@@ -334,10 +334,10 @@ class CrossesActions extends ActionController {
             if (!$user_id
              && $invitation['valid']
              && isset($user_infos['CONNECTED'])) {
-                if ($invitation['identity_id'] === SMITH_BOT_A) {
+                if (in_array($invitation['identity_id'], explode(',', SMITH_BOT))) {
                     $result['free_identities'] = [];
                     foreach ($result['cross']->exfee->invitations as $invItem) {
-                        if ($invItem->identity->id !== SMITH_BOT_A
+                        if (!in_array($invItem->identity->id, explode(',', SMITH_BOT))
                             // && $invitation->identity->
                             // @todo check provider as wechat
                             ) {
@@ -507,6 +507,56 @@ class CrossesActions extends ActionController {
             apiResponse(['invitation' => $invitation]);
         }
         apiError(404, 'invitation_not_found', 'Invitation Not Found');
+    }
+
+
+    public function doGetRouteXUrl() {
+//         $params = $this->params;
+//         $checkHelper = $this->getHelperByName('check');
+//         $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
+//         if ($result['check'] !== true) {
+//             if ($result['uid'] === 0) {
+//                 apiError(401, 'invalid_auth', '');
+//             } else {
+//                 apiError(403, 'not_authorized', "The X you're requesting is private.");
+//             }
+//         }
+//         $crossHelper = $this->getHelperByName('cross');
+//         $cross = $crossHelper->getCross($params['id']);
+//         if ($cross) {
+//             switch ($cross->attribute['state']) {
+//                 case 'deleted':
+//                     apiError(403, 'not_authorized', "The X you're requesting is private.");
+//                 case 'draft':
+//                     if (!in_array($result['uid'], $cross->exfee->hosts)) {
+//                         apiError(403, 'not_authorized', "The X you're requesting is private.");
+//                     }
+//             }
+//             $modExfee   = $this->getModelByName('Exfee');
+//             $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
+//                 $cross->id, SMITH_BOT_A
+//             );
+//             if (!$invitation) {
+//                 $modIdentity = $this->getModelByName('Identity');
+//                 $exfee = new Exfee;
+//                 $now   = time();
+//                 $bot   = $modIdentity->getIdentityById(SMITH_BOT_A);
+//                 $exfee->invitations = [new Invitation(
+//                     0, $bot, $bot, $bot,
+//                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+//                 )];
+
+
+
+// $udeResult = $modExfee->updateExfee(
+//     $exfee, $by_identity->id, $by_identity->connected_user_id
+// );
+
+
+
+//             apiResponse(['cross' => $cross]);
+//         }
+        apiError(400, 'param_error', "The X you're requesting is not found.");
     }
 
 
