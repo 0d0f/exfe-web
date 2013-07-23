@@ -886,14 +886,15 @@ class BusActions extends ActionController {
     public function doUsers() {
         $modUser     = $this->getModelByName('User');
         $modIdentity = $this->getModelByName('Identity');
-        $identity_id = @$_POST['identity_id'];
-        $external_id = @$_POST['external_id'];
-        if (!$identity_id
-         || !($external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $identity_id))
-         || !($provider          = preg_replace('/^.*@([^@]*)$/', '$1', $identity_id))) {
-            $this->jsonError(500, 'error_identity_id');
+        if (!($strArgs  = @file_get_contents('php://input'))
+         || !($identity = @json_decode($strArgs, true))) {
+            $this->jsonError(500, 'invalid_input');
             return;
         }
+        // decode json
+        $external_id       = @$identity['external_id'];
+        $external_username = @$identity['external_username'];
+        $provider          = @$identity['provider'];
         if ($provider === 'wechat' && !$external_id) {
             $this->jsonError(500, 'error_external_id');
             return;
@@ -907,6 +908,11 @@ class BusActions extends ActionController {
                 'provider'          => $provider,
                 'external_id'       => $external_id,
                 'external_username' => $external_username,
+                'name'              => @$identity['name'],
+                'bio'               => @$identity['bio'],
+                'locale'            => @$identity['locale'],
+                'timezone'          => @$identity['timezone'],
+                'avatar_filename'   => @$identity['avatar_filename'],
             ]);
             $identity    = $modIdentity->getIdentityById($identity_id);
         }
