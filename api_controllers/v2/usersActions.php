@@ -238,7 +238,7 @@ class UsersActions extends ActionController {
                 apiError(400, 'error_invitation_token', '');
             }
             // check Smith token
-            if ($objInvitation['identity_id'] === SMITH_BOT_A) {
+            if (in_array($objInvitation['identity_id'], explode(',', SMITH_BOT))) {
                 apiError(403, 'forbidden', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
             }
             // get target user identity status
@@ -751,7 +751,7 @@ class UsersActions extends ActionController {
         $invToken   = trim($_POST['invitation_token']);
         $invitation = $modExfee->getRawInvitationByToken($invToken);
         // check Smith token
-        if ($invitation['identity_id'] === SMITH_BOT_A) {
+        if (in_array($invitation['identity_id'], explode(',', SMITH_BOT))) {
             apiError(403, 'FORBIDDEN', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
         }
         // 如果 token 有效
