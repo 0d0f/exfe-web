@@ -770,6 +770,35 @@ class BusActions extends ActionController {
     }
 
 
+    public function doGetRouteXUrl() {
+        $crossHelper = $this->getHelperByName('cross');
+        $params = $this->params;
+        $cross  = $crossHelper->getCross(@(int)$params['cross_id']);
+        if ($cross) {
+            if ($cross->attribute['state'] === 'deleted') {
+                $this->jsonError(500, 'cross_error');
+                return;
+            }
+            $modExfee = $this->getModelByName('Exfee');
+            foreach (explode(',', SMITH_BOT) as $idBot) {
+                $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
+                    $cross->id, $idBot
+                );
+                if ($invitation) {
+                    break;
+                }
+            }
+            if (!$invitation) {
+                $this->jsonError(500, 'cross_error');
+                return;
+            }
+            $this->jsonResponse(SITE_URL . "/#!token={$invitation['token']}/routex/");
+            return;
+        }
+        $this->jsonError(404, 'cross_not_found');
+    }
+
+
     public function doExfees() {
         $params     = $this->params;
         $id         = @ (int) $params['id'];
