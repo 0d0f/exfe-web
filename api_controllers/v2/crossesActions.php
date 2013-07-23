@@ -511,51 +511,70 @@ class CrossesActions extends ActionController {
 
 
     public function doGetRouteXUrl() {
-//         $params = $this->params;
-//         $checkHelper = $this->getHelperByName('check');
-//         $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
-//         if ($result['check'] !== true) {
-//             if ($result['uid'] === 0) {
-//                 apiError(401, 'invalid_auth', '');
-//             } else {
-//                 apiError(403, 'not_authorized', "The X you're requesting is private.");
-//             }
-//         }
-//         $crossHelper = $this->getHelperByName('cross');
-//         $cross = $crossHelper->getCross($params['id']);
-//         if ($cross) {
-//             switch ($cross->attribute['state']) {
-//                 case 'deleted':
-//                     apiError(403, 'not_authorized', "The X you're requesting is private.");
-//                 case 'draft':
-//                     if (!in_array($result['uid'], $cross->exfee->hosts)) {
-//                         apiError(403, 'not_authorized', "The X you're requesting is private.");
-//                     }
-//             }
-//             $modExfee   = $this->getModelByName('Exfee');
-//             $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
-//                 $cross->id, SMITH_BOT_A
-//             );
-//             if (!$invitation) {
-//                 $modIdentity = $this->getModelByName('Identity');
-//                 $exfee = new Exfee;
-//                 $now   = time();
-//                 $bot   = $modIdentity->getIdentityById(SMITH_BOT_A);
-//                 $exfee->invitations = [new Invitation(
-//                     0, $bot, $bot, $bot,
-//                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
-//                 )];
-
-
-
-// $udeResult = $modExfee->updateExfee(
-//     $exfee, $by_identity->id, $by_identity->connected_user_id
-// );
-
-
-
-//             apiResponse(['cross' => $cross]);
-//         }
+        $params = $this->params;
+        $checkHelper = $this->getHelperByName('check');
+        $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
+        if ($result['check'] !== true) {
+            if ($result['uid'] === 0) {
+                apiError(401, 'invalid_auth', '');
+            } else {
+                apiError(403, 'not_authorized', "The X you're requesting is private.");
+            }
+        }
+        $crossHelper = $this->getHelperByName('cross');
+        $cross = $crossHelper->getCross($params['id']);
+        if ($cross) {
+            switch ($cross->attribute['state']) {
+                case 'deleted':
+                    apiError(403, 'not_authorized', "The X you're requesting is private.");
+                case 'draft':
+                    if (!in_array($result['uid'], $cross->exfee->hosts)) {
+                        apiError(403, 'not_authorized', "The X you're requesting is private.");
+                    }
+            }
+            $modExfee     = $this->getModelByName('Exfee');
+            $hostIdentity = null;
+            $curIdentity  = null;
+            foreach ($cross->exfee->invitations as $invitation) {
+                if ($invitation->identity->connected_user_id === $result['uid']) {
+                    $curIdentity  = $invitation->identity;
+                }
+                if ($invitation->host) {
+                    $hostIdentity = $invitation->identity;
+                }
+            }
+            $byIdentity = $curIdentity ?: $hostIdentity;
+            if (!$byIdentity) {
+                apiError(500, 'internal_server_error');
+            }
+            $idBot      = explode(',', SMITH_BOT)[0];
+            $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
+                $cross->id, $idBot
+            );
+            if (!$invitation) {
+                $modIdentity = $this->getModelByName('Identity');
+                $exfee = new Exfee;
+                $now   = time();
+                $bot   = $modIdentity->getIdentityById($idBot);
+                $exfee->id = $cross->exfee->id;
+                $exfee->invitations = [new Invitation(
+                    0, $idBot, $byIdentity, $byIdentity,
+                    'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                )];
+                $udeResult = $modExfee->updateExfee(
+                    $exfee, $byIdentity->id, $byIdentity->connected_user_id
+                );
+                if ($udeResult) {
+                    $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
+                        $cross->id, $idBot
+                    );
+                }
+            }
+            if (!$invitation) {
+                apiError(500, 'internal_server_error');
+            }
+            apiResponse(['url' => SITE_URL . "/#!token={$invitation['token']}/routex/"]);
+        }
         apiError(400, 'param_error', "The X you're requesting is not found.");
     }
 
