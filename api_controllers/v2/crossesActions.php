@@ -558,7 +558,7 @@ class CrossesActions extends ActionController {
                 $bot   = $modIdentity->getIdentityById($idBot);
                 $exfee->id = $cross->exfee->id;
                 $exfee->invitations = [new Invitation(
-                    0, $idBot, $byIdentity, $byIdentity,
+                    0, $bot, $byIdentity, $byIdentity,
                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                 )];
                 $udeResult = $modExfee->updateExfee(
