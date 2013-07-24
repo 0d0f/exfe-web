@@ -9,16 +9,19 @@
     url  = https://github.com/abraham/twitteroauth.git
 [submodule "libimage"]
     path = third_party_libraries/libimage
-    url  = https://gist.github.com/6034990.git
+    url  = https://github.com/Leask/libimage.git
 [submodule "httpkit"]
     path = third_party_libraries/httpkit
-    url  = https://gist.github.com/6035051.git
+    url  = https://github.com/Leask/httpkit.git
 [submodule "ics.generator"]
     path = third_party_libraries/ics.generator
     url  = https://github.com/Leask/ics.generator.git
 [submodule "libtime"]
     path = third_party_libraries/libtime
-    url  = https://gist.github.com/6038199.git
+    url  = https://github.com/Leask/libtime.git
 [submodule "build"]
     path = third_party_libraries/build
     url  = https://gist.github.com/6037948.git
+[submodule "libcjk"]
+    path = third_party_libraries/libcjk
+    url  = https://gist.github.com/4153061.git
