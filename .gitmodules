@@ -22,3 +22,6 @@
 [submodule "build"]
     path = third_party_libraries/build
     url  = https://gist.github.com/6037948.git
+[submodule "libcjk"]
+    path = third_party_libraries/libcjk
+    url  = https://gist.github.com/4153061.git
