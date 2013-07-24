@@ -300,7 +300,8 @@
           <div class="wechat">这不是我的微信账号?</div>
         </div>
         <div id="other-info" class="info-windown hide">
-          <div class="detial"></div>
+          <div class="splitline detial">
+          </div>
           <div class="update">请对方更新方位</div>
         </div>
       </div>
@@ -312,7 +313,7 @@
       </div>
       <div id="free-identities" class="hide">
         <div id="iavatar">
-          <div>请把您自己的头像</div>
+          <div class="placeholder"><div>请长按头像</div></div>
           <img src="" alt="" class="avatar" />
         </div>
         <h2 id="exfee-name"></h2>
