@@ -314,7 +314,7 @@
       <div id="free-identities" class="hide">
         <div id="iavatar">
           <div class="placeholder">
-            <div>请长按头像</div>
+            <div class="text">请长按头像</div>
             <img src="" alt="" class="avatar" />
           </div>
         </div>
