@@ -408,8 +408,7 @@ class ExfeeActions extends ActionController {
             $identity    = $modIdentity->getIdentityById($identity_id);
         }
         if (!$identity) {
-            $this->jsonError(500, 'identity_error');
-            return;
+            apiError(500, 'identity_error');
         }
         // check current status
         $identity_ids = $modExfee->getIdentityIdsByExfeeId($exfee_id);
