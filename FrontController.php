@@ -104,11 +104,22 @@ class FrontController {
             header('HTTP/1.1 204 No Content');
             return;
         }
+        if (!preg_match('/^.*' . preg_replace(
+            '/^([^\/]*\/\/)(.*)$/',  '$2',  SITE_URL
+        ) . '$/i', $_SERVER['SERVER_NAME'])) {
+            header('location: ' . SITE_URL);
+            return;
+        }
         $route   = isset($_GET['_route']) ? $_GET['_route'] : $_SERVER['REQUEST_URI'];
         $arrPath = explode(
             '/', strtolower(current(explode('?', $route)))
         );
         array_shift($arrPath);
+        if (!BUS_REMOTE && (@$arrPath[1] === 'bus' && @$_SERVER['REMOTE_ADDR'] !== '127.0.0.1')) {
+            header('HTTP/1.1 403 Forbidden');
+            echo "Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix\n";
+            return;
+        }
         $first = array_shift($arrPath);
         $last  = sizeof($arrPath) - 1;
         if ($arrPath[$last] === '') {
