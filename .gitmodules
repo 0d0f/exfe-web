@@ -9,7 +9,7 @@
     url  = https://github.com/abraham/twitteroauth.git
 [submodule "libimage"]
     path = third_party_libraries/libimage
-    url  = git@github.com:Leask/libimage.git
+    url  = https://github.com/Leask/libimage.git
 [submodule "httpkit"]
     path = third_party_libraries/httpkit
     url  = https://gist.github.com/6035051.git
