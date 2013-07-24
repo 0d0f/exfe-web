@@ -315,7 +315,7 @@
         <div id="iavatar">
           <div class="placeholder">
             <div class="text">请长按头像</div>
-            <img src="" alt="" class="avatar" />
+            <div class="avatar"></div>
           </div>
         </div>
         <h2 id="exfee-name"></h2>
