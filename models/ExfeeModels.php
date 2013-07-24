@@ -62,7 +62,7 @@ class ExfeeModels extends DataModel {
             if (isset($chkedIdt[$eItem['identity_id']])
              || !$rawExfee[$ei]['identity']
              || !$rawExfee[$ei]['identity_upd']
-             || (!$withRemoved && (int) $eItem['identity_id'] === SMITH_BOT_A)) {
+             || (!$withRemoved && in_array((int) $eItem['identity_id'], explode(',', SMITH_BOT)))) {
                 unset($rawExfee[$ei]);
                 continue;
             }
@@ -194,7 +194,7 @@ class ExfeeModels extends DataModel {
 
 
     public function checkInvitationTokenTime($rawInvitation) {
-        return $rawInvitation['identity_id'] === SMITH_BOT_A
+        return in_array($rawInvitation['identity_id'], explode(',', SMITH_BOT))
             || (($rawInvitation['token_used_at'] === '0000-00-00 00:00:00'
               || time() - strtotime($rawInvitation['token_used_at']) < 233)
              && (time() - strtotime($rawInvitation['created_at']))   < (60 * 60 * 24 * 7)); // 7 days
