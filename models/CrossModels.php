@@ -36,11 +36,13 @@ class CrossModels extends DataModel {
         $setTime    = isset($cross->time);
         $cross_time = $cross->time ?: new CrossTime('', '', '', '', '', '', '');
         $widgets    = $cross->widget;
+        $bgUpdate   = false;
         $background = '';
         if ($widgets) {
             foreach($widgets as $widget) {
                 if ($widget->type === 'Background') {
                     $background = $widget->image;
+                    $bgUpdate   = true;
                 }
             }
         }
@@ -148,7 +150,7 @@ class CrossModels extends DataModel {
                 // }
             }
 
-            if ($background !== $old_background) {
+            if ($bgUpdate && $background !== $old_background) {
                 array_push($updatefields, "background = '{$background}'");
                 $cross_updated['background']  = $updated;
             }
