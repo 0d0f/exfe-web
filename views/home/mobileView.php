@@ -301,6 +301,10 @@
         </div>
         <div id="other-info" class="info-windown hide">
           <div class="splitline detial">
+            <div class="name"></div>
+            <div class="date hide"><span class="time"></span>分钟前所处位置</div>
+            <div class="between between-destination hide">距离终点<span class="dest"></span><i class="icon"></i></div>
+            <div class="between between-me hide">你们相距<span class="dest"></span><i class="icon"></i></div>
           </div>
           <div class="update">请对方更新方位</div>
         </div>
