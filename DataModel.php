@@ -15,8 +15,8 @@ function stripslashes_deep($value) {
 function getMainDB() {
     global $maindb;
     if (!$maindb) {
-        $maindb = mysqli_connect(DBHOST, DBUSER, DBPASSWD, DBNAME);
-        mysqli_set_charset($maindb, "SET NAMES 'utf8mb4'");
+        $maindb = new mysqli(DBHOST, DBUSER, DBPASSWD, DBNAME);
+        $maindb->set_charset('utf8mb4');
     }
 }
 getMainDB();
@@ -33,7 +33,7 @@ abstract class DataModel {
 
     public function mysql_fetch_all($result) {
         $return = [];
-        while($row = mysqli_fetch_array($result, MYSQL_ASSOC)) {
+        while ($row = $result->fetch_array(MYSQL_ASSOC)) {
             $return[] = stripslashes_deep($row);
         }
         return $return;
@@ -41,31 +41,31 @@ abstract class DataModel {
 
     public function query($sql) {
         global $maindb;
-        mysqli_query($maindb, $sql);
-        if (($error = mysqli_error($maindb))) {
-            error_log("SQL error: {$error}\nSQL: {$sql}");
+        $maindb->query($sql);
+        if ($maindb->error) {
+            error_log("SQL error: {$maindb->error}\nSQL: {$sql}");
             return null;
         }
         $result = [];
-        $insert_id = mysqli_insert_id($maindb);
+        $insert_id = $maindb->insert_id;
         if ($insert_id > 0) {
             $result['insert_id'] = strval($insert_id);
         }
-        $result['affected_rows'] = mysqli_affected_rows($maindb);
+        $result['affected_rows'] = $maindb->affected_rows;
         return $result;
     }
 
     public function getAll($sql) {
         global $maindb;
-        return ($query = mysqli_query($maindb, $sql))
+        return ($query = $maindb->query($sql))
              ? $this->mysql_fetch_all($query)
              : null;
     }
 
     public function getRow($sql) {
         global $maindb;
-        if($query = mysqli_query($maindb, $sql)) {
-            if($return = mysqli_fetch_array($query, MYSQL_ASSOC)) {
+        if (($query = $maindb->query($sql))) {
+            if (($return = $query->fetch_array(MYSQL_ASSOC))) {
                 return $return;
             }
         }
@@ -74,7 +74,7 @@ abstract class DataModel {
     public function countNum($sql) {
         $row = $this->getRow($sql);
         if (!empty($row)) {
-            foreach($row as $key => $value) {
+            foreach ($row as $key => $value) {
                 return $value;
             }
         }
@@ -84,8 +84,8 @@ abstract class DataModel {
     public function getColumn($sql) {
         global $maindb;
         $result = [];
-        if (($query = mysqli_query($maindb, $sql))) {
-            if($data = $this->mysql_fetch_all($query)) {
+        if (($query = $maindb->query($sql))) {
+            if (($data = $this->mysql_fetch_all($query))) {
                 foreach ($data as $row) {
                     foreach ($row as $name => $value) {
                         $result[] = $value;
