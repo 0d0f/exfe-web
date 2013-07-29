@@ -21,6 +21,10 @@ if (isset($_COOKIE['locale'])) {
 $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 // }
 
+function dbescape($string) {
+    global $maindb;
+    return mysqli_real_escape_string($maindb, $string);
+}
 
 // redis by @leaskh {
 
