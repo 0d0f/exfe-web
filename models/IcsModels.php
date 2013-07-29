@@ -41,11 +41,11 @@ class IcsModels extends DataModel {
             $strPlace = '';
         }
         // make
-        $modInvite->setSubject(mysql_real_escape_string($cross->title))
-                  ->setDescription(mysql_real_escape_string($cross->description))
+        $modInvite->setSubject(dbescape($cross->title))
+                  ->setDescription(dbescape($cross->description))
                   ->setStart($begin_at)
                   ->setEnd($end_at)
-                  ->setLocation(mysql_real_escape_string($strPlace))
+                  ->setLocation(dbescape($strPlace))
                   ->setUrl(SITE_URL . "/#!{$cross->id}")
                   ->setOrganizer('', '');
         // parse invitations

@@ -4,7 +4,7 @@ class MuteActions extends ActionController {
 
     public function doCross() {
         // get token
-        $token = mysql_real_escape_string(trim($_GET['token']));
+        $token = dbescape(trim($_GET['token']));
         $modExfee = $this->getModelByName('Exfee');
         $objToken = $modExfee->getRawInvitationByToken($token);
         if (!$token) {

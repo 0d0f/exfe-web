@@ -15,10 +15,8 @@ function stripslashes_deep($value) {
 function getMainDB() {
     global $maindb;
     if (!$maindb) {
-        $maindb = mysql_connect(DBHOST, DBUSER, DBPASSWD);
-        mysql_select_db(DBNAME, $maindb);
-        mysql_query("SET NAMES 'utf8mb4'");
-      # mysql_query("SET NAMES 'utf8'");
+        $maindb = mysqli_connect(DBHOST, DBUSER, DBPASSWD, DBNAME);
+        mysqli_query($maindb, "SET NAMES 'utf8mb4'");
     }
 }
 getMainDB();
@@ -35,36 +33,39 @@ abstract class DataModel {
 
     public function mysql_fetch_all($result) {
         $return = [];
-        while($row = mysql_fetch_array($result, MYSQL_ASSOC)) {
+        while($row = mysqli_fetch_array($result, MYSQL_ASSOC)) {
             $return[] = stripslashes_deep($row);
         }
         return $return;
     }
 
     public function query($sql) {
-        mysql_query($sql);
-        if (($error = mysql_error())) {
+        global $maindb;
+        mysqli_query($maindb, $sql);
+        if (($error = mysqli_error())) {
             error_log("SQL error: {$error}\nSQL: {$sql}");
             return null;
         }
         $result = [];
-        $insert_id = mysql_insert_id();
+        $insert_id = mysqli_insert_id();
         if ($insert_id > 0) {
             $result['insert_id'] = strval($insert_id);
         }
-        $result['affected_rows'] = mysql_affected_rows();
+        $result['affected_rows'] = mysqli_affected_rows();
         return $result;
     }
 
     public function getAll($sql) {
-        return ($query = mysql_query($sql))
+        global $maindb;
+        return ($query = mysqli_query($maindb, $sql))
              ? $this->mysql_fetch_all($query)
              : null;
     }
 
     public function getRow($sql) {
-        if($query = mysql_query($sql)) {
-            if($return = mysql_fetch_array($query, MYSQL_ASSOC)) {
+        global $maindb;
+        if($query = mysqli_query($maindb, $sql)) {
+            if($return = mysqli_fetch_array($query, MYSQL_ASSOC)) {
                 return $return;
             }
         }
@@ -81,8 +82,9 @@ abstract class DataModel {
     }
 
     public function getColumn($sql) {
+        global $maindb;
         $result = [];
-        if (($query = mysql_query($sql))) {
+        if (($query = mysqli_query($maindb, $sql))) {
             if($data = $this->mysql_fetch_all($query)) {
                 foreach ($data as $row) {
                     foreach ($row as $name => $value) {

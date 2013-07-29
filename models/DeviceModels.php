@@ -4,8 +4,8 @@ class DeviceModels extends DataModel {
 
     public function getDeviceByUseridAndUdid($user_id, $udid, $os_name) {
         $user_id    = (int) $user_id;
-        $udid       = mysql_real_escape_string($udid);
-        $os_name    = mysql_real_escape_string($os_name);
+        $udid       = dbescape($udid);
+        $os_name    = dbescape($os_name);
         return $user_id && $udid && $os_name ? $this->getRow(
             "SELECT * FROM `devices`
              WHERE `user_id` =  {$user_id}
@@ -17,13 +17,13 @@ class DeviceModels extends DataModel {
 
     public function updateDeviceByUseridAndUdid($user_id, $udid, $push_token, $os_name, $name = '', $brand = '', $model = '', $os_version = '') {
         $user_id    = (int) $user_id;
-        $udid       = mysql_real_escape_string($udid);
-        $push_token = mysql_real_escape_string($push_token);
-        $os_name    = mysql_real_escape_string($os_name);
-        $name       = mysql_real_escape_string($name);
-        $brand      = mysql_real_escape_string($brand);
-        $model      = mysql_real_escape_string($model);
-        $os_version = mysql_real_escape_string($os_version);
+        $udid       = dbescape($udid);
+        $push_token = dbescape($push_token);
+        $os_name    = dbescape($os_name);
+        $name       = dbescape($name);
+        $brand      = dbescape($brand);
+        $model      = dbescape($model);
+        $os_version = dbescape($os_version);
         $this->disconnectDeviceByUdidExceptUserid($udid, $os_name, $user_id);
         return $user_id && $udid && $push_token && $os_name ? $this->query(
             "UPDATE `devices`
@@ -43,13 +43,13 @@ class DeviceModels extends DataModel {
 
     public function connectDeviceByUseridAndUdid($user_id, $udid, $push_token, $os_name, $name = '', $brand = '', $model = '', $os_version = '') {
         $user_id    = (int) $user_id;
-        $udid       = mysql_real_escape_string($udid);
-        $push_token = mysql_real_escape_string($push_token);
-        $os_name    = mysql_real_escape_string($os_name);
-        $name       = mysql_real_escape_string($name);
-        $brand      = mysql_real_escape_string($brand);
-        $model      = mysql_real_escape_string($model);
-        $os_version = mysql_real_escape_string($os_version);
+        $udid       = dbescape($udid);
+        $push_token = dbescape($push_token);
+        $os_name    = dbescape($os_name);
+        $name       = dbescape($name);
+        $brand      = dbescape($brand);
+        $model      = dbescape($model);
+        $os_version = dbescape($os_version);
         $this->disconnectDeviceByUdidExceptUserid($udid, $os_name, $user_id);
         return $user_id && $udid && $push_token && $os_name ? $this->query(
             "INSERT INTO `devices`
@@ -72,8 +72,8 @@ class DeviceModels extends DataModel {
 
 
     public function disconnectDeviceByUdidExceptUserid($udid, $os_name, $user_id) {
-        $udid       = mysql_real_escape_string($udid);
-        $os_name    = mysql_real_escape_string($os_name);
+        $udid       = dbescape($udid);
+        $os_name    = dbescape($os_name);
         $user_id    = (int) $user_id;
         return $udid && $os_name && $user_id ? $this->query(
             "UPDATE `devices`
@@ -89,8 +89,8 @@ class DeviceModels extends DataModel {
 
     public function disconnectDeviceByUseridAndUdid($user_id, $udid, $os_name) {
         $user_id    = (int) $user_id;
-        $udid       = mysql_real_escape_string($udid);
-        $os_name    = mysql_real_escape_string($os_name);
+        $udid       = dbescape($udid);
+        $os_name    = dbescape($os_name);
         return $user_id && $udid ? $this->query(
             "UPDATE `devices`
              SET    `status`             =  0,
@@ -142,8 +142,8 @@ class DeviceModels extends DataModel {
 
 
     public function updateDeviceReachableByUdid($udid, $os_name, $error) {
-        $udid       = mysql_real_escape_string($udid);
-        $os_name    = mysql_real_escape_string($os_name);
+        $udid       = dbescape($udid);
+        $os_name    = dbescape($os_name);
         $error      = strlen($error) ? 1 : 0;
         return $udid && $os_name ? $this->query(
             "UPDATE `devices`

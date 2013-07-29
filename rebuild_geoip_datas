@@ -98,7 +98,7 @@ class UpgradeGeoipDatas extends DataModel {
                         case 4:
                         case 7:
                         case 8:
-                            $arrLine[$i] = mysql_real_escape_string(trim(trim($item, '"')));
+                            $arrLine[$i] = dbescape(trim(trim($item, '"')));
                             break;
                         case 5:
                         case 6:
