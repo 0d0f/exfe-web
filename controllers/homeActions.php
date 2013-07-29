@@ -7,8 +7,8 @@ class HomeActions extends ActionController {
         $modCross = $this->getModelByName('Cross');
         $modExfee = $this->getModelByName('Exfee');
         $modUser  = $this->getModelByName('User');
-        $token = mysql_real_escape_string($_GET['token']);
-        $rsvp  = strtolower(mysql_real_escape_string($_GET['rsvp']));
+        $token = dbescape($_GET['token']);
+        $rsvp  = strtolower(dbescape($_GET['rsvp']));
         if ($token && $rsvp) {
             if (($objToken = $modExfee->getRawInvitationByToken($token))
              && $objToken['valid']
@@ -32,7 +32,7 @@ class HomeActions extends ActionController {
         // get sms token
         $this->setVar('sms_token', null);
         if (isset($_GET['t'])) {
-            $t = mysql_real_escape_string($_GET['t']);
+            $t = dbescape($_GET['t']);
             if (($objToken = $modUser->resolveToken($t))) {
                 $objToken['origin_token'] = $t;
             }

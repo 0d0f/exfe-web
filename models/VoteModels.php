@@ -5,11 +5,11 @@ class VoteModels extends DataModel {
     public function createVote($cross_id, $identity_id, $title = '', $description = '', $choice = '', $anonymous = false, $type = '') {
         $cross_id    = (int) $cross_id;
         $identity_id = (int) $identity_id;
-        $title       = @mysql_real_escape_string(trim($title));
-        $description = @mysql_real_escape_string(trim($description));
-        $choice      = @mysql_real_escape_string(strtolower(trim($choice)));
+        $title       = @dbescape(trim($title));
+        $description = @dbescape(trim($description));
+        $choice      = @dbescape(strtolower(trim($choice)));
         $anonymous   = !!$anonymous ? 1 : 0;
-        $type        = @mysql_real_escape_string(trim($type));
+        $type        = @dbescape(trim($type));
         if ($cross_id && $identity_id) {
             $isResult = $this->query(
                 "INSERT INTO `votes` SET
@@ -146,9 +146,9 @@ class VoteModels extends DataModel {
         $id            = (int) $id;
         $identity_id   = (int) $identity_id;
         $intStatus     = (int) $status;
-        $strTitle      = @mysql_real_escape_string(trim($title));
-        $strDesc       = @mysql_real_escape_string(trim($description));
-        $strChoice     = @mysql_real_escape_string(strtolower(trim($choice)));
+        $strTitle      = @dbescape(trim($title));
+        $strDesc       = @dbescape(trim($description));
+        $strChoice     = @dbescape(strtolower(trim($choice)));
         $intAnonymous  = !!$anonymous ? 1 : 0;
         if ($id && $identity_id) {
             $sqlAppend = '';
@@ -188,8 +188,8 @@ class VoteModels extends DataModel {
     public function addVoteOption($vote_id, $identity_id, $data, $title = '') {
         $vote_id     = (int) $vote_id;
         $identity_id = (int) $identity_id;
-        $title       = @mysql_real_escape_string(trim($title));
-        $data        = @mysql_real_escape_string(json_encode($data));
+        $title       = @dbescape(trim($title));
+        $data        = @dbescape(json_encode($data));
         if ($vote_id && $identity_id && $data) {
             $isResult = $this->query(
                 "INSERT INTO `vote_options` SET
@@ -213,8 +213,8 @@ class VoteModels extends DataModel {
     public function updateVoteOption($id, $identity_id, $data = null, $title = null) {
         $id          = (int) $id;
         $identity_id = (int) $identity_id;
-        $strTitle    = @mysql_real_escape_string(trim($title));
-        $strData     = @mysql_real_escape_string(json_encode($data));
+        $strTitle    = @dbescape(trim($title));
+        $strData     = @dbescape(json_encode($data));
         if ($id && $identity_id) {
             $sqlAppend = '';
             if ($title !== null) {

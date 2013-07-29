@@ -37,12 +37,12 @@ class PreferencesModels extends DataModel {
             $sqlUsr = [];
             $sqlIdt = [];
             if (isset($preferences['locale'])   && $preferences['locale']) {
-                $strItem  = "`locale`   = '" . mysql_real_escape_string($preferences['locale'])   . "'";
+                $strItem  = "`locale`   = '" . dbescape($preferences['locale'])   . "'";
                 $sqlUsr[] = $strItem;
                 $sqlIdt[] = $strItem;
             }
             if (isset($preferences['timezone']) && $preferences['timezone']) {
-                $strItem  = "`timezone` = '" . mysql_real_escape_string($preferences['timezone']) . "'";
+                $strItem  = "`timezone` = '" . dbescape($preferences['timezone']) . "'";
                 $sqlUsr[] = $strItem;
                 $sqlIdt[] = $strItem;
             }

@@ -15,7 +15,7 @@ if (DEBUG) {
     error_log("+++++++ {$_SERVER['REQUEST_URI']} +++++++");
     if (extension_loaded('xhprof')) {
         xhprof_enable(XHPROF_FLAGS_CPU + XHPROF_FLAGS_MEMORY);
-        $xhprof_lib = "/usr/local/Cellar/php54-xhprof/270b75d/xhprof_lib";
+        $xhprof_lib = "/usr/local/Cellar/php55-xhprof/254eb24/xhprof_lib";
         include_once "{$xhprof_lib}/utils/xhprof_lib.php";
         include_once "{$xhprof_lib}/utils/xhprof_runs.php";
     }

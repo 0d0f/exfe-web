@@ -21,10 +21,10 @@ class PlaceModels extends DataModel {
 
     public function addPlace($place) {
         $place->id   = (int) $place->id;
-        $title       = mysql_real_escape_string($place->title);
-        $description = mysql_real_escape_string($place->description);
-        $external_id = mysql_real_escape_string($place->external_id);
-        $provider    = mysql_real_escape_string($place->provider);
+        $title       = dbescape($place->title);
+        $description = dbescape($place->description);
+        $external_id = dbescape($place->external_id);
+        $provider    = dbescape($place->provider);
         // fixed data {
         if (!strlen($title) && !floatval($place->lng) && !floatval($place->lat)) {
             $place->external_id = '';

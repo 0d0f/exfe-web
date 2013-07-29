@@ -54,7 +54,7 @@ class IcsActions extends ActionController {
         $crossHelper = $this->getHelperByName('Cross');
         // check authorization
         $params      = $this->params;
-        if (!($token         = mysql_real_escape_string(@$params['token']))
+        if (!($token         = dbescape(@$params['token']))
          || !($rawInvitation = $modExfee->getRawInvitationByToken($token))
          ||   $rawInvitation['state'] === 4
          || !($objCross      = $crossHelper->getCross($rawInvitation['cross_id']))) {
