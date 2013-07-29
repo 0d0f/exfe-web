@@ -16,7 +16,7 @@ function getMainDB() {
     global $maindb;
     if (!$maindb) {
         $maindb = mysqli_connect(DBHOST, DBUSER, DBPASSWD, DBNAME);
-        mysqli_query($maindb, "SET NAMES 'utf8mb4'");
+        mysqli_set_charset($maindb, "SET NAMES 'utf8mb4'");
     }
 }
 getMainDB();
