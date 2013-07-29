@@ -42,16 +42,16 @@ abstract class DataModel {
     public function query($sql) {
         global $maindb;
         mysqli_query($maindb, $sql);
-        if (($error = mysqli_error())) {
+        if (($error = mysqli_error($maindb))) {
             error_log("SQL error: {$error}\nSQL: {$sql}");
             return null;
         }
         $result = [];
-        $insert_id = mysqli_insert_id();
+        $insert_id = mysqli_insert_id($maindb);
         if ($insert_id > 0) {
             $result['insert_id'] = strval($insert_id);
         }
-        $result['affected_rows'] = mysqli_affected_rows();
+        $result['affected_rows'] = mysqli_affected_rows($maindb);
         return $result;
     }
 
