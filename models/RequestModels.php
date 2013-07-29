@@ -42,7 +42,7 @@ class RequestModels extends DataModel {
     public function request($identity_id, $exfee_id, $message = '') {
         $identity_id = (int) $identity_id;
         $exfee_id    = (int) $exfee_id;
-        $message     = @mysql_real_escape_string(trim($message));
+        $message     = @dbescape(trim($message));
         if ($identity_id && $exfee_id) {
             $curRequest = $this->getRequestBy(0, $identity_id, $exfee_id);
             $rawResult  = $curRequest ? $this->query(

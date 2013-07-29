@@ -684,7 +684,7 @@ class UsersActions extends ActionController {
             apiError(400, 'weak_password', 'password must be longer than four');
         }
         // set password
-        $name = mysql_real_escape_string(formatName($_POST['name']));
+        $name = dbescape(formatName($_POST['name']));
         $stResult = $modUser->setUserPasswordAndSignin($user_id, $password, $name);
         if ($stResult) {
             // set identity name
@@ -717,7 +717,7 @@ class UsersActions extends ActionController {
         if (!validatePassword($password)) {
             apiError(400, 'weak_password', 'password must be longer than four');
         }
-        $name = mysql_real_escape_string(formatName($_POST['name']));
+        $name = dbescape(formatName($_POST['name']));
         // set password
         $stResult = $modUser->resetPasswordByToken($token, $password, $name);
         if ($stResult) {

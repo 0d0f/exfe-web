@@ -8,13 +8,13 @@ class BusActions extends ActionController {
     public function doUpdateIdentity() {
         // get raw data
         $id                = isset($_POST['id'])                ? intval($_POST['id'])                                  : null;
-        $provider          = isset($_POST['provider'])          ? mysql_real_escape_string($_POST['provider'])          : null;
-        $external_id       = isset($_POST['external_id'])       ? mysql_real_escape_string($_POST['external_id'])       : null;
-        $name              = isset($_POST['name'])              ? mysql_real_escape_string($_POST['name'])              : '';
-        $nickname          = isset($_POST['nickname'])          ? mysql_real_escape_string($_POST['nickname'])          : '';
-        $bio               = isset($_POST['bio'])               ? mysql_real_escape_string($_POST['bio'])               : '';
-        $avatar_filename   = isset($_POST['avatar_filename'])   ? mysql_real_escape_string($_POST['avatar_filename'])   : ''; // @todo submit by array @leask to @googollee
-        $external_username = isset($_POST['external_username']) ? mysql_real_escape_string($_POST['external_username']) : '';
+        $provider          = isset($_POST['provider'])          ? dbescape($_POST['provider'])          : null;
+        $external_id       = isset($_POST['external_id'])       ? dbescape($_POST['external_id'])       : null;
+        $name              = isset($_POST['name'])              ? dbescape($_POST['name'])              : '';
+        $nickname          = isset($_POST['nickname'])          ? dbescape($_POST['nickname'])          : '';
+        $bio               = isset($_POST['bio'])               ? dbescape($_POST['bio'])               : '';
+        $avatar_filename   = isset($_POST['avatar_filename'])   ? dbescape($_POST['avatar_filename'])   : ''; // @todo submit by array @leask to @googollee
+        $external_username = isset($_POST['external_username']) ? dbescape($_POST['external_username']) : '';
         // check data
         if (!$id || !$provider || !$external_id) {
             $this->jsonError(500, 'identity_error');
@@ -680,8 +680,8 @@ class BusActions extends ActionController {
         // decode json
         $identity = (array) json_decode($str_args);
         $identity['id']                = isset($identity['id'])                ? (int) $identity['id']                                    : 0;
-        $identity['provider']          = isset($identity['provider'])          ? mysql_real_escape_string($identity['provider'])          : '';
-        $identity['external_username'] = isset($identity['external_username']) ? mysql_real_escape_string($identity['external_username']) : '';
+        $identity['provider']          = isset($identity['provider'])          ? dbescape($identity['provider'])          : '';
+        $identity['external_username'] = isset($identity['external_username']) ? dbescape($identity['external_username']) : '';
         if (!$identity['id']) {
             if ($identity['provider'] && $identity['external_username']) {
                 // get identity id

@@ -329,20 +329,20 @@ class IdentityModels extends DataModel {
         $hlpUder = $this->getHelperByName('user');
         // collecting new identity informations
         $user_id           = (int) $user_id;
-        $provider          = @mysql_real_escape_string(trim($identityDetail['provider']));
-        $external_id       = @mysql_real_escape_string(trim($identityDetail['external_id']));
-        $external_username = @mysql_real_escape_string(strtolower(trim($identityDetail['external_username'])));
-        $name              = @mysql_real_escape_string(trim($identityDetail['name']));
-        $nickname          = @mysql_real_escape_string(trim($identityDetail['nickname']));
-        $bio               = @mysql_real_escape_string(trim($identityDetail['bio']));
-        $locale            = @mysql_real_escape_string(trim($identityDetail['locale']));
-        $timezone          = @mysql_real_escape_string(trim($identityDetail['timezone']));
-        $avatar_filename   = @mysql_real_escape_string(trim($identityDetail['avatar_filename']));
+        $provider          = @dbescape(trim($identityDetail['provider']));
+        $external_id       = @dbescape(trim($identityDetail['external_id']));
+        $external_username = @dbescape(strtolower(trim($identityDetail['external_username'])));
+        $name              = @dbescape(trim($identityDetail['name']));
+        $nickname          = @dbescape(trim($identityDetail['nickname']));
+        $bio               = @dbescape(trim($identityDetail['bio']));
+        $locale            = @dbescape(trim($identityDetail['locale']));
+        $timezone          = @dbescape(trim($identityDetail['timezone']));
+        $avatar_filename   = @dbescape(trim($identityDetail['avatar_filename']));
         if (@$identityDetail['avatar'] && is_array($identityDetail['avatar'])) {
             $avatar        = [
-                'original' => @mysql_real_escape_string(trim($identityDetail['avatar']['original'])),
-                '320_320'  => @mysql_real_escape_string(trim($identityDetail['avatar']['320_320'])),
-                '80_80'    => @mysql_real_escape_string(trim($identityDetail['avatar']['80_80'])),
+                'original' => @dbescape(trim($identityDetail['avatar']['original'])),
+                '320_320'  => @dbescape(trim($identityDetail['avatar']['320_320'])),
+                '80_80'    => @dbescape(trim($identityDetail['avatar']['80_80'])),
             ];
         } else if ($avatar_filename) {
             $avatar        = [
@@ -432,9 +432,9 @@ class IdentityModels extends DataModel {
                         $external_username
                     );
                     if ($rawIdentity) {
-                        $external_id = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
-                        $name        = mysql_real_escape_string(trim($rawIdentity->name));
-                        $bio         = mysql_real_escape_string(trim($rawIdentity->bio));
+                        $external_id = dbescape(strtolower(trim($rawIdentity->external_id)));
+                        $name        = dbescape(trim($rawIdentity->name));
+                        $bio         = dbescape(trim($rawIdentity->bio));
                         $avatar      = $rawIdentity->avatar;
                     }
                     break;
@@ -443,9 +443,9 @@ class IdentityModels extends DataModel {
                         $external_username
                     );
                     if ($rawIdentity) {
-                        $external_id = mysql_real_escape_string(strtolower(trim($rawIdentity->external_id)));
-                        $name        = mysql_real_escape_string(trim($rawIdentity->name));
-                        $bio         = mysql_real_escape_string(trim($rawIdentity->bio));
+                        $external_id = dbescape(strtolower(trim($rawIdentity->external_id)));
+                        $name        = dbescape(trim($rawIdentity->name));
+                        $bio         = dbescape(trim($rawIdentity->bio));
                         $avatar      = $rawIdentity->avatar;
                     }
                     break;

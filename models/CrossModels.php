@@ -56,15 +56,15 @@ class CrossModels extends DataModel {
         }
 
         $cross_time->outputformat        = (int) $cross_time->outputformat;
-        $cross->title                    = mysql_real_escape_string(isset($cross->title)       ? $cross->title       : '');
-        $cross->description              = mysql_real_escape_string(isset($cross->description) ? $cross->description : '');
-        $cross_time->origin              = mysql_real_escape_string($cross_time->origin);
-        $cross_time->begin_at->timezone  = mysql_real_escape_string($cross_time->begin_at->timezone);
-        $cross_time->begin_at->date_word = mysql_real_escape_string($cross_time->begin_at->date_word);
-        $cross_time->begin_at->time_word = mysql_real_escape_string($cross_time->begin_at->time_word);
-        $cross_time->begin_at->date      = mysql_real_escape_string($cross_time->begin_at->date);
-        $cross_time->begin_at->time      = mysql_real_escape_string($cross_time->begin_at->time);
-        $background                      = mysql_real_escape_string($background);
+        $cross->title                    = dbescape(isset($cross->title)       ? $cross->title       : '');
+        $cross->description              = dbescape(isset($cross->description) ? $cross->description : '');
+        $cross_time->origin              = dbescape($cross_time->origin);
+        $cross_time->begin_at->timezone  = dbescape($cross_time->begin_at->timezone);
+        $cross_time->begin_at->date_word = dbescape($cross_time->begin_at->date_word);
+        $cross_time->begin_at->time_word = dbescape($cross_time->begin_at->time_word);
+        $cross_time->begin_at->date      = dbescape($cross_time->begin_at->date);
+        $cross_time->begin_at->time      = dbescape($cross_time->begin_at->time);
+        $background                      = dbescape($background);
 
         $begin_at_time_in_old_format     = $cross_time->begin_at->date . (
             $cross_time->begin_at->date ? " {$cross_time->begin_at->time}" : ''
@@ -106,8 +106,8 @@ class CrossModels extends DataModel {
             $updated       = ['updated_at'  => date('Y-m-d H:i:s', time()),
                               'identity_id' => $by_identity_id];
             if ($place_id > 0 && $old_cross
-             && (mysql_real_escape_string($old_cross->place->title)       !== $cross->place->title
-              || mysql_real_escape_string($old_cross->place->description) !== $cross->place->description
+             && (dbescape($old_cross->place->title)       !== $cross->place->title
+              || dbescape($old_cross->place->description) !== $cross->place->description
               || (float) $old_cross->place->lng !== (float) $cross->place->lng
               || (float) $old_cross->place->lat !== (float) $cross->place->lat
               || $old_cross->place->provider    !== $cross->place->provider
@@ -117,12 +117,12 @@ class CrossModels extends DataModel {
                 $cross_updated['place']       = $updated;
             }
 
-            if (isset($cross->title) && $cross->title && $old_cross && mysql_real_escape_string($old_cross->title) !== $cross->title) {
+            if (isset($cross->title) && $cross->title && $old_cross && dbescape($old_cross->title) !== $cross->title) {
                 array_push($updatefields, "`title`           = '{$cross->title}'");
                 $cross_updated['title']       = $updated;
             }
 
-            if (isset($cross->description) && $old_cross && mysql_real_escape_string($old_cross->description) !== $cross->description) {
+            if (isset($cross->description) && $old_cross && dbescape($old_cross->description) !== $cross->description) {
                 array_push($updatefields, "`description`     = '{$cross->description}'");
                 $cross_updated['description'] = $updated;
             }
@@ -130,7 +130,7 @@ class CrossModels extends DataModel {
             if ($setTime
              && $cross_time
              && $old_cross
-             && (mysql_real_escape_string($old_cross->time->origin) !== $cross->time->origin
+             && (dbescape($old_cross->time->origin) !== $cross->time->origin
               || $old_cross->time->begin_at->date !== $cross->time->begin_at->date
               || $old_cross->time->begin_at->time !== $cross->time->begin_at->time)) {
                 array_push($updatefields, "`begin_at`        = '{$begin_at_time_in_old_format}'");
