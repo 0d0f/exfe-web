@@ -116,7 +116,6 @@ class CrossModels extends DataModel {
                 array_push($updatefields, "`place_id`        =  {$place_id}");
                 $cross_updated['place']       = $updated;
             }
-
             if (isset($cross->title) && $cross->title && $old_cross && dbescape($old_cross->title) !== $cross->title) {
                 array_push($updatefields, "`title`           = '{$cross->title}'");
                 $cross_updated['title']       = $updated;
