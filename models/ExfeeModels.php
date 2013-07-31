@@ -579,7 +579,7 @@ class ExfeeModels extends DataModel {
         $changed     = false;
         if (isset($exfee->name)) {
             $exfee->name = formatTitle($exfee->name, 233);
-            $changed = $this->query(
+            $this->query(
                 "UPDATE `exfees`
                  SET    `name` = '{$exfee->name}'
                  WHERE  `id`   =  {$exfee->id}"
@@ -793,9 +793,11 @@ class ExfeeModels extends DataModel {
                     }
                 }
             }
-            $hlpQueue->despatchUpdate(
-                $cross, $old_cross, $delExfee, $addExfee, $user_id ?: -$by_identity_id, $by_identity_id
-            );
+            if ($changed) {
+                $hlpQueue->despatchUpdate(
+                    $cross, $old_cross, $delExfee, $addExfee, $user_id ?: -$by_identity_id, $by_identity_id
+                );
+            }
             if ($addExfee) {
                 $to_exfee = new stdClass;
                 $to_exfee->id = $cross->exfee->id;
