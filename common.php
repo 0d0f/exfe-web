@@ -23,7 +23,7 @@ $exfe_res = new ResourceBundle($locale, INTL_RESOURCES);
 
 function dbescape($string) {
     global $maindb;
-    return mysqli_real_escape_string($maindb, $string);
+    return $maindb->escape_string($string);
 }
 
 // redis by @leaskh {
