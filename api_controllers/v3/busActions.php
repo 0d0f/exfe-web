@@ -1015,6 +1015,7 @@ class BusActions extends ActionController {
         $modBkg      = $this->getModelByName('Background');
         $modConv     = $this->getModelByName('Conversation');
         $modExfee    = $this->getModelByName('Exfee');
+        $modQueue    = $this->getModelByName('Queue');
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
         function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5) {
@@ -1044,10 +1045,22 @@ class BusActions extends ActionController {
             touchCross($cross_id, $by_identity->connected_user_id);
             return $udeResult ? $objCross : null;
         };
-        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv) {
+        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv, $hlpCross, $modQueue) {
             $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
             $objPost->by_identity_id = $identity->id;
             $pstResult = $modConv->addPost($objPost);
+            if (($post_id = @$pstResult['post_id'])) {
+                $post  = $modConv->getPostById($post_id);
+                $cross = $hlpCross->getCross($cross_id, true);
+                $draft = isset($cross->attribute)
+                    && isset($cross->attribute['state'])
+                    && $cross->attribute['state'] === 'draft';
+                if (!$draft) {
+                    $modQueue->despatchConversation(
+                        $cross, $post, $identity->connected_user_id, $identity->id
+                    );
+                }
+            }
             touchCross($cross_id, $identity->connected_user_id);
             return $pstResult && $pstResult['post'] ? $pstResult['post'] : null;
         };
