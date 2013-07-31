@@ -174,18 +174,20 @@ class BusActions extends ActionController {
         }
 
         // publish on time {
-        httpKit::request(
-            EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-          . base64_url_encode(SITE_URL . '/v3/bus/publishx'),
-            ['update' => 'once', 'ontime' => time() + 60 * 10],
-            [
-                'cross_id'    => $cross_id,
-                'exfee_id'    => $gthResult['exfee_id'],
-                'user_id'     => $user_id,
-                'identity_id' => $identity_id,
-            ],
-            false, false, 3, 3, 'json'
-        );
+        if ($cross->attribute->state !== 'published') {
+            httpKit::request(
+                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+              . base64_url_encode(SITE_URL . '/v3/bus/publishx'),
+                ['update' => 'once', 'ontime' => time() + 60 * 10],
+                [
+                    'cross_id'    => $cross_id,
+                    'exfee_id'    => $gthResult['exfee_id'],
+                    'user_id'     => $user_id,
+                    'identity_id' => $identity_id,
+                ],
+                false, false, 3, 3, 'json'
+            );
+        }
         // }
 
         $rspData = $crossHelper->getCross($cross_id, true);
