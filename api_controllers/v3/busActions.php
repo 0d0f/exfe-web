@@ -1028,8 +1028,7 @@ class BusActions extends ActionController {
                   . "&identity_id={$identity_id}" . ($created_at
                   ? "&created_at={$created_at}"   : '')
                 ),
-                ['update' => 'once', 'ontime' => time()], [],
-             // ['update' => 'once', 'ontime' => $now + $delay], [],
+                ['update' => 'once', 'ontime' => time() + $delay], [],
                 false, false, 3, 3, 'txt'
             );
         };
@@ -1228,8 +1227,7 @@ class BusActions extends ActionController {
                 break;
             case 13:
                 if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)
-                // || ($now - $created_at >= 60 * 60 * 24)) {
-                || ($now - $created_at >= 100)) {
+                || ($now - $created_at >= 60 * 60 * 24)) {
                     $result = $editExfee($exfee, $cross_id, new Invitation(
                         0, $botCashbox, $bot233, $bot233,
                         'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
