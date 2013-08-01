@@ -1018,14 +1018,15 @@ class BusActions extends ActionController {
         $modQueue    = $this->getModelByName('Queue');
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
-        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5) {
+        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5, $created_at = 0) {
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(
                     SITE_URL . '/v3/bus/tutorials/' . ($step_id + 1)
                   . "?cross_id={$cross_id}"
                   . "&exfee_id={$exfee_id}"
-                  . "&identity_id={$identity_id}"
+                  . "&identity_id={$identity_id}" . ($created_at
+                  ? "&created_at={$created_at}"   : '')
                 ),
                 ['update' => 'once', 'ontime' => time()], [],
              // ['update' => 'once', 'ontime' => $now + $delay], [],
@@ -1164,6 +1165,9 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'exfee_error');
             return;
         }
+        // get created_at
+        $created_at = @ (int) $params['created_at'];
+        // get leaved
         $leaved = true;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->id === $identity_id) {
@@ -1214,22 +1218,25 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
                 break;
             case 12:
-                $delay  = 60 * 2;
+                $delay  = 233;
                 $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
                 $needPw = $passwd && !$passwd['encrypted_password'];
                 $result = $needPw
                         ? post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
                         : new stdClass;
+                $created_at = $now;
                 break;
             case 13:
-                if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)) {
+                if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)
+                // || ($now - $created_at >= 60 * 60 * 24)) {
+                || ($now - $created_at >= 100)) {
                     $result = $editExfee($exfee, $cross_id, new Invitation(
                         0, $botCashbox, $bot233, $bot233,
                         'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                     ), $botCashbox);
                 } else {
                     $result = new stdClass;
-                    $delay  = 60 * 2;
+                    $delay  = 233;
                     $step_id--;
                 }
                 break;
@@ -1265,7 +1272,7 @@ class BusActions extends ActionController {
         }
         if ($result) {
             $this->jsonResponse($result);
-            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay);
+            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay, $created_at);
             return;
         }
         $this->jsonError(500, 'internal_server_error');
