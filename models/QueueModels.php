@@ -7,6 +7,18 @@ class QueueModels extends DataModel {
 
     public $hlpGobus = null;
 
+    public $robots   = [];
+
+
+    public function __construct() {
+        $this->robots = [
+            TUTORIAL_BOT_A,
+            TUTORIAL_BOT_B,
+            TUTORIAL_BOT_C,
+            TUTORIAL_BOT_D
+        ] + explode(',', SMITH_BOT);
+    }
+
 
     public function fireBus(
         $recipients, $merge_key, $method, $service,
@@ -29,7 +41,8 @@ class QueueModels extends DataModel {
 
     public function makeRecipientByInvitation($invitation) {
         $hlpTime = $this->getHelperByName('Time');
-        return new Recipient(
+        return in_array($invitation->identity->id, $this->robots)
+             ? null : new Recipient(
             $invitation->identity->id,
             $invitation->identity->connected_user_id,
             $invitation->identity->name,
@@ -59,7 +72,9 @@ class QueueModels extends DataModel {
         $tos  = [];
         $invTimezone = '';
         foreach ($invitations as $invitation) {
-            $tos[] = $this->makeRecipientByInvitation($invitation);
+            if (($recipient = $this->makeRecipientByInvitation($invitation))) {
+                $tos[] = $recipient;
+            }
             if ($invitation->identity->timezone && (!$invTimezone || $invitation->host)) {
                 $invTimezone = $invitation->identity->timezone;
             }
