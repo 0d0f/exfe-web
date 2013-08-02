@@ -6,33 +6,40 @@
 
 class libwechat {
 
-    public function valid() {
-        $echoStr = $_GET["echostr"];
-        //valid signature , option
-        if($this->checkSignature()){
-            echo $echoStr;
-            exit;
-        }
+    public $token = '';
+
+
+    public function __construct($token) {
+        $this->token = $token;
     }
 
 
-    private function checkSignature() {
-        $signature = $_GET["signature"];
-        $timestamp = $_GET["timestamp"];
-        $nonce = $_GET["nonce"];
-
-        $token = TOKEN;
-        $tmpArr = [$token, $timestamp, $nonce];
+    public function checkSignature($signature, $timestamp, $nonce) {
+        $tmpArr = [$this->token, $timestamp, $nonce];
         sort($tmpArr);
         $tmpStr = implode($tmpArr);
         $tmpStr = sha1($tmpStr);
-
-        if ($tmpStr == $signature) {
-            return true;
-        } else {
-            return false;
-        }
+        return $tmpStr === $signature;
     }
 
+
+    public function unpackMessage($rawInput) {
+        return simplexml_load_string($rawInput, 'SimpleXMLElement', LIBXML_NOCDATA);
+    }
+
+
+    public function packMessage($toUserName, $fromUserName, $content, $msgType = 'text') {
+        if ($toUserName && $fromUserName && $content) {
+            $textTpl = "<xml>
+                        <ToUserName><![CDATA[%s]]></ToUserName>
+                        <FromUserName><![CDATA[%s]]></FromUserName>
+                        <CreateTime>%s</CreateTime>
+                        <MsgType><![CDATA[%s]]></MsgType>
+                        <Content><![CDATA[%s]]></Content>
+                        </xml>";
+            return sprintf($textTpl, $toUserName, $fromUserName, time(), $msgType, $content);
+        }
+        return null;
+    }
 
 }
