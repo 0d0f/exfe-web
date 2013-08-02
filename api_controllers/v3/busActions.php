@@ -1080,6 +1080,11 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'identity_error');
             return;
         }
+        // check identity
+        if (in_array($objIdentity->provider, ['wechat'])) {
+            $this->jsonResponse(new stdClass);
+            return;
+        }
         // check robots
         if (!($bot233      = $modIdentity->getIdentityById(TUTORIAL_BOT_A))
          || !($botFrontier = $modIdentity->getIdentityById(TUTORIAL_BOT_B))
@@ -1221,7 +1226,7 @@ class BusActions extends ActionController {
                 $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
                 $needPw = $passwd && !$passwd['encrypted_password'];
                 $result = $needPw
-                        ? post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
+                        ? $post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
                         : new stdClass;
                 $created_at = $now;
                 break;
