@@ -86,10 +86,10 @@ function getCache($key) {
     return readRedisBy($redis_cache, $key, true);
 }
 
-function setCache($key, $value) {
+function setCache($key, $value, $expire = 604800) {
     global $redis_cache;
     writeRedisBy($redis_cache, $key, $value, true);
-    setRedisItemTimeoutBy($redis_cache, $key, 604800); // 60 * 60 * 24 * 7
+    setRedisItemTimeoutBy($redis_cache, $key, $expire); // 60 * 60 * 24 * 7
 }
 
 function delCache($key) {
