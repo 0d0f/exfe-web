@@ -51,7 +51,7 @@ class wechatActions extends ActionController {
                             'avatar_filename'   => $rawIdentity->avatar_filename
                         ]);
                         $identity    = $modIdentity->getIdentityById($identity_id);
-                    }-
+                    }
                     if (!$identity) {
                         // 500
                         return;
