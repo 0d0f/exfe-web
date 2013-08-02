@@ -9,7 +9,11 @@ class WechatModels extends DataModel {
 
 
     public function __construct() {
-        $this->libwechat = new libwechat(WECHAT_OFFICIAL_ACCOUNT_KEY);
+        $this->libwechat = new libwechat(
+            WECHAT_OFFICIAL_ACCOUNT_KEY,
+            WECHAT_OFFICIAL_ACCOUNT_APPID,
+            WECHAT_OFFICIAL_ACCOUNT_SECRET
+        );
     }
 
 
@@ -24,16 +28,15 @@ class WechatModels extends DataModel {
 
 
     public function getIdentityBy($external_id) {
-        return $external_id ? new Identity(
-            0,
-            $external_id,
-            $external_id,
-            '',
-            'wechat',
-            0,
-            $external_id,
-            $external_id
-        ) : null;
+        if ($external_id) {
+             $rawIdentity = $this->libwechat->getUserInfo($external_id);
+             return new Identity(
+                0, $rawIdentity['nickname'], '', '', 'wechat', 0,
+                $rawIdentity['openid'], $rawIdentity['openid'], null, '', '', 0,
+                false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
+            );
+        }
+        return null;
     }
 
 
