@@ -24,11 +24,15 @@ class libwechat {
 
 
     public function unpackMessage($rawInput) {
-        return simplexml_load_string($rawInput, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return simplexml_load_string(
+            $rawInput, 'SimpleXMLElement', LIBXML_NOCDATA
+        );
     }
 
 
-    public function packMessage($toUserName, $fromUserName, $content, $msgType = 'text') {
+    public function packMessage(
+        $toUserName, $fromUserName, $content, $msgType = 'text'
+    ) {
         if ($toUserName && $fromUserName && $content) {
             $textTpl = "<xml>
                         <ToUserName><![CDATA[%s]]></ToUserName>
@@ -37,9 +41,17 @@ class libwechat {
                         <MsgType><![CDATA[%s]]></MsgType>
                         <Content><![CDATA[%s]]></Content>
                         </xml>";
-            return sprintf($textTpl, $toUserName, $fromUserName, time(), $msgType, $content);
+            return sprintf(
+                $textTpl, $toUserName, $fromUserName, time(), $msgType,
+                self::xmlSafeStr($content)
+            );
         }
         return null;
+    }
+
+
+    public static function xmlSafeStr($str) {
+        return preg_replace("/[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]/", '', $str);
     }
 
 }
