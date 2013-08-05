@@ -246,6 +246,7 @@ class QueueModels extends DataModel {
                     $identity->connected_user_id = $invitation->identity->connected_user_id;
                     $tmpInvitation = deepClone($invitation);
                     $tmpInvitation->identity = $identity;
+                    $tmpInvitation->identity->timezone = $invitation->identity->timezone;
                     $gotInvitation[] = $tmpInvitation;
                 }
             }
@@ -260,6 +261,7 @@ class QueueModels extends DataModel {
                 foreach ($mobIdentities as $mI => $mItem) {
                     $tmpInvitation = deepClone($invitation);
                     $tmpInvitation->identity = $mItem;
+                    $tmpInvitation->identity->timezone = $invitation->identity->timezone;
                     $gotInvitation[] = $tmpInvitation;
                 }
                 // set conversation counter
