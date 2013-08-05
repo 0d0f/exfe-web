@@ -24,7 +24,7 @@ class QueueModels extends DataModel {
         $recipients, $merge_key, $method, $service,
         $update, $ontime, $data, $cstRequest = ''
     ) {
-        return httpKit::request(
+        return $recipients ? httpKit::request(
             EXFE_AUTH_SERVER . '/v3/splitter',
             null, [
                 'recipients' => $recipients,
@@ -35,7 +35,7 @@ class QueueModels extends DataModel {
                 'ontime'     => $ontime,
                 'data'       => $data ?: new stdClass,
             ], false, false, 3, 3, 'json', false, true, [], $cstRequest
-        );
+        ) : true;
     }
 
 
