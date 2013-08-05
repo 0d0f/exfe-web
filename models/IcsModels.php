@@ -14,7 +14,7 @@ class IcsModels extends DataModel {
             return '';
         }
         // init
-        $modInvite = new Invite("exfe_cross_{$cross->id}");
+        $modInvite = new Invite("x+{$cross->id}@exfe.com");
         // make time
         if ($cross->time->begin_at->time) {
             $intTime = strtotime("{$cross->time->begin_at->date} {$cross->time->begin_at->time} UTC");
