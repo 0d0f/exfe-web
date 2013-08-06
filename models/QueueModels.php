@@ -52,7 +52,8 @@ class QueueModels extends DataModel {
             $invitation->identity->locale,
             $invitation->identity->provider,
             $invitation->identity->external_id,
-            $invitation->identity->external_username
+            $invitation->identity->external_username,
+            isset($invitation->fallbacks) ? $invitation->fallbacks : []
         );
     }
 
@@ -262,6 +263,13 @@ class QueueModels extends DataModel {
                     $tmpInvitation = deepClone($invitation);
                     $tmpInvitation->identity = $mItem;
                     $tmpInvitation->identity->timezone = $invitation->identity->timezone;
+                    if (in_array($event,           ['cross/invitation', 'cross/remind'])
+                     && in_array($mItem->provider, ['iOS', 'Android'])) {
+                        $tmpInvitation->fallbacks = [
+                            "{$mItem->external_username}@{$mItem->provider}",
+                            "{$invitation->identity->external_username}@{$invitation->identity->provider}"
+                        ];
+                    }
                     $gotInvitation[] = $tmpInvitation;
                 }
                 // set conversation counter
