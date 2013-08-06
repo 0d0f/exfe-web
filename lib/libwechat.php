@@ -107,4 +107,61 @@ class libwechat {
         return null;
     }
 
+
+    public function getMenu() {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/menu/get', [
+                    'access_token' => $access_token,
+                ], null, false, false, 3, 3, 'json', true
+            );
+            if ($result
+             && $result['http_code'] === 200
+             && $result['json']
+             && @$result['json']['menu']) {
+                return $result['json']['menu'];
+            }
+        }
+        return null;
+    }
+
+
+    public function createMenu($menu) {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/menu/create', [
+                    'access_token' => $access_token,
+                ], $menu, false, false, 3, 3, 'json', true, true, [], '', true
+            );
+            if ($result
+             && $result['http_code'] === 200
+             && $result['json']
+             && @ (int) $result['json']['errcode'] === 0) {
+                return $this->getMenu();
+            }
+        }
+        return null;
+    }
+
+
+    public function deleteMenu() {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/menu/delete', [
+                    'access_token' => $access_token,
+                ], null, false, false, 3, 3, 'json', true
+            );
+            if ($result
+             && $result['http_code'] === 200
+             && $result['json']
+             && @ (int) $result['json']['errcode'] === 0) {
+                return true;
+            }
+        }
+        return null;
+    }
+
 }
