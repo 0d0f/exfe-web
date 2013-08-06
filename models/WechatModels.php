@@ -49,4 +49,19 @@ class WechatModels extends DataModel {
         );
     }
 
+
+    public function getMenu() {
+        return $this->libwechat->getMenu();
+    }
+
+
+    public function createMenu($menu) {
+        return $this->libwechat->createMenu($menu);
+    }
+
+
+    public function deleteMenu() {
+        return $this->libwechat->deleteMenu();
+    }
+
 }

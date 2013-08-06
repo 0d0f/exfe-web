@@ -30,6 +30,7 @@ $sources = [
     'share',
     'views',
     'xbgutilitie',
+    'wechat',
 ];
 
 
