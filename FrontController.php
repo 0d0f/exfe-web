@@ -126,7 +126,8 @@ class FrontController {
         if ($arrPath[$last] === '') {
             unset($arrPath[$last]);
         }
-        if (!$first) {
+        if (!$first
+         || preg_match('/^!\d+$/', $first)) { // @todo: ignore crosses urls
             $this->rockWeb('home', $arrPath, $route);
         } else if (preg_match('/^v\d+$/', $first)) {
             $controller = array_shift($arrPath);
