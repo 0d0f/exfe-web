@@ -22,6 +22,8 @@ class Recipient extends EFObject {
 
     public $external_username = null;
 
+    public $fallbacks         = null;
+
 
     public function __construct(
         $identity_id       = 0,
@@ -33,7 +35,8 @@ class Recipient extends EFObject {
         $language          = '',
         $provider          = '',
         $external_id       = '',
-        $external_username = ''
+        $external_username = '',
+        $fallbacks         = []
     ) {
         parent::__construct(0, 'Recipient');
 
@@ -47,6 +50,7 @@ class Recipient extends EFObject {
         $this->provider          = $provider;
         $this->external_id       = $external_id;
         $this->external_username = $external_username;
+        $this->fallbacks         = $fallbacks;
 
         if (preg_match('/phone/', $provider) && preg_match('/\+86.*/', $external_id)) {
             $this->language = 'zh_cn';
