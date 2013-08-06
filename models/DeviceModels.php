@@ -113,13 +113,20 @@ class DeviceModels extends DataModel {
 
     public function getDevicesByUserid($user_id, $mainIdentity = null) {
         $user_id    = (int) $user_id;
-        $rawResult  = $user_id ? $this->getAll(
+        $rawResult  = $user_id ? ($this->getAll(
             "SELECT * FROM `devices`
              WHERE  `user_id` = {$user_id}
-             AND    `status`  = 1"
-        ) : [];
+             AND    `status`  = 1
+             GROUP BY `udid`"
+        ) ?: []) : [];
+        foreach ($rawResult as $rI => $rItem) {
+            if (time() - strtotime("{$rItem['last_connected_at']} +0000") > 60 * 60 * 24 * 90) {
+                $this->disconnectDeviceByUseridAndUdid($rItem['user_id'], $rItem['udid'], $rItem['os_name']);
+                unset($rawResult[$rI]);
+            }
+        }
         if ($mainIdentity) {
-            foreach ($rawResult ?: [] as $rI => $rItem) {
+            foreach ($rawResult as $rI => $rItem) {
                 $rawResult[$rI] = new Identity(
                     -$rItem['id'],
                     $mainIdentity->name,
@@ -136,8 +143,24 @@ class DeviceModels extends DataModel {
                     $rItem['unreachable']
                 );
             }
+        } else {
+            foreach ($rawResult as $rI => $rItem) {
+                $rawResult[$rI] = new Device(
+                    $rItem['id'],
+                    $rItem['name'],
+                    $rItem['brand'],
+                    $rItem['model'],
+                    $rItem['os_name'],
+                    $rItem['os_version'],
+                    $rItem['description'],
+                    $rItem['status'],
+                    $rItem['first_connected_at'],
+                    $rItem['last_connected_at'],
+                    $rItem['disconnected_at']
+                );
+            }
         }
-        return $rawResult;
+        return array_values($rawResult);
     }
 
 

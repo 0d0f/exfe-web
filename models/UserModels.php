@@ -81,6 +81,7 @@ class UserModels extends DataModel {
     public function getUserById($id, $withCrossQuantity = false, $identityStatus = 3) {
         $hlpExfeAuth = $this->getHelperByName('ExfeAuth');
         $hlpIdentity = $this->getHelperByName('Identity');
+        $hlpDevice   = $this->getHelperByName('Device');
         $id = (int) $id;
         $rawUser = $this->getRawUserById($id);
         if ($rawUser) {
@@ -214,25 +215,7 @@ class UserModels extends DataModel {
                 }
             }
             // get all devices of user
-            $rawDevices = $this->getAll(
-                "SELECT * FROM `devices` WHERE `user_id` = {$rawUser['id']}"
-            );
-            // insert devices into user
-            foreach ($rawDevices ?: [] as $device) {
-                $user->devices[] = new Device(
-                    $device['id'],
-                    $device['name'],
-                    $device['brand'],
-                    $device['model'],
-                    $device['os_name'],
-                    $device['os_version'],
-                    $device['description'],
-                    $device['status'],
-                    $device['first_connected_at'],
-                    $device['last_connected_at'],
-                    $device['disconnected_at']
-                );
-            }
+            $user->devices = $hlpDevice->getDevicesByUserid($rawUser['id']);
             // return
             return $user;
         } else {

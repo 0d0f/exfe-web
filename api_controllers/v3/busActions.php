@@ -174,18 +174,20 @@ class BusActions extends ActionController {
         }
 
         // publish on time {
-        httpKit::request(
-            EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-          . base64_url_encode(SITE_URL . '/v3/bus/publishx'),
-            ['update' => 'once', 'ontime' => time() + 60 * 10],
-            [
-                'cross_id'    => $cross_id,
-                'exfee_id'    => $gthResult['exfee_id'],
-                'user_id'     => $user_id,
-                'identity_id' => $identity_id,
-            ],
-            false, false, 3, 3, 'json'
-        );
+        if ($cross->attribute->state !== 'published') {
+            httpKit::request(
+                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+              . base64_url_encode(SITE_URL . '/v3/bus/publishx'),
+                ['update' => 'once', 'ontime' => time() + 60 * 10],
+                [
+                    'cross_id'    => $cross_id,
+                    'exfee_id'    => $gthResult['exfee_id'],
+                    'user_id'     => $user_id,
+                    'identity_id' => $identity_id,
+                ],
+                false, false, 3, 3, 'json'
+            );
+        }
         // }
 
         $rspData = $crossHelper->getCross($cross_id, true);
@@ -1013,19 +1015,20 @@ class BusActions extends ActionController {
         $modBkg      = $this->getModelByName('Background');
         $modConv     = $this->getModelByName('Conversation');
         $modExfee    = $this->getModelByName('Exfee');
+        $modQueue    = $this->getModelByName('Queue');
         $hlpCross    = $this->getHelperByName('cross');
         // init functions
-        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5) {
+        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5, $created_at = 0) {
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(
                     SITE_URL . '/v3/bus/tutorials/' . ($step_id + 1)
                   . "?cross_id={$cross_id}"
                   . "&exfee_id={$exfee_id}"
-                  . "&identity_id={$identity_id}"
+                  . "&identity_id={$identity_id}" . ($created_at
+                  ? "&created_at={$created_at}"   : '')
                 ),
-                ['update' => 'once', 'ontime' => time()], [],
-             // ['update' => 'once', 'ontime' => $now + $delay], [],
+                ['update' => 'once', 'ontime' => time() + $delay], [],
                 false, false, 3, 3, 'txt'
             );
         };
@@ -1042,10 +1045,22 @@ class BusActions extends ActionController {
             touchCross($cross_id, $by_identity->connected_user_id);
             return $udeResult ? $objCross : null;
         };
-        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv) {
+        $post = function ($cross_id, $exfee_id, $identity, $content) use ($modConv, $hlpCross, $modQueue) {
             $objPost = new Post(0, $identity, $content, $exfee_id, 'exfee');
             $objPost->by_identity_id = $identity->id;
             $pstResult = $modConv->addPost($objPost);
+            if (($post_id = @$pstResult['post_id'])) {
+                $post  = $modConv->getPostById($post_id);
+                $cross = $hlpCross->getCross($cross_id, true);
+                $draft = isset($cross->attribute)
+                    && isset($cross->attribute['state'])
+                    && $cross->attribute['state'] === 'draft';
+                if (!$draft) {
+                    $modQueue->despatchConversation(
+                        $cross, $post, $identity->connected_user_id, $identity->id
+                    );
+                }
+            }
             touchCross($cross_id, $identity->connected_user_id);
             return $pstResult && $pstResult['post'] ? $pstResult['post'] : null;
         };
@@ -1063,6 +1078,11 @@ class BusActions extends ActionController {
         }
         if (!($objIdentity = $modIdentity->getIdentityById($identity_id))) {
             $this->jsonError(500, 'identity_error');
+            return;
+        }
+        // check identity
+        if (in_array($objIdentity->provider, ['wechat'])) {
+            $this->jsonResponse(new stdClass);
             return;
         }
         // check robots
@@ -1149,6 +1169,9 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'exfee_error');
             return;
         }
+        // get created_at
+        $created_at = @ (int) $params['created_at'];
+        // get leaved
         $leaved = true;
         foreach ($exfee->invitations as $invitation) {
             if ($invitation->identity->id === $identity_id) {
@@ -1199,22 +1222,24 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
                 break;
             case 12:
-                $delay  = 60 * 2;
+                $delay  = 233;
                 $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
                 $needPw = $passwd && !$passwd['encrypted_password'];
                 $result = $needPw
-                        ? post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
+                        ? $post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
                         : new stdClass;
+                $created_at = $now;
                 break;
             case 13:
-                if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)) {
+                if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)
+                || ($now - $created_at >= 60 * 60 * 24)) {
                     $result = $editExfee($exfee, $cross_id, new Invitation(
                         0, $botCashbox, $bot233, $bot233,
                         'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                     ), $botCashbox);
                 } else {
                     $result = new stdClass;
-                    $delay  = 60 * 2;
+                    $delay  = 233;
                     $step_id--;
                 }
                 break;
@@ -1250,7 +1275,7 @@ class BusActions extends ActionController {
         }
         if ($result) {
             $this->jsonResponse($result);
-            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay);
+            nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay, $created_at);
             return;
         }
         $this->jsonError(500, 'internal_server_error');

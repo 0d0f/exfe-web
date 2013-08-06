@@ -7,12 +7,24 @@ class QueueModels extends DataModel {
 
     public $hlpGobus = null;
 
+    public $robots   = [];
+
+
+    public function __construct() {
+        $this->robots = [
+            TUTORIAL_BOT_A,
+            TUTORIAL_BOT_B,
+            TUTORIAL_BOT_C,
+            TUTORIAL_BOT_D
+        ] + explode(',', SMITH_BOT);
+    }
+
 
     public function fireBus(
         $recipients, $merge_key, $method, $service,
         $update, $ontime, $data, $cstRequest = ''
     ) {
-        return httpKit::request(
+        return $recipients ? httpKit::request(
             EXFE_AUTH_SERVER . '/v3/splitter',
             null, [
                 'recipients' => $recipients,
@@ -23,24 +35,36 @@ class QueueModels extends DataModel {
                 'ontime'     => $ontime,
                 'data'       => $data ?: new stdClass,
             ], false, false, 3, 3, 'json', false, true, [], $cstRequest
-        );
+        ) : true;
     }
 
 
     public function makeRecipientByInvitation($invitation) {
         $hlpTime = $this->getHelperByName('Time');
-        return new Recipient(
-            $invitation->identity->id,
-            $invitation->identity->connected_user_id,
-            $invitation->identity->name,
-            $invitation->identity->auth_data ?: '',
-            $hlpTime->getDigitalTimezoneBy($invitation->identity->timezone),
-            $invitation->token ?: '',
-            $invitation->identity->locale,
-            $invitation->identity->provider,
-            $invitation->identity->external_id,
-            $invitation->identity->external_username
-        );
+        if (!in_array($invitation->identity->id, $this->robots)) {
+            $external_username = $invitation->identity->external_username;
+            $provider          = $invitation->identity->provider;
+            switch ($provider) {
+                case 'facebook':
+                    $external_username = "{$invitation->identity->external_username}@facebook.com";
+                case 'google':
+                    $provider          = 'email';
+            }
+            return new Recipient(
+                $invitation->identity->id,
+                $invitation->identity->connected_user_id,
+                $invitation->identity->name,
+                $invitation->identity->auth_data ?: '',
+                $hlpTime->getDigitalTimezoneBy($invitation->identity->timezone),
+                $invitation->token ?: '',
+                $invitation->identity->locale,
+                $provider,
+                $invitation->identity->external_id,
+                $external_username,
+                isset($invitation->fallbacks) ? $invitation->fallbacks : []
+            );
+        }
+        return null;
     }
 
 
@@ -59,7 +83,9 @@ class QueueModels extends DataModel {
         $tos  = [];
         $invTimezone = '';
         foreach ($invitations as $invitation) {
-            $tos[] = $this->makeRecipientByInvitation($invitation);
+            if (($recipient = $this->makeRecipientByInvitation($invitation))) {
+                $tos[] = $recipient;
+            }
             if ($invitation->identity->timezone && (!$invTimezone || $invitation->host)) {
                 $invTimezone = $invitation->identity->timezone;
             }
@@ -231,6 +257,7 @@ class QueueModels extends DataModel {
                     $identity->connected_user_id = $invitation->identity->connected_user_id;
                     $tmpInvitation = deepClone($invitation);
                     $tmpInvitation->identity = $identity;
+                    $tmpInvitation->identity->timezone = $invitation->identity->timezone;
                     $gotInvitation[] = $tmpInvitation;
                 }
             }
@@ -245,6 +272,14 @@ class QueueModels extends DataModel {
                 foreach ($mobIdentities as $mI => $mItem) {
                     $tmpInvitation = deepClone($invitation);
                     $tmpInvitation->identity = $mItem;
+                    $tmpInvitation->identity->timezone = $invitation->identity->timezone;
+                    if (in_array($event,           ['cross/invitation', 'cross/remind'])
+                     && in_array($mItem->provider, ['iOS', 'Android'])) {
+                        $tmpInvitation->fallbacks = [
+                            "{$mItem->external_username}@{$mItem->provider}",
+                            "{$invitation->identity->external_username}@{$invitation->identity->provider}"
+                        ];
+                    }
                     $gotInvitation[] = $tmpInvitation;
                 }
                 // set conversation counter

@@ -142,11 +142,11 @@ class IdentityModels extends DataModel {
 
 
     public function getTwitterAvatarBySmallAvatar($strUrl) {
-        $strReg = '/normal(\.[a-z]{1,5})$/i';
+        $strReg = '/_normal(\.[a-z]{1,5})$/i';
         return [
             'original' => preg_replace($strReg, '$1',                 $strUrl),
             '320_320'  => preg_replace($strReg, '$1',                 $strUrl),
-            '80_80'    => preg_replace($strReg, 'reasonably_small$1', $strUrl),
+            '80_80'    => preg_replace($strReg, '_reasonably_small$1', $strUrl),
         ];
     }
 
@@ -331,7 +331,7 @@ class IdentityModels extends DataModel {
         $user_id           = (int) $user_id;
         $provider          = @dbescape(trim($identityDetail['provider']));
         $external_id       = @dbescape(trim($identityDetail['external_id']));
-        $external_username = @dbescape(strtolower(trim($identityDetail['external_username'])));
+        $external_username = @dbescape(trim($identityDetail['external_username']));
         $name              = @dbescape(trim($identityDetail['name']));
         $nickname          = @dbescape(trim($identityDetail['nickname']));
         $bio               = @dbescape(trim($identityDetail['bio']));
@@ -355,9 +355,11 @@ class IdentityModels extends DataModel {
         }
         switch ($provider) {
             case 'flickr':
+            case 'wechat':
                 break;
             default:
-                $external_id = strtolower($external_id);
+                $external_id       = strtolower($external_id);
+                $external_username = strtolower($external_username);
         }
         // basic check
         switch ($provider) {
