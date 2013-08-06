@@ -41,20 +41,30 @@ class QueueModels extends DataModel {
 
     public function makeRecipientByInvitation($invitation) {
         $hlpTime = $this->getHelperByName('Time');
-        return in_array($invitation->identity->id, $this->robots)
-             ? null : new Recipient(
-            $invitation->identity->id,
-            $invitation->identity->connected_user_id,
-            $invitation->identity->name,
-            $invitation->identity->auth_data ?: '',
-            $hlpTime->getDigitalTimezoneBy($invitation->identity->timezone),
-            $invitation->token ?: '',
-            $invitation->identity->locale,
-            $invitation->identity->provider,
-            $invitation->identity->external_id,
-            $invitation->identity->external_username,
-            isset($invitation->fallbacks) ? $invitation->fallbacks : []
-        );
+        if (!in_array($invitation->identity->id, $this->robots)) {
+            $external_username = $invitation->identity->external_username;
+            $provider          = $invitation->identity->provider;
+            switch ($provider) {
+                case 'facebook':
+                    $external_username = "{$invitation->identity->external_username}@facebook.com";
+                case 'google':
+                    $provider          = 'email';
+            }
+            return new Recipient(
+                $invitation->identity->id,
+                $invitation->identity->connected_user_id,
+                $invitation->identity->name,
+                $invitation->identity->auth_data ?: '',
+                $hlpTime->getDigitalTimezoneBy($invitation->identity->timezone),
+                $invitation->token ?: '',
+                $invitation->identity->locale,
+                $provider,
+                $invitation->identity->external_id,
+                $external_username,
+                isset($invitation->fallbacks) ? $invitation->fallbacks : []
+            );
+        }
+        return null;
     }
 
 
