@@ -127,7 +127,7 @@ class ExfeeActions extends ActionController {
         // check notification_identity
         $raw_identity_id = @$_POST['identity_id'];
         if (!$raw_identity_id) {
-            apiError(400, 'no identity_id', '');
+            apiError(400, 'no_identity_id', '');
         }
         $strReg            = '/(.*)@([^\@]*)/';
         $external_username = preg_replace($strReg, '$1', $raw_identity_id);
@@ -136,7 +136,7 @@ class ExfeeActions extends ActionController {
             $provider, $external_username, true
         );
         if (!$identity_id) {
-            apiError(400, 'error identity_id', '');
+            apiError(400, 'error_identity_id', '');
         }
         // do it
         $udResult = $modExfee->removeNotificationIdentity($exfee_id, $identity_id, $by_identity_id);
