@@ -37,13 +37,13 @@ class wechatcli extends DataModel {
             "button" => [
                 [
                     "type" => "click",
-                    "name" => "活点地图",
-                    "key"  => "V1001_TODAY_MUSIC"
+                    "name" => "我的地图",
+                    "key"  => "LIST_MAPS"
                 ],
                 [
                     "type" => "click",
                     "name" => "创建地图",
-                    "key"  => "V1001_TODAY_SINGER"
+                    "key"  => "CREATE_MAP"
                 ],
                 [
                     "name" => "帮助",
@@ -51,12 +51,12 @@ class wechatcli extends DataModel {
                         [
                             "type" => "click",
                             "name" => "菜单一",
-                            "key"  => "V1001_HELLO_WORLD"
+                            "key"  => "HELP_01"
                         ],
                         [
                             "type" => "click",
                             "name" => "菜单二",
-                            "key"  => "V1001_GOOD"
+                            "key"  => "HELP_02"
                         ]
                     ]
                 ]
@@ -65,6 +65,16 @@ class wechatcli extends DataModel {
         $rawMenu = $this->hlpWechat->createMenu($menu);
         if ($rawMenu) {
             print_r($rawMenu);
+        } else {
+            echo "Failed!\r\n";
+        }
+    }
+
+
+    public function updateMenu() {
+        $rawResult = $this->hlpWechat->deleteMenu();
+        if ($rawResult) {
+            $this->createMenu();
         } else {
             echo "Failed!\r\n";
         }
@@ -106,11 +116,14 @@ switch (strtolower($argv[0])) {
     case 'createmenu':
         $objWechatcli->createMenu();
         break;
+    case 'updatemenu':
+        $objWechatcli->updateMenu();
+        break;
     case 'deletemenu':
         $objWechatcli->deleteMenu();
         break;
     default:
         echo "WeChatCli: invalid option -- '{$argv[0]}'\r\n";
-        echo "try: getmenu, createmenu, deletemenu.\r\n";
+        echo "try: getmenu, createmenu, updatemenu, deletemenu.\r\n";
         exit(1);
 }
