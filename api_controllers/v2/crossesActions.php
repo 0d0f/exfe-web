@@ -562,7 +562,7 @@ class CrossesActions extends ActionController {
                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                 )];
                 $udeResult = $modExfee->updateExfee(
-                    $exfee, $byIdentity->id, $byIdentity->connected_user_id
+                    $exfee, $byIdentity->id, $byIdentity->connected_user_id, false, true
                 );
                 if ($udeResult) {
                     $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(
