@@ -126,8 +126,11 @@ class FrontController {
         if ($arrPath[$last] === '') {
             unset($arrPath[$last]);
         }
-        if (!$first
-         || preg_match('/^!\d+$/', $first)) { // @todo: ignore crosses urls
+        if (!$first) {
+            $this->rockWeb('home', $arrPath, $route);
+        } else if (preg_match('/^!\d+$/', $first)) { // @todo: ignore crosses urls
+            array_unshift($arrPath, $first);
+            array_unshift($arrPath, 'index');
             $this->rockWeb('home', $arrPath, $route);
         } else if (preg_match('/^v\d+$/', $first)) {
             $controller = array_shift($arrPath);
