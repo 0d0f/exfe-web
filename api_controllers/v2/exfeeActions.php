@@ -93,28 +93,37 @@ class ExfeeActions extends ActionController {
 
     public function doRemoveNotificationIdentity() {
         // get libs
-        $params   = $this->params;
-        $modExfee = $this->getModelByName('exfee');
-        $modCross = $this->getModelByName('Cross');
-        $hlpCheck = $this->getHelperByName('check');
+        $params      = $this->params;
+        $modIdentity = $this->getModelByName('identity');
+        $modExfee    = $this->getModelByName('exfee');
+        $hlpCheck    = $this->getHelperByName('check');
         // basic check
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
-        if (!($by_identity_id = intval(@$_POST['by_identity_id'] ?: @$_GET['by_identity_id']))) {
-            apiError(400, 'no_by_identity_id', 'by_identity_id must be provided');
-        }
         // get cross id
         $cross_id = $modExfee->getCrossIdByExfeeId($exfee_id);
         // check rights
-        $result   = $hlpCheck->isAPIAllow('cross_edit', $params['token'], ['cross_id' => $cross_id, 'by_identity_id' => $by_identity_id]);
+        $result   = $hlpCheck->isAPIAllow('cross', $params['token'], ['cross_id' => $cross_id]);
         if (!$result['check']) {
             if ($result['uid']) {
                 apiError(403, 'not_authorized', 'You are not a member of this exfee.');
             }
             apiError(401, 'invalid_auth', '');
         }
-        $by_identity_id = (int) $result['by_identity_id'];
+        // getting current invitation
+        $exfee = $modExfee->getExfeeById($exfee_id);
+        $cur_invitation = null;
+        foreach ($exfee->invitations as $invitation) {
+            if ($invitation->identity->connected_user_id === $result['uid']) {
+                $cur_invitation = $invitation;
+                break;
+            }
+        }
+        if (!$cur_invitation) {
+            apiError(403, 'not_authorized', 'You are not authorized to edit this exfee.');
+        }
+        $by_identity_id  = (int) $cur_invitation->identity->id;
         // check notification_identity
         $raw_identity_id = @$_POST['identity_id'];
         if (!$raw_identity_id) {
