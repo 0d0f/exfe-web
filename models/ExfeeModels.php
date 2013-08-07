@@ -450,7 +450,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateRsvpByExfeeId($exfee_id, $rsvp) {
+    public function updateRsvpByExfeeId($exfee_id, $rsvp, $notificationOnly = false) {
         // base check
         $identity_id    = (int)$rsvp->identity_id;
         $rsvp_status    = $this->getIndexOfRsvpStatus($rsvp->response);
@@ -464,7 +464,8 @@ class ExfeeModels extends DataModel {
                  `exfee_updated_at` = NOW(),
                  `by_identity_id`   = {$by_identity_id}
                  WHERE `exfee_id`   = {$exfee_id}
-                 AND `identity_id`  = {$identity_id}"
+                 AND `identity_id`  = {$identity_id}" . ($notificationOnly
+             ? " AND `state`        = 5" : '')
             ))) {
                 return array(
                     'identity_id'    => $identity_id,
@@ -475,6 +476,15 @@ class ExfeeModels extends DataModel {
             }
         }
         return false;
+    }
+
+
+    public function removeNotificationIdentity($exfee_id, $identity_id, $by_identity_id) {
+        $rsvp = new stdClass;
+        $rsvp->identity_id    = $identity_id;
+        $rsvp->by_identity_id = $by_identity_id;
+        $rsvp->response       = 'REMOVED';
+        return !!$this->updateRsvpByExfeeId($exfee_id, $rsvp, true);
     }
 
 
