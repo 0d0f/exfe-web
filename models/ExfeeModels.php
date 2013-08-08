@@ -484,8 +484,9 @@ class ExfeeModels extends DataModel {
         $rsvp->identity_id    = $identity_id;
         $rsvp->by_identity_id = $by_identity_id;
         $rsvp->response       = 'REMOVED';
+        $result = !!$this->updateRsvpByExfeeId($exfee_id, $rsvp, true);
         $this->updateExfeeTime($exfee_id);
-        return !!$this->updateRsvpByExfeeId($exfee_id, $rsvp, true);
+        return $result;
     }
 
 
