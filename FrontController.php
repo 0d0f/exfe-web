@@ -104,7 +104,7 @@ class FrontController {
             header('HTTP/1.1 204 No Content');
             return;
         }
-        if ($_SERVER['SERVER_NAME'] !== '0d0f.redirectme.net' // wechat debug
+        if (($_SERVER['SERVER_NAME'] !== '0d0f.redirectme.net' && $_SERVER['SERVER_NAME'] !== 'exfe.com') // wechat debug
          && !preg_match('/^.*' . preg_replace(
             '/^([^\/]*\/\/)(.*)$/',  '$2',  SITE_URL
         ) . '$/i', $_SERVER['SERVER_NAME'])) {
