@@ -119,7 +119,7 @@ class wechatActions extends ActionController {
                                             }
                                             if ($cross_ids) {
                                                 $rawMaps = httpKit::request(
-                                                    EXFE_AUTH_SERVER . '/v3/routex/_inner/crosses',
+                                                    EXFE_AUTH_SERVER . '/v3/routex/_inner/search/crosses',
                                                     null, array_keys($cross_ids),
                                                     false, false, 3, 3, 'json', true
                                                 );
