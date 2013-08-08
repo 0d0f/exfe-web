@@ -28,10 +28,10 @@ class CrossesActions extends ActionController {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
+            touchCross($params['id'], $result['uid']);
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                 apiError(304, 'Cross Not Modified.');
             }
-            touchCross($params['id'], $result['uid']);
             $cross->touched_at = date('Y-m-d H:i:s') . ' +0000';
             apiResponse(['cross' => $cross]);
         }
