@@ -45,6 +45,11 @@ class OAuthActions extends ActionController {
             case 'google':
                 $urlOauth = $modOauth->googleRedirect($workflow);
                 break;
+            case 'wechat':
+                $urlOauth = $modOauth->wechatRedirect($workflow);
+                // @todo
+                header("Location: {$urlOauth}");
+                break;
             default:
                 apiError(400, 'no_provider', '');
         }
@@ -542,6 +547,34 @@ class OAuthActions extends ActionController {
           ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
           : '/'
         ));
+    }
+
+
+    public function doWechatCallBack() {
+        $modOauth = $this->getModelByName('OAuth');
+        $modOauth->resetSession();
+        if (($token = $modOauth->getWechatAccessToken($_REQUEST['code']))) {
+            $rawIdentity = $modOauth->getWechatProfile($token['openid'], $token);
+            if ($rawIdentity) {
+                $modWechat = $this->getModelByName('Wechat');
+                $rawIdentity = $modWechat->makeIdentityBy($rawIdentity);
+                $result = $modOauth->handleCallback($rawIdentity, $oauthIfo);
+                if (!$result) {
+                    $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'wechat']);
+                    header('location: /');
+                    return;
+                }
+                $modOauth->addtoSession([
+                    'oauth_signin'       => $result['oauth_signin'],
+                    'identity'           => (array) $result['identity'],
+                    'provider'           => $result['identity']->provider,
+                    'identity_status'    => $result['identity_status'],
+                ]);
+                header('location: /');
+                return;
+            }
+        }
+        header('location: /');
     }
 
 
