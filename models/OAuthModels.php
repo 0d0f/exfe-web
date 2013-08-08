@@ -740,6 +740,71 @@ class OAuthModels extends DataModel {
         return null;
     }
 
+    // }
+
+
+    // wechat {
+
+    public function wechatRedirect($workflow) {
+        return 'http://open.weixin.qq.com/connect/oauth2/authorize'
+             . '?appid='        . WECHAT_OFFICIAL_ACCOUNT_APPID
+             . '&redirect_uri=' . 'http://exfe.com/oauth/wechatcallback'
+          // . '&redirect_uri=' . WECHAT_REDIRECT_URI
+             . '&response_type=code'
+             . '&scope=snsapi_userinfo'
+             . '&state=123'
+             . '#wechat_redirect';
+    }
+
+
+    public function getWechatAccessToken($oauthCode) {
+        if (!$oauthCode) {
+            return null;
+        }
+        $objCurl = curl_init(
+            'https://api.weixin.qq.com/sns/oauth2/access_token'
+          . '?appid='  . WECHAT_OFFICIAL_ACCOUNT_APPID
+          . '&secret=' . WECHAT_OFFICIAL_ACCOUNT_SECRET
+          . '&code='   . $oauthCode
+          . '&grant_type=authorization_code'
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($data = (array) json_decode($data)) && isset($data['access_token'])) {
+            return $data;
+        }
+        return null;
+    }
+
+
+    public function refreshWechatAccessToken() {
+        //https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+    }
+
+
+    public function getWechatProfile($openid, $token) {
+        if ($token) {
+            $objCurl = curl_init(
+                'https://api.weixin.qq.com/sns/userinfo'
+              . '?access_token=' . $token['access_token']
+              . '&openid='       . $openid
+            );
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            if ($data && ($data = (array) json_decode($data)) && isset($data['openid'])) {
+                return $data;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    // }
+
 
     public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
         // get models

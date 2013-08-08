@@ -29,14 +29,19 @@ class WechatModels extends DataModel {
 
     public function getIdentityBy($external_id) {
         if ($external_id) {
-             $rawIdentity = $this->libwechat->getUserInfo($external_id);
-             return new Identity(
-                0, $rawIdentity['nickname'], '', '', 'wechat', 0,
-                $rawIdentity['openid'], $rawIdentity['openid'], null, '', '', 0,
-                false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
-            );
+            $rawIdentity = $this->libwechat->getUserInfo($external_id);
+            return $this->makeIdentityBy($rawIdentity);
         }
         return null;
+    }
+
+
+    public function makeIdentityBy($rawIdentity) {
+        return new Identity(
+            0, $rawIdentity['nickname'], '', '', 'wechat', 0,
+            $rawIdentity['openid'], $rawIdentity['openid'], null, '', '', 0,
+            false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
+        );
     }
 
 
