@@ -82,17 +82,18 @@ class wechatActions extends ActionController {
                             $modIdentity = $this->getModelByName('Identity');
                             $crossHelper = $this->getHelperByName('cross');
                             $exfeeHelper = $this->getHelperByName('exfee');
+                            $rtnMessage  = '';
+                            $rtnType     = 'text';
                             $now   = time();
                             $idBot = explode(',', SMITH_BOT)[0];
                             $bot   = $modIdentity->getIdentityById($idBot);
                             switch ($event) {
                                 case 'subscribe':
-                                    $strMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n Welcome {$identity->name} 欢迎欢迎，测试测试，中文中文。";
+                                    $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n Welcome {$identity->name}！";
                                     break;
                                 case 'click':
                                     switch ($objMsg->EventKey) {
                                         case 'LIST_MAPS':
-
                                             $exfee_id_list = $exfeeHelper->getExfeeIdByUserid($user_id);
                                             $cross_list    = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, false, $user_id);
                                             $cross_ids     = [];
@@ -114,6 +115,9 @@ class wechatActions extends ActionController {
                                                     $cross_ids[$cross->id] = [
                                                         'title'    => $cross->title,
                                                         'exfee_id' => $cross->exfee->id,
+                                                        'desc'     => $cross->description,
+                                                     // 'image'    => SITE_URL . '/static/img/xbg/' . (@$cross->widget[0]->image ?: 'default.jpg'),
+                                                        'image'    => 'https://exfe.com/static/img/xbg/' . (@$cross->widget[0]->image ?: 'default.jpg'),
                                                     ];
                                                 }
                                             }
@@ -134,12 +138,15 @@ class wechatActions extends ActionController {
                                                             'id'       => $rItem['cross_id'],
                                                             'title'    => $cross_ids[$rItem['cross_id']]['title'],
                                                             'exfee_id' => $cross_ids[$rItem['cross_id']]['exfee_id'],
+                                                            'image'    => $cross_ids[$rItem['cross_id']]['image'],
+                                                            'desc'     => $cross_ids[$rItem['cross_id']]['desc'],
                                                         ];
                                                     }
                                                 }
                                             }
                                             if ($maps) {
-                                                $strMessage = '';
+                                                $rtnMessage = [];
+                                                $rtnType    = 'news';
                                                 foreach ($maps as $i => $map) {
                                                     $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                                         $map['id'], $idBot
@@ -164,10 +171,15 @@ class wechatActions extends ActionController {
                                                         // 500
                                                         return;
                                                     }
-                                                    $strMessage .= '<a href="' . SITE_URL . "/#!token={$invitation['token']}/routex/\">{$map['title']}</a> \r\n";
+                                                    $rtnMessage[] = [
+                                                        'Title'       => $map['title'],
+                                                        'Description' => $map['desc'],
+                                                        'PicUrl'      => $map['image'],
+                                                        'Url'         => SITE_URL . "/#!token={$invitation['token']}/routex/",
+                                                    ];
                                                 }
                                             } else {
-                                                $strMessage = '您目前没有活点地图，立刻创建一个？';
+                                                $rtnMessage = '您目前没有活点地图，立刻创建一个？';
                                             }
                                             break;
                                         case 'CREATE_MAP':
@@ -216,7 +228,7 @@ class wechatActions extends ActionController {
                                                 return;
                                             }
                                             touchCross($cross_id, $identity->connected_user_id);
-                                            $strMessage = '<a href="' . SITE_URL . "/#!token={$invitation['token']}/routex/\">{$objCross->title}</a> \r\n";
+                                            $rtnMessage = '<a href="' . SITE_URL . "/#!token={$invitation['token']}/routex/\">{$objCross->title}</a> \r\n";
                                             break;
                                         case 'HELP_01':
                                             break;
@@ -228,8 +240,10 @@ class wechatActions extends ActionController {
                                     }
                             }
                             $strReturn = $modWechat->packMessage(
-                                $identity->external_username, $strMessage
+                                $identity->external_username,
+                                $rtnMessage, $rtnType, 1
                             );
+                            // @todo @debug by @Leaskh
                             error_log($strReturn);
                             if (!$strReturn) {
                                 // 500
