@@ -91,23 +91,17 @@ class wechatcli extends DataModel {
     }
 
 
-    public function run() {
-        // $redis = new Redis();
-        // $redis->connect(REDIS_SERVER_ADDRESS, REDIS_SERVER_PORT);
-        // $keys = $redis->keys('u:*');
-        // // loop
-        // foreach ($keys ?: [] as $key) {
-        //     echo "Delete Auto Complete Index for id {$key} .\r\n";
-        //     $redis->del($key);
-        // }
-        // //
-        // echo "\r\nDone.\r\n";
+    public function test() {
+        // print_r($this->hlpWechat->getIdentityBy('oVgq_jt1yV6Ser5fS7_m2MCObiVg'));
     }
 
 }
 
 $objWechatcli = new wechatcli();
 array_shift($argv);
+
+// $objWechatcli->test();
+// exit();
 
 switch (strtolower($argv[0])) {
     case 'getmenu':

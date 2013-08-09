@@ -24,4 +24,9 @@ class WechatHelper extends ActionController {
         return $this->modWechat->deleteMenu();
     }
 
+
+    public function getIdentityBy($external_id) {
+        return $this->modWechat->getIdentityBy($external_id);
+    }
+
 }
