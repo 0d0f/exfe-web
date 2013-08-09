@@ -96,35 +96,22 @@ class wechatActions extends ActionController {
                                         case 'LIST_MAPS':
                                             $exfee_id_list = $exfeeHelper->getExfeeIdByUserid($user_id);
                                             $cross_list    = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, false, $user_id);
-                                            $cross_ids     = [];
-                                            $maps          = [];
+                                            $crosses       = [];
                                             foreach ($cross_list as $i => $cross) {
-                                                $skip = false;
-                                                switch ($cross->attribute['state']) {
-                                                    case 'deleted':
-                                                        unset($cross_list[$i]);
-                                                        $skip = true;
-                                                        break;
-                                                    case 'draft':
-                                                        if (!in_array($uid, $cross->exfee->hosts)) {
-                                                            unset($cross_list[$i]);
-                                                            $skip = true;
-                                                        }
+                                                if ($cross->attribute['state'] === 'deleted'
+                                                || ($cross->attribute['state'] === 'draft'
+                                                 && !in_array($user_id, $cross->exfee->hosts))) {
+                                                } else {
+                                                    $crosses[$cross->id] = $cross;
                                                 }
-                                                if (!$skip) {
-                                                    $cross_ids[$cross->id] = [
-                                                        'title'    => $cross->title,
-                                                        'exfee_id' => $cross->exfee->id,
-                                                        'desc'     => $cross->description,
-                                                     // 'image'    => SITE_URL . '/static/img/xbg/' . (@$cross->widget[0]->image ?: 'default.jpg'),
-                                                        'image'    => 'https://exfe.com/static/img/xbg/' . (@$cross->widget[0]->image ?: 'default.jpg'),
-                                                    ];
-                                                }
+                                                unset($cross_list[$i]);
                                             }
-                                            if ($cross_ids) {
+                                            $cross_list = null;
+                                            $maps       = [];
+                                            if ($crosses) {
                                                 $rawMaps = httpKit::request(
                                                     EXFE_AUTH_SERVER . '/v3/routex/_inner/search/crosses',
-                                                    null, array_keys($cross_ids),
+                                                    null, array_keys($crosses),
                                                     false, false, 3, 3, 'json', true
                                                 );
                                                 $rawMaps = (
@@ -133,27 +120,21 @@ class wechatActions extends ActionController {
                                                  && $rawMaps['json']
                                                 ) ? $rawMaps['json'] : [];
                                                 foreach ($rawMaps as $rI => $rItem) {
-                                                    if ($rItem['enable'] && sizeof($maps) < 30) {
-                                                        $maps[] = [
-                                                            'id'       => $rItem['cross_id'],
-                                                            'title'    => $cross_ids[$rItem['cross_id']]['title'],
-                                                            'exfee_id' => $cross_ids[$rItem['cross_id']]['exfee_id'],
-                                                            'image'    => $cross_ids[$rItem['cross_id']]['image'],
-                                                            'desc'     => $cross_ids[$rItem['cross_id']]['desc'],
-                                                        ];
+                                                    if ($rItem['enable'] && sizeof($maps) < 10) {
+                                                        $maps[] = $rItem['cross_id'];
                                                     }
                                                 }
                                             }
                                             if ($maps) {
                                                 $rtnMessage = [];
                                                 $rtnType    = 'news';
-                                                foreach ($maps as $i => $map) {
+                                                foreach ($maps as $map) {
                                                     $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                                        $map['id'], $idBot
+                                                        $map, $idBot
                                                     );
                                                     if (!$invitation) {
                                                         $exfee = new Exfee;
-                                                        $exfee->id = $map['exfee_id'];
+                                                        $exfee->id = $crosses[$map]->exfee->id;
                                                         $exfee->invitations = [new Invitation(
                                                             0, $bot, $identity, $identity,
                                                             'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
@@ -163,7 +144,7 @@ class wechatActions extends ActionController {
                                                         );
                                                         if ($udeResult) {
                                                             $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                                                $map['id'], $idBot
+                                                                $map, $idBot
                                                             );
                                                         }
                                                     }
@@ -172,10 +153,10 @@ class wechatActions extends ActionController {
                                                         return;
                                                     }
                                                     $rtnMessage[] = [
-                                                        'Title'       => $map['title'],
-                                                        'Description' => $map['desc'],
-                                                        'PicUrl'      => $map['image'],
-                                                        'Url'         => SITE_URL . "/#!token={$invitation['token']}/routex/",
+                                                        'Title'       => $crosses[$map]->title,
+                                                        'Description' => $crosses[$map]->description,
+                                                        'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$crosses[$map]->widget[0]->image ?: 'default.jpg'),
+                                                        'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}",
                                                     ];
                                                 }
                                             } else {
@@ -243,7 +224,7 @@ class wechatActions extends ActionController {
                                                 'Title'       => $objCross->title,
                                                 'Description' => $objCross->description,
                                                 'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$objCross->widget[0]->image ?: 'default.jpg'),
-                                                'Url'         => SITE_URL . "/!{$objCross->id}/routex?xcode={$invitation['token']}",
+                                                'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}",
                                             ]];
                                             $rtnType    = 'news';
                                             break;
