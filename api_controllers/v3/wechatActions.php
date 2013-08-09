@@ -159,7 +159,7 @@ class wechatActions extends ActionController {
                                                             'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                                                         )];
                                                         $udeResult = $exfeeHelper->updateExfee(
-                                                            $exfee, $identity->id, $identity->connected_user_id, false, true
+                                                            $exfee, $identity->id, $user_id, false, true
                                                         );
                                                         if ($udeResult) {
                                                             $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
@@ -183,6 +183,7 @@ class wechatActions extends ActionController {
                                             }
                                             break;
                                         case 'CREATE_MAP':
+                                            // gather
                                             $hlpBkg   = $this->getHelperByName('Background');
                                             $objCross = new stdClass;
                                             $objCross->title       = "·X· {$identity->name}";
@@ -212,14 +213,23 @@ class wechatActions extends ActionController {
                                                 )
                                             ];
                                             $gtResult = $crossHelper->gatherCross(
-                                                $objCross, $identity->id,
-                                                $identity->connected_user_id > 0 ? $identity->connected_user_id : 0
+                                                $objCross, $identity->id, $user_id
                                             );
                                             $cross_id = @ (int) $gtResult['cross_id'];
                                             if ($cross_id <= 0) {
                                                 // 500
                                                 return;
                                             }
+                                            // enable routex
+                                            $rawMaps = httpKit::request(
+                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses",
+                                                null,  [[
+                                                    'cross_id'         => $cross_id,
+                                                    'save_breadcrumbs' => true,
+                                                    'after_in_seconds' => 7200,
+                                                ]], false, false, 3, 3, 'json'
+                                            );
+                                            // get invitation
                                             $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                                 $cross_id, $idBot
                                             );
@@ -227,8 +237,15 @@ class wechatActions extends ActionController {
                                                 // 500
                                                 return;
                                             }
+                                            // returns
                                             touchCross($cross_id, $identity->connected_user_id);
-                                            $rtnMessage = '<a href="' . SITE_URL . "/#!token={$invitation['token']}/routex/\">{$objCross->title}</a> \r\n";
+                                            $rtnMessage = [[
+                                                'Title'       => $objCross->title,
+                                                'Description' => $objCross->description,
+                                                'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$objCross->widget[0]->image ?: 'default.jpg'),
+                                                'Url'         => SITE_URL . "/!{$objCross->id}/routex?xcode={$invitation['token']}",
+                                            ]];
+                                            $rtnType    = 'news';
                                             break;
                                         case 'HELP_01':
                                             break;
@@ -241,7 +258,7 @@ class wechatActions extends ActionController {
                             }
                             $strReturn = $modWechat->packMessage(
                                 $identity->external_username,
-                                $rtnMessage, $rtnType, 1
+                                $rtnMessage, $rtnType
                             );
                             // @todo @debug by @Leaskh
                             error_log($strReturn);
