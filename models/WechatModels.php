@@ -45,12 +45,12 @@ class WechatModels extends DataModel {
     }
 
 
-    public function packMessage($toUserName, $content, $msgType = 'text') {
+    public function packMessage(
+        $toUserName, $content, $msgType = 'text', $FuncFlag = 0
+    ) {
         return $this->libwechat->packMessage(
-            $toUserName,
-            WECHAT_OFFICIAL_ACCOUNT_ID,
-            $content,
-            $msgType
+            $toUserName, WECHAT_OFFICIAL_ACCOUNT_ID,
+            $content, $msgType, $FuncFlag
         );
     }
 
