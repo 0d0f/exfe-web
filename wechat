@@ -38,12 +38,12 @@ class wechatcli extends DataModel {
                 [
                     "type" => "click",
                     "name" => "我的地图",
-                    "key"  => "LIST_MAPS"
+                    "key"  => "LIST_MAPS",
                 ],
                 [
                     "type" => "click",
                     "name" => "创建地图",
-                    "key"  => "CREATE_MAP"
+                    "key"  => "CREATE_MAP",
                 ],
                 [
                     "name" => "帮助",
@@ -51,12 +51,12 @@ class wechatcli extends DataModel {
                         [
                             "type" => "click",
                             "name" => "菜单一",
-                            "key"  => "HELP_01"
+                            "key"  => "HELP_01",
                         ],
                         [
                             "type" => "click",
                             "name" => "菜单二",
-                            "key"  => "HELP_02"
+                            "key"  => "HELP_02",
                         ]
                     ]
                 ]
