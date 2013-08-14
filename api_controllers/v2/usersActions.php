@@ -1272,7 +1272,7 @@ class UsersActions extends ActionController {
             $user['name'] = formatName($_POST['name']);
         }
         if (isset($_POST['bio'])) {
-            $user['bio']  = formatDescription($_POST['name']);
+            $user['bio']  = formatDescription($_POST['bio']);
         }
         if ($user && !$modUser->updateUserById($user_id, $user)) {
             apiError(500, 'update_failed');
