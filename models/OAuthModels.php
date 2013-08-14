@@ -746,14 +746,24 @@ class OAuthModels extends DataModel {
 
     // wechat {
 
-    public function wechatRedirect($workflow) {
+    public function wechatRedirect($workflow, $step = 2) {
+        switch ($step) {
+            case 1:
+                $scope = 'snsapi_base';
+                break;
+            case 2:
+                $scope = 'snsapi_userinfo';
+                break;
+            default:
+                return null;
+        }
         return 'http://open.weixin.qq.com/connect/oauth2/authorize'
              . '?appid='        . WECHAT_OFFICIAL_ACCOUNT_APPID
              . '&redirect_uri=' . 'http://exfe.com/oauth/wechatcallback'
           // . '&redirect_uri=' . WECHAT_REDIRECT_URI
              . '&response_type=code'
-             . '&scope=snsapi_userinfo'
-             . '&state=123'
+             . "&scope={$scope}"
+             . "&state={$step}"
              . '#wechat_redirect';
     }
 
@@ -884,6 +894,7 @@ class OAuthModels extends DataModel {
                 ];
                 break;
             case 'google':
+            case 'wechat':
                 $oAuthToken = $rawOAuthToken;
         }
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);

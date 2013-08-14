@@ -47,7 +47,6 @@ class OAuthActions extends ActionController {
                 break;
             case 'wechat':
                 $urlOauth = $modOauth->wechatRedirect($workflow);
-                // @todo
                 header("Location: {$urlOauth}");
                 break;
             default:
@@ -558,9 +557,12 @@ class OAuthActions extends ActionController {
             if ($rawIdentity) {
                 $modWechat = $this->getModelByName('Wechat');
                 $rawIdentity = $modWechat->makeIdentityBy($rawIdentity);
-                $result = $modOauth->handleCallback($rawIdentity, $oauthIfo);
+                $result = $modOauth->handleCallback($rawIdentity, [], $token);
                 if (!$result) {
-                    $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'wechat']);
+                    $modOauth->addtoSession([
+                        'oauth_signin' => false,
+                        'provider'     => 'wechat',
+                    ]);
                     header('location: /');
                     return;
                 }
