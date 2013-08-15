@@ -248,6 +248,7 @@ class wechatActions extends ActionController {
                                             'lat' => (float) $objMsg->Latitude,
                                         ]], false, false, 3, 3, 'json'
                                     );
+                                    return;
                             }
                             $strReturn = $modWechat->packMessage(
                                 $identity->external_username,
