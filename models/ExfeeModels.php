@@ -202,6 +202,7 @@ class ExfeeModels extends DataModel {
 
 
     public function getRawInvitationByToken($token) {
+        $token = dbescape($token);
         if ($token) {
             $rawInvitation = $this->getRow(
                 "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
@@ -475,6 +476,17 @@ class ExfeeModels extends DataModel {
             }
         }
         return false;
+    }
+
+
+    public function removeNotificationIdentity($exfee_id, $identity_id, $by_identity_id) {
+        $rsvp = new stdClass;
+        $rsvp->identity_id    = $identity_id;
+        $rsvp->by_identity_id = $by_identity_id;
+        $rsvp->response       = 'REMOVED';
+        $result = !!$this->updateRsvpByExfeeId($exfee_id, $rsvp);
+        $this->updateExfeeTime($exfee_id);
+        return $result;
     }
 
 

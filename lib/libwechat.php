@@ -40,27 +40,96 @@ class libwechat {
 
 
     public function packMessage(
-        $toUserName, $fromUserName, $content, $msgType = 'text'
+        $toUserName, $fromUserName, $content, $msgType = 'text', $FuncFlag = 0
     ) {
         if ($toUserName && $fromUserName && $content) {
-            $textTpl = "<xml>
-                        <ToUserName><![CDATA[%s]]></ToUserName>
-                        <FromUserName><![CDATA[%s]]></FromUserName>
-                        <CreateTime>%s</CreateTime>
-                        <MsgType><![CDATA[%s]]></MsgType>
-                        <Content><![CDATA[%s]]></Content>
-                        </xml>";
-            return sprintf(
-                $textTpl, $toUserName, $fromUserName, time(), $msgType,
-                self::xmlSafeStr($content)
-            );
+            $msg = [
+                'ToUserName'   => $toUserName,
+                'FromUserName' => $fromUserName,
+                'MsgType'      => $msgType,
+                'CreateTime'   => time(),
+                'FuncFlag'     => $FuncFlag,
+            ];
+            switch ($msgType) {
+                case 'text':
+                    $msg['Content']      = $content;
+                    break;
+                case 'music':
+                    // ['Title' => '', 'Description' => '', 'MusicUrl' => '', 'HQMusicUrl' => '']
+                    $msg['Music']        = $content;
+                    break;
+                case 'news':
+                    // [['Title' => '', 'Description' => '', 'PicUrl' => '', 'Url' => '']]
+                    $msg['ArticleCount'] = sizeof($content);
+                    $msg['Articles']     = $content;
+                    break;
+                default:
+                    return null;
+            }
+            return self::xml_encode($msg);
         }
         return null;
     }
 
 
     public static function xmlSafeStr($str) {
-        return preg_replace("/[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]/", '', $str);
+        return '<![CDATA[' . preg_replace(
+            "/[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]/", '', $str
+        ) . ']]>';
+    }
+
+
+    /**
+     * 数据XML编码
+     * @param mixed $data 数据
+     * @return string
+     */
+    public static function data_to_xml($data) {
+        $xml = '';
+        foreach ($data as $key => $val) {
+            is_numeric($key) && $key = "item id=\"{$key}\"";
+            $xml .= "<{$key}>";
+            $xml .= (is_array($val) || is_object($val))
+                  ? self::data_to_xml($val)
+                  : self::xmlSafeStr($val);
+            list($key,) = explode(' ', $key);
+            $xml .=  "</{$key}>";
+        }
+        return $xml;
+    }
+
+
+    /**
+     * XML编码
+     * @param mixed $data 数据
+     * @param string $root 根节点名
+     * @param string $item 数字索引的子节点名
+     * @param string $attr 根节点属性
+     * @param string $id   数字索引子节点key转换的属性名
+     * @param string $encoding 数据编码
+     * @return string
+    */
+    public function xml_encode(
+        $data,
+        $root     = 'xml',
+        $item     = 'item',
+        $attr     = '',
+        $id       = 'id',
+        $encoding = 'utf-8'
+    ) {
+        if (is_array($attr)) {
+            $_attr = [];
+            foreach ($attr as $key => $value) {
+                $_attr[] = "{$key}=\"{$value}\"";
+            }
+            $attr = implode(' ', $_attr);
+        }
+        $attr = trim($attr);
+        $attr = empty($attr) ? '' : " {$attr}";
+        $xml  = "<{$root}{$attr}>";
+        $xml .= self::data_to_xml($data, $item, $id);
+        $xml .= "</{$root}>";
+        return $xml;
     }
 
 
@@ -102,6 +171,63 @@ class libwechat {
              && $result['json']
              && @ (int) $result['json']['subscribe'] === 1) {
                 return $result['json'];
+            }
+        }
+        return null;
+    }
+
+
+    public function getMenu() {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/menu/get', [
+                    'access_token' => $access_token,
+                ], null, false, false, 3, 3, 'json', true
+            );
+            if ($result
+             && $result['http_code'] === 200
+             && $result['json']
+             && @$result['json']['menu']) {
+                return $result['json']['menu'];
+            }
+        }
+        return null;
+    }
+
+
+    public function createMenu($menu) {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/menu/create', [
+                    'access_token' => $access_token,
+                ], $menu, false, false, 3, 3, 'json', true, true, [], '', true
+            );
+            if ($result
+             && $result['http_code'] === 200
+             && $result['json']
+             && @ (int) $result['json']['errcode'] === 0) {
+                return $this->getMenu();
+            }
+        }
+        return null;
+    }
+
+
+    public function deleteMenu() {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/menu/delete', [
+                    'access_token' => $access_token,
+                ], null, false, false, 3, 3, 'json', true
+            );
+            if ($result
+             && $result['http_code'] === 200
+             && $result['json']
+             && @ (int) $result['json']['errcode'] === 0) {
+                return true;
             }
         }
         return null;

@@ -38,6 +38,62 @@ class HomeActions extends ActionController {
             }
             $this->setVar('sms_token', $objToken ?: false);
         }
+        // load models
+        $modOauth      = $this->getModelByName('OAuth');
+        $modBackground = $this->getModelByName('Background');
+        $modMap        = $this->getModelByName('Map');
+        // check oauth session
+        $oauthIfo      = $modOauth->getSession();
+        // // @todo wechat debug {
+        if (@$oauthIfo['provider'] === 'wechat') {
+            print_r($oauthIfo);
+            exit();
+        }
+        // }
+        // check xcode {
+        $isSmithCode = false;
+        $exfee_id    = 0;
+        if (isset($_GET['xcode'])) {
+            $invitation = $modExfee->getRawInvitationByToken($_GET['xcode']);
+            if ($invitation && $invitation['state'] !== 4) {
+                $isSmithCode = in_array($invitation['identity_id'], explode(',', SMITH_BOT));
+                $exfee_id    = $invitation['exfee_id'];
+            }
+        }
+        // }
+        $this->setVar('isSmithCode', $isSmithCode);
+        $this->setVar('exfee_id',    $exfee_id);
+        $oauthRst      = null;
+        if ($oauthIfo) {
+            $oauthRst  = ['authorization' => null];
+            if ($oauthIfo['oauth_signin']) {
+                $oauthRst['authorization']   = $oauthIfo['oauth_signin'];
+                $oauthRst['data']            = [
+                    'identity'        => $oauthIfo['identity'],
+                    'identity_status' => $oauthIfo['identity_status'],
+                ];
+                if ($oauthIfo['identity']->provider === 'twitter') {
+                    $oauthRst['data']['twitter_following'] = $oauthIfo['twitter_following'];
+                }
+                if (isset($oauthIfo['workflow'])
+                 && isset($oauthIfo['workflow']['verification_token'])) {
+                    $oauthRst['verification_token'] = $oauthIfo['workflow']['verification_token'];
+                }
+            }
+            if (isset($oauthIfo['workflow'])) {
+                if (isset($oauthIfo['workflow']['callback']['url'])) {
+                    $oauthRst['refere'] = $oauthIfo['workflow']['callback']['url'];
+                }
+                if (isset($oauthIfo['workflow']['callback']['args'])) {
+                    $oauthRst['event']  = $oauthIfo['workflow']['callback']['args'];
+                }
+            }
+        }
+        $modOauth->resetSession();
+        // show page
+        $this->setVar('backgrounds', $modBackground->getAllBackground());
+        $this->setVar('oauth',       $oauthRst);
+        $this->setVar('location',    $modMap->getCurrentLocation());
         // case USER_AGENT
         if (!isset($_GET['ipad'])
          && !isset($_COOKIE['ipad'])
@@ -79,43 +135,6 @@ class HomeActions extends ActionController {
         if (isset($_GET['ipad'])) {
             setcookie('ipad', true, time() + 60 * 60 * 24);
         }
-        // load models
-        $modOauth      = $this->getModelByName('OAuth');
-        $modBackground = $this->getModelByName('Background');
-        $modMap        = $this->getModelByName('Map');
-        // check oauth session
-        $oauthIfo      = $modOauth->getSession();
-        $oauthRst      = null;
-        if ($oauthIfo) {
-            $oauthRst  = ['authorization' => null];
-            if ($oauthIfo['oauth_signin']) {
-                $oauthRst['authorization']   = $oauthIfo['oauth_signin'];
-                $oauthRst['data']            = [
-                    'identity'        => $oauthIfo['identity'],
-                    'identity_status' => $oauthIfo['identity_status'],
-                ];
-                if ($oauthIfo['identity']->provider === 'twitter') {
-                    $oauthRst['data']['twitter_following'] = $oauthIfo['twitter_following'];
-                }
-                if (isset($oauthIfo['workflow'])
-                 && isset($oauthIfo['workflow']['verification_token'])) {
-                    $oauthRst['verification_token'] = $oauthIfo['workflow']['verification_token'];
-                }
-            }
-            if (isset($oauthIfo['workflow'])) {
-                if (isset($oauthIfo['workflow']['callback']['url'])) {
-                    $oauthRst['refere'] = $oauthIfo['workflow']['callback']['url'];
-                }
-                if (isset($oauthIfo['workflow']['callback']['args'])) {
-                    $oauthRst['event']  = $oauthIfo['workflow']['callback']['args'];
-                }
-            }
-        }
-        $modOauth->resetSession();
-        // show page
-        $this->setVar('backgrounds', $modBackground->getAllBackground());
-        $this->setVar('oauth',       $oauthRst);
-        $this->setVar('location',    $modMap->getCurrentLocation());
         $this->displayView();
     }
 

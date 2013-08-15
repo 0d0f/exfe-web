@@ -1,0 +1,123 @@
+#!/usr/bin/env php
+<?php
+// by @leaskh
+
+error_reporting(E_ALL ^ E_NOTICE);
+
+define('HELPER_DIR', dirname(__FILE__) . '/helpers');
+define('MODEL_DIR',  dirname(__FILE__) . '/models');
+
+require_once dirname(__FILE__) . '/common.php';
+require_once dirname(__FILE__) . '/DataModel.php';
+require_once 'FrontController.php';
+
+
+class wechatcli extends DataModel {
+
+    public $hlpWechat = null;
+
+
+    public function __construct() {
+        $this->hlpWechat = $this->getHelperByName('Wechat');
+    }
+
+
+    public function getMenu() {
+        $rawMenu = $this->hlpWechat->getMenu();
+        if ($rawMenu) {
+            print_r($rawMenu);
+        } else {
+            echo "menu no exist!\r\n";
+        }
+    }
+
+
+    public function createMenu() {
+        $menu = [
+            "button" => [
+                [
+                    "type" => "click",
+                    "name" => "我的地图",
+                    "key"  => "LIST_MAPS",
+                ],
+                [
+                    "type" => "click",
+                    "name" => "创建地图",
+                    "key"  => "CREATE_MAP",
+                ],
+                [
+                    "name" => "帮助",
+                    "sub_button" => [
+                        [
+                            "type" => "click",
+                            "name" => "菜单一",
+                            "key"  => "HELP_01",
+                        ],
+                        [
+                            "type" => "click",
+                            "name" => "菜单二",
+                            "key"  => "HELP_02",
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        $rawMenu = $this->hlpWechat->createMenu($menu);
+        if ($rawMenu) {
+            print_r($rawMenu);
+        } else {
+            echo "Failed!\r\n";
+        }
+    }
+
+
+    public function updateMenu() {
+        $rawResult = $this->hlpWechat->deleteMenu();
+        if ($rawResult) {
+            $this->createMenu();
+        } else {
+            echo "Failed!\r\n";
+        }
+    }
+
+
+    public function deleteMenu() {
+        $rawResult = $this->hlpWechat->deleteMenu();
+        if ($rawResult) {
+            echo "Done!\r\n";
+        } else {
+            echo "Failed!\r\n";
+        }
+    }
+
+
+    public function test() {
+        // print_r($this->hlpWechat->getIdentityBy('oVgq_jt1yV6Ser5fS7_m2MCObiVg'));
+    }
+
+}
+
+$objWechatcli = new wechatcli();
+array_shift($argv);
+
+// $objWechatcli->test();
+// exit();
+
+switch (strtolower($argv[0])) {
+    case 'getmenu':
+        $objWechatcli->getMenu();
+        break;
+    case 'createmenu':
+        $objWechatcli->createMenu();
+        break;
+    case 'updatemenu':
+        $objWechatcli->updateMenu();
+        break;
+    case 'deletemenu':
+        $objWechatcli->deleteMenu();
+        break;
+    default:
+        echo "WeChatCli: invalid option -- '{$argv[0]}'\r\n";
+        echo "try: getmenu, createmenu, updatemenu, deletemenu.\r\n";
+        exit(1);
+}

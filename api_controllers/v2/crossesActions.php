@@ -28,10 +28,10 @@ class CrossesActions extends ActionController {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
+            touchCross($params['id'], $result['uid']);
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                 apiError(304, 'Cross Not Modified.');
             }
-            touchCross($params['id'], $result['uid']);
             $cross->touched_at = date('Y-m-d H:i:s') . ' +0000';
             apiResponse(['cross' => $cross]);
         }
@@ -140,9 +140,9 @@ class CrossesActions extends ActionController {
                 $modUser  = $this->getModelByName('User');
                 foreach ($cross->exfee->invitations as $invitation) {
                     if ($invitation->identity->id === $identity_id
-                        // @todo check provider as wechat
-                     // && $invitation->identity->connected_user_id <= 0
-                     ) {
+                    // @todo check provider as wechat
+                    // && $invitation->identity->connected_user_id <= 0
+                    ) {
                         $crossAccessToken = $modCross->generateCrossAccessToken(
                             $cross->id, $identity_id,
                             $modUser->getUserIdByIdentityId($identity_id)
@@ -562,7 +562,7 @@ class CrossesActions extends ActionController {
                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                 )];
                 $udeResult = $modExfee->updateExfee(
-                    $exfee, $byIdentity->id, $byIdentity->connected_user_id
+                    $exfee, $byIdentity->id, $byIdentity->connected_user_id, false, true
                 );
                 if ($udeResult) {
                     $invitation = $modExfee->getRawInvitationByCrossIdAndIdentityId(

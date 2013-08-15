@@ -29,24 +29,44 @@ class WechatModels extends DataModel {
 
     public function getIdentityBy($external_id) {
         if ($external_id) {
-             $rawIdentity = $this->libwechat->getUserInfo($external_id);
-             return new Identity(
-                0, $rawIdentity['nickname'], '', '', 'wechat', 0,
-                $rawIdentity['openid'], $rawIdentity['openid'], null, '', '', 0,
-                false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
-            );
+            $rawIdentity = $this->libwechat->getUserInfo($external_id);
+            return $this->makeIdentityBy($rawIdentity);
         }
         return null;
     }
 
 
-    public function packMessage($toUserName, $content, $msgType = 'text') {
+    public function makeIdentityBy($rawIdentity) {
+        return $rawIdentity ? new Identity(
+            0, $rawIdentity['nickname'], '', '', 'wechat', 0,
+            $rawIdentity['openid'], $rawIdentity['openid'], null, '', '', 0,
+            false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
+        ) : null;
+    }
+
+
+    public function packMessage(
+        $toUserName, $content, $msgType = 'text', $FuncFlag = 0
+    ) {
         return $this->libwechat->packMessage(
-            $toUserName,
-            WECHAT_OFFICIAL_ACCOUNT_ID,
-            $content,
-            $msgType
+            $toUserName, WECHAT_OFFICIAL_ACCOUNT_ID,
+            $content, $msgType, $FuncFlag
         );
+    }
+
+
+    public function getMenu() {
+        return $this->libwechat->getMenu();
+    }
+
+
+    public function createMenu($menu) {
+        return $this->libwechat->createMenu($menu);
+    }
+
+
+    public function deleteMenu() {
+        return $this->libwechat->deleteMenu();
     }
 
 }

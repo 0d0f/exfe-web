@@ -104,7 +104,7 @@ class FrontController {
             header('HTTP/1.1 204 No Content');
             return;
         }
-        if ($_SERVER['SERVER_NAME'] !== '0d0f.redirectme.net' // wechat debug
+        if (($_SERVER['SERVER_NAME'] !== '0d0f.redirectme.net' && $_SERVER['SERVER_NAME'] !== 'exfe.com') // wechat debug
          && !preg_match('/^.*' . preg_replace(
             '/^([^\/]*\/\/)(.*)$/',  '$2',  SITE_URL
         ) . '$/i', $_SERVER['SERVER_NAME'])) {
@@ -127,6 +127,10 @@ class FrontController {
             unset($arrPath[$last]);
         }
         if (!$first) {
+            $this->rockWeb('home', $arrPath, $route);
+        } else if (preg_match('/^!\d+$/', $first)) { // @todo: ignore crosses urls
+            array_unshift($arrPath, $first);
+            array_unshift($arrPath, 'index');
             $this->rockWeb('home', $arrPath, $route);
         } else if (preg_match('/^v\d+$/', $first)) {
             $controller = array_shift($arrPath);

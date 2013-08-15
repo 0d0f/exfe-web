@@ -297,16 +297,6 @@
         <div id="my-info" class="info-windown hide">
           <div class="splitline show">秀这张“活点地图”</div>
           <div class="splitline discover">发现更多…</div>
-          <div class="wechat">这不是我的微信账号?</div>
-        </div>
-        <div id="other-info" class="info-windown hide">
-          <div class="splitline detial">
-            <div class="name"></div>
-            <div class="date hide"><span class="time"></span>分钟前所处位置</div>
-            <div class="between between-destination hide">距离终点<span class="dest"></span><i class="icon"></i></div>
-            <div class="between between-me hide">你们相距<span class="dest"></span><i class="icon"></i></div>
-          </div>
-          <div class="update">请对方更新方位</div>
         </div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
@@ -315,7 +305,7 @@
           <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
         </div>
       </div>
-      <div id="free-identities" class="hide">
+      <!--div id="free-identities" class="hide">
         <div id="iavatar">
           <div class="placeholder">
             <div class="text">请长按头像</div>
@@ -329,7 +319,7 @@
             <button class="btn no-avatar">没有我的头像?</button>
           </div>
         </div>
-      </div>
+      </div-->
     </div>
   </script>
 

@@ -443,6 +443,7 @@ class OAuthModels extends DataModel {
         return false;
     }
 
+
     public function getDropboxProfile($oauthToken, $oauthTokenSecret) {
         if ($oauthToken && $oauthTokenSecret) {
             // get oauth token
@@ -740,6 +741,82 @@ class OAuthModels extends DataModel {
         return null;
     }
 
+    // }
+
+
+    // wechat {
+
+    public function wechatRedirect($workflow, $step = 2) {
+        $this->setSession('wechat', '', '', $workflow);
+        switch ($step) {
+            case 1:
+                $scope = 'snsapi_base';
+                break;
+            case 2:
+                $scope = 'snsapi_userinfo';
+                break;
+            default:
+                return null;
+        }
+        return 'http://open.weixin.qq.com/connect/oauth2/authorize'
+             . '?appid='        . WECHAT_OFFICIAL_ACCOUNT_APPID
+             . '&redirect_uri=' . 'http://exfe.com/oauth/wechatcallback'
+          // . '&redirect_uri=' . WECHAT_REDIRECT_URI
+             . '&response_type=code'
+             . "&scope={$scope}"
+             . "&state={$step}"
+             . '#wechat_redirect';
+    }
+
+
+    public function getWechatAccessToken($oauthCode) {
+        if (!$oauthCode) {
+            return null;
+        }
+        $objCurl = curl_init(
+            'https://api.weixin.qq.com/sns/oauth2/access_token'
+          . '?appid='  . WECHAT_OFFICIAL_ACCOUNT_APPID
+          . '&secret=' . WECHAT_OFFICIAL_ACCOUNT_SECRET
+          . '&code='   . $oauthCode
+          . '&grant_type=authorization_code'
+        );
+        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+        $data = curl_exec($objCurl);
+        curl_close($objCurl);
+        if ($data && ($data = (array) json_decode($data)) && isset($data['access_token'])) {
+            return $data;
+        }
+        return null;
+    }
+
+
+    public function refreshWechatAccessToken() {
+        //https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+    }
+
+
+    public function getWechatProfile($openid, $token) {
+        if ($token) {
+            $objCurl = curl_init(
+                'https://api.weixin.qq.com/sns/userinfo'
+              . '?access_token=' . $token['access_token']
+              . '&openid='       . $openid
+            );
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            $data = curl_exec($objCurl);
+            curl_close($objCurl);
+            if ($data && ($data = (array) json_decode($data)) && isset($data['openid'])) {
+                return $data;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    // }
+
 
     public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
         // get models
@@ -818,6 +895,7 @@ class OAuthModels extends DataModel {
                 ];
                 break;
             case 'google':
+            case 'wechat':
                 $oAuthToken = $rawOAuthToken;
         }
         $hlpIdentity->updateOAuthTokenById($objIdentity->id, $oAuthToken);

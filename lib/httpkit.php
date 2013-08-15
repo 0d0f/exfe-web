@@ -18,7 +18,8 @@ class httpKit {
         $jsonDecode  = false,
         $decoAsArray = true,
         $proxy       = [],
-        $cstRequest  = ''
+        $cstRequest  = '',
+        $unescaped   = false
     ) {
         if ($url) {
             if ($argsGet) {
@@ -53,7 +54,9 @@ class httpKit {
             if ($argsPost !== null) {
                 switch ($postType) {
                     case 'json':
-                        $argsPost = json_encode($argsPost);
+                        $argsPost = $unescaped
+                                  ? json_encode($argsPost, JSON_UNESCAPED_UNICODE)
+                                  : json_encode($argsPost);
                         break;
                     case 'form':
                         $argsPost = http_build_query($argsPost);

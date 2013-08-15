@@ -24,6 +24,7 @@ class wechatActions extends ActionController {
             $modIdentity = $this->getModelByName('Identity');
             $rawInput = file_get_contents('php://input');
             $objMsg   = $modWechat->unpackMessage($rawInput);
+            $now      = time();
             error_log(json_encode($objMsg));
             if (!($external_id = @$objMsg->FromUserName ? "{$objMsg->FromUserName}" : '')) {
                 error_log('Empty FromUserName');
@@ -55,8 +56,11 @@ class wechatActions extends ActionController {
             }
             switch (@$objMsg->MsgType) {
                 case 'event':
-                    switch (@$objMsg->Event) {
+                    $event = @strtolower($objMsg->Event);
+                    switch ($event) {
                         case 'subscribe':
+                        case 'click':
+                        case 'location':
                             // check user
                             $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
                             $user_id    = 0;
@@ -77,10 +81,181 @@ class wechatActions extends ActionController {
                                 // 500
                                 return;
                             }
+                            $modIdentity = $this->getModelByName('Identity');
+                            $crossHelper = $this->getHelperByName('cross');
+                            $exfeeHelper = $this->getHelperByName('exfee');
+                            $rtnMessage  = '';
+                            $rtnType     = 'text';
+                            $idBot = explode(',', SMITH_BOT)[0];
+                            $bot   = $modIdentity->getIdentityById($idBot);
+                            switch ($event) {
+                                case 'subscribe':
+                                    $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n Welcome {$identity->name}！";
+                                    break;
+                                case 'click':
+                                    switch ($objMsg->EventKey) {
+                                        case 'LIST_MAPS':
+                                            $exfee_id_list = $exfeeHelper->getExfeeIdByUserid($user_id);
+                                            $cross_list    = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, false, $user_id);
+                                            $crosses       = [];
+                                            foreach ($cross_list as $i => $cross) {
+                                                if ($cross->attribute['state'] === 'deleted'
+                                                || ($cross->attribute['state'] === 'draft'
+                                                 && !in_array($user_id, $cross->exfee->hosts))) {
+                                                } else {
+                                                    $crosses[$cross->id] = $cross;
+                                                }
+                                                unset($cross_list[$i]);
+                                            }
+                                            $cross_list = null;
+                                            $maps       = [];
+                                            if ($crosses) {
+                                                $rawMaps = httpKit::request(
+                                                    EXFE_AUTH_SERVER . '/v3/routex/_inner/search/crosses',
+                                                    null, array_keys($crosses),
+                                                    false, false, 3, 3, 'json', true
+                                                );
+                                                $rawMaps = (
+                                                    $rawMaps
+                                                 && $rawMaps['http_code'] === 200
+                                                 && $rawMaps['json']
+                                                ) ? $rawMaps['json'] : [];
+                                                foreach ($rawMaps as $rI => $rItem) {
+                                                    if ($rItem['enable'] && sizeof($maps) < 10) {
+                                                        $maps[] = $rItem['cross_id'];
+                                                    }
+                                                }
+                                            }
+                                            if ($maps) {
+                                                $rtnMessage = [];
+                                                $rtnType    = 'news';
+                                                foreach ($maps as $map) {
+                                                    $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                                        $map, $idBot
+                                                    );
+                                                    if (!$invitation) {
+                                                        $exfee = new Exfee;
+                                                        $exfee->id = $crosses[$map]->exfee->id;
+                                                        $exfee->invitations = [new Invitation(
+                                                            0, $bot, $identity, $identity,
+                                                            'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                                                        )];
+                                                        $udeResult = $exfeeHelper->updateExfee(
+                                                            $exfee, $identity->id, $user_id, false, true
+                                                        );
+                                                        if ($udeResult) {
+                                                            $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                                                $map, $idBot
+                                                            );
+                                                        }
+                                                    }
+                                                    if (!$invitation) {
+                                                        // 500
+                                                        return;
+                                                    }
+                                                    $rtnMessage[] = [
+                                                        'Title'       => $crosses[$map]->title,
+                                                        'Description' => $crosses[$map]->description,
+                                                        'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$crosses[$map]->widget[0]->image ?: 'default.jpg'),
+                                                        'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}",
+                                                    ];
+                                                }
+                                            } else {
+                                                $rtnMessage = '您目前没有活点地图，立刻创建一个？';
+                                            }
+                                            break;
+                                        case 'CREATE_MAP':
+                                            // gather
+                                            $hlpBkg   = $this->getHelperByName('Background');
+                                            $objCross = new stdClass;
+                                            $objCross->title       = "·X· {$identity->name}";
+                                            $objCross->description = '';
+                                            $objCross->by_identity = $identity;
+                                            $objCross->time        = null;
+                                            $objCross->place       = new Place(
+                                                0, 'Online', 'exfe.com', '', '', '', '', $now, $now
+                                            );
+                                            $objCross->attribute   = new stdClass;
+                                            $objCross->attribute->state = 'published';
+                                            $objBackground         = new stdClass;
+                                            $allBgs = $hlpBkg->getAllBackground();
+                                            $objCross->widget      = [
+                                                new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
+                                            ];
+                                            $objCross->type        = 'Cross';
+                                            $objCross->exfee       = new Exfee;
+                                            $objCross->exfee->invitations = [
+                                                new Invitation(
+                                                    0, $identity, $identity, $identity,
+                                                    'ACCEPTED', 'EXFE', '', $now, $now, true,  0, []
+                                                ),
+                                                new Invitation(
+                                                    0, $bot,      $identity, $identity,
+                                                    'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                                                )
+                                            ];
+                                            $gtResult = $crossHelper->gatherCross(
+                                                $objCross, $identity->id, $user_id
+                                            );
+                                            $cross_id = @ (int) $gtResult['cross_id'];
+                                            if ($cross_id <= 0) {
+                                                // 500
+                                                return;
+                                            }
+                                            // enable routex
+                                            $rawMaps = httpKit::request(
+                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses",
+                                                null,  [[
+                                                    'cross_id'         => $cross_id,
+                                                    'save_breadcrumbs' => true,
+                                                    'after_in_seconds' => 7200,
+                                                ]], false, false, 3, 3, 'json'
+                                            );
+                                            // get invitation
+                                            $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                                $cross_id, $idBot
+                                            );
+                                            if (!$invitation) {
+                                                // 500
+                                                return;
+                                            }
+                                            // returns
+                                            touchCross($cross_id, $identity->connected_user_id);
+                                            $rtnMessage = [[
+                                                'Title'       => $objCross->title,
+                                                'Description' => $objCross->description,
+                                                'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$objCross->widget[0]->image ?: 'default.jpg'),
+                                                'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}",
+                                            ]];
+                                            $rtnType    = 'news';
+                                            break;
+                                        case 'HELP_01':
+                                            break;
+                                        case 'HELP_02':
+                                            break;
+                                        default:
+                                            // 404
+                                            return;
+                                    }
+                                    break;
+                                case 'location':
+                                    httpKit::request(
+                                        EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
+                                        ['coordinate' => 'earth'], [[
+                                            'ts'  => $now,
+                                            'acc' => (float) $objMsg->Precision,
+                                            'lng' => (float) $objMsg->Longitude,
+                                            'lat' => (float) $objMsg->Latitude,
+                                        ]], false, false, 3, 3, 'json'
+                                    );
+                                    return;
+                            }
                             $strReturn = $modWechat->packMessage(
                                 $identity->external_username,
-                                "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n Welcome {$identity->name} 欢迎欢迎，测试测试，中文中文。"
+                                $rtnMessage, $rtnType
                             );
+                            // @todo @debug by @Leaskh
+                            error_log($strReturn);
                             if (!$strReturn) {
                                 // 500
                                 return;
