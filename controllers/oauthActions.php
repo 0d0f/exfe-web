@@ -550,7 +550,21 @@ class OAuthActions extends ActionController {
 
     public function doWechatCallBack() {
         $modOauth = $this->getModelByName('OAuth');
-        $modOauth->resetSession();
+        $oauthIfo = $modOauth->getSession();
+        $workflow = $oauthIfo ?  $oauthIfo['workflow'] : null;
+        $isMobile = $workflow ? ($workflow['callback']
+                 && $workflow['callback']['oauth_device']
+                 && $workflow['callback']['oauth_device_callback']) : false;
+        if (!$oauthIfo || $oauthIfo['external_service'] !== 'wechat') {
+            if ($isMobile) {
+                $modOauth->resetSession();
+                header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+            } else {
+                $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'wechat']);
+                header('location: /');
+            }
+            return;
+        }
         if (($token = $modOauth->getWechatAccessToken($_REQUEST['code']))) {
             $rawIdentity = $modOauth->getWechatProfile($token['openid'], $token);
             if ($rawIdentity) {
@@ -558,11 +572,28 @@ class OAuthActions extends ActionController {
                 $rawIdentity = $modWechat->makeIdentityBy($rawIdentity);
                 $result = $modOauth->handleCallback($rawIdentity, [], $token);
                 if (!$result) {
-                    $modOauth->addtoSession([
-                        'oauth_signin' => false,
-                        'provider'     => 'wechat',
-                    ]);
-                    header('location: /');
+                    if ($isMobile) {
+                        $modOauth->resetSession();
+                        header("location: {$workflow['callback']['oauth_device_callback']}?err=OAutherror");
+                    } else {
+                        $modOauth->addtoSession(['oauth_signin' => false, 'provider' => 'wechat']);
+                        header('location: /');
+                    }
+                    return;
+                }
+                if ($isMobile) {
+                    header(
+                        "location: {$workflow['callback']['oauth_device_callback']}"
+                      . "?token={$result['oauth_signin']['token']}"
+                      . "&name={$result['identity']->name}"
+                      . "&userid={$result['oauth_signin']['user_id']}"
+                      . "&external_id={$result['identity']->external_id}"
+                      . "&provider={$result['identity']->provider}"
+                      . "&identity_status={$result['identity_status']}"
+                      . (isset($workflow['verification_token'])
+                      ? "&verification_token={$workflow['verification_token']}"
+                      : '')
+                    );
                     return;
                 }
                 $modOauth->addtoSession([
@@ -575,7 +606,12 @@ class OAuthActions extends ActionController {
                 return;
             }
         }
-        header('location: /');
+        $modOauth->resetSession();
+        header('location: ' . (
+            $isMobile
+          ? "{$workflow['callback']['oauth_device_callback']}?err=OAutherror"
+          : '/'
+        ));
     }
 
 
