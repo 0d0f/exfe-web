@@ -24,6 +24,7 @@ class wechatActions extends ActionController {
             $modIdentity = $this->getModelByName('Identity');
             $rawInput = file_get_contents('php://input');
             $objMsg   = $modWechat->unpackMessage($rawInput);
+            $now      = time();
             error_log(json_encode($objMsg));
             if (!($external_id = @$objMsg->FromUserName ? "{$objMsg->FromUserName}" : '')) {
                 error_log('Empty FromUserName');
@@ -59,6 +60,7 @@ class wechatActions extends ActionController {
                     switch ($event) {
                         case 'subscribe':
                         case 'click':
+                        case 'location':
                             // check user
                             $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
                             $user_id    = 0;
@@ -84,7 +86,6 @@ class wechatActions extends ActionController {
                             $exfeeHelper = $this->getHelperByName('exfee');
                             $rtnMessage  = '';
                             $rtnType     = 'text';
-                            $now   = time();
                             $idBot = explode(',', SMITH_BOT)[0];
                             $bot   = $modIdentity->getIdentityById($idBot);
                             switch ($event) {
@@ -236,6 +237,17 @@ class wechatActions extends ActionController {
                                             // 404
                                             return;
                                     }
+                                    break;
+                                case 'location':
+                                    httpKit::request(
+                                        EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
+                                        ['coordinate' => 'earth'], [[
+                                            'ts'  => $now,
+                                            'acc' => (float) $objMsg->Precision,
+                                            'lng' => (float) $objMsg->Longitude,
+                                            'lat' => (float) $objMsg->Latitude,
+                                        ]], false, false, 3, 3, 'json'
+                                    );
                             }
                             $strReturn = $modWechat->packMessage(
                                 $identity->external_username,
