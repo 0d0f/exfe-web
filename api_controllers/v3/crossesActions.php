@@ -36,6 +36,7 @@ class CrossesActions extends ActionController {
             header('Cache-Control: no-cache');
             header('Content-Transfer-Encoding: binary');
             header('Content-type: image/jpeg');
+            $image = imagecreatetruecolor($config['width'], $config['height']);
             // get background
             $background = 'default.jpg';
             foreach ($cross->widget as $widget) {
@@ -48,7 +49,43 @@ class CrossesActions extends ActionController {
             $backgroundImage = $objLibImage->rawResizeImage(
                 $backgroundImage, $config['width'], $config['height']
             );
-            imagepng($backgroundImage);
+
+
+
+
+
+
+// create masking
+$mask = imagecreatetruecolor(500, 500);
+$transparent = imagecolorallocate($mask, 255, 0, 0);
+imagecolortransparent($mask, $transparent);
+imagefilledellipse($mask, 250, 250, 500, 500, $transparent);
+$red = imagecolorallocate($mask, 0, 0, 0);
+imagecopy($image, $mask, 0, 0, 0, 0, $newwidth, $newheight);
+imagecolortransparent($image, $red);
+imagefill($image,0,0, $red);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         }
     }
 

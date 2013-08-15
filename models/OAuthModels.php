@@ -747,6 +747,7 @@ class OAuthModels extends DataModel {
     // wechat {
 
     public function wechatRedirect($workflow, $step = 2) {
+        $this->setSession('wechat', '', '', $workflow);
         switch ($step) {
             case 1:
                 $scope = 'snsapi_base';
