@@ -140,9 +140,9 @@ class CrossesActions extends ActionController {
                 $modUser  = $this->getModelByName('User');
                 foreach ($cross->exfee->invitations as $invitation) {
                     if ($invitation->identity->id === $identity_id
-                        // @todo check provider as wechat
-                     // && $invitation->identity->connected_user_id <= 0
-                     ) {
+                    // @todo check provider as wechat
+                    // && $invitation->identity->connected_user_id <= 0
+                    ) {
                         $crossAccessToken = $modCross->generateCrossAccessToken(
                             $cross->id, $identity_id,
                             $modUser->getUserIdByIdentityId($identity_id)

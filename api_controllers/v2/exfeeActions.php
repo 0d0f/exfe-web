@@ -91,6 +91,95 @@ class ExfeeActions extends ActionController {
     }
 
 
+    public function doInvite() {
+        // get libs
+        $params      = $this->params;
+        $modUser     = $this->getModelByName('User');
+        $modExfee    = $this->getModelByName('Exfee');
+        $modIdentity = $this->getModelByName('Identity');
+        $hlpCross    = $this->getHelperByName('Cross');
+        $hlpCheck    = $this->getHelperByName('Check');
+        // basic check
+        if (!($exfee_id = intval($params['id']))) {
+            apiError(400, 'no_exfee_id', 'exfee_id must be provided');
+        }
+        if (!($user_id = intval(@$_POST['user_id']))) {
+            apiError(400, 'no_user_id', 'user_id must be provided');
+        }
+        if (!($xcode = @$_POST['xcode'])) {
+            apiError(400, 'no_xcode', 'xcode must be provided');
+        }
+        // $_POST['widget_type']
+        // $_POST['widget_id']
+        // check via identity
+        if (($via = @$_POST['via'] ?: '')) {
+            $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $via);
+            $provider          = preg_replace('/^.*@([^@]*)$/', '$1', $via);
+            $via_identity      = $modIdentity->getIdentityByProviderAndExternalUsername(
+                $provider, $external_username
+            );
+            if (!$via_identity) {
+                apiError(400, 'error_via_identity');
+            }
+        } else {
+            $via_identity = $modIdentity->getIdentityById(explode(',', SMITH_BOT)[0]);
+            if (!$via_identity) {
+                apiError(500, 'server_error');
+            }
+        }
+        // check invitation
+        $rawInvitation = $modExfee->getRawInvitationByToken($xcode);
+        if (!$rawInvitation
+         || $rawInvitation['exfee_id'] !== $exfee_id
+         || $rawInvitation['state']    === 4) {
+            apiError(400, 'error_xcode');
+        }
+        // check user
+        $user = $modUser->getUserById($user_id);
+        if (!$user || !$user->identities) {
+            apiError(400, 'error_user');
+        }
+        // check exfee
+        $exfee = $modExfee->getExfeeById($exfee_id, true);
+        $removed  = false;
+        $viaFound = false;
+        foreach ($exfee->invitations as $invitaion) {
+            if ($invitaion->identity->connected_user_id === $user_id) {
+                if ($invitaion->rsvp_status === 'REMOVED') {
+                    $removed = true;
+                } else {
+                    apiError(400, 'already_in', 'user is already in this exfee');
+                }
+            }
+            if ($invitaion->identity->connected_user_id === $via_identity->connected_user_id
+             || $invitaion->identity->id                === $via_identity->id) {
+                $viaFound = true;
+            }
+        }
+        if ($removed) {
+            apiError(401, 'removed_user');
+        }
+        if (!$viaFound) {
+            apiError(400, 'error_via_identity');
+        }
+        // action
+        $objInvitation = new stdClass;
+        $objInvitation->id = 0;
+        $objInvitation->identity = $user->identities[0];
+        $objInvitation->response = 'NORESPONSE';
+        $exfee     = new Exfee;
+        $exfee->id = $exfee_id;
+        $exfee->invitations = [$objInvitation];
+        $udeResult = $modExfee->updateExfee(
+            $exfee, $via_identity->id, $via_identity->connected_user_id
+        );
+        if ($udeResult && $udeResult['changed']) {
+            apiResponse(['cross' => $hlpCross->getCross($rawInvitation['cross_id'])]);
+        }
+        apiError(400, 'bad_request');
+    }
+
+
     public function doRemoveNotificationIdentity() {
         // get libs
         $params      = $this->params;
