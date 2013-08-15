@@ -202,6 +202,7 @@ class ExfeeModels extends DataModel {
 
 
     public function getRawInvitationByToken($token) {
+        $token = dbescape($token);
         if ($token) {
             $rawInvitation = $this->getRow(
                 "SELECT * FROM `invitations` WHERE `token` = '{$token}'"
