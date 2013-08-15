@@ -61,14 +61,56 @@ $transparent = imagecolorallocate($mask, 255, 0, 0);
 imagecolortransparent($mask, $transparent);
 imagefilledellipse($mask, 250, 250, 500, 500, $transparent);
 $red = imagecolorallocate($mask, 0, 0, 0);
-imagecopy($image, $mask, 0, 0, 0, 0, $newwidth, $newheight);
-imagecolortransparent($image, $red);
-imagefill($image,0,0, $red);
+imagecopymerge($backgroundImage, $mask, 0, 0, 0, 0, 500, 500, 100);
+imagecolortransparent($backgroundImage, $red);
+imagefill($backgroundImage, 0, 0, $red);
 
 
 
 
 
+
+
+
+imagepng($backgroundImage);
+
+
+
+
+
+
+
+
+
+// $image = imagecreatetruecolor($newwidth, $newheight);
+// imagealphablending($image,true);
+// imagecopyresampled($image,$image_s,0,0,0,0,$newwidth,$newheight,$width,$height);
+
+// // create masking
+// $mask = imagecreatetruecolor($width, $height);
+// $mask = imagecreatetruecolor($newwidth, $newheight);
+
+
+
+// $transparent = imagecolorallocate($mask, 255, 0, 0);
+// imagecolortransparent($mask, $transparent);
+
+
+
+// imagefilledellipse($mask, $newwidth/2, $newheight/2, $newwidth, $newheight, $transparent);
+
+
+
+// $red = imagecolorallocate($mask, 0, 0, 0);
+// imagecopy($image, $mask, 0, 0, 0, 0, $newwidth, $newheight);
+// imagecolortransparent($image, $red);
+// imagefill($image,0,0, $red);
+
+// // output and free memory
+// header('Content-type: image/png');
+// imagepng($image);
+// imagedestroy($image);
+// imagedestroy($mask);
 
 
 

@@ -47,6 +47,7 @@ class OAuthActions extends ActionController {
                 break;
             case 'wechat':
                 $urlOauth = $modOauth->wechatRedirect($workflow);
+                // header("location: {$urlOauth}");
                 break;
             default:
                 apiError(400, 'no_provider', '');
