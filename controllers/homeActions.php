@@ -50,6 +50,19 @@ class HomeActions extends ActionController {
             exit();
         }
         // }
+        // check xcode {
+        $isSmithCode = false;
+        $exfee_id    = 0;
+        if (isset($_GET['xcode'])) {
+            $invitation = $modExfee->getRawInvitationByToken($_GET['xcode']);
+            if ($invitation && $invitation['state'] !== 4) {
+                $isSmithCode = in_array($invitation['identity_id'], explode(',', SMITH_BOT));
+                $exfee_id    = $invitation['exfee_id'];
+            }
+        }
+        // }
+        $this->setVar('isSmithCode', $isSmithCode);
+        $this->setVar('exfee_id',    $exfee_id);
         $oauthRst      = null;
         if ($oauthIfo) {
             $oauthRst  = ['authorization' => null];
