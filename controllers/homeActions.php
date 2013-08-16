@@ -44,25 +44,26 @@ class HomeActions extends ActionController {
         $modMap        = $this->getModelByName('Map');
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
-        // // @todo wechat debug {
+        // @todo wechat debug {
         if (@$oauthIfo['provider'] === 'wechat') {
-            print_r($oauthIfo);
-            exit();
+            error_log(json_encode($oauthIfo));
         }
         // }
         // check xcode {
-        $isSmithCode = false;
+        $smith_id    = 0;
         $exfee_id    = 0;
         if (isset($_GET['xcode'])) {
             $invitation = $modExfee->getRawInvitationByToken($_GET['xcode']);
             if ($invitation && $invitation['state'] !== 4) {
-                $isSmithCode = in_array($invitation['identity_id'], explode(',', SMITH_BOT));
-                $exfee_id    = $invitation['exfee_id'];
+                if (in_array($invitation['identity_id'], explode(',', SMITH_BOT))) {
+                    $smith_id = $invitation['identity_id'];
+                }
+                $exfee_id = $invitation['exfee_id'];
             }
         }
         // }
-        $this->setVar('isSmithCode', $isSmithCode);
-        $this->setVar('exfee_id',    $exfee_id);
+        $this->setVar('smith_id', $smith_id);
+        $this->setVar('exfee_id', $exfee_id);
         $oauthRst      = null;
         if ($oauthIfo) {
             $oauthRst  = ['authorization' => null];
