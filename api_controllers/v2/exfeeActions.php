@@ -148,7 +148,7 @@ class ExfeeActions extends ActionController {
                 if ($invitaion->rsvp_status === 'REMOVED') {
                     $removed = true;
                 } else {
-                    apiError(400, 'already_in', 'user is already in this exfee');
+                    apiResponse(['cross' => $hlpCross->getCross($rawInvitation['cross_id'])]);
                 }
             }
             if ($invitaion->identity->connected_user_id === $via_identity->connected_user_id
