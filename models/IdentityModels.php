@@ -303,7 +303,7 @@ class IdentityModels extends DataModel {
             $httpCode = curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
             if ($httpCode === 200) {
-                return getAllSizeGravatarUrlByExternalUsername($external_username);
+                return $this->getAllSizeGravatarUrlByExternalUsername($external_username);
             }
         }
         return null;
