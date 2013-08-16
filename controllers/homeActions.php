@@ -45,10 +45,10 @@ class HomeActions extends ActionController {
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
         // // @todo wechat debug {
-        if (@$oauthIfo['provider'] === 'wechat') {
-            print_r($oauthIfo);
-            exit();
-        }
+        // if (@$oauthIfo['provider'] === 'wechat') {
+        //     print_r($oauthIfo);
+        //     exit();
+        // }
         // }
         // check xcode {
         $isSmithCode = false;
