@@ -17,10 +17,18 @@ class CrossesActions extends ActionController {
         $objLibImage = new libImage;
         // config
         $config = [
-            'width'        => 640,
-            'height'       => 320,
-            'jpeg-quality' => 100,
-            'period'       => 604800, // 60 * 60 * 24 * 7
+            'width'          => 320,
+            'height'         => 180,
+            'cx'             => -64,
+            'cy'             => -123,
+            'cr'             => 367,
+            'map-width'      => 360,
+            'map-height'     => 300,
+            'map-zoom-level' => 13,
+            'markx'          => 272,
+            'marky'          => 134,
+            'jpeg-quality'   => 100,
+            'period'         => 604800, // 60 * 60 * 24 * 7
         ];
 
         $modExfee    = $this->getModelByName('Exfee');
@@ -36,8 +44,9 @@ class CrossesActions extends ActionController {
             header('Cache-Control: no-cache');
             header('Content-Transfer-Encoding: binary');
             header('Content-type: image/jpeg');
-            $image = imagecreatetruecolor($config['width'], $config['height']);
             // get background
+            $width  = $config['width']  * 2;
+            $height = $config['height'] * 2;
             $background = 'default.jpg';
             foreach ($cross->widget as $widget) {
                 if ($widget->type === 'Background') {
@@ -47,24 +56,48 @@ class CrossesActions extends ActionController {
             $backgroundFile  = @ file_get_contents("{$bkgDir}{$background}");
             $backgroundImage = @ imagecreatefromstring($backgroundFile);
             $backgroundImage = $objLibImage->rawResizeImage(
-                $backgroundImage, $config['width'], $config['height']
+                $backgroundImage, $width, $height
             );
 
 
 
-
-
-
 // create masking
-$mask = imagecreatetruecolor(500, 500);
-$transparent = imagecolorallocate($mask, 255, 0, 0);
-imagecolortransparent($mask, $transparent);
-imagefilledellipse($mask, 250, 250, 500, 500, $transparent);
-$red = imagecolorallocate($mask, 0, 0, 0);
-imagecopymerge($backgroundImage, $mask, 0, 0, 0, 0, 500, 500, 100);
-imagecolortransparent($backgroundImage, $red);
-imagefill($backgroundImage, 0, 0, $red);
+$mask = imagecreatetruecolor($width, $height);
 
+
+// render map
+$lat = 132;
+$lng = 44;
+
+if ($lat && $lng) {
+    $mapImage = httpKit::fetchImageExpress(
+        'https://maps.googleapis.com/maps/api/staticmap?center='
+      . "{$lat},{$lng}&markers=scale:2|icon%3a"
+      . urlencode('http://img.exfe.com/web/map_pin_blue@2x.png')
+      . "%7C{$lat},{$lng}&zoom={$config['map-zoom-level']}"
+      . "&size={$config['map-width']}x{$config['map-height']}"
+      . '&maptype=road&sensor=false&scale=2'
+    );
+    if ($mapImage) {
+        $mapWidth  = $config['map-width']  * 2;
+        $mapHeight = $config['map-height'] * 2;
+        imagecopyresampled(
+            $mask, $mapImage,
+            $config['markx'] * 2 - $config['map-width'],
+            $config['marky'] * 2 - $config['map-height'],
+            0, 0,
+            $mapWidth, $mapHeight,
+            $mapWidth, $mapHeight
+        );
+        imagedestroy($mapImage);
+    }
+}
+
+$transparent = imagecolorallocate($mask, 0, 0, 0);
+imagecolortransparent($mask, $transparent);
+imagefilledellipse($mask, -128, -246, 1468, 1468, $transparent);
+imagecopymerge($backgroundImage, $mask, 0, 0, 0, 0, $width, $height, 100);
+imagedestroy($mask);
 
 
 
@@ -73,49 +106,12 @@ imagefill($backgroundImage, 0, 0, $red);
 
 
 imagepng($backgroundImage);
+imagedestroy($backgroundImage);
 
 
 
 
-
-
-
-
-
-// $image = imagecreatetruecolor($newwidth, $newheight);
-// imagealphablending($image,true);
-// imagecopyresampled($image,$image_s,0,0,0,0,$newwidth,$newheight,$width,$height);
-
-// // create masking
-// $mask = imagecreatetruecolor($width, $height);
-// $mask = imagecreatetruecolor($newwidth, $newheight);
-
-
-
-// $transparent = imagecolorallocate($mask, 255, 0, 0);
-// imagecolortransparent($mask, $transparent);
-
-
-
-// imagefilledellipse($mask, $newwidth/2, $newheight/2, $newwidth, $newheight, $transparent);
-
-
-
-// $red = imagecolorallocate($mask, 0, 0, 0);
-// imagecopy($image, $mask, 0, 0, 0, 0, $newwidth, $newheight);
-// imagecolortransparent($image, $red);
-// imagefill($image,0,0, $red);
-
-// // output and free memory
-// header('Content-type: image/png');
-// imagepng($image);
-// imagedestroy($image);
-// imagedestroy($mask);
-
-
-
-
-
+return;
 
 
 
