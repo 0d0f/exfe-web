@@ -264,7 +264,7 @@ class IdentitiesActions extends ActionController {
                 }
             }
         }
-        apiError(400, 'invalid_relation', 'only your connected identities can be update');
+        apiError(401, 'not_allowed', 'only your connected identities can be update');
     }
 
 }
