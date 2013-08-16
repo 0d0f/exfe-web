@@ -603,7 +603,7 @@ class OAuthActions extends ActionController {
                     'provider'           => $result['identity']->provider,
                     'identity_status'    => $result['identity_status'],
                 ]);
-                header('location: /');
+                header('location: ' . $workflow['callback']['url']);
                 return;
             }
         }
