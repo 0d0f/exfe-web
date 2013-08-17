@@ -153,7 +153,7 @@ class wechatActions extends ActionController {
                                                         // 500
                                                         return;
                                                     }
-                                                    $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}";
+                                                    $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&" . time();
                                                     if ($rtnMessage) {
                                                         foreach ($crosses[$map]->exfee->invitations as $invItem) {
                                                             if ($invItem->identity->connected_user_id === $user_id) {
@@ -233,7 +233,7 @@ class wechatActions extends ActionController {
                                             $rtnMessage = [[
                                                 'Title'       => $objCross->title,
                                                 'Description' => $objCross->description,
-                                                'PicUrl'      => API_URL  . "/v3/crosses/{$cross_id}/image?xcode={$invitation['token']}",
+                                                'PicUrl'      => API_URL  . "/v3/crosses/{$cross_id}/image?xcode={$invitation['token']}&" . time(),
                                                 'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}",
                                             ]];
                                             $rtnType    = 'news';
