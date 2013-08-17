@@ -242,10 +242,12 @@ class wechatActions extends ActionController {
                                     httpKit::request(
                                         EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
                                         ['coordinate' => 'earth'], [[
-                                            'ts'  => $now,
-                                            'acc' => (float) $objMsg->Precision,
-                                            'lng' => (float) $objMsg->Longitude,
-                                            'lat' => (float) $objMsg->Latitude,
+                                            't'   => $now,
+                                            'gps' => [
+                                                (float) $objMsg->Latitude,
+                                                (float) $objMsg->Longitude,
+                                                (float) $objMsg->Precision,
+                                            ],
                                         ]], false, false, 3, 3, 'json'
                                     );
                                     return;
