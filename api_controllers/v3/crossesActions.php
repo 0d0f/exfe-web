@@ -11,11 +11,13 @@ class CrossesActions extends ActionController {
         // init requirement
         $params = $this->params;
         $curDir = dirname(__FILE__);
-        $bkgDir    = "{$curDir}/../../static/img/xbg/";
+        $resDir    = "{$curDir}/../../static/img/";
+        $bkgDir    = "{$resDir}xbg/";
         require_once "{$curDir}/../../lib/httpkit.php";
         require_once "{$curDir}/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
+        set_time_limit(10);
         $config = [
             'width'          => 320,
             'height'         => 180,
@@ -29,6 +31,8 @@ class CrossesActions extends ActionController {
             'marky'          => 134,
             'jpeg-quality'   => 100,
             'avatar-size'    => 64,
+            'mask-file'      => "{$resDir}wechat_x_mask@2x.png",
+            'shadow-file'    => "{$resDir}wechat_x_shadow@2x.png",
             'period'         => 604800, // 60 * 60 * 24 * 7
         ];
         // load models
@@ -46,25 +50,15 @@ class CrossesActions extends ActionController {
             header('Cache-Control: no-cache');
             header('Content-Transfer-Encoding: binary');
             header('Content-type: image/jpeg');
-            // get background
+            // create base image
             $width  = $config['width']  * 2;
             $height = $config['height'] * 2;
-            $background = 'default.jpg';
-            foreach ($cross->widget as $widget) {
-                if ($widget->type === 'Background') {
-                    $background = $widget->image;
-                }
-            }
-            $backgroundFile  = @ file_get_contents("{$bkgDir}{$background}");
-            $backgroundImage = @ imagecreatefromstring($backgroundFile);
-            $backgroundImage = $objLibImage->rawResizeImage(
-                $backgroundImage, $width, $height
-            );
-            // create masking
-            $mask = imagecreatetruecolor($width, $height);
+            $image  = imagecreatetruecolor($width, $height);
+            imagesavealpha($image, true);
+            imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
             // render map
-            $lat = '';
-            $lng = '';
+            $lat = '121';
+            $lng = '31';
             if ($cross->place && $cross->place->lat && $cross->place->lng) {
                 $lat = $cross->place->lat;
                 $lng = $cross->place->lng;
@@ -83,7 +77,7 @@ class CrossesActions extends ActionController {
                     $mapWidth  = $config['map-width']  * 2;
                     $mapHeight = $config['map-height'] * 2;
                     imagecopyresampled(
-                        $mask, $mapImage,
+                        $image, $mapImage,
                         $config['markx'] * 2 - $config['map-width'],
                         $config['marky'] * 2 - $config['map-height'],
                         0, 0,
@@ -100,6 +94,18 @@ class CrossesActions extends ActionController {
                     $avatarLayout, [[4, 0], [1, 1], [2, 1], [3, 1], [4, 1]]
                 );
             }
+            // get background
+            $background = 'default.jpg';
+            foreach ($cross->widget as $widget) {
+                if ($widget->type === 'Background') {
+                    $background = $widget->image;
+                }
+            }
+            $backgroundFile  = @ file_get_contents("{$bkgDir}{$background}");
+            $backgroundImage = @ imagecreatefromstring($backgroundFile);
+            $backgroundImage = $objLibImage->rawResizeImage(
+                $backgroundImage, $width, $height
+            );
             // render avatar
             $avatarSize = $config['avatar-size'] * 2;
             foreach ($avatarLayout as $alI => $alItem) {
@@ -129,18 +135,39 @@ class CrossesActions extends ActionController {
                     );
                 }
             }
-            // merge layers
-            $transparent = imagecolorallocate($mask, 0, 0, 0);
-            imagecolortransparent($mask, $transparent);
-            imagefilledellipse(
-                $mask, $config['cx'] * 2, $config['cy'] * 2,
-                $config['cr'] * 2 * 2, $config['cr'] * 2 * 2, $transparent
+            // masking
+            $maskImage = @imagecreatefrompng($config['mask-file']);
+            imagecopyresampled(
+                $image, $backgroundImage, 0, 0,
+                0, 0, 275, $height, 275, $height
             );
-            imagecopymerge($backgroundImage, $mask, 0, 0, 0, 0, $width, $height, 100);
-            imagedestroy($mask);
-            // output
-            imagepng($backgroundImage);
+            for ($x = 275; $x < 555; $x++) {
+                for ($y = 0; $y < $height; $y++) {
+                    $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $x, $y));
+                    if ($alpha['red'] === 0) {
+                        $height = $y;
+                        continue;
+                    }
+                    $alpha = 127 - floor($alpha['red'] / 2 );
+                    if (127 == $alpha) { // int ? float
+                        continue;
+                    }
+                    $color = imagecolorsforindex($backgroundImage, imagecolorat($backgroundImage, $x, $y));
+                    imagesetpixel($image, $x, $y, imagecolorallocatealpha($image, $color['red'], $color['green'], $color['blue'], $alpha));
+                }
+            }
+            imagedestroy($maskImage);
             imagedestroy($backgroundImage);
+            // merge layers
+            $shadowImage = @imagecreatefrompng($config['shadow-file']);
+            imagecopyresampled(
+                $image, $shadowImage, 0, 0,
+                0, 0, $width, $height, $width, $height
+            );
+            imagedestroy($shadowImage);
+            // output
+            imagepng($image);
+            imagedestroy($image);
         }
     }
 
