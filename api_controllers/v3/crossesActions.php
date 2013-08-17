@@ -24,11 +24,13 @@ class CrossesActions extends ActionController {
             'cx'             => -64,
             'cy'             => -123,
             'cr'             => 367,
-            'map-width'      => 360,
-            'map-height'     => 300,
+            'c-x-pos-a'      => 275,
+            'c-x-pos-b'      => 555,
+            'map-width'      => 285,
+            'map-height'     => 275,
             'map-zoom-level' => 13,
-            'markx'          => 272,
-            'marky'          => 134,
+            'markx'          => 280,
+            'marky'          => 136,
             'jpeg-quality'   => 100,
             'avatar-size'    => 64,
             'mask-file'      => "{$resDir}wechat_x_mask@2x.png",
@@ -54,8 +56,6 @@ class CrossesActions extends ActionController {
             $width  = $config['width']  * 2;
             $height = $config['height'] * 2;
             $image  = imagecreatetruecolor($width, $height);
-            imagesavealpha($image, true);
-            imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
             // render map
             $lat = '121';
             $lng = '31';
@@ -139,9 +139,9 @@ class CrossesActions extends ActionController {
             $maskImage = @imagecreatefrompng($config['mask-file']);
             imagecopyresampled(
                 $image, $backgroundImage, 0, 0,
-                0, 0, 275, $height, 275, $height
+                0, 0, $config['c-x-pos-a'], $height, $config['c-x-pos-a'], $height
             );
-            for ($x = 275; $x < 555; $x++) {
+            for ($x = $config['c-x-pos-a']; $x < $config['c-x-pos-b']; $x++) {
                 for ($y = 0; $y < $height; $y++) {
                     $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $x, $y));
                     if ($alpha['red'] === 0) {
