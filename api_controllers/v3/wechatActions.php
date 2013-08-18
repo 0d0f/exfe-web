@@ -153,10 +153,19 @@ class wechatActions extends ActionController {
                                                         // 500
                                                         return;
                                                     }
+                                                    $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&" . time();
+                                                    if ($rtnMessage) {
+                                                        foreach ($crosses[$map]->exfee->invitations as $invItem) {
+                                                            if ($invItem->identity->connected_user_id === $user_id) {
+                                                                $picUrl = $invItem->invited_by->avatar['320_320'];
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                     $rtnMessage[] = [
                                                         'Title'       => $crosses[$map]->title,
                                                         'Description' => $crosses[$map]->description,
-                                                        'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$crosses[$map]->widget[0]->image ?: 'default.jpg'),
+                                                        'PicUrl'      => $picUrl,
                                                         'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}",
                                                     ];
                                                 }
@@ -224,7 +233,7 @@ class wechatActions extends ActionController {
                                             $rtnMessage = [[
                                                 'Title'       => $objCross->title,
                                                 'Description' => $objCross->description,
-                                                'PicUrl'      => 'https://exfe.com/static/img/xbg/' . (@$objCross->widget[0]->image ?: 'default.jpg'),
+                                                'PicUrl'      => API_URL  . "/v3/crosses/{$cross_id}/image?xcode={$invitation['token']}&" . time(),
                                                 'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}",
                                             ]];
                                             $rtnType    = 'news';
@@ -242,10 +251,12 @@ class wechatActions extends ActionController {
                                     httpKit::request(
                                         EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
                                         ['coordinate' => 'earth'], [[
-                                            'ts'  => $now,
-                                            'acc' => (float) $objMsg->Precision,
-                                            'lng' => (float) $objMsg->Longitude,
-                                            'lat' => (float) $objMsg->Latitude,
+                                            't'   => $now,
+                                            'gps' => [
+                                                (float) $objMsg->Latitude,
+                                                (float) $objMsg->Longitude,
+                                                (float) $objMsg->Precision,
+                                            ],
                                         ]], false, false, 3, 3, 'json'
                                     );
                                     return;
