@@ -156,7 +156,8 @@ class wechatActions extends ActionController {
                                                     $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&" . time();
                                                     if ($rtnMessage) {
                                                         foreach ($crosses[$map]->exfee->invitations as $invItem) {
-                                                            if ($invItem->identity->connected_user_id === $user_id) {
+                                                            if ($invItem->identity->connected_user_id === $user_id
+                                                             || $invItem->identity->id                === $identity_id) {
                                                                 $picUrl = $invItem->invited_by->avatar['320_320'];
                                                                 break;
                                                             }
