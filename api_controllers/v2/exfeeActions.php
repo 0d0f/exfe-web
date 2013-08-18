@@ -434,16 +434,18 @@ class ExfeeActions extends ActionController {
                 $exfee = $modExfee->getExfeeById($exfee_id);
                 $cur_invitation  = null;
                 $cur_identity_id = 0;
+                $grouping        = 0;
                 foreach ($exfee->invitations as $invitation) {
                     if ($invitation->identity->connected_user_id === (int) $result['uid']) {
                         $cur_invitation = $invitation;
                         break;
                     }
                 }
-                $rawExfee = $this->getRawExfeeById($exfee->id, true);
+                $rawExfee = $modExfee->getRawExfeeById($exfee->id, true);
                 foreach ($rawExfee as $reItem) {
                     if ((int) $reItem['identity_id'] === $rawIdentity->id) {
                         $cur_invitation_id = (int) $reItem['id'];
+                        $grouping          = (int) $reItem['grouping'];
                         break;
                     }
                 }
@@ -451,11 +453,12 @@ class ExfeeActions extends ActionController {
                     apiError(400, 'already_in', '');
                 }
                 $objInvitation = new stdClass;
-                $objInvitation->id = 0;
+                $objInvitation->id       = 0;
                 $objInvitation->identity = $rawIdentity;
                 $objInvitation->response = 'NOTIFICATION';
                 $objInvitation->host     = $cur_invitation->host;
                 $objInvitation->mates    = $cur_invitation->mates;
+                $objInvitation->grouping = $grouping;
                 $result = $modExfee->addInvitationIntoExfee(
                     $objInvitation, $exfee->id, $cur_invitation->identity->id, (int) $result['uid']
                 );
