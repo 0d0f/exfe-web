@@ -382,8 +382,8 @@ class ExfeeModels extends DataModel {
                 `invited_by`       =  {$by_identity_id},
                 `by_identity_id`   =  {$by_identity_id},
                 `host`             =  {$host},
-                `mates`            =  {$mates},
-                `grouping`         =  {$invitation->grouping}";
+                `mates`            =  {$mates}" . (@$invitation->grouping ? ",
+                `grouping`         =  {$invitation->grouping}" : '');
         $dbResult = $this->query($sql);
         // save relations and update request access
         $hlpRequest = $this->getHelperByName('Request');
