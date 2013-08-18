@@ -293,11 +293,9 @@
         </div>
         <div id="identities"></div>
       </div>
-      <div id="info-wins" class="hide">
-        <div id="my-info" class="info-windown hide">
-          <div class="splitline show">秀这张“活点地图”</div>
-          <div class="splitline discover">发现更多…</div>
-        </div>
+      <div id="my-info" class="info-windown hide">
+        <div class="splitline show">秀这张“活点地图”</div>
+        <div class="splitline discover">发现更多…</div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
