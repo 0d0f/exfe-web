@@ -65,14 +65,21 @@ class CrossesActions extends ActionController {
             }
             $avatarLayout = [[0, 0], [1, 0], [2, 0], [3, 0]];
             if ($lat && $lng) {
-                $mapImage = httpKit::fetchImageExpress(
-                    'https://maps.googleapis.com/maps/api/staticmap?center='
-                  . "{$lat},{$lng}&markers=scale:2|icon%3a"
-                  . urlencode('http://img.exfe.com/web/map_pin_blue@2x.png')
-                  . "%7C{$lat},{$lng}&zoom={$config['map-zoom-level']}"
-                  . "&size={$config['map-width']}x{$config['map-height']}"
-                  . '&maptype=road&sensor=false&scale=2'
+                $mapImageKey = "cross_image_map:{$lat},{$lng}";
+                $mapImage = $objLibImage->getImageCache(
+                    IMG_CACHE_PATH, $mapImageKey, 60 * 60 * 24 * 30, true
                 );
+                if (!$mapImage) {
+                    $mapImage = httpKit::fetchImageExpress(
+                        'https://maps.googleapis.com/maps/api/staticmap?center='
+                      . "{$lat},{$lng}&markers=scale:2|icon%3a"
+                      . urlencode('http://img.exfe.com/web/map_pin_blue@2x.png')
+                      . "%7C{$lat},{$lng}&zoom={$config['map-zoom-level']}"
+                      . "&size={$config['map-width']}x{$config['map-height']}"
+                      . '&maptype=road&sensor=false&scale=2'
+                    );
+                    $objLibImage->setImageCache(IMG_CACHE_PATH, $mapImageKey, $mapImage);
+                }
                 if ($mapImage) {
                     $mapWidth  = $config['map-width']  * 2;
                     $mapHeight = $config['map-height'] * 2;
@@ -91,7 +98,7 @@ class CrossesActions extends ActionController {
                 );
             } else {
                 $avatarLayout = array_merge(
-                    $avatarLayout, [[4, 0], [1, 1], [2, 1], [3, 1], [4, 1]]
+                    $avatarLayout, [[4, 0], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1]]
                 );
             }
             // get background
@@ -101,11 +108,60 @@ class CrossesActions extends ActionController {
                     $background = $widget->image;
                 }
             }
-            $backgroundFile  = @ file_get_contents("{$bkgDir}{$background}");
-            $backgroundImage = @ imagecreatefromstring($backgroundFile);
-            $backgroundImage = $objLibImage->rawResizeImage(
-                $backgroundImage, $width, $height
+            $backgroundPath  = "{$bkgDir}{$background}";
+
+
+            $maskImage = @imagecreatefrompng($config['mask-file']);
+            // try cache
+
+            $bgImageKey      = "cross_image_background:{$backgroundFile}";
+            $backgroundImage = $objLibImage->getImageCache(
+                IMG_CACHE_PATH, $bgImageKey, 60 * 60 * 24 * 365, true
             );
+            if (!$backgroundImage) {
+                $backgroundImage = imagecreatetruecolor($width, $height);
+                imagefill($backgroundImage, 0, 0, imagecolorallocatealpha($backgroundImage, 0, 0, 0, 127));
+                imagesavealpha($backgroundImage, true);
+                $backgroundFile  = @ file_get_contents($backgroundPath);
+                $tmpBgImage = @ imagecreatefromstring($backgroundFile);
+                $tmpBgImage = $objLibImage->rawResizeImage(
+                    $tmpBgImage, $width, $height
+                );
+                // masking
+                imagecopyresampled(
+                    $backgroundImage, $tmpBgImage, 0, 0,
+                    0, 0, $config['c-x-pos-a'], $height, $config['c-x-pos-a'], $height
+                );
+                $calHeight = $height;
+                for ($x = $config['c-x-pos-a']; $x < $config['c-x-pos-b']; $x++) {
+                    for ($y = 0; $y < $calHeight; $y++) {
+                        $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $x, $y));
+                        if ($alpha['red'] === 0) {
+                            $calHeight = $y;
+                            continue;
+                        }
+                        $alpha = 127 - floor($alpha['red'] / 2 );
+                        if (127 == $alpha) { // int ? float
+                            continue;
+                        }
+                        $color = imagecolorsforindex($tmpBgImage, imagecolorat($tmpBgImage, $x, $y));
+                        imagesetpixel($backgroundImage, $x, $y, imagecolorallocatealpha($backgroundImage, $color['red'], $color['green'], $color['blue'], $alpha));
+                    }
+                }
+                // merge layers
+                $shadowImage = @imagecreatefrompng($config['shadow-file']);
+                imagecopyresampled(
+                    $backgroundImage, $shadowImage, 0, 0,
+                    0, 0, $width, $height, $width, $height
+                );
+                imagedestroy($shadowImage);
+                $objLibImage->setImageCache(IMG_CACHE_PATH, $bgImageKey, $backgroundImage);
+            }
+            imagecopyresampled(
+                $image, $backgroundImage, 0, 0,
+                0, 0, $width, $height, $width, $height
+            );
+            imagedestroy($backgroundImage);
             // render avatar
             $avatarSize = $config['avatar-size'] * 2;
             foreach ($avatarLayout as $alI => $alItem) {
@@ -129,42 +185,39 @@ class CrossesActions extends ActionController {
                     $imageObject = $objLibImage->rawResizeImage(
                         $imageObject, $avatarSize, $avatarSize
                     );
-                    imagecopyresampled(
-                        $backgroundImage, $imageObject, $alItem[0], $alItem[1],
-                        0, 0, $avatarSize, $avatarSize, $avatarSize, $avatarSize
-                    );
-                }
-            }
-            // masking
-            $maskImage = @imagecreatefrompng($config['mask-file']);
-            imagecopyresampled(
-                $image, $backgroundImage, 0, 0,
-                0, 0, $config['c-x-pos-a'], $height, $config['c-x-pos-a'], $height
-            );
-            for ($x = $config['c-x-pos-a']; $x < $config['c-x-pos-b']; $x++) {
-                for ($y = 0; $y < $height; $y++) {
-                    $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $x, $y));
-                    if ($alpha['red'] === 0) {
-                        $height = $y;
-                        continue;
+                    if ($alI == 3 && sizeof($avatarLayout) === 7) {
+                        $maxY = $avatarSize;
+                        for ($x = 0; $x < $avatarSize; $x++) {
+                            $currentX = $alItem[0] + $x;
+                            for ($y = 0; $y < $maxY; $y++) {
+                                $currentY = $alItem[1] + $y;
+                                $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $currentX, $currentY));
+                                if ($alpha['red'] === 0) {
+                                    $maxY = $y;
+                                    continue;
+                                }
+                                $alpha = 127 - floor($alpha['red'] / 2 );
+                                if (127 == $alpha) { // int ? float
+                                    continue;
+                                }
+                                $color = imagecolorsforindex($imageObject, imagecolorat($imageObject, $x, $y));
+                                imagesetpixel($image, $currentX, $currentY, imagecolorallocatealpha($image, $color['red'], $color['green'], $color['blue'], $alpha));
+                            }
+                        }
+                    } else {
+                        imagecopyresampled(
+                            $image, $imageObject, $alItem[0], $alItem[1],
+                            0, 0, $avatarSize, $avatarSize, $avatarSize, $avatarSize
+                        );
                     }
-                    $alpha = 127 - floor($alpha['red'] / 2 );
-                    if (127 == $alpha) { // int ? float
-                        continue;
-                    }
-                    $color = imagecolorsforindex($backgroundImage, imagecolorat($backgroundImage, $x, $y));
-                    imagesetpixel($image, $x, $y, imagecolorallocatealpha($image, $color['red'], $color['green'], $color['blue'], $alpha));
+
                 }
             }
             imagedestroy($maskImage);
-            imagedestroy($backgroundImage);
-            // merge layers
-            $shadowImage = @imagecreatefrompng($config['shadow-file']);
-            imagecopyresampled(
-                $image, $shadowImage, 0, 0,
-                0, 0, $width, $height, $width, $height
-            );
-            imagedestroy($shadowImage);
+
+
+
+
             // output
             imagepng($image);
             imagedestroy($image);
