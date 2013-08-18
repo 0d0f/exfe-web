@@ -329,12 +329,12 @@
               <div class="app-keywords">汇聚・融入・乐享</div>
             </div>
           </div>
-        </div>
-        <div class="notify">
-          <div class="notify-title">请输入资料以便朋友们向您发送提醒：</div>
-          <div class="notify-frame">
-            <input type="text" class="email" id="notify-provider" placeholder="您的手机号或电子邮件" />
-            <button class="notify-ok">确定</button>
+          <div class="notify">
+            <div class="notify-title">请输入资料以便朋友们向您发送提醒：</div>
+            <div class="notify-frame">
+              <input type="text" class="email" id="notify-provider" placeholder="您的手机号或电子邮件" />
+              <button class="notify-ok">确定</button>
+            </div>
           </div>
         </div>
       </div>
