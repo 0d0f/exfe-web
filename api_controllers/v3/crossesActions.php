@@ -98,7 +98,7 @@ class CrossesActions extends ActionController {
                 );
             } else {
                 $avatarLayout = array_merge(
-                    $avatarLayout, [[4, 0], [1, 1], [2, 1], [3, 1], [4, 1]]
+                    $avatarLayout, [[4, 0], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1]]
                 );
             }
             // get background
@@ -185,7 +185,7 @@ class CrossesActions extends ActionController {
                     $imageObject = $objLibImage->rawResizeImage(
                         $imageObject, $avatarSize, $avatarSize
                     );
-                    if ($alI == 4 && sizeof($avatarLayout) === 7) {
+                    if ($alI == 3 && sizeof($avatarLayout) === 7) {
                         $maxY = $avatarSize;
                         for ($x = 0; $x < $avatarSize; $x++) {
                             $currentX = $alItem[0] + $x;
