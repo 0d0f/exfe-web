@@ -56,12 +56,30 @@ class CrossesActions extends ActionController {
             $width  = $config['width']  * 2;
             $height = $config['height'] * 2;
             $image  = imagecreatetruecolor($width, $height);
+            imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
+            imagesavealpha($image, true);
+
             // render map
-            $lat = '121';
-            $lng = '31';
-            if ($cross->place && $cross->place->lat && $cross->place->lng) {
+            $geoMarks = httpKit::request(
+                EXFE_AUTH_SERVER . "/v3/routex/_inner/geomarks/crosses/{$cross->id}",
+                ['tags' => 'destination'], null,
+                false, false, 3, 3, 'json', true
+            );
+            $geoMarks = (
+                $geoMarks
+             && $geoMarks['http_code'] === 200
+             && $geoMarks['json']
+             && $geoMarks['json'][0]
+            ) ? $geoMarks['json'][0] : [];
+            if ($geoMarks) {
+                $lat = $geoMarks['lat'];
+                $lng = $geoMarks['lng'];
+            } else if ($cross->place && $cross->place->lat && $cross->place->lng) {
                 $lat = $cross->place->lat;
                 $lng = $cross->place->lng;
+            } else {
+                $lat = '';
+                $lng = '';
             }
             $avatarLayout = [[0, 0], [1, 0], [2, 0], [3, 0]];
             if ($lat && $lng) {
@@ -113,49 +131,56 @@ class CrossesActions extends ActionController {
 
             $maskImage = @imagecreatefrompng($config['mask-file']);
             // try cache
-
-            $bgImageKey      = "cross_image_background:{$backgroundFile}";
-            $backgroundImage = $objLibImage->getImageCache(
-                IMG_CACHE_PATH, $bgImageKey, 60 * 60 * 24 * 365, true
-            );
-            if (!$backgroundImage) {
-                $backgroundImage = imagecreatetruecolor($width, $height);
-                imagefill($backgroundImage, 0, 0, imagecolorallocatealpha($backgroundImage, 0, 0, 0, 127));
-                imagesavealpha($backgroundImage, true);
-                $backgroundFile  = @ file_get_contents($backgroundPath);
-                $tmpBgImage = @ imagecreatefromstring($backgroundFile);
-                $tmpBgImage = $objLibImage->rawResizeImage(
-                    $tmpBgImage, $width, $height
+            if ($lat && $lng) {
+                $bgImageKey      = "cross_image_background:{$backgroundFile}";
+                $backgroundImage = $objLibImage->getImageCache(
+                    IMG_CACHE_PATH, $bgImageKey, 60 * 60 * 24 * 365, true
                 );
-                // masking
-                imagecopyresampled(
-                    $backgroundImage, $tmpBgImage, 0, 0,
-                    0, 0, $config['c-x-pos-a'], $height, $config['c-x-pos-a'], $height
-                );
-                $calHeight = $height;
-                for ($x = $config['c-x-pos-a']; $x < $config['c-x-pos-b']; $x++) {
-                    for ($y = 0; $y < $calHeight; $y++) {
-                        $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $x, $y));
-                        if ($alpha['red'] === 0) {
-                            $calHeight = $y;
-                            continue;
+                if (!$backgroundImage) {
+                    $backgroundImage = imagecreatetruecolor($width, $height);
+                    imagefill($backgroundImage, 0, 0, imagecolorallocatealpha($backgroundImage, 0, 0, 0, 127));
+                    imagesavealpha($backgroundImage, true);
+                    $backgroundFile  = @ file_get_contents($backgroundPath);
+                    $tmpBgImage = @ imagecreatefromstring($backgroundFile);
+                    $tmpBgImage = $objLibImage->rawResizeImage(
+                        $tmpBgImage, $width, $height
+                    );
+                    // masking
+                    imagecopyresampled(
+                        $backgroundImage, $tmpBgImage, 0, 0,
+                        0, 0, $config['c-x-pos-a'], $height, $config['c-x-pos-a'], $height
+                    );
+                    $calHeight = $height;
+                    for ($x = $config['c-x-pos-a']; $x < $config['c-x-pos-b']; $x++) {
+                        for ($y = 0; $y < $calHeight; $y++) {
+                            $alpha = imagecolorsforindex($maskImage, imagecolorat($maskImage, $x, $y));
+                            if ($alpha['red'] === 0) {
+                                $calHeight = $y;
+                                continue;
+                            }
+                            $alpha = 127 - floor($alpha['red'] / 2 );
+                            if (127 == $alpha) { // int ? float
+                                continue;
+                            }
+                            $color = imagecolorsforindex($tmpBgImage, imagecolorat($tmpBgImage, $x, $y));
+                            imagesetpixel($backgroundImage, $x, $y, imagecolorallocatealpha($backgroundImage, $color['red'], $color['green'], $color['blue'], $alpha));
                         }
-                        $alpha = 127 - floor($alpha['red'] / 2 );
-                        if (127 == $alpha) { // int ? float
-                            continue;
-                        }
-                        $color = imagecolorsforindex($tmpBgImage, imagecolorat($tmpBgImage, $x, $y));
-                        imagesetpixel($backgroundImage, $x, $y, imagecolorallocatealpha($backgroundImage, $color['red'], $color['green'], $color['blue'], $alpha));
                     }
+                    // merge layers
+                    $shadowImage = @imagecreatefrompng($config['shadow-file']);
+                    imagecopyresampled(
+                        $backgroundImage, $shadowImage, 0, 0,
+                        0, 0, $width, $height, $width, $height
+                    );
+                    imagedestroy($shadowImage);
+                    $objLibImage->setImageCache(IMG_CACHE_PATH, $bgImageKey, $backgroundImage);
                 }
-                // merge layers
-                $shadowImage = @imagecreatefrompng($config['shadow-file']);
-                imagecopyresampled(
-                    $backgroundImage, $shadowImage, 0, 0,
-                    0, 0, $width, $height, $width, $height
+            } else {
+                $backgroundFile  = @ file_get_contents($backgroundPath);
+                $backgroundImage = @ imagecreatefromstring($backgroundFile);
+                $backgroundImage = $objLibImage->rawResizeImage(
+                    $backgroundImage, $width, $height
                 );
-                imagedestroy($shadowImage);
-                $objLibImage->setImageCache(IMG_CACHE_PATH, $bgImageKey, $backgroundImage);
             }
             imagecopyresampled(
                 $image, $backgroundImage, 0, 0,
