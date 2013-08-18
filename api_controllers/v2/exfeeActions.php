@@ -440,7 +440,7 @@ class ExfeeActions extends ActionController {
                         break;
                     }
                 }
-                $rawExfee = $this->getRawExfeeById($exfee->id, true);
+                $rawExfee = $modExfee->getRawExfeeById($exfee->id, true);
                 foreach ($rawExfee as $reItem) {
                     if ((int) $reItem['identity_id'] === $rawIdentity->id) {
                         $cur_invitation_id = (int) $reItem['id'];
