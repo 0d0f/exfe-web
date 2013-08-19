@@ -15,7 +15,8 @@ echo "window._ENV_.CSSFILE = '${cssname}';\n";
 echo 'window._ENV_.smith_id = ' . $this->getVar('smith_id') . ';' . "\n";
 echo 'window._ENV_.exfee_id = ' . $this->getVar('exfee_id') . ';' . "\n";
 echo "  </script>\n";
-echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js' async></script>";
+echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js'></script>";
+echo "<script src='/static/js/" . $jsname . "'</script>";
 echo "\n";
 
 // Google Analytics
