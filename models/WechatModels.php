@@ -29,6 +29,7 @@ class WechatModels extends DataModel {
 
     public function getIdentityBy($external_id) {
         if ($external_id) {
+            $external_id = splitIdentityId($external_id)[0];
             $rawIdentity = $this->libwechat->getUserInfo($external_id);
             return $this->makeIdentityBy($rawIdentity);
         }
@@ -39,8 +40,9 @@ class WechatModels extends DataModel {
     public function makeIdentityBy($rawIdentity) {
         return $rawIdentity ? new Identity(
             0, $rawIdentity['nickname'], '', '', 'wechat', 0,
-            $rawIdentity['openid'], $rawIdentity['openid'], null, '', '', 0,
-            false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
+            "{$rawIdentity['openid']}@" . WECHAT_OFFICIAL_ACCOUNT_ID,
+            "{$rawIdentity['openid']}@" . WECHAT_OFFICIAL_ACCOUNT_ID, null, '',
+            '', 0, false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
         ) : null;
     }
 
@@ -48,8 +50,9 @@ class WechatModels extends DataModel {
     public function packMessage(
         $toUserName, $content, $msgType = 'text', $FuncFlag = 0
     ) {
+        $toUserName = splitIdentityId($toUserName);
         return $this->libwechat->packMessage(
-            $toUserName, WECHAT_OFFICIAL_ACCOUNT_ID,
+            $toUserName[0], $toUserName[1],
             $content, $msgType, $FuncFlag
         );
     }
