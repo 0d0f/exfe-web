@@ -26,7 +26,8 @@ class wechatActions extends ActionController {
             $objMsg   = $modWechat->unpackMessage($rawInput);
             $now      = time();
             error_log(json_encode($objMsg));
-            if (!($external_id = @$objMsg->FromUserName ? "{$objMsg->FromUserName}" : '')) {
+            if (!($external_id = @$objMsg->FromUserName && @$objMsg->ToUserName
+                               ? "{$objMsg->FromUserName}@{$objMsg->ToUserName}" : '')) {
                 error_log('Empty FromUserName');
                 return;
             }
