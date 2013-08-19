@@ -967,9 +967,9 @@ class UserModels extends DataModel {
         require_once dirname(__FILE__) . "/../xbgutilitie/libimage.php";
         // image config
         $specification = [
-            'width'      => 160,
-            'height'     => 160,
-            'font-width' => 110,
+            'width'      => 320,
+            'height'     => 320,
+            'font-width' => 220,
         ];
         $backgrounds = [
             'blue',
@@ -989,7 +989,7 @@ class UserModels extends DataModel {
             [255, 255, 255],
             [255, 255, 255],
         ];
-        $ftSize = 64;
+        $ftSize = 128;
         // header
         if (!$asimage) {
             header('Pragma: no-cache');
@@ -1057,9 +1057,9 @@ class UserModels extends DataModel {
         }
         $name    = mb_convert_encoding($name, 'html-entities', 'utf-8');
         // calcular font size
-        $ftSize += 1;
+        $ftSize += 2;
         do {
-            $ftSize--;
+            $ftSize -= 2;
             $posArr = imagettftext(imagecreatetruecolor($specification['width'], $specification['height']), $ftSize, 0, 0, $specification['height'], $fColor, $ftFile, $name);
             $fWidth = $posArr[2] - $posArr[0];
         } while ($fWidth > $specification['font-width']);
