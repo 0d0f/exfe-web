@@ -1102,7 +1102,7 @@ class BusActions extends ActionController {
             $objCross->by_identity = $bot233;
             $objCross->time        = $modTime->parseTimeString(
                 'Today',
-                $modTime->getDigitalTimezoneBy($objIdentity->timezone) ?: '+00:00 GMT'
+                $modTime->getDigitalTimezoneBy($objIdentity->timezone) ?: '+00:00'
             );
             $objCross->place       = new Place(
                 0, 'Online', 'exfe.com', '', '', '', '', $now, $now
