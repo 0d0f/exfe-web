@@ -26,6 +26,16 @@ function dbescape($string) {
     return $maindb->escape_string($string);
 }
 
+// identity functions {
+define('IDENTITY_SPLIT_REG', '/(.*)@([^\@]*)/');
+function splitIdentityId($identityId) {
+    return [
+        preg_replace(IDENTITY_SPLIT_REG, '$1', $identityId),
+        preg_replace(IDENTITY_SPLIT_REG, '$2', $identityId),
+    ];
+}
+// }
+
 // redis by @leaskh {
 
 # connection pool

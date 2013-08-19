@@ -26,7 +26,8 @@ class wechatActions extends ActionController {
             $objMsg   = $modWechat->unpackMessage($rawInput);
             $now      = time();
             error_log(json_encode($objMsg));
-            if (!($external_id = @$objMsg->FromUserName ? "{$objMsg->FromUserName}" : '')) {
+            if (!($external_id = @$objMsg->FromUserName && @$objMsg->ToUserName
+                               ? "{$objMsg->FromUserName}@{$objMsg->ToUserName}" : '')) {
                 error_log('Empty FromUserName');
                 return;
             }
@@ -153,7 +154,7 @@ class wechatActions extends ActionController {
                                                         // 500
                                                         return;
                                                     }
-                                                    $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&" . time();
+                                                    $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}";
                                                     if ($rtnMessage) {
                                                         foreach ($crosses[$map]->exfee->invitations as $invItem) {
                                                             if ($invItem->identity->connected_user_id === $user_id
@@ -234,7 +235,7 @@ class wechatActions extends ActionController {
                                             $rtnMessage = [[
                                                 'Title'       => $objCross->title,
                                                 'Description' => $objCross->description,
-                                                'PicUrl'      => API_URL  . "/v3/crosses/{$cross_id}/image?xcode={$invitation['token']}&" . time(),
+                                                'PicUrl'      => API_URL  . "/v3/crosses/{$cross_id}/image?xcode={$invitation['token']}",
                                                 'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}",
                                             ]];
                                             $rtnType    = 'news';

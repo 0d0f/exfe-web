@@ -35,6 +35,7 @@ class CrossesActions extends ActionController {
             'avatar-size'    => 64,
             'mask-file'      => "{$resDir}wechat_x_mask@2x.png",
             'shadow-file'    => "{$resDir}wechat_x_shadow@2x.png",
+            'jpeg-quality'   => 100,
             'period'         => 604800, // 60 * 60 * 24 * 7
         ];
         // load models
@@ -52,14 +53,9 @@ class CrossesActions extends ActionController {
             header('Cache-Control: no-cache');
             header('Content-Transfer-Encoding: binary');
             header('Content-type: image/jpeg');
-            // create base image
-            $width  = $config['width']  * 2;
-            $height = $config['height'] * 2;
-            $image  = imagecreatetruecolor($width, $height);
-            imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
-            imagesavealpha($image, true);
-
-            // render map
+            // ready
+            $updated_at = strtotime($cross->exfee->updated_at);
+            // get gps
             $geoMarks = httpKit::request(
                 EXFE_AUTH_SERVER . "/v3/routex/_inner/geomarks/crosses/{$cross->id}",
                 ['tags' => 'destination'], null,
@@ -74,6 +70,7 @@ class CrossesActions extends ActionController {
             if ($geoMarks) {
                 $lat = $geoMarks['lat'];
                 $lng = $geoMarks['lng'];
+                $updated_at = $geoMarks['updated_at'] > $updated_at ? $geoMarks['updated_at'] : $updated_at;
             } else if ($cross->place && $cross->place->lat && $cross->place->lng) {
                 $lat = $cross->place->lat;
                 $lng = $cross->place->lng;
@@ -81,6 +78,22 @@ class CrossesActions extends ActionController {
                 $lat = '';
                 $lng = '';
             }
+            // try cache
+            $rsImageKey = "{$this->route}&updated_at={$updated_at}";
+            $rsImage = $objLibImage->getImageCache(
+                IMG_CACHE_PATH, $rsImageKey, $config['period'], false, 'jpg'
+            );
+            if ($rsImage) {
+                fpassthru($rsImage);
+                fclose($rsImage);
+                return;
+            }
+            // create base image
+            $width  = $config['width']  * 2;
+            $height = $config['height'] * 2;
+            $image  = imagecreatetruecolor($width, $height);
+            imagefill($image, 0, 0, imagecolorallocate($image, 255, 255, 255));
+            // render map
             $avatarLayout = [[0, 0], [1, 0], [2, 0], [3, 0]];
             if ($lat && $lng) {
                 $mapImageKey = "cross_image_map:{$lat},{$lng}";
@@ -119,7 +132,7 @@ class CrossesActions extends ActionController {
                     $avatarLayout, [[4, 0], [0, 1], [1, 1], [2, 1], [3, 1], [4, 1]]
                 );
             }
-            // get background
+            // render background
             $background = 'default.jpg';
             foreach ($cross->widget as $widget) {
                 if ($widget->type === 'Background') {
@@ -127,11 +140,9 @@ class CrossesActions extends ActionController {
                 }
             }
             $backgroundPath  = "{$bkgDir}{$background}";
-
-
             $maskImage = @imagecreatefrompng($config['mask-file']);
-            // try cache
             if ($lat && $lng) {
+                // try background cache
                 $bgImageKey      = "cross_image_background:{$backgroundFile}";
                 $backgroundImage = $objLibImage->getImageCache(
                     IMG_CACHE_PATH, $bgImageKey, 60 * 60 * 24 * 365, true
@@ -145,7 +156,7 @@ class CrossesActions extends ActionController {
                     $tmpBgImage = $objLibImage->rawResizeImage(
                         $tmpBgImage, $width, $height
                     );
-                    // masking
+                    // masking background
                     imagecopyresampled(
                         $backgroundImage, $tmpBgImage, 0, 0,
                         0, 0, $config['c-x-pos-a'], $height, $config['c-x-pos-a'], $height
@@ -166,7 +177,7 @@ class CrossesActions extends ActionController {
                             imagesetpixel($backgroundImage, $x, $y, imagecolorallocatealpha($backgroundImage, $color['red'], $color['green'], $color['blue'], $alpha));
                         }
                     }
-                    // merge layers
+                    // merge shadow layers
                     $shadowImage = @imagecreatefrompng($config['shadow-file']);
                     imagecopyresampled(
                         $backgroundImage, $shadowImage, 0, 0,
@@ -176,12 +187,14 @@ class CrossesActions extends ActionController {
                     $objLibImage->setImageCache(IMG_CACHE_PATH, $bgImageKey, $backgroundImage);
                 }
             } else {
+                // render purge background
                 $backgroundFile  = @ file_get_contents($backgroundPath);
                 $backgroundImage = @ imagecreatefromstring($backgroundFile);
                 $backgroundImage = $objLibImage->rawResizeImage(
                     $backgroundImage, $width, $height
                 );
             }
+            // merge background layer
             imagecopyresampled(
                 $image, $backgroundImage, 0, 0,
                 0, 0, $width, $height, $width, $height
@@ -239,13 +252,12 @@ class CrossesActions extends ActionController {
                 }
             }
             imagedestroy($maskImage);
-
-
-
-
-            // output
-            imagepng($image);
+            // render
+            imagejpeg($image, null, $config['jpeg-quality']);
+            $objLibImage->setImageCache(IMG_CACHE_PATH, $rsImageKey, $image, 'jpg', $config['jpeg-quality']);
             imagedestroy($image);
+        } else {
+            header('HTTP/1.1 404 Not Found');
         }
     }
 
