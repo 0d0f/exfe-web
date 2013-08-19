@@ -294,17 +294,17 @@
         <div id="identities"></div>
       </div>
       <div id="my-info" class="info-windown hide">
-        <div class="splitline show">秀这张“活点地图”</div>
+        <div class="how">秀这张“活点地图”</div>
         <div class="splitline discover">发现更多…</div>
       </div>
       <div id="other-info" class="info-windown hide">
-        <div class="splitline">
+        <div class="info">
           <div class="name"></div>
           <div class="update hide"><span class="time"></span>分钟前所处方位</div>
           <div class="dest hide">距目的地 <span class="m"></span></div>
           <div class="dest-me hide">与您相距 <span class="m"></span></div>
         </div>
-        <div class="please-update hide">请对方更新方位</div>
+        <div class="splitline please-update hide">请对方更新方位</div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
