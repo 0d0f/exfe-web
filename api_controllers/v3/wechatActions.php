@@ -25,7 +25,6 @@ class wechatActions extends ActionController {
             $rawInput = file_get_contents('php://input');
             $objMsg   = $modWechat->unpackMessage($rawInput);
             $now      = time();
-            error_log(json_encode($objMsg));
             if (!($external_id = @$objMsg->FromUserName && @$objMsg->ToUserName
                                ? "{$objMsg->FromUserName}@{$objMsg->ToUserName}" : '')) {
                 error_log('Empty FromUserName');
@@ -168,7 +167,7 @@ class wechatActions extends ActionController {
                                                         'Title'       => $crosses[$map]->title,
                                                         'Description' => $crosses[$map]->description,
                                                         'PicUrl'      => $picUrl,
-                                                        'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}",
+                                                        'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
                                                     ];
                                                 }
                                             } else {
@@ -177,12 +176,17 @@ class wechatActions extends ActionController {
                                             break;
                                         case 'CREATE_MAP':
                                             // gather
+                                            $modTime  = $this->getModelByName('Time');
                                             $hlpBkg   = $this->getHelperByName('Background');
                                             $objCross = new stdClass;
-                                            $objCross->title       = "·X· {$identity->name}";
+                                            $objCross->time        = $modTime->parseTimeString(
+                                                'Today',
+                                                $modTime->getDigitalTimezoneBy($identity->timezone) ?: '+08:00 GMT'
+                                            );
+                                            $timeArray = explode('-', $objCross->time->begin_at->date);
+                                            $objCross->title       = "{$identity->name}的活点地图 " . (int)$timeArray[1] . '月' . (int)$timeArray[2] . '日';
                                             $objCross->description = '';
                                             $objCross->by_identity = $identity;
-                                            $objCross->time        = null;
                                             $objCross->place       = new Place(
                                                 0, 'Online', 'exfe.com', '', '', '', '', $now, $now
                                             );
@@ -232,13 +236,13 @@ class wechatActions extends ActionController {
                                             }
                                             // returns
                                             touchCross($cross_id, $identity->connected_user_id);
-                                            $rtnMessage = [[
-                                                'Title'       => $objCross->title,
-                                                'Description' => $objCross->description,
-                                                'PicUrl'      => API_URL  . "/v3/crosses/{$cross_id}/image?xcode={$invitation['token']}",
-                                                'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}",
-                                            ]];
-                                            $rtnType    = 'news';
+                                            $rtnMessage = '<a href="'
+                                                        . SITE_URL
+                                                        . "/!{$cross_id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}\">{$objCross->title} "
+                                                        . SITE_URL
+                                                        . "/!{$cross_id}/routex?xcode="
+                                                        . substr($invitation['token'], 0, 3)
+                                                        . "…</a> \n点链接开启这张活点地图。长按此消息转发给朋友们，就能互相看到所处方位。";
                                             break;
                                         case 'HELP_01':
                                             break;
@@ -267,8 +271,6 @@ class wechatActions extends ActionController {
                                 $identity->external_username,
                                 $rtnMessage, $rtnType
                             );
-                            // @todo @debug by @Leaskh
-                            error_log($strReturn);
                             if (!$strReturn) {
                                 // 500
                                 return;
