@@ -10,8 +10,6 @@
   <style>.hide { display: none; }</style>
 </head>
 <body>
-  <!-- iframe <iframe id="xframe" frameborder="0" src="" class="hide"></iframe> /iframe }}} -->
-
   <!-- Container {{{-->
   <div class="container" id="app-container">
     <div role="main" id="app-main">
