@@ -294,8 +294,17 @@
         <div id="identities"></div>
       </div>
       <div id="my-info" class="info-windown hide">
-        <div class="splitline show">秀这张“活点地图”</div>
+        <div class="show">秀这张“活点地图”</div>
         <div class="splitline discover">发现更多…</div>
+      </div>
+      <div id="other-info" class="info-windown hide">
+        <div class="info">
+          <div class="name"></div>
+          <div class="update hide"><span class="time"></span>分钟前所处方位</div>
+          <div class="dest hide">距目的地 <span class="m"></span></div>
+          <div class="dest-me hide">与您相距 <span class="m"></span></div>
+        </div>
+        <div class="splitline please-update hide">请对方更新方位</div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
@@ -303,21 +312,6 @@
           <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
         </div>
       </div>
-      <!--div id="free-identities" class="hide">
-        <div id="iavatar">
-          <div class="placeholder">
-            <div class="text">请长按头像</div>
-            <div class="avatar"></div>
-          </div>
-        </div>
-        <h2 id="exfee-name"></h2>
-        <div class="exfers">
-          <ul class="clearfix identities"></ul>
-          <div class="my-avatar">
-            <button class="btn no-avatar">没有我的头像?</button>
-          </div>
-        </div>
-      </div-->
       <div id="shuidi-dialog" class="hide">
         <div class="main">
           <h3 class="title">在“活点地图”上绘制路径?  </h3>
