@@ -294,7 +294,7 @@
         <div id="identities"></div>
       </div>
       <div id="my-info" class="info-windown hide">
-        <div class="how">秀这张“活点地图”</div>
+        <div class="show">秀这张“活点地图”</div>
         <div class="splitline discover">发现更多…</div>
       </div>
       <div id="other-info" class="info-windown hide">
