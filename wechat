@@ -37,16 +37,16 @@ class wechatcli extends DataModel {
             "button" => [
                 [
                     "type" => "click",
-                    "name" => "我的地图",
+                    "name" => "查看",
                     "key"  => "LIST_MAPS",
                 ],
                 [
                     "type" => "click",
-                    "name" => "创建地图",
+                    "name" => "创建",
                     "key"  => "CREATE_MAP",
                 ],
                 [
-                    "name" => "帮助",
+                    "name" => "···",
                     "sub_button" => [
                         [
                             "type" => "click",
