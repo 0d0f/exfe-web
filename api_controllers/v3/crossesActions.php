@@ -178,15 +178,11 @@ class CrossesActions extends ActionController {
                             imagesetpixel($backgroundImage, $x, $y, imagecolorallocatealpha($backgroundImage, $color['red'], $color['green'], $color['blue'], $alpha));
                         }
                     }
-                    // merge shadow layers
-                    $shadowImage = @imagecreatefrompng($config['shadow-map-file']);
-                    imagecopyresampled(
-                        $backgroundImage, $shadowImage, 0, 0,
-                        0, 0, $width, $height, $width, $height
-                    );
-                    imagedestroy($shadowImage);
+                    // set cache
                     $objLibImage->setImageCache(IMG_CACHE_PATH, $bgImageKey, $backgroundImage);
                 }
+                // ready shadow
+                $shadowImage = @imagecreatefrompng($config['shadow-map-file']);
             } else {
                 // render purge background
                 $backgroundFile  = @ file_get_contents($backgroundPath);
@@ -194,13 +190,8 @@ class CrossesActions extends ActionController {
                 $backgroundImage = $objLibImage->rawResizeImage(
                     $backgroundImage, $width, $height
                 );
-                // merge shadow layers
+                // ready shadow
                 $shadowImage = @imagecreatefrompng($config['shadow-file']);
-                imagecopyresampled(
-                    $backgroundImage, $shadowImage, 0, 0,
-                    0, 0, $width, $height, $width, $height
-                );
-                imagedestroy($shadowImage);
             }
             // merge background layer
             imagecopyresampled(
@@ -260,6 +251,11 @@ class CrossesActions extends ActionController {
                 }
             }
             imagedestroy($maskImage);
+            // merge shadow layers
+            imagecopyresampled(
+                $image, $shadowImage, 0, 0, 0, 0, $width, $height, $width, $height
+            );
+            imagedestroy($shadowImage);
             // render
             imagejpeg($image, null, $config['jpeg-quality']);
             $objLibImage->setImageCache(IMG_CACHE_PATH, $rsImageKey, $image, 'jpg', $config['jpeg-quality']);
