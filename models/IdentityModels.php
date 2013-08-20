@@ -664,4 +664,27 @@ class IdentityModels extends DataModel {
         return false;
     }
 
+
+    public function isLabRat($identity_id) {
+        if (($identity_id = (int) $identity_id)) {
+            $rawResult = $this->getRow(
+                "SELECT `lab_rat` FROM `identities` WHERE `id` = {$identity_id}"
+            );
+            if ($rawResult) {
+                return !!$rawResult['lab_rat'];
+            }
+        }
+        return null;
+    }
+
+
+    public function setLabRat($identity_id) {
+        if (($identity_id = (int) $identity_id)) {
+            return $this->query(
+                "UPDATE `identities` SET `lab_rat` = 1 WHERE `id` = {$identity_id}"
+            );
+        }
+        return null;
+    }
+
 }
