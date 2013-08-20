@@ -187,9 +187,7 @@ class wechatActions extends ActionController {
                                             $objCross->title       = "{$identity->name}的活点地图 " . (int)$timeArray[1] . '月' . (int)$timeArray[2] . '日';
                                             $objCross->description = '';
                                             $objCross->by_identity = $identity;
-                                            $objCross->place       = new Place(
-                                                0, 'Online', 'exfe.com', '', '', '', '', $now, $now
-                                            );
+                                            $objCross->place       = new Place();
                                             $objCross->attribute   = new stdClass;
                                             $objCross->attribute->state = 'published';
                                             $objBackground         = new stdClass;
