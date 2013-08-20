@@ -103,14 +103,20 @@ class ExfeeActions extends ActionController {
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
-        if (!($user_id = intval(@$_POST['user_id']))) {
-            apiError(400, 'no_user_id', 'user_id must be provided');
+        if (!($user_token = intval(@$_POST['user_token']))) {
+            apiError(400, 'no_user_token', 'user_token must be provided');
         }
         if (!($xcode = @$_POST['xcode'])) {
             apiError(400, 'no_xcode', 'xcode must be provided');
         }
         // $_POST['widget_type']
         // $_POST['widget_id']
+        // check user_token
+        $objToken     = $modUser->getUserToken($user_token);
+        if ($objToken && ($user_id = @$objToken['data']['user_id'])) {
+        } else {
+            apiError(400, 'error_user_token');
+        }
         // check via identity
         if (($via = @$_POST['via'] ?: '')) {
             $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $via);
