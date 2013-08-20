@@ -175,9 +175,12 @@ class wechatActions extends ActionController {
                                             }
                                             break;
                                         case 'CREATE_MAP':
+                                            if (!$modIdentity->isLabRat($identity->id)) {
+                                                $rtnMessage = '你还不是内测用户，就不让你用！';
+                                                break;
+                                            }
                                             // gather
                                             $modTime  = $this->getModelByName('Time');
-                                            $hlpBkg   = $this->getHelperByName('Background');
                                             $objCross = new stdClass;
                                             $objCross->time        = $modTime->parseTimeString(
                                                 'Today',
@@ -187,16 +190,11 @@ class wechatActions extends ActionController {
                                             $objCross->title       = "{$identity->name}的活点地图 " . (int)$timeArray[1] . '月' . (int)$timeArray[2] . '日';
                                             $objCross->description = '';
                                             $objCross->by_identity = $identity;
-                                            $objCross->place       = new Place(
-                                                0, 'Online', 'exfe.com', '', '', '', '', $now, $now
-                                            );
+                                            $objCross->place       = new Place();
                                             $objCross->attribute   = new stdClass;
                                             $objCross->attribute->state = 'published';
                                             $objBackground         = new stdClass;
-                                            $allBgs = $hlpBkg->getAllBackground();
-                                            $objCross->widget      = [
-                                                new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
-                                            ];
+                                            $objCross->widget      = [new Background('wechat.jpg')];
                                             $objCross->type        = 'Cross';
                                             $objCross->exfee       = new Exfee;
                                             $objCross->exfee->invitations = [
@@ -219,9 +217,8 @@ class wechatActions extends ActionController {
                                             }
                                             // enable routex
                                             $rawMaps = httpKit::request(
-                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses",
+                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}",
                                                 null,  [
-                                                    'cross_id'         => $cross_id,
                                                     'save_breadcrumbs' => true,
                                                     'after_in_seconds' => 7200,
                                                 ], false, false, 3, 3, 'json'
@@ -291,9 +288,18 @@ class wechatActions extends ActionController {
                     }
                     break;
                 case 'text':
-                    $strReturn = $modWechat->packMessage(
-                        $identity->external_username, "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n" . shell_exec('/usr/local/bin/fortune ')
-                    );
+                    switch ($objMsg->Content) {
+                        case '233':
+                            $modIdentity->setLabRat($identity->id);
+                            $strReturn = $modWechat->packMessage(
+                                $identity->external_username, '你现在能创建活点地图了！'
+                            );
+                            break;
+                        default:
+                            $strReturn = $modWechat->packMessage(
+                                $identity->external_username, "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n" . shell_exec('/usr/local/bin/fortune ')
+                            );
+                    }
                     if (!$strReturn) {
                         // 500
                         return;

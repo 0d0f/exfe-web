@@ -573,7 +573,7 @@ class CrossesActions extends ActionController {
             if (!$invitation) {
                 apiError(500, 'internal_server_error');
             }
-            apiResponse(['url' => SITE_URL . "/#!token={$invitation['token']}/routex/"]);
+            apiResponse(['url' => SITE_URL . "/!{$cross->id}/routex?xcode={$invitation['token']}&via={$byIdentity->external_username}@{$byIdentity->provider}"]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
     }

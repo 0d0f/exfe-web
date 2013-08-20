@@ -7,6 +7,8 @@ error_reporting(E_ALL ^ E_NOTICE);
 define('HELPER_DIR', dirname(__FILE__) . '/helpers');
 define('MODEL_DIR',  dirname(__FILE__) . '/models');
 
+set_time_limit(10);
+
 require_once dirname(__FILE__) . '/common.php';
 require_once dirname(__FILE__) . '/DataModel.php';
 require_once 'FrontController.php';
@@ -37,16 +39,16 @@ class wechatcli extends DataModel {
             "button" => [
                 [
                     "type" => "click",
-                    "name" => "我的地图",
+                    "name" => "查看",
                     "key"  => "LIST_MAPS",
                 ],
                 [
                     "type" => "click",
-                    "name" => "创建地图",
+                    "name" => "创建",
                     "key"  => "CREATE_MAP",
                 ],
                 [
-                    "name" => "帮助",
+                    "name" => "···",
                     "sub_button" => [
                         [
                             "type" => "click",
