@@ -217,9 +217,8 @@ class wechatActions extends ActionController {
                                             }
                                             // enable routex
                                             $rawMaps = httpKit::request(
-                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses",
+                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}",
                                                 null,  [
-                                                    'cross_id'         => $cross_id,
                                                     'save_breadcrumbs' => true,
                                                     'after_in_seconds' => 7200,
                                                 ], false, false, 3, 3, 'json'
