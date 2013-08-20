@@ -11,32 +11,33 @@ class CrossesActions extends ActionController {
         // init requirement
         $params = $this->params;
         $curDir = dirname(__FILE__);
-        $resDir    = "{$curDir}/../../static/img/";
-        $bkgDir    = "{$resDir}xbg/";
+        $resDir    = "{$curDir}/../../default_avatar_portrait/";
+        $bkgDir    = "{$curDir}/../../static/img/xbg/";
         require_once "{$curDir}/../../lib/httpkit.php";
         require_once "{$curDir}/../../xbgutilitie/libimage.php";
         $objLibImage = new libImage;
         // config
         set_time_limit(10);
         $config = [
-            'width'          => 320,
-            'height'         => 180,
-            'cx'             => -64,
-            'cy'             => -123,
-            'cr'             => 367,
-            'c-x-pos-a'      => 275,
-            'c-x-pos-b'      => 555,
-            'map-width'      => 285,
-            'map-height'     => 235,
-            'map-zoom-level' => 13,
-            'markx'          => 280,
-            'marky'          => 116,
-            'jpeg-quality'   => 100,
-            'avatar-size'    => 64,
-            'mask-file'      => "{$resDir}wechat_x_mask@2x.png",
-            'shadow-file'    => "{$resDir}wechat_x_shadow@2x.png",
-            'jpeg-quality'   => 100,
-            'period'         => 604800, // 60 * 60 * 24 * 7
+            'width'           => 320,
+            'height'          => 180,
+            'cx'              => -64,
+            'cy'              => -123,
+            'cr'              => 367,
+            'c-x-pos-a'       => 275,
+            'c-x-pos-b'       => 555,
+            'map-width'       => 285,
+            'map-height'      => 235,
+            'map-zoom-level'  => 13,
+            'markx'           => 280,
+            'marky'           => 116,
+            'jpeg-quality'    => 100,
+            'avatar-size'     => 64,
+            'mask-file'       => "{$resDir}wechat_x_mask@2x.png",
+            'shadow-file'     => "{$resDir}wechat_x_shadow@2x.png",
+            'shadow-map-file' => "{$resDir}wechat_x_shadow_map@2x.png",
+            'jpeg-quality'    => 100,
+            'period'          => 604800, // 60 * 60 * 24 * 7
         ];
         // load models
         $modExfee    = $this->getModelByName('Exfee');
@@ -178,7 +179,7 @@ class CrossesActions extends ActionController {
                         }
                     }
                     // merge shadow layers
-                    $shadowImage = @imagecreatefrompng($config['shadow-file']);
+                    $shadowImage = @imagecreatefrompng($config['shadow-map-file']);
                     imagecopyresampled(
                         $backgroundImage, $shadowImage, 0, 0,
                         0, 0, $width, $height, $width, $height
@@ -193,6 +194,13 @@ class CrossesActions extends ActionController {
                 $backgroundImage = $objLibImage->rawResizeImage(
                     $backgroundImage, $width, $height
                 );
+                // merge shadow layers
+                $shadowImage = @imagecreatefrompng($config['shadow-file']);
+                imagecopyresampled(
+                    $backgroundImage, $shadowImage, 0, 0,
+                    0, 0, $width, $height, $width, $height
+                );
+                imagedestroy($shadowImage);
             }
             // merge background layer
             imagecopyresampled(
