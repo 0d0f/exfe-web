@@ -72,4 +72,11 @@ class WechatModels extends DataModel {
         return $this->libwechat->deleteMenu();
     }
 
+
+    public function sendTemplateMessage($toUserName, $template_id, $content) {
+        return $this->libwechat->sendTemplateMessage(
+            splitIdentityId($toUserName)[0], $template_id, $content
+        );
+    }
+
 }
