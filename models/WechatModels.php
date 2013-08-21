@@ -74,8 +74,19 @@ class WechatModels extends DataModel {
 
 
     public function sendTemplateMessage($toUserName, $template_id, $content) {
+        $templates = [
+            'gh_c2e5730627a4' => [
+                'x_title_update'        => 'cKExQY5C6M20Sk6dNzajAqDPkryvIgGz6nWpnlbQlj5JQjshzG_gQ0F18RsJeWH1',
+                'user_location_request' => '0w_9XXPiMHmqKWgrQB-zzkujNgDgG1JRGN8j132SiNEx0HcqXu8a1G_xTLwedrmW',
+            ],
+            'gh_8c4c8d9d14a7' => [
+                'x_title_update'        => 'cEhPMpIuw87cGZKvZpWjCru_I7LW-SerUzLHlzYyy2px1ao16opH6_Qld8H96Lec',
+                'user_location_request' => 'F2b3C5kpw2lDPyYlUAygr6X1STqdHclR9vKMhBxsEHXO7IgwJ-oI8gBUdhfutePU',
+            ],
+        ];
+        $ids = splitIdentityId($toUserName);
         return $this->libwechat->sendTemplateMessage(
-            splitIdentityId($toUserName)[0], $template_id, $content
+            $ids[0], $templates[$ids[1]][$template_id], $content
         );
     }
 
