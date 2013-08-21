@@ -1007,6 +1007,43 @@ class BusActions extends ActionController {
     }
 
 
+    public function doSendWechatMessage() {
+        $modWechat = $this->getModelByName('Wechat');
+        $rawInput  = @file_get_contents('php://input');
+        $msgObject = json_decode($rawInput, true);
+        if ($msgObject
+         && isset($msgObject['touser'])
+         && isset($msgObject['template_id'])
+         && isset($msgObject['data'])) {
+            $result = $modWechat->sendTemplateMessage(
+                $msgObject['touser'],
+                $msgObject['template_id'],
+                $msgObject['data']
+            );
+            if ($result) {
+                $this->jsonResponse(new stdClass);
+                return;
+            }
+        }
+        $this->jsonError(400, 'bad_request');
+    }
+
+
+    public function doRequestXTitle() {
+        $modWechat = $this->getModelByName('Wechat');
+        $params    = $this->params;
+        if ($modWechat->requestXTitle(
+            $params['cross_id'],
+            $params['cross_title'],
+            $params['external_id']
+        )) {
+            $this->jsonResponse(new stdClass);
+        } else {
+            $this->jsonError(400, 'bad_request');
+        }
+    }
+
+
     public function doTutorials() {
         // init models
         $modIdentity = $this->getModelByName('Identity');

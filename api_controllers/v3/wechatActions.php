@@ -1,5 +1,8 @@
 <?php
 
+set_time_limit(5);
+
+
 class wechatActions extends ActionController {
 
     public function doIndex() {
@@ -22,9 +25,12 @@ class wechatActions extends ActionController {
         } else {
             $modUser     = $this->getModelByName('User');
             $modIdentity = $this->getModelByName('Identity');
-            $rawInput = file_get_contents('php://input');
-            $objMsg   = $modWechat->unpackMessage($rawInput);
-            $now      = time();
+            $crossHelper = $this->getHelperByName('cross');
+            $rawInput    = file_get_contents('php://input');
+            $objMsg      = $modWechat->unpackMessage($rawInput);
+            $now         = time();
+            $rtnType     = 'text';
+            $rtnMessage  = '';
             if (!($external_id = @$objMsg->FromUserName && @$objMsg->ToUserName
                                ? "{$objMsg->FromUserName}@{$objMsg->ToUserName}" : '')) {
                 error_log('Empty FromUserName');
@@ -46,7 +52,8 @@ class wechatActions extends ActionController {
                     'name'              => $rawIdentity->name,
                     'external_username' => $rawIdentity->external_username,
                     'avatar'            => $rawIdentity->avatar,
-                    'avatar_filename'   => $rawIdentity->avatar_filename
+                    'avatar_filename'   => $rawIdentity->avatar_filename,
+                    'timezone'          => $rawIdentity->timezone,
                 ]);
                 $identity    = $modIdentity->getIdentityById($identity_id);
             }
@@ -82,10 +89,7 @@ class wechatActions extends ActionController {
                                 return;
                             }
                             $modIdentity = $this->getModelByName('Identity');
-                            $crossHelper = $this->getHelperByName('cross');
                             $exfeeHelper = $this->getHelperByName('exfee');
-                            $rtnMessage  = '';
-                            $rtnType     = 'text';
                             $idBot = explode(',', SMITH_BOT)[0];
                             $bot   = $modIdentity->getIdentityById($idBot);
                             switch ($event) {
@@ -176,7 +180,7 @@ class wechatActions extends ActionController {
                                             break;
                                         case 'CREATE_MAP':
                                             if (!$modIdentity->isLabRat($identity->id)) {
-                                                $rtnMessage = '你还不是内测用户，就不让你用！';
+                                                $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
                                                 break;
                                             }
                                             // gather
@@ -273,6 +277,22 @@ class wechatActions extends ActionController {
                                 return;
                             }
                             echo $strReturn;
+                            ob_end_flush(); // Strange behaviour, will not work
+                            flush();        // Unless both are called!
+                            if ("{$event}" === 'click' && "{$objMsg->EventKey}" === 'CREATE_MAP') {
+                                setCache("wechat_user_{$identity->external_id}_current_x_id", $cross_id, 60);
+                                httpKit::request(
+                                    EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                                  . base64_url_encode(
+                                        SITE_URL . '/v3/bus/requestxtitle/'
+                                      . "?cross_id={$cross_id}"
+                                      . "&cross_title=" . urlencode($objCross->title)
+                                      . "&external_id={$identity->external_id}"
+                                    ),
+                                    ['update' => 'once', 'ontime' => time() + 7], [],
+                                    false, false, 3, 3, 'txt'
+                                );
+                            }
                             break;
                         case 'unsubscribe':
                             // check user
@@ -288,18 +308,30 @@ class wechatActions extends ActionController {
                     }
                     break;
                 case 'text':
-                    switch ($objMsg->Content) {
-                        case '233':
-                            $modIdentity->setLabRat($identity->id);
-                            $strReturn = $modWechat->packMessage(
-                                $identity->external_username, '你现在能创建活点地图了！'
-                            );
-                            break;
-                        default:
-                            $strReturn = $modWechat->packMessage(
-                                $identity->external_username, "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n" . shell_exec('/usr/local/bin/fortune ')
-                            );
+                    $strContent = trim($objMsg->Content);
+                    if (($current_cross_id = $modWechat->getCurrentX($identity->external_id))) {
+                        $cross = new stdClass;
+                        $cross->id    = $current_cross_id;
+                        $cross->title = $strContent;
+                        $cross_rs = $crossHelper->editCross($cross, $identity->id);
+                        if ($cross_rs) {
+                            setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60);
+                            $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$cross->title}";
+                        }
                     }
+                    if (!$rtnMessage) {
+                        switch ($strContent) {
+                            case '233':
+                                $modIdentity->setLabRat($identity->id);
+                                $rtnMessage = "感谢您参与测试。去创建活点地图并邀请朋友们吧！\n产品仍在不断改进，欢迎您的想法反馈。您可以在此发送以“反馈：”开头的消息。";
+                        }
+                    }
+                    if (!$rtnMessage) {
+                        $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune');
+                    }
+                    $strReturn = $modWechat->packMessage(
+                        $identity->external_username, $rtnMessage
+                    );
                     if (!$strReturn) {
                         header('HTTP/1.1 500 Internal Server Error');
                         return;

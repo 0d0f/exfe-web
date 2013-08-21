@@ -72,4 +72,35 @@ class WechatModels extends DataModel {
         return $this->libwechat->deleteMenu();
     }
 
+
+    public function requestXTitle($cross_id, $cross_title, $external_id) {
+        setCache("wechat_user_{$external_id}_current_x_id", $cross_id, 60);
+        return $this->sendTemplateMessage(
+            $external_id, 'x_title_update', ['cross' => ['title' => $cross_title]]
+        );
+    }
+
+
+    public function getCurrentX($external_id) {
+        return @ (int) getCache("wechat_user_{$external_id}_current_x_id");
+    }
+
+
+    public function sendTemplateMessage($toUserName, $template_id, $content) {
+        $templates = [
+            'gh_c2e5730627a4' => [
+                'x_title_update'        => 'cKExQY5C6M20Sk6dNzajAqDPkryvIgGz6nWpnlbQlj5JQjshzG_gQ0F18RsJeWH1',
+                'user_location_request' => '0w_9XXPiMHmqKWgrQB-zzkujNgDgG1JRGN8j132SiNEx0HcqXu8a1G_xTLwedrmW',
+            ],
+            'gh_8c4c8d9d14a7' => [
+                'x_title_update'        => 'cEhPMpIuw87cGZKvZpWjCru_I7LW-SerUzLHlzYyy2px1ao16opH6_Qld8H96Lec',
+                'user_location_request' => 'F2b3C5kpw2lDPyYlUAygr6X1STqdHclR9vKMhBxsEHXO7IgwJ-oI8gBUdhfutePU',
+            ],
+        ];
+        $ids = splitIdentityId($toUserName);
+        return $this->libwechat->sendTemplateMessage(
+            $ids[0], $templates[$ids[1]][$template_id], $content
+        );
+    }
+
 }
