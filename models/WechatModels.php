@@ -74,8 +74,7 @@ class WechatModels extends DataModel {
 
 
     public function requestXTitle($cross_id, $cross_title, $external_id) {
-        // setCache("wechat_user_{$external_id}_current_x_id", $cross_id, 60);
-        setCache("wechat_user_{$external_id}_current_x_id", $cross_id, 6000000000);
+        setCache("wechat_user_{$external_id}_current_x_id", $cross_id, 60);
         return $this->sendTemplateMessage(
             $external_id, 'x_title_update', ['cross' => ['title' => $cross_title]]
         );
