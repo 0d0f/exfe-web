@@ -37,7 +37,7 @@ class wechatActions extends ActionController {
                 $identity_id = $identity->id;
             } else {
                 if (!($rawIdentity = $modWechat->getIdentityBy($external_id))) {
-                    // 500
+                    header('HTTP/1.1 500 Internal Server Error');
                     return;
                 }
                 $identity_id = $modIdentity->addIdentity([
@@ -51,7 +51,7 @@ class wechatActions extends ActionController {
                 $identity    = $modIdentity->getIdentityById($identity_id);
             }
             if (!$identity) {
-                // 500
+                header('HTTP/1.1 500 Internal Server Error');
                 return;
             }
             switch (@$objMsg->MsgType) {
@@ -78,7 +78,7 @@ class wechatActions extends ActionController {
                                 // );
                             }
                             if (!$user_id) {
-                                // 500
+                                header('HTTP/1.1 500 Internal Server Error');
                                 return;
                             }
                             $modIdentity = $this->getModelByName('Identity');
@@ -150,7 +150,7 @@ class wechatActions extends ActionController {
                                                         }
                                                     }
                                                     if (!$invitation) {
-                                                        // 500
+                                                        header('HTTP/1.1 500 Internal Server Error');
                                                         return;
                                                     }
                                                     $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}";
@@ -212,7 +212,7 @@ class wechatActions extends ActionController {
                                             );
                                             $cross_id = @ (int) $gtResult['cross_id'];
                                             if ($cross_id <= 0) {
-                                                // 500
+                                                header('HTTP/1.1 500 Internal Server Error');
                                                 return;
                                             }
                                             // enable routex
@@ -228,7 +228,7 @@ class wechatActions extends ActionController {
                                                 $cross_id, $idBot
                                             );
                                             if (!$invitation) {
-                                                // 500
+                                                header('HTTP/1.1 500 Internal Server Error');
                                                 return;
                                             }
                                             // returns
@@ -246,7 +246,7 @@ class wechatActions extends ActionController {
                                         case 'HELP_02':
                                             break;
                                         default:
-                                            // 404
+                                            header('HTTP/1.1 404 Not Found');
                                             return;
                                     }
                                     break;
@@ -269,7 +269,7 @@ class wechatActions extends ActionController {
                                 $rtnMessage, $rtnType
                             );
                             if (!$strReturn) {
-                                // 500
+                                header('HTTP/1.1 500 Internal Server Error');
                                 return;
                             }
                             echo $strReturn;
@@ -278,7 +278,7 @@ class wechatActions extends ActionController {
                             // check user
                             $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
                             if (!isset($user_infos['CONNECTED'])) {
-                                // 400
+                                header('HTTP/1.1 404 Not Found');
                                 return;
                             }
                             $modIdentity->revokeIdentity($identity_id);
@@ -301,7 +301,7 @@ class wechatActions extends ActionController {
                             );
                     }
                     if (!$strReturn) {
-                        // 500
+                        header('HTTP/1.1 500 Internal Server Error');
                         return;
                     }
                     echo $strReturn;
