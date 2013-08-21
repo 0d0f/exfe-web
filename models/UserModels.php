@@ -4,7 +4,7 @@ class UserModels extends DataModel {
 
     private $salt = '_4f9g18t9VEdi2if';
 
-    public  $arrUserIdentityStatus = array('', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED');
+    public  $arrUserIdentityStatus = ['', 'RELATED', 'VERIFYING', 'CONNECTED', 'REVOKED'];
 
 
     function randStr($len = 5, $type = 'normal') {
@@ -857,7 +857,8 @@ class UserModels extends DataModel {
                     `updated_at` = NOW()"
         );
         delCache("user_identity:identity_{$identity_id}");
-        $sqlAppend = '';
+        $sqlAppend     = '';
+        $tutorial_x_id = 0;
         if ($status > 1) {
              $rawIdentity = $this->getRow(
                 "SELECT * FROM `identities` WHERE `id` = {$identity_id}"
@@ -872,6 +873,12 @@ class UserModels extends DataModel {
                 if (!$rawUsers['timezone'] && $rawIdentity['timezone']) {
                     $sqlAppend .= ", `timezone` = '{$rawIdentity['timezone']}'";
                 }
+                if ($status === 3) {
+                    if (!$rawUsers['tutorial_x_id'] && $rawIdentity['tutorial_x_id']) {
+                        $sqlAppend .= ", `tutorial_x_id` = '{$rawIdentity['tutorial_x_id']}'";
+                    }
+                }
+                $tutorial_x_id = (int) ($rawIdentity['tutorial_x_id'] ?: $rawUsers['tutorial_x_id']);
             }
         }
         $this->query(
@@ -881,24 +888,54 @@ class UserModels extends DataModel {
         );
         delCache("users:{$user_id}");
         // tutorials {
-        $aftStatus = $this->getAll(
+        if (in_array($status, [2, 3])) {
+            $aftStatus = $this->getConnectedIdentityCount($user_id);
+            if ($aftStatus === 1 && $tutorial_x_id === 0
+             && $rawIdentity['provider'] !== 'wechat') {
+                require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+                httpKit::request(
+                    EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                  . base64_url_encode(
+                        SITE_URL . "/v3/bus/tutorials/1?identity_id={$identity_id}"
+                    ),
+                    ['update' => 'once', 'ontime' => time()], [],
+                    false, false, 3, 3, 'txt'
+                );
+            }
+        }
+        // }
+        return true;
+    }
+
+
+    public function getConnectedIdentityCount($user_id) {
+        $rawResult = $this->getAll(
             "SELECT * FROM `user_identity`
              WHERE `userid` = {$user_id}
              AND   `status` = 3"
         );
-        if ($aftStatus && sizeof($aftStatus) === 1) {
-            require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
-            httpKit::request(
-                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-              . base64_url_encode(
-                    SITE_URL . "/v3/bus/tutorials/1?identity_id={$identity_id}"
-                ),
-                ['update' => 'once', 'ontime' => time()], [],
-                false, false, 3, 3, 'txt'
+        return $rawResult ? sizeof($rawResult) : null;
+    }
+
+
+    public function getTutorialXId($user_id, $identity_id) {
+        if ($identity_id) {
+            $rawResult = $this->getRow(
+                "SELECT `tutorial_x_id` FROM `identities` WHERE `id` = " . (int) $identity_id . ';'
             );
+            if ($rawResult) {
+                return (int) $rawResult['tutorial_x_id'];
+            }
         }
-        // }
-        return true;
+        if ($user_id) {
+            $rawResult = $this->getRow(
+                "SELECT `tutorial_x_id` FROM `users` WHERE `id`     = "  . (int) $user_id     . ';'
+            );
+            if ($rawResult) {
+                return (int) $rawResult['tutorial_x_id'];
+            }
+        }
+        return null;
     }
 
 

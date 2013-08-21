@@ -1048,8 +1048,6 @@ class BusActions extends ActionController {
         // init models
         $modIdentity = $this->getModelByName('Identity');
         $modUser     = $this->getModelByName('User');
-        $modTime     = $this->getModelByName('Time');
-        $modBkg      = $this->getModelByName('Background');
         $modConv     = $this->getModelByName('Conversation');
         $modExfee    = $this->getModelByName('Exfee');
         $modQueue    = $this->getModelByName('Queue');
@@ -1117,74 +1115,19 @@ class BusActions extends ActionController {
             $this->jsonError(500, 'identity_error');
             return;
         }
-        // check identity
-        if (in_array($objIdentity->provider, ['wechat'])) {
-            $this->jsonResponse(new stdClass);
-            return;
-        }
-        // check robots
-        if (!($bot233      = $modIdentity->getIdentityById(TUTORIAL_BOT_A))
-         || !($botFrontier = $modIdentity->getIdentityById(TUTORIAL_BOT_B))
-         || !($botCashbox  = $modIdentity->getIdentityById(TUTORIAL_BOT_C))
-         || !($botClarus   = $modIdentity->getIdentityById(TUTORIAL_BOT_D))) {
-            $this->jsonError(500, 'robot_error');
-            return;
-        }
+        // get robots
+        $bot233      = $modIdentity->getIdentityById(TUTORIAL_BOT_A);
+        $botFrontier = $modIdentity->getIdentityById(TUTORIAL_BOT_B);
+        $botCashbox  = $modIdentity->getIdentityById(TUTORIAL_BOT_C);
+        $botClarus   = $modIdentity->getIdentityById(TUTORIAL_BOT_D);
         // gather
         if ($step_id === 1) {
-            $modTime  = $this->getModelByName('Time');
-            $objCross = new stdClass;
-            $objCross->title       = 'Explore EXFE';
-            $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
-            $objCross->by_identity = $bot233;
-            $objCross->time        = $modTime->parseTimeString(
-                'Today',
-                $modTime->getDigitalTimezoneBy($objIdentity->timezone) ?: '+00:00'
-            );
-            $objCross->place       = new Place(
-                0, 'Online', 'exfe.com', '', '', '', '', $now, $now
-            );
-            $objCross->attribute   = new stdClass;
-            $objCross->attribute->state = 'published';
-            $objBackground         = new stdClass;
-            $allBgs = $modBkg->getAllBackground();
-            $objCross->widget      = [
-                new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
-            ];
-            $objCross->type        = 'Cross';
-            $objCross->exfee       = new Exfee;
-            $objCross->exfee->invitations = [
-                new Invitation(
-                    0, $bot233,      $bot233, $bot233,
-                    'ACCEPTED',   'EXFE', '', $now, $now, true,  0, []
-                ),
-                new Invitation(
-                    0, $objIdentity, $bot233, $bot233,
-                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
-                ),
-                new Invitation(
-                    0, $botFrontier, $bot233, $bot233,
-                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
-                ),
-                new Invitation(
-                    0, $botCashbox,  $bot233, $bot233,
-                    'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
-                ),
-            ];
-            $gtResult = $hlpCross->gatherCross(
-                $objCross, $bot233->id,
-                $bot233->connected_user_id > 0 ? $bot233->connected_user_id : 0
-            );
-            $cross_id = @ (int) $gtResult['cross_id'];
-            if ($cross_id > 0) {
-                $objCross = $hlpCross->getCross($cross_id);
-                $exfee_id = $objCross->exfee->id;
-                touchCross($cross_id, $bot233->connected_user_id);
+            $objCross = $hlpCross->doTutorial($objIdentity);
+            if ($objCross) {
                 $this->jsonResponse($objCross);
-                nextStep($step_id, $cross_id, $exfee_id, $identity_id, 60);
-                return;
+            } else {
+                $this->jsonError(500, 'internal_server_error');
             }
-            $this->jsonError(500, 'internal_server_error');
             return;
         }
         // get inputs
