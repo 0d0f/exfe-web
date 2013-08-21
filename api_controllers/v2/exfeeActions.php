@@ -103,7 +103,7 @@ class ExfeeActions extends ActionController {
         if (!($exfee_id = intval($params['id']))) {
             apiError(400, 'no_exfee_id', 'exfee_id must be provided');
         }
-        if (!($user_token = intval(@$_POST['user_token']))) {
+        if (!($user_token = @$_POST['user_token'])) {
             apiError(400, 'no_user_token', 'user_token must be provided');
         }
         if (!($xcode = @$_POST['xcode'])) {
