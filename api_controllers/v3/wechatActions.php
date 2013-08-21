@@ -46,7 +46,8 @@ class wechatActions extends ActionController {
                     'name'              => $rawIdentity->name,
                     'external_username' => $rawIdentity->external_username,
                     'avatar'            => $rawIdentity->avatar,
-                    'avatar_filename'   => $rawIdentity->avatar_filename
+                    'avatar_filename'   => $rawIdentity->avatar_filename,
+                    'timezone'          => $rawIdentity->timezone,
                 ]);
                 $identity    = $modIdentity->getIdentityById($identity_id);
             }
@@ -176,7 +177,7 @@ class wechatActions extends ActionController {
                                             break;
                                         case 'CREATE_MAP':
                                             if (!$modIdentity->isLabRat($identity->id)) {
-                                                $rtnMessage = '你还不是内测用户，就不让你用！';
+                                                $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
                                                 break;
                                             }
                                             // gather
@@ -292,12 +293,12 @@ class wechatActions extends ActionController {
                         case '233':
                             $modIdentity->setLabRat($identity->id);
                             $strReturn = $modWechat->packMessage(
-                                $identity->external_username, '你现在能创建活点地图了！'
+                                $identity->external_username, "感谢您参与测试。去创建活点地图并邀请朋友们吧！\n产品仍在不断改进，欢迎您的想法反馈。您可以在此发送以“反馈：”开头的消息。"
                             );
                             break;
                         default:
                             $strReturn = $modWechat->packMessage(
-                                $identity->external_username, "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n" . shell_exec('/usr/local/bin/fortune ')
+                                $identity->external_username, "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune ')
                             );
                     }
                     if (!$strReturn) {
