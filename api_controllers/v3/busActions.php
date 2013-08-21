@@ -1029,6 +1029,21 @@ class BusActions extends ActionController {
     }
 
 
+    public function doRequestXTitle() {
+        $modWechat = $this->getModelByName('Wechat');
+        $params    = $this->params;
+        if ($modWechat->requestXTitle(
+            $params['cross_id'],
+            $params['cross_title'],
+            $params['external_id']
+        )) {
+            $this->jsonResponse(new stdClass);
+        } else {
+            $this->jsonError(400, 'bad_request');
+        }
+    }
+
+
     public function doTutorials() {
         // init models
         $modIdentity = $this->getModelByName('Identity');

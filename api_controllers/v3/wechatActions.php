@@ -1,5 +1,8 @@
 <?php
 
+set_time_limit(5);
+
+
 class wechatActions extends ActionController {
 
     public function doIndex() {
@@ -274,6 +277,21 @@ class wechatActions extends ActionController {
                                 return;
                             }
                             echo $strReturn;
+                            ob_end_flush(); // Strange behaviour, will not work
+                            flush();        // Unless both are called!
+                            if ("{$event}" === 'click' && "{$objMsg->EventKey}" === 'CREATE_MAP') {
+                                httpKit::request(
+                                    EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                                  . base64_url_encode(
+                                        SITE_URL . '/v3/bus/requestxtitle/'
+                                      . "?cross_id={$cross_id}"
+                                      . "&cross_title=" . urlencode($objCross->title)
+                                      . "&external_id={$identity->external_id}")
+                                    ),
+                                    ['update' => 'once', 'ontime' => time() + 7], [],
+                                    false, false, 3, 3, 'txt'
+                                );
+                            }
                             break;
                         case 'unsubscribe':
                             // check user
@@ -289,7 +307,16 @@ class wechatActions extends ActionController {
                     }
                     break;
                 case 'text':
-                    switch ($objMsg->Content) {
+                    $strContent = trim($objMsg->Content);
+                    if (($current_cross_id = $modWechat->getCurrentX($identity->external_id))) {
+                        $cross = new stdClass;
+                        $cross->id    = $current_cross_id;
+                        $cross->title = $strContent;
+                        $cross_rs = $crossHelper->editCross($cross, $identity->id);
+                        error_log(json_encode($cross_rs));
+                        return;
+                    }
+                    switch ($strContent) {
                         case '233':
                             $modIdentity->setLabRat($identity->id);
                             $strReturn = $modWechat->packMessage(
