@@ -71,18 +71,16 @@ class wechatActions extends ActionController {
                             // check user
                             $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
                             $user_id    = 0;
+                            $cross_id   = 0;
                             if (isset($user_infos['CONNECTED'])) {
-                                $user_id = $user_infos['CONNECTED'][0]['user_id'];
+                                $user_id  = $user_infos['CONNECTED'][0]['user_id'];
                             } else if (isset($user_infos['REVOKED'])) {
-                                $user_id = $user_infos['REVOKED'][0]['user_id'];
+                                $user_id  = $user_infos['REVOKED'][0]['user_id'];
                                 $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
                             } else {
                                 $user_id  = $modUser->addUser();
                                 $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
                                 $identity = $modIdentity->getIdentityById($identity_id);
-                                // $modIdentity->sendVerification(
-                                //     'Welcome', $identity, '', false, $identity->name ?: ''
-                                // );
                             }
                             if (!$user_id) {
                                 header('HTTP/1.1 500 Internal Server Error');
@@ -94,7 +92,30 @@ class wechatActions extends ActionController {
                             $bot   = $modIdentity->getIdentityById($idBot);
                             switch ($event) {
                                 case 'subscribe':
-                                    $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n Welcome {$identity->name}！";
+                                    $numIdentities = $modUser->getConnectedIdentityCount($user_id);
+                                    $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
+                                    // if ($numIdentities === 1 && !$tutorial_x_id) {
+                                    if (1) {
+                                        $cross = $crossHelper->doTutorial($identity);
+                                        if ($cross) {
+                                            $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                                $cross->id, $identity->id
+                                            );
+                                            if ($invitation) {
+                                                $cross_id   = $cross->id;
+                                                $rtnType    = 'news';
+                                                $rtnMessage = [[
+                                                    'Title'       => $cross->title,
+                                                    'Description' => $cross->description,
+                                                    'PicUrl'      => SITE_URL . '/static/img/routex_welcome@2x.jpg',
+                                                    'Url'         => SITE_URL . "/!{$cross->id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
+                                                ]];
+                                            }
+                                        }
+                                    }
+                                    if (!$rtnMessage) {
+                                        $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune');
+                                    }
                                     break;
                                 case 'click':
                                     switch ($objMsg->EventKey) {
@@ -219,14 +240,6 @@ class wechatActions extends ActionController {
                                                 header('HTTP/1.1 500 Internal Server Error');
                                                 return;
                                             }
-                                            // enable routex
-                                            $rawMaps = httpKit::request(
-                                                EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}",
-                                                null,  [
-                                                    'save_breadcrumbs' => true,
-                                                    'after_in_seconds' => 7200,
-                                                ], false, false, 3, 3, 'json'
-                                            );
                                             // get invitation
                                             $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                                 $cross_id, $idBot
@@ -279,6 +292,7 @@ class wechatActions extends ActionController {
                             echo $strReturn;
                             ob_end_flush(); // Strange behaviour, will not work
                             flush();        // Unless both are called!
+                            // request x title
                             if ("{$event}" === 'click' && "{$objMsg->EventKey}" === 'CREATE_MAP') {
                                 setCache("wechat_user_{$identity->external_id}_current_x_id", $cross_id, 60);
                                 httpKit::request(
@@ -291,6 +305,16 @@ class wechatActions extends ActionController {
                                     ),
                                     ['update' => 'once', 'ontime' => time() + 7], [],
                                     false, false, 3, 3, 'txt'
+                                );
+                            }
+                            // enable routex
+                            if ($cross_id) {
+                                httpKit::request(
+                                    EXFE_AUTH_SERVER . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}",
+                                    null,  [
+                                        'save_breadcrumbs' => true,
+                                        'after_in_seconds' => 7200,
+                                    ], false, false, 3, 3, 'json'
                                 );
                             }
                             break;
