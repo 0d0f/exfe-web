@@ -73,6 +73,20 @@ class WechatModels extends DataModel {
     }
 
 
+    public function requestXTitle($cross_id, $cross_title, $external_id) {
+        // setCache("wechat_user_{$external_id}_current_x_id", $cross_id, 60);
+        setCache("wechat_user_{$external_id}_current_x_id", $cross_id, 6000000000);
+        return $this->sendTemplateMessage(
+            $external_id, 'x_title_update', ['cross' => ['title' => $cross_title]]
+        );
+    }
+
+
+    public function getCurrentX($external_id) {
+        return @ (int) getCache("wechat_user_{$external_id}_current_x_id");
+    }
+
+
     public function sendTemplateMessage($toUserName, $template_id, $content) {
         $templates = [
             'gh_c2e5730627a4' => [
