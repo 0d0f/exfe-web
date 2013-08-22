@@ -48,19 +48,9 @@ class wechatcli extends DataModel {
                     "key"  => "CREATE_MAP",
                 ],
                 [
+                    "type" => "click",
                     "name" => "···",
-                    "sub_button" => [
-                        [
-                            "type" => "click",
-                            "name" => "菜单一",
-                            "key"  => "HELP_01",
-                        ],
-                        [
-                            "type" => "click",
-                            "name" => "菜单二",
-                            "key"  => "HELP_02",
-                        ]
-                    ]
+                    "key"  => "MORE",
                 ]
             ]
         ];
