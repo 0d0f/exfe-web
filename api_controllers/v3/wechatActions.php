@@ -13,13 +13,13 @@ class wechatActions extends ActionController {
     public function doCallback() {
         $modWechat = $this->getModelByName('wechat');
         $params    = $this->params;
-        if ($params['echostr']) {
+        if (@$params['echostr']) {
             if ($modWechat->valid(
-                $params['signature'],
-                $params['timestamp'],
-                $params['nonce']
+                @$params['signature'],
+                @$params['timestamp'],
+                @$params['nonce']
             )) {
-                echo $params['echostr'];
+                echo @$params['echostr'];
                 return;
             }
         } else {
@@ -61,6 +61,9 @@ class wechatActions extends ActionController {
                 header('HTTP/1.1 500 Internal Server Error');
                 return;
             }
+            // debug url
+            $debugUrlKey = "wechat_debug_{$identity_id}";
+            $debugUrl    = getCache($debugUrlKey) ? '&debug=true' : '';
             switch (@$objMsg->MsgType) {
                 case 'event':
                     $event = @strtolower($objMsg->Event);
@@ -106,7 +109,7 @@ class wechatActions extends ActionController {
                                                     'Title'       => '欢迎使用“活点地图”',
                                                     'Description' => '',
                                                     'PicUrl'      => SITE_URL . '/static/img/routex_welcome@2x.jpg',
-                                                    'Url'         => SITE_URL . "/!{$cross->id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
+                                                    'Url'         => SITE_URL . "/!{$cross->id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}{$debugUrl}",
                                                 ]];
                                             }
                                         }
@@ -193,7 +196,7 @@ class wechatActions extends ActionController {
                                                         'Title'       => $crosses[$map]->title,
                                                         'Description' => $crosses[$map]->description,
                                                         'PicUrl'      => $picUrl,
-                                                        'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
+                                                        'Url'         => SITE_URL . "/!{$map}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}{$debugUrl}",
                                                     ];
                                                 }
                                             } else {
@@ -256,7 +259,7 @@ class wechatActions extends ActionController {
                                                 'Title'       => $objCross->title,
                                                 'Description' => '开启这张“活点地图” 就能互相看到位置和轨迹。或长按转发邀请更多朋友们。',
                                                 'PicUrl'      => '',
-                                                'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
+                                                'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}{$debugUrl}",
                                             ]];
                                             break;
                                         case 'MORE':
@@ -349,6 +352,14 @@ class wechatActions extends ActionController {
                             case '233':
                                 $modIdentity->setLabRat($identity->id);
                                 $rtnMessage = "感谢您参与测试。去创建活点地图并邀请朋友们吧！\n产品仍在不断改进，欢迎您的想法反馈。您可以在此发送以“反馈：”开头的消息。";
+                                break;
+                            case 'debug on':
+                                setCache($debugUrlKey, 1);
+                                $rtnMessage = "调试模式已开启。";
+                                break;
+                            case 'debug off':
+                                setCache($debugUrlKey, 0);
+                                $rtnMessage = "调试模式已关闭。";
                         }
                     }
                     if (!$rtnMessage) {
