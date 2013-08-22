@@ -89,24 +89,22 @@ class wechatActions extends ActionController {
                             $modIdentity = $this->getModelByName('Identity');
                             $exfeeHelper = $this->getHelperByName('exfee');
                             $idBot = explode(',', SMITH_BOT)[0];
-                            $bot   = $modIdentity->getIdentityById($idBot);
                             switch ($event) {
                                 case 'subscribe':
                                     $numIdentities = $modUser->getConnectedIdentityCount($user_id);
                                     $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
-                                    // if ($numIdentities === 1 && !$tutorial_x_id) {
-                                    if (1) {
+                                    if (1 || $numIdentities === 1 && !$tutorial_x_id) {
                                         $cross = $crossHelper->doTutorial($identity);
                                         if ($cross) {
                                             $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                                $cross->id, $identity->id
+                                                $cross->id, $idBot
                                             );
                                             if ($invitation) {
                                                 $cross_id   = $cross->id;
                                                 $rtnType    = 'news';
                                                 $rtnMessage = [[
-                                                    'Title'       => $cross->title,
-                                                    'Description' => $cross->description,
+                                                    'Title'       => '欢迎使用“活点地图”',
+                                                    'Description' => '',
                                                     'PicUrl'      => SITE_URL . '/static/img/routex_welcome@2x.jpg',
                                                     'Url'         => SITE_URL . "/!{$cross->id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
                                                 ]];
@@ -114,14 +112,17 @@ class wechatActions extends ActionController {
                                         }
                                     }
                                     if (!$rtnMessage) {
-                                        $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune');
+                                        $rtnMessage = "嗨，{$identity->name}！欢迎再次开启“活点地图”。";
                                     }
                                     break;
                                 case 'click':
+                                    $bot = $modIdentity->getIdentityById($idBot);
                                     switch ($objMsg->EventKey) {
                                         case 'LIST_MAPS':
                                             $exfee_id_list = $exfeeHelper->getExfeeIdByUserid($user_id);
-                                            $cross_list    = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, false, $user_id);
+                                            $cross_list    = $crossHelper->getCrossesByExfeeIdList(
+                                                $exfee_id_list, null, null, false, $user_id
+                                            );
                                             $crosses       = [];
                                             foreach ($cross_list as $i => $cross) {
                                                 if ($cross->attribute['state'] === 'deleted'
@@ -196,7 +197,7 @@ class wechatActions extends ActionController {
                                                     ];
                                                 }
                                             } else {
-                                                $rtnMessage = '您目前没有活点地图，立刻创建一个？';
+                                                $rtnMessage = '您现在没有“活点地图”，创建一张并邀请朋友们吧。';
                                             }
                                             break;
                                         case 'CREATE_MAP':
@@ -250,17 +251,15 @@ class wechatActions extends ActionController {
                                             }
                                             // returns
                                             touchCross($cross_id, $identity->connected_user_id);
-                                            $rtnMessage = '<a href="'
-                                                        . SITE_URL
-                                                        . "/!{$cross_id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}\">{$objCross->title} "
-                                                        . SITE_URL
-                                                        . "/!{$cross_id}/routex?xcode="
-                                                        . substr($invitation['token'], 0, 3)
-                                                        . "…</a> \n点链接开启这张活点地图。长按此消息转发给朋友们，就能互相看到所处方位。";
+                                            $rtnType    = 'news';
+                                            $rtnMessage = [[
+                                                'Title'       => $objCross->title,
+                                                'Description' => '开启这张“活点地图” 就能互相看到位置和轨迹。或长按转发邀请更多朋友们。',
+                                                'PicUrl'      => '',
+                                                'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}",
+                                            ]];
                                             break;
-                                        case 'HELP_01':
-                                            break;
-                                        case 'HELP_02':
+                                        case 'MORE':
                                             break;
                                         default:
                                             header('HTTP/1.1 404 Not Found');
@@ -332,7 +331,7 @@ class wechatActions extends ActionController {
                     }
                     break;
                 case 'text':
-                    $strContent = trim($objMsg->Content);
+                    $strContent = dbescape(trim($objMsg->Content));
                     if (($current_cross_id = $modWechat->getCurrentX($identity->external_id))) {
                         $cross = new stdClass;
                         $cross->id    = $current_cross_id;
@@ -340,11 +339,13 @@ class wechatActions extends ActionController {
                         $cross_rs = $crossHelper->editCross($cross, $identity->id);
                         if ($cross_rs) {
                             setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60);
+                            touchCross($cross->id, $identity->connected_user_id);
                             $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$cross->title}";
                         }
                     }
                     if (!$rtnMessage) {
-                        switch ($strContent) {
+                        switch (strtolower($strContent)) {
+                            case 'threshold of the odyssey':
                             case '233':
                                 $modIdentity->setLabRat($identity->id);
                                 $rtnMessage = "感谢您参与测试。去创建活点地图并邀请朋友们吧！\n产品仍在不断改进，欢迎您的想法反馈。您可以在此发送以“反馈：”开头的消息。";
@@ -361,6 +362,9 @@ class wechatActions extends ActionController {
                         return;
                     }
                     echo $strReturn;
+                    ob_end_flush(); // Strange behaviour, will not work
+                    flush();        // Unless both are called!
+                    $modWechat->logMessage($identity->id, $strContent);
                     break;
                 default:
                     error_log('Unknow MsgType');
