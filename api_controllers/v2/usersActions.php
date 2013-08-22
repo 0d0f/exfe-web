@@ -287,15 +287,22 @@ class UsersActions extends ActionController {
         } else {
             apiError(401, 'authenticate_failed', ''); // 需要重新鉴权
         }
-        // get browsing identity ids
-        $bsIdentityIds = @json_decode($_POST['identity_ids']);
-        if (!$bsIdentityIds || !is_array($bsIdentityIds)) {
-            apiError(400, 'no_identity_ids', '');
-        }
         // get from user
         $fromUser = $modUser->getUserById($fromUserId, false, 0);
         if (!$fromUser) {
             apiError(400, 'error_user_status', '');
+        }
+        // get browsing identity ids
+        if (@strtolower($_POST['force']) === 'true') {
+            $bsIdentityIds = [];
+            foreach ($fromUser->identities as $iI => $iItem) {
+                $bsIdentityIds[] = $iItem->id;
+            }
+        } else {
+            $bsIdentityIds = @json_decode($_POST['identity_ids']);
+            if (!$bsIdentityIds || !is_array($bsIdentityIds)) {
+                apiError(400, 'no_identity_ids', '');
+            }
         }
         // check user identity status
         $numIdentity = sizeof($fromUser->identities);
