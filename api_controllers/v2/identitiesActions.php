@@ -18,6 +18,38 @@ class IdentitiesActions extends ActionController {
     }
 
 
+    public function doCheckFollowing() {
+        // check signin
+        $checkHelper = $this->getHelperByName('check');
+        $params = $this->params;
+        $result = $checkHelper->isAPIAllow('user_edit', $params['token']);
+        if ($result['check']) {
+            $user_id = $result['uid'];
+        } else {
+            apiError(401, 'no_signin', '');
+        }
+        // get models
+        $modUser = $this->getModelByName('user');
+        // get user
+        if (!($objUser = $modUser->getUserById($user_id))) {
+            apiError(500, 'update_failed');
+        }
+        // collecting post data
+        if (!($identity_id = intval($params['id']))) {
+            apiError(400, 'no_identity_id', 'identity_id must be provided');
+        }
+        // check identity
+        foreach ($objUser->identities as $iItem) {
+            if ($iItem->id === $identity_id) {
+                $modWechat = $this->getModelByName('Wechat');
+                $identity = $modWechat->getIdentityBy($iItem->external_id);
+                apiResponse(['following' => !!$identity]);
+            }
+        }
+        apiError(401, 'not_allowed', 'only your connected identities can be check');
+    }
+
+
     public function doGet() {
         // get models
         $modUser       = $this->getModelByName('User');
