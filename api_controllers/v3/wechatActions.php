@@ -269,7 +269,7 @@ class wechatActions extends ActionController {
                                 case 'location':
                                     httpKit::request(
                                         EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
-                                        ['coordinate' => 'earth'], [[
+                                        ['coordinate' => 'mars'], [[
                                             't'   => $now,
                                             'gps' => [
                                                 (float) $objMsg->Latitude,
