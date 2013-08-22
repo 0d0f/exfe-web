@@ -25,9 +25,13 @@ class wechatActions extends ActionController {
         } else {
             $modUser     = $this->getModelByName('User');
             $modIdentity = $this->getModelByName('Identity');
+            $modTime     = $this->getModelByName('Time');
             $crossHelper = $this->getHelperByName('cross');
+            $exfeeHelper = $this->getHelperByName('exfee');
             $rawInput    = file_get_contents('php://input');
             $objMsg      = $modWechat->unpackMessage($rawInput);
+            $idBot       = explode(',', SMITH_BOT)[0];
+            $bot         = $modIdentity->getIdentityById($idBot);
             $now         = time();
             $rtnType     = 'text';
             $rtnMessage  = '';
@@ -61,9 +65,10 @@ class wechatActions extends ActionController {
                 header('HTTP/1.1 500 Internal Server Error');
                 return;
             }
-            // debug url
+            // debug url {
             $debugUrlKey = "wechat_debug_{$identity_id}";
             $debugUrl    = getCache($debugUrlKey) ? '&debug=true' : '';
+            // }
             switch (@$objMsg->MsgType) {
                 case 'event':
                     $event = @strtolower($objMsg->Event);
@@ -90,8 +95,6 @@ class wechatActions extends ActionController {
                                 return;
                             }
                             $modIdentity = $this->getModelByName('Identity');
-                            $exfeeHelper = $this->getHelperByName('exfee');
-                            $idBot = explode(',', SMITH_BOT)[0];
                             switch ($event) {
                                 case 'subscribe':
                                     $numIdentities = $modUser->getConnectedIdentityCount($user_id);
@@ -119,7 +122,6 @@ class wechatActions extends ActionController {
                                     }
                                     break;
                                 case 'click':
-                                    $bot     = $modIdentity->getIdentityById($idBot);
                                     $pageKey = "wechat_routex_paging_{$identity->id}";
                                     switch ($objMsg->EventKey) {
                                         case 'LIST_MAPS':
@@ -160,7 +162,6 @@ class wechatActions extends ActionController {
                                                     }
                                                 }
                                                 $rawMaps = null;
-                                                error_log('paging_________________' . $pageNum);
                                                 $curItem = $pageSize * $pageNum + $pageSize;
                                                 $total   = sizeof($enabled);
                                                 $maps    = array_slice($enabled, $pageNum * $pageSize, $pageSize);
@@ -224,7 +225,6 @@ class wechatActions extends ActionController {
                                                 break;
                                             }
                                             // gather
-                                            $modTime  = $this->getModelByName('Time');
                                             $objCross = new stdClass;
                                             $objCross->time        = $modTime->parseTimeString(
                                                 'Today',
@@ -361,8 +361,7 @@ class wechatActions extends ActionController {
                             touchCross($cross->id, $identity->connected_user_id);
                             $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$cross->title}";
                         }
-                    }
-                    if (!$rtnMessage) {
+                    } else {
                         switch (strtolower($strContent)) {
                             case 'threshold of the odyssey':
                             case '233':
@@ -380,9 +379,9 @@ class wechatActions extends ActionController {
                             case 'think different':
                                 $rtnMessage = 'Here’s to the crazy ones. The rebels. The troublemakers. The ones who see things differently. While some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.';
                         }
-                    }
-                    if (!$rtnMessage) {
-                        $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune');
+                        if (!$rtnMessage) {
+                            $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune');
+                        }
                     }
                     $strReturn = $modWechat->packMessage(
                         $identity->external_username, $rtnMessage
@@ -395,6 +394,83 @@ class wechatActions extends ActionController {
                     ob_end_flush(); // Strange behaviour, will not work
                     flush();        // Unless both are called!
                     $modWechat->logMessage($identity->id, $strContent);
+                    break;
+                case 'location':
+                    if (!$modIdentity->isLabRat($identity->id)) {
+                        $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
+                        break;
+                    }
+                    // gather
+                    $objCross = new stdClass;
+                    $objCross->time        = $modTime->parseTimeString(
+                        'Today',
+                        $modTime->getDigitalTimezoneBy($identity->timezone) ?: '+08:00 GMT'
+                    );
+                    $timeArray = explode('-', $objCross->time->begin_at->date);
+                    $objCross->title       = "{$identity->name}的活点地图 " . (int)$timeArray[1] . '月' . (int)$timeArray[2] . '日';
+                    $objCross->description = '';
+                    $objCross->by_identity = $identity;
+                    $objCross->place       = new Place(
+                        0,
+                        $objMsg->Label,
+                        '',
+                        $objMsg->Location_Y,
+                        $objMsg->Location_X,
+                        'wechat',
+                        $objMsg->MsgId
+                    );
+                    $objCross->attribute   = new stdClass;
+                    $objCross->attribute->state = 'published';
+                    $objBackground         = new stdClass;
+                    $objCross->widget      = [new Background('wechat.jpg')];
+                    $objCross->type        = 'Cross';
+                    $objCross->exfee       = new Exfee;
+                    $objCross->exfee->invitations = [
+                        new Invitation(
+                            0, $identity, $identity, $identity,
+                            'ACCEPTED', 'EXFE', '', $now, $now, true,  0, []
+                        ),
+                        new Invitation(
+                            0, $bot,      $identity, $identity,
+                            'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
+                        )
+                    ];
+                    $gtResult = $crossHelper->gatherCross(
+                        $objCross, $identity->id, $user_id
+                    );
+                    $cross_id = @ (int) $gtResult['cross_id'];
+                    if ($cross_id <= 0) {
+                        header('HTTP/1.1 500 Internal Server Error');
+                        return;
+                    }
+                    // get invitation
+                    $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                        $cross_id, $idBot
+                    );
+                    if (!$invitation) {
+                        header('HTTP/1.1 500 Internal Server Error');
+                        return;
+                    }
+                    // returns
+                    touchCross($cross_id, $identity->connected_user_id);
+                    setCache($pageKey, 0, 1);
+                    $rtnType    = 'news';
+                    $rtnMessage = [[
+                        'Title'       => $objCross->title,
+                        'Description' => '开启这张“活点地图” 就能互相看到位置和轨迹。或长按转发邀请更多朋友们。',
+                        'PicUrl'      => '',
+                        'Url'         => SITE_URL . "/!{$cross_id}/routex?xcode={$invitation['token']}&via={$identity->external_username}@{$identity->provider}{$debugUrl}",
+                    ]];
+                    $strReturn = $modWechat->packMessage(
+                        $identity->external_username, $rtnMessage, $rtnType
+                    );
+                    if (!$strReturn) {
+                        header('HTTP/1.1 500 Internal Server Error');
+                        return;
+                    }
+                    echo $strReturn;
+                    ob_end_flush(); // Strange behaviour, will not work
+                    flush();        // Unless both are called!
                     break;
                 default:
                     error_log('Unknow MsgType');
