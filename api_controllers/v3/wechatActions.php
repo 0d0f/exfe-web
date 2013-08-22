@@ -119,7 +119,8 @@ class wechatActions extends ActionController {
                                     }
                                     break;
                                 case 'click':
-                                    $bot = $modIdentity->getIdentityById($idBot);
+                                    $bot     = $modIdentity->getIdentityById($idBot);
+                                    $pageKey = "wechat_routex_paging_{$identity->id}";
                                     switch ($objMsg->EventKey) {
                                         case 'LIST_MAPS':
                                             $exfee_id_list = $exfeeHelper->getExfeeIdByUserid($user_id);
@@ -149,11 +150,25 @@ class wechatActions extends ActionController {
                                                  && $rawMaps['http_code'] === 200
                                                  && $rawMaps['json']
                                                 ) ? $rawMaps['json'] : [];
+                                                // paging {
+                                                $pageSize = 4;
+                                                $pageNum  = (int) getCache($pageKey);
+                                                $enabled  = [];
                                                 foreach ($rawMaps as $rI => $rItem) {
-                                                    if ($rItem['enable'] && sizeof($maps) < 10) {
-                                                        $maps[] = $rItem['cross_id'];
+                                                    if ($rItem['enable']) {
+                                                        $enabled[] = $rItem['cross_id'];
                                                     }
                                                 }
+                                                $rawMaps = null;
+                                                error_log('paging_________________' . $pageNum);
+                                                $curItem = $pageSize * $pageNum + $pageSize;
+                                                $total   = sizeof($enabled);
+                                                $maps    = array_slice($enabled, $pageNum * $pageSize, $pageSize);
+                                                if ($curItem >= $total) {
+                                                    $pageNum = -1;
+                                                }
+                                                setCache($pageKey, ++$pageNum, 30);
+                                                // }
                                             }
                                             if ($maps) {
                                                 $rtnMessage = [];
@@ -254,6 +269,7 @@ class wechatActions extends ActionController {
                                             }
                                             // returns
                                             touchCross($cross_id, $identity->connected_user_id);
+                                            setCache($pageKey, 0, 1);
                                             $rtnType    = 'news';
                                             $rtnMessage = [[
                                                 'Title'       => $objCross->title,
