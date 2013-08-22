@@ -103,4 +103,14 @@ class WechatModels extends DataModel {
         );
     }
 
+
+    public function logMessage($identity_id, $message) {
+        if ($identity_id && $message) {
+            return $this->query(
+                "INSERT INTO `wechat_posts` SET `identity_id` = {$identity_id}, `content` = '{$message}';"
+            );
+        }
+        return false;
+    }
+
 }
