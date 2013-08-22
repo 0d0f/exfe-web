@@ -369,14 +369,13 @@ class CrossModels extends DataModel {
     }
 
 
-    public function doTutorial($identity) {
+    public function doTutorial($identity, $background = '') {
         // init libs
         require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
         // init models
         $hlpCross    = $this->getHelperByName('Cross');
         $hlpIdentity = $this->getHelperByName('Identity');
         $hlpTime     = $this->getHelperByName('Time');
-        $hlpBkg      = $this->getHelperByName('Background');
         // init functions
         function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5, $created_at = 0) {
             httpKit::request(
@@ -396,7 +395,8 @@ class CrossModels extends DataModel {
         if (!($bot233      = $hlpIdentity->getIdentityById(TUTORIAL_BOT_A))
          || !($botFrontier = $hlpIdentity->getIdentityById(TUTORIAL_BOT_B))
          || !($botCashbox  = $hlpIdentity->getIdentityById(TUTORIAL_BOT_C))
-         || !($botClarus   = $hlpIdentity->getIdentityById(TUTORIAL_BOT_D))) {
+         || !($botClarus   = $hlpIdentity->getIdentityById(TUTORIAL_BOT_D))
+         || !($botSmith    = $hlpIdentity->getIdentityById(explode(',', SMITH_BOT)[0]))) {
             return false;
         }
         // init cross
@@ -414,10 +414,12 @@ class CrossModels extends DataModel {
         $objCross->attribute   = new stdClass;
         $objCross->attribute->state = 'published';
         $objBackground         = new stdClass;
-        $allBgs = $hlpBkg->getAllBackground();
-        $objCross->widget      = [
-            new Background($allBgs[rand(0, sizeof($allBgs) - 1)])
-        ];
+        if (!$background) {
+            $hlpBkg = $this->getHelperByName('Background');
+            $allBgs = $hlpBkg->getAllBackground();
+            $background = $allBgs[rand(0, sizeof($allBgs) - 1)];
+        }
+        $objCross->widget      = [new Background($background)];
         $objCross->type        = 'Cross';
         $objCross->exfee       = new Exfee;
         $now                   = time();
@@ -436,6 +438,10 @@ class CrossModels extends DataModel {
             ),
             new Invitation(
                 0, $botCashbox,  $bot233, $bot233,
+                'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+            ),
+            new Invitation(
+                0, $botSmith,    $bot233, $bot233,
                 'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
             ),
         ];
