@@ -18,12 +18,13 @@ class IconsActions extends ActionController {
             'default_color' => 'blue',
             'width'         => 48,
             'height'        => 68,
-            'font'          => "{$fontDir}OpenSans-Bold.ttf",
+            'font'          => "{$fontDir}OpenSans-Regular.ttf",
             'font_cjk'      => "{$fontDir}wqy-microhei.ttc",
             'font_color'    => [255, 254, 254, 1],
             'font_size'     => 26,
-            'font_top'      => -6,
+            'font_top'      => -5,
             'font_width'    => 26,
+            'font_shadow'   => 0.25,
             'period'        => 604800, // 60 * 60 * 24 * 7
         ];
         // header
@@ -73,6 +74,15 @@ class IconsActions extends ActionController {
         $posArr = imagettftext(
             imagecreatetruecolor($config['width'], $config['height']),
             $ftSize, 0, 0, $config['height'], $font_color, $font, 'x'
+        );
+        // draw text shadow
+        $fontShadowColor = imagecolorallocatealpha(
+            $image, 0, 0, 0, 127 * (1 - $config['font_shadow'])
+        );
+        imagettftext(
+            $image, $ftSize, 0, ($config['width'] - $fWidth) / 2,
+            ($config['height'] + $posArr[1] - $posArr[7]) / 2 + $config['font_top'] - 1,
+            $fontShadowColor, $font, $content
         );
         // draw text
         imagettftext(
