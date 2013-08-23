@@ -312,6 +312,9 @@ class wechatActions extends ActionController {
         echo $strReturn;
         ob_end_flush(); // Strange behaviour, will not work
         flush();        // Unless both are called!
+        if (DEBUG && VERBOSE_LOG) {
+            error_log("RESPONSE_TO_WECHAT: {$strReturn}");
+        }
         // call services
         if ($cross) {
             // reset pagine
