@@ -99,7 +99,6 @@ class CrossesActions extends ActionController {
         $rsImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $rsImageKey, $config['period'], false, 'jpg'
         );
-$rsImage = null;
         if ($rsImage) {
             fpassthru($rsImage);
             fclose($rsImage);
@@ -169,19 +168,6 @@ $rsImage = null;
             );
             imagedestroy($mapImage);
         }
-        // render mark
-        error_log($config['map-mark-routex']);
-        if ($mark=$config['map-mark-routex']) {
-            $markImage = @imagecreatefrompng($mark);
-            imagecopyresampled(
-                $image, $markImage,
-                $config['markx'] - $config['mark-width'] / 2,
-                $config['marky'] - $config['mark-height'], 0, 0,
-                $config['mark-width'], $config['mark-height'],
-                $config['mark-width'], $config['mark-height']
-            );
-            imagedestroy($markImage);
-        }
         // render background
         $background = 'default.jpg';
         foreach ($cross->widget as $widget) {
@@ -228,6 +214,18 @@ $rsImage = null;
             }
             // set cache
             $objLibImage->setImageCache(IMG_CACHE_PATH, $bgImageKey, $backgroundImage);
+        }
+        // render mark
+        if ($mark) {
+            $markImage = @imagecreatefrompng($mark);
+            imagecopyresampled(
+                $image, $markImage,
+                $config['markx'] * 2 - $config['mark-width'] / 2,
+                $config['marky'] * 2 - $config['mark-height'], 0, 0,
+                $config['mark-width'], $config['mark-height'],
+                $config['mark-width'], $config['mark-height']
+            );
+            imagedestroy($markImage);
         }
         // ready shadow
         $shadowImage = @imagecreatefrompng($config['shadow-map-file']);
@@ -285,7 +283,6 @@ $rsImage = null;
                         0, 0, $avatarSize, $avatarSize, $avatarSize, $avatarSize
                     );
                 }
-
             }
         }
         imagedestroy($maskImage);
