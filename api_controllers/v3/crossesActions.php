@@ -16,7 +16,7 @@ class CrossesActions extends ActionController {
             'width'            => 320,
             'height'           => 180,
             'avatar-size'      => 112,
-            'routex-icon'      => "{$resDir}widget_routex_30@2x.png",
+            'routex-icon'      => "{$resDir}widget_routex_60@2x.png",
             'shadow-file'      => "{$resDir}wechat_x_shadow@2x.png",
             'routex-icon-size' => 60,
             'routex-icon-x'    => 252,
@@ -263,6 +263,7 @@ class CrossesActions extends ActionController {
                 }
             }
         }
+        $mapImage = null;
         if ($lat && $lng) {
             $lat = round($lat, $config['map-accuracy']);
             $lng = round($lng, $config['map-accuracy']);
@@ -279,19 +280,19 @@ class CrossesActions extends ActionController {
                 );
                 $objLibImage->setImageCache(IMG_CACHE_PATH, $mapImageKey, $mapImage);
             }
-            if (!$mapImage) {
-                $mapImage = @imagecreatefrompng($config['map-default']);
-            }
-            $mapWidth  = $config['map-width']  * 2;
-            $mapHeight = $config['map-height'] * 2;
-            imagecopyresampled(
-                $image, $mapImage,
-                $config['markx'] * 2 - $config['map-width'],
-                $config['marky'] * 2 - $config['map-height'],
-                0, 0, $mapWidth, $mapHeight, $mapWidth, $mapHeight
-            );
-            imagedestroy($mapImage);
         }
+        if (!$mapImage) {
+            $mapImage = @imagecreatefrompng($config['map-default']);
+        }
+        $mapWidth  = $config['map-width']  * 2;
+        $mapHeight = $config['map-height'] * 2;
+        imagecopyresampled(
+            $image, $mapImage,
+            $config['markx'] * 2 - $config['map-width'],
+            $config['marky'] * 2 - $config['map-height'],
+            0, 0, $mapWidth, $mapHeight, $mapWidth, $mapHeight
+        );
+        imagedestroy($mapImage);
         // render background
         $background = 'default.jpg';
         foreach ($cross->widget as $widget) {
@@ -302,7 +303,7 @@ class CrossesActions extends ActionController {
         $backgroundPath  = "{$bkgDir}{$background}";
         $maskImage = @imagecreatefrompng($config['mask-file']);
         // try background cache
-        $bgImageKey      = "cross_image_background:{$backgroundFile}";
+        $bgImageKey      = "cross_image_background:{$backgroundPath}";
         $backgroundImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $bgImageKey, 60 * 60 * 24 * 365, true
         );
@@ -310,8 +311,7 @@ class CrossesActions extends ActionController {
             $backgroundImage = imagecreatetruecolor($width, $height);
             imagefill($backgroundImage, 0, 0, imagecolorallocatealpha($backgroundImage, 0, 0, 0, 127));
             imagesavealpha($backgroundImage, true);
-            $backgroundFile  = @ file_get_contents($backgroundPath);
-            $tmpBgImage = @ imagecreatefromstring($backgroundFile);
+            $tmpBgImage = @imagecreatefromstring(@file_get_contents($backgroundPath));
             $tmpBgImage = $objLibImage->rawResizeImage(
                 $tmpBgImage, $width, $height
             );
