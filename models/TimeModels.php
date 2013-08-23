@@ -24,7 +24,7 @@ class TimeModels extends DataModel {
     }
 
 
-    public function getDigitalTimezoneBy($timezoneName) {
+    public function getDigitalTimezoneBy($timezoneName, $offset = false) {
         $timezoneName = strtolower(trim($timezoneName));
         $timezoneDiff = null;
         foreach (DateTimeZone::listAbbreviations() as $group) {
@@ -42,8 +42,15 @@ class TimeModels extends DataModel {
         if ($timezoneDiff === null) {
             return '';
         } else {
-            return $this->getDigitalTimezoneByRaw($timezoneDiff);
+            return $offset
+                 ? $timezoneDiff
+                 : $this->getDigitalTimezoneByRaw($timezoneDiff);
         }
+    }
+
+
+    public function getLongitudeBy($offset) {
+        return $offset / (60 * 60 * 12) * 180;
     }
 
 

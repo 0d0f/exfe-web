@@ -96,7 +96,7 @@
           {{#if place.map}}
           <a class="map_link" href="{{#if place.href}}{{place.href}}{{else}}#{{/if}}">
             <div class="map{{#unless place.map}} {{hide}}{{/unless}}" {{#if place.map}}style="background-image: url({{place.map}});"{{/if}}>
-              <img class="place_mark" alt="" src="http://img.exfe.com/web/map_pin_blue@2x.png" />
+              <img class="place_mark" alt="" src="http://img.exfe.com/web/map_mark_diamond_blue@2x.png" />
             </div>
           </a>
           {{/if}}
