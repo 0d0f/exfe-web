@@ -368,4 +368,103 @@ class CrossModels extends DataModel {
         return $result;
     }
 
+
+    public function doTutorial($identity, $background = '') {
+        // init libs
+        require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+        // init models
+        $hlpCross    = $this->getHelperByName('Cross');
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $hlpTime     = $this->getHelperByName('Time');
+        // init functions
+        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5, $created_at = 0) {
+            httpKit::request(
+                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+              . base64_url_encode(
+                    SITE_URL . '/v3/bus/tutorials/' . ($step_id + 1)
+                  . "?cross_id={$cross_id}"
+                  . "&exfee_id={$exfee_id}"
+                  . "&identity_id={$identity_id}" . ($created_at
+                  ? "&created_at={$created_at}"   : '')
+                ),
+                ['update' => 'once', 'ontime' => time() + $delay], [],
+                false, false, 3, 3, 'txt'
+            );
+        };
+        // init robots
+        if (!($bot233      = $hlpIdentity->getIdentityById(TUTORIAL_BOT_A))
+         || !($botFrontier = $hlpIdentity->getIdentityById(TUTORIAL_BOT_B))
+         || !($botCashbox  = $hlpIdentity->getIdentityById(TUTORIAL_BOT_C))
+         || !($botClarus   = $hlpIdentity->getIdentityById(TUTORIAL_BOT_D))
+         || !($botSmith    = $hlpIdentity->getIdentityById(explode(',', SMITH_BOT)[0]))) {
+            return false;
+        }
+        // init cross
+        $objCross = new stdClass;
+        $objCross->title       = 'Explore EXFE';
+        $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
+        $objCross->by_identity = $bot233;
+        $objCross->time        = $hlpTime->parseTimeString(
+            'Today',
+            $hlpTime->getDigitalTimezoneBy($identity->timezone) ?: '+00:00'
+        );
+        $objCross->place       = new Place(
+            0, 'Online', 'exfe.com', '', '', '', '', $now, $now
+        );
+        $objCross->attribute   = new stdClass;
+        $objCross->attribute->state = 'published';
+        $objBackground         = new stdClass;
+        if (!$background) {
+            $hlpBkg = $this->getHelperByName('Background');
+            $allBgs = $hlpBkg->getAllBackground();
+            $background = $allBgs[rand(0, sizeof($allBgs) - 1)];
+        }
+        $objCross->widget      = [new Background($background)];
+        $objCross->type        = 'Cross';
+        $objCross->exfee       = new Exfee;
+        $now                   = time();
+        $objCross->exfee->invitations = [
+            new Invitation(
+                0, $bot233,      $bot233, $bot233,
+                'ACCEPTED',   'EXFE', '', $now, $now, true,  0, []
+            ),
+            new Invitation(
+                0, $identity,    $bot233, $bot233,
+                'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+            ),
+            new Invitation(
+                0, $botFrontier, $bot233, $bot233,
+                'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+            ),
+            new Invitation(
+                0, $botCashbox,  $bot233, $bot233,
+                'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+            ),
+            new Invitation(
+                0, $botSmith,    $bot233, $bot233,
+                'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
+            ),
+        ];
+        $gtResult = $hlpCross->gatherCross(
+            $objCross, $bot233->id,
+            $bot233->connected_user_id > 0 ? $bot233->connected_user_id : 0
+        );
+        $cross_id = @ (int) $gtResult['cross_id'];
+        if ($cross_id > 0) {
+            $objCross = $hlpCross->getCross($cross_id);
+            $exfee_id = $objCross->exfee->id;
+            nextStep(2, $cross_id, $exfee_id, $identity->id, 60);
+            $this->query(
+                "UPDATE `identities` SET `tutorial_x_id` = {$cross_id} WHERE `id` = {$identity->id}"
+            );
+            if ($identity->connected_user_id > 0) {
+                $this->query(
+                    "UPDATE  `users` SET `tutorial_x_id` = {$cross_id} WHERE `id` = {$identity->connected_user_id}"
+                );
+            }
+            return $objCross;
+        }
+        return false;
+    }
+
  }

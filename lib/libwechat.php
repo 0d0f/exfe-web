@@ -72,6 +72,27 @@ class libwechat {
     }
 
 
+    public function sendTemplateMessage($toUserName, $template_id, $content) {
+        $access_token = $this->getAccessToken();
+        if ($access_token) {
+            $result = httpkit::request(
+                'https://api.weixin.qq.com/cgi-bin/message/template/send', [
+                    'access_token' => $access_token,
+                ], [
+                    'touser'      => $toUserName,
+                    'template_id' => $template_id,
+                    'data'        => $content,
+                ], false, false, 3, 3, 'json', true
+            );
+            return $result
+                && $result['http_code'] === 200
+                && $result['json']
+                && @ (int) $result['json']['errcode'] === 0;
+        }
+        return null;
+    }
+
+
     public static function xmlSafeStr($str) {
         return '<![CDATA[' . preg_replace(
             "/[\\x00-\\x08\\x0b-\\x0c\\x0e-\\x1f]/", '', $str
