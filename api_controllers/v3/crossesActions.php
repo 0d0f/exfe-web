@@ -18,7 +18,7 @@ class CrossesActions extends ActionController {
             'avatar-size'      => 112,
             'routex-icon'      => "{$resDir}widget_routex_60@2x.png",
             'shadow-file'      => "{$resDir}wechat_x_shadow@2x.png",
-            'routex-icon-size' => 60,
+            'routex-icon-size' => 60 * 2,
             'routex-icon-x'    => 252,
             'routex-icon-y'    => 12,
             'line-color'       => [127, 127, 127, 0.5],
