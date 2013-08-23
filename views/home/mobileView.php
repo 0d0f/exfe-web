@@ -96,7 +96,7 @@
           {{#if place.map}}
           <a class="map_link" href="{{#if place.href}}{{place.href}}{{else}}#{{/if}}">
             <div class="map{{#unless place.map}} {{hide}}{{/unless}}" {{#if place.map}}style="background-image: url({{place.map}});"{{/if}}>
-              <img class="place_mark" alt="" src="http://img.exfe.com/web/map_pin_blue@2x.png" />
+              <img class="place_mark" alt="" src="http://img.exfe.com/web/map_mark_diamond_blue@2x.png" />
             </div>
           </a>
           {{/if}}
@@ -284,9 +284,9 @@
       <div id="identities-overlay">
         <div id="isme" class="identity">
           <div class="abg"><img src="" alt="" class="avatar"></div>
-          <div class="detial">
+          <div class="detial unknown">
             <i class="icon icon-dot-grey"></i>
-            <span class="distance">方位？</span>
+            <span class="distance">未知方位</span>
           </div>
         </div>
         <div id="identities"></div>
