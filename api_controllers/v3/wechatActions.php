@@ -287,17 +287,17 @@ class wechatActions extends ActionController {
                                     break;
                                 case 'location':
                                     // @debug {
-                                    httpKit::request(
-                                        EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
-                                        ['coordinate' => 'earth'], [[
-                                            't'   => $now,
-                                            'gps' => [
-                                                (float) $objMsg->Latitude,
-                                                (float) $objMsg->Longitude,
-                                                (float) $objMsg->Precision,
-                                            ],
-                                        ]], false, false, 3, 3, 'json'
-                                    );
+                                    // httpKit::request(
+                                    //     EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
+                                    //     ['coordinate' => 'earth'], [[
+                                    //         't'   => $now,
+                                    //         'gps' => [
+                                    //             (float) $objMsg->Latitude,
+                                    //             (float) $objMsg->Longitude,
+                                    //             (float) $objMsg->Precision,
+                                    //         ],
+                                    //     ]], false, false, 3, 3, 'json'
+                                    // );
                                     // }
                                     return;
                             }
