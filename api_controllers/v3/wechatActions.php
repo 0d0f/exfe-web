@@ -286,17 +286,19 @@ class wechatActions extends ActionController {
                                     }
                                     break;
                                 case 'location':
-                                    httpKit::request(
-                                        EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
-                                        ['coordinate' => 'mars'], [[
-                                            't'   => $now,
-                                            'gps' => [
-                                                (float) $objMsg->Latitude,
-                                                (float) $objMsg->Longitude,
-                                                (float) $objMsg->Precision,
-                                            ],
-                                        ]], false, false, 3, 3, 'json'
-                                    );
+                                    // @debug {
+                                    // httpKit::request(
+                                    //     EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
+                                    //     ['coordinate' => 'mars'], [[
+                                    //         't'   => $now,
+                                    //         'gps' => [
+                                    //             (float) $objMsg->Latitude,
+                                    //             (float) $objMsg->Longitude,
+                                    //             (float) $objMsg->Precision,
+                                    //         ],
+                                    //     ]], false, false, 3, 3, 'json'
+                                    // );
+                                    // }
                                     return;
                             }
                             $strReturn = $modWechat->packMessage(
