@@ -2,8 +2,132 @@
 
 class CrossesActions extends ActionController {
 
-    public function doIndex() {
-
+    public function doWechatImage() {
+        // init requirement
+        $params = $this->params;
+        $curDir = dirname(__FILE__);
+        $resDir    = "{$curDir}/../../default_avatar_portrait/";
+        $bkgDir    = "{$curDir}/../../static/img/xbg/";
+        require_once "{$curDir}/../../lib/httpkit.php";
+        require_once "{$curDir}/../../xbgutilitie/libimage.php";
+        $objLibImage = new libImage;
+        // config
+        $config = [
+            'width'            => 320,
+            'height'           => 180,
+            'avatar-size'      => 112,
+            'routex-icon'      => "{$resDir}widget_routex_30@2x.png",
+            'shadow-file'      => "{$resDir}wechat_x_shadow@2x.png",
+            'routex-icon-size' => 60,
+            'routex-icon-x'    => 252,
+            'routex-icon-y'    => 12,
+            'line-color'       => [127, 127, 127, 0.5],
+            'jpeg-quality'     => 100,
+            'period'           => 604800, // 60 * 60 * 24 * 7
+        ];
+        // check cross
+        $crossHelper = $this->getHelperByName('Cross');
+        $cross       = $crossHelper->getCross((int) @$params['id']);
+        if ($cross && $cross->attribute['state'] !== 'deleted') {
+        } else {
+            header('HTTP/1.1 404 Not Found');
+            return;
+        }
+        // check identity
+        $identity_id = (int) $params['identity_id'];
+        if (!$identity_id) {
+            header('HTTP/1.1 404 Not Found');
+            return;
+        }
+        // header
+        header('Pragma: no-cache');
+        header('Cache-Control: no-cache');
+        header('Content-Transfer-Encoding: binary');
+        header('Content-type: image/jpeg');
+        // try cache
+        $rsImage = $objLibImage->getImageCache(
+            IMG_CACHE_PATH, $this->route, $config['period'], false, 'jpg'
+        );
+        if ($rsImage) {
+            fpassthru($rsImage);
+            fclose($rsImage);
+            return;
+        }
+        // render background
+        $background = 'default.jpg';
+        foreach ($cross->widget as $widget) {
+            if ($widget->type === 'Background') {
+                $background = $widget->image;
+            }
+        }
+        $backgroundFile = @file_get_contents("{$bkgDir}{$background}");
+        $image  = @imagecreatefromstring($backgroundFile);
+        $width  = $config['width']  * 2;
+        $height = $config['height'] * 2;
+        $image  = $objLibImage->rawResizeImage($image, $width, $height);
+        // get avatar image
+        $modIdentity = $this->getModelByName('Identity');
+        $identity    = $modIdentity->getIdentityById($identity_id);
+        if ($identity) {
+            $imageUrl    = $identity->avatar['320_320'];
+            if (strpos($imageUrl, API_URL) !== false) {
+                $arr_url     = explode('=', $imageUrl);
+                $avatarImage = isset($arr_url[1]) && $arr_url[1]
+                             ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true)
+                             : null;
+            } else {
+                $avatarImage = httpKit::fetchImageExpress($imageUrl);
+            }
+            if ($avatarImage) {
+                $avatarSize  = $config['avatar-size'] * 2;
+                $avatarImage = $objLibImage->rawResizeImage(
+                    $avatarImage, $avatarSize, $avatarSize
+                );
+                imagecopyresampled(
+                    $image, $avatarImage,
+                    ($width  - $avatarSize) / 2,
+                    ($height - $avatarSize) / 2,
+                    0, 0, $avatarSize, $avatarSize, $avatarSize, $avatarSize
+                );
+                $color = imagecolorallocatealpha(
+                    $image,
+                    $config['line-color'][0],
+                    $config['line-color'][1],
+                    $config['line-color'][2],
+                    (1 - $config['line-color'][3]) * 127
+                );
+                $x1    = ($width  - $avatarSize) / 2 - 1;
+                $y1    = ($height - $avatarSize) / 2 - 1;
+                $x2    = ($width  + $avatarSize) / 2;
+                $y2    = ($height + $avatarSize) / 2;
+                imageline($image, $x1, $y1, $x2, $y1, $color);
+                imageline($image, $x2, $y1, $x2, $y2, $color);
+                imageline($image, $x2, $y2, $x1, $y2, $color);
+                imageline($image, $x1, $y2, $x1, $y1, $color);
+                imagedestroy($avatarImage);
+            }
+        }
+        // render shadow
+        $shadowImage = @imagecreatefrompng($config['shadow-file']);
+        imagecopyresampled(
+            $image, $shadowImage, 0, 0, 0, 0, $width, $height, $width, $height
+        );
+        imagedestroy($shadowImage);
+        // render routerx icon
+        $iconImage = @imagecreatefrompng($config['routex-icon']);
+        imagecopyresampled(
+            $image, $iconImage,
+            $config['routex-icon-x'] * 2, $config['routex-icon-y'] * 2, 0, 0,
+            $config['routex-icon-size'],  $config['routex-icon-size'],
+            $config['routex-icon-size'],  $config['routex-icon-size']
+        );
+        imagedestroy($iconImage);
+        // render
+        imagejpeg($image, null, $config['jpeg-quality']);
+        $objLibImage->setImageCache(
+            IMG_CACHE_PATH, $this->route, $image, 'jpg', $config['jpeg-quality']
+        );
+        imagedestroy($image);
     }
 
 
@@ -258,7 +382,7 @@ class CrossesActions extends ActionController {
                 $imageObject = $objLibImage->rawResizeImage(
                     $imageObject, $avatarSize, $avatarSize
                 );
-                if ($alI == 3 && sizeof($avatarLayout) === 7) {
+                if ($alI == 3) {
                     $maxY = $avatarSize;
                     for ($x = 0; $x < $avatarSize; $x++) {
                         $currentX = $alItem[0] + $x;
