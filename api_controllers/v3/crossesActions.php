@@ -105,7 +105,7 @@ class CrossesActions extends ActionController {
                     $mapImage = httpKit::fetchImageExpress(
                         'https://maps.googleapis.com/maps/api/staticmap?center='
                       . "{$lat},{$lng}&markers=scale:2|icon%3a"
-                      . urlencode('http://img.exfe.com/web/map_pin_blue@2x.png')
+                      . urlencode('http://img.exfe.com/web/map_mark_diamond_blue@2x.png')
                       . "%7C{$lat},{$lng}&zoom={$config['map-zoom-level']}"
                       . "&size={$config['map-width']}x{$config['map-height']}"
                       . '&maptype=road&sensor=false&scale=2'
