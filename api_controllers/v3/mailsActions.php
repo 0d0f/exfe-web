@@ -94,7 +94,7 @@ class MailsActions extends ActionController {
             $mapImage  = httpKit::fetchImageExpress(
                 'https://maps.googleapis.com/maps/api/staticmap?center='
               . "{$lat},{$lng}&markers=icon%3a"
-              . urlencode('http://img.exfe.com/web/map_pin_blue.png')
+              . urlencode('http://img.exfe.com/web/map_mark_diamond_blue.png')
               . "%7C{$lat},{$lng}&zoom={$mapZoom}"
               . "&size={$config['map-width']}x{$mapHeight}"
               . '&maptype=road&sensor=false&scale=1'
