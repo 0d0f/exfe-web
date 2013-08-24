@@ -36,6 +36,21 @@ function splitIdentityId($identityId) {
 }
 // }
 
+function imageHeader($type = 'png', $expires = 0) {
+    header('Content-Transfer-Encoding: binary');
+    header("Content-type: image/{$type}");
+    enableCache($expires);
+}
+
+function enableCache($expires = 0) {
+    $expires = $expires ?: 60 * 60 * 24 * 1;
+    header('Pragma: public');
+    header("Cache-Control: maxage={$expires}");
+    header('Expires: ' . gmdate('D, d M Y H:i:s', time() + $expires) . ' GMT');
+    // header('Pragma: no-cache');
+    // header('Cache-Control: no-cache');
+}
+
 // redis by @leaskh {
 
 # connection pool
