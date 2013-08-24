@@ -29,7 +29,7 @@ $sources = [
     'rebuild_cache',
     'rebuild_geoip_datas',
     'share',
-    'third_party_libraries',
+    'third_party_libraries/GeoLiteCity_20121106',
     'views',
     'xbgutilitie',
     'wechat',
