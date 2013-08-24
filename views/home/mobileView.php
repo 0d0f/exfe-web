@@ -298,7 +298,7 @@
       <div id="other-info" class="info-windown hide">
         <div class="info">
           <div class="name"></div>
-          <div class="update hide"><span class="time"></span>分钟前所处方位</div>
+          <div class="update hide"><span class="time"></span>前所处方位</div>
           <div class="dest hide">距目的地 <span class="m"></span></div>
           <div class="dest-me hide">与您相距 <span class="m"></span></div>
         </div>
