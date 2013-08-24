@@ -169,13 +169,44 @@ class ExfeeActions extends ActionController {
             apiError(400, 'error_via_identity');
         }
         // action
-        $objInvitation = new stdClass;
-        $objInvitation->id = 0;
-        $objInvitation->identity = $user->identities[0];
-        $objInvitation->response = 'NORESPONSE';
         $exfee     = new Exfee;
         $exfee->id = $exfee_id;
-        $exfee->invitations = [$objInvitation];
+        $exfee->invitations = [];
+        $wechatIdentity = null;
+        $phoneIdentity  = null;
+        $emailIdentity  = null;
+        foreach ($user->identities as $identity) {
+            switch ($identity->provider) {
+                case 'phone':
+                    $phoneIdentity  = $phoneIdentity  ?: $identity;
+                    break;
+                case 'wechat':
+                    $wechatIdentity = $wechatIdentity ?: $identity;
+                    break;
+                case 'email':
+                    $emailIdentity  = $emailIdentity  ?: $identity;
+            }
+        }
+        if ($wechatIdentity) {
+            $objInvitation = new stdClass;
+            $objInvitation->id = 0;
+            $objInvitation->identity = $wechatIdentity;
+            $objInvitation->response = 'NORESPONSE';
+            $exfee->invitations[] = $objInvitation;
+        }
+        if ($phoneIdentity) {
+            $objInvitation = new stdClass;
+            $objInvitation->id = 0;
+            $objInvitation->identity = $phoneIdentity;
+            $objInvitation->response = 'NORESPONSE';
+            $exfee->invitations[] = $objInvitation;
+        } else if ($emailIdentity) {
+            $objInvitation = new stdClass;
+            $objInvitation->id = 0;
+            $objInvitation->identity = $emailIdentity;
+            $objInvitation->response = 'NORESPONSE';
+            $exfee->invitations[] = $objInvitation;
+        }
         $udeResult = $modExfee->updateExfee(
             $exfee, $via_identity->id, $via_identity->connected_user_id
         );
