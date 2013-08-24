@@ -23,7 +23,7 @@ class MailsActions extends ActionController {
             'map-zoom-level'   => 13,
             'ribbon-image'     => "{$curDir}/../../static/img/ribbon_280@2x.png",
             'ribbon-padding'   => 7,
-            'jpeg-quality'     => 100,
+            'jpeg-quality'     => 60,
             'period'           => 604800, // 60 * 60 * 24 * 7
         ];
 
