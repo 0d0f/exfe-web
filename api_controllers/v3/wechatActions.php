@@ -183,7 +183,7 @@ class wechatActions extends ActionController {
                                             }
                                         }
                                         if ($invitation) {
-                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}";
+                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}";
                                             if ($rtnMessage) {
                                                 foreach ($crosses[$map]->exfee->invitations as $invItem) {
                                                     if ($invItem->identity->connected_user_id === $user_id
@@ -214,7 +214,7 @@ class wechatActions extends ActionController {
                                         $rtnMessage = [[
                                             'Title'       => $cross->title,
                                             'Description' => '开启这张“活点地图” 就能互相看到位置和轨迹。或长按转发邀请更多朋友们。',
-                                            'PicUrl'      => '',
+                                            'PicUrl'      => API_URL . "/v3/crosses/{$cross->id}/wechatimage?identity_id={$identity->id}",
                                             'Url'         => "{$rawResult['url']}{$debugUrl}",
                                         ]];
                                     }
@@ -296,9 +296,9 @@ class wechatActions extends ActionController {
                     $cross      = $rawResult['cross'];
                     $rtnType    = 'news';
                     $rtnMessage = [[
-                        'Title'       => $rawResult['cross']->title,
+                        'Title'       => $cross->title,
                         'Description' => '开启这张“活点地图” 就能互相看到位置和轨迹。或长按转发邀请更多朋友们。',
-                        'PicUrl'      => '',
+                        'PicUrl'      => API_URL . "/v3/crosses/{$cross->id}/wechatimage?identity_id={$identity->id}",
                         'Url'         => "{$rawResult['url']}{$debugUrl}",
                     ]];
                 }
