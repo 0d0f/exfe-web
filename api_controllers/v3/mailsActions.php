@@ -28,18 +28,20 @@ class MailsActions extends ActionController {
         ];
 
         // header
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/jpeg');
-
+        imageHeader('jpeg');
         // try cache
         $rsImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $this->route, $config['period'], false, 'jpg'
         );
         if ($rsImage) {
-            fpassthru($rsImage);
-            fclose($rsImage);
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $rsImage['time']) . ' GMT');
+            $imfSince = @strtotime($this->params['if_modified_since']);
+            if ($imfSince && $imfSince >= $rsImage['time']) {
+                header('HTTP/1.1 304 Not Modified');
+                return;
+            }
+            fpassthru($rsImage['resource']);
+            fclose($rsImage['resource']);
             return;
         }
 
@@ -138,6 +140,7 @@ class MailsActions extends ActionController {
         );
 
         // render
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time() + 7) . ' GMT');
         imagejpeg($image, null, $config['jpeg-quality']);
         $objLibImage->setImageCache(IMG_CACHE_PATH, $this->route, $image, 'jpg', $config['jpeg-quality']);
         imagedestroy($image);

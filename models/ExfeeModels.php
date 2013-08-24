@@ -38,9 +38,9 @@ class ExfeeModels extends DataModel {
             'INTERESTED'   => 1,
             'DECLINED'     => 2,
             'IGNORED'      => 3,
-            'REMOVED'      => 4,
-            'NORESPONSE'   => 5,
-            'NOTIFICATION' => 6
+            'NORESPONSE'   => 4,
+            'NOTIFICATION' => 5,
+            'REMOVED'      => 6
         ];
         // get raw exfee
         $rawExfee = $this->getRawExfeeById($id, $withRemoved);
@@ -613,10 +613,12 @@ class ExfeeModels extends DataModel {
         //
         if (isset($exfee->invitations) && is_array($exfee->invitations) && $oldExfee) {
             // get current exfee infos
-            $oldUserIds = [];
+            $oldUserIds  = [];
+            $oldNotifIds = [];
             foreach ($old_cross->exfee->invitations as $fmI => $fmItem) {
                 if ($fmItem->response !== 'REMOVED') {
                     $oldUserIds[] = $fmItem->identity->connected_user_id;
+                    $oldNotifIds[$fmItem->identity->id] = $fmItem->notification_identities;
                 }
                 if (!$timezone && $fmItem->identity->timezone) {
                     $timezone = $fmItem->identity->timezone;
@@ -652,6 +654,11 @@ class ExfeeModels extends DataModel {
                     $exfee->invitations[$toI]->response = $toItem->rsvp_status;
                 }
                 // expending notification identities
+                if (!$toItem->notification_identities
+                 && isset($oldNotifIds[$toItem->identity->id])
+                 && $toItem->response === 'REMOVED') {
+                    $toItem->notification_identities = $oldNotifIds[$toItem->identity->id];
+                }
                 foreach ($toItem->notification_identities ?: [] as $ti => $tarId) {
                     $tarId = strtolower($tarId);
                     $external_username = preg_replace($strRegExp, '$1', $tarId);

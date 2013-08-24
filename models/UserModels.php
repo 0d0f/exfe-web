@@ -1029,10 +1029,7 @@ class UserModels extends DataModel {
         $ftSize = 128;
         // header
         if (!$asimage) {
-            header('Pragma: no-cache');
-            header('Cache-Control: no-cache');
-            header('Content-Transfer-Encoding: binary');
-            header('Content-type: image/png');
+            imageHeader();
         }
         // try cache
         $objLibImage  = new libImage;
@@ -1045,8 +1042,14 @@ class UserModels extends DataModel {
             if ($asimage) {
                 return $cache;
             }
-            fpassthru($cache);
-            fclose($cache);
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $cache['time']) . ' GMT');
+            $imfSince = @strtotime($this->params['if_modified_since']);
+            if ($imfSince && $imfSince >= $cache['time']) {
+                header('HTTP/1.1 304 Not Modified');
+                return;
+            }
+            fpassthru($cache['resource']);
+            fclose($cache['resource']);
             return;
         }
         // get rendom color index
@@ -1107,6 +1110,7 @@ class UserModels extends DataModel {
             return $image;
         }
         // show image
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time() + 7) . ' GMT');
         $actResult = imagepng($image);
         imagedestroy($image);
         // return

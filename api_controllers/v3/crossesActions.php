@@ -40,17 +40,21 @@ class CrossesActions extends ActionController {
             return;
         }
         // header
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/jpeg');
+        imageHeader('jpeg');
         // try cache
         $rsImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $this->route, $config['period'], false, 'jpg'
         );
         if ($rsImage) {
-            fpassthru($rsImage);
-            fclose($rsImage);
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $rsImage['time']) . ' GMT');
+            $imfSince = @strtotime($this->params['if_modified_since']);
+            if ($imfSince && $imfSince >= $rsImage['time']) {
+                error_log('xxxxx');
+                header('HTTP/1.1 304 Not Modified');
+                return;
+            }
+            fpassthru($rsImage['resource']);
+            fclose($rsImage['resource']);
             return;
         }
         // render background
@@ -96,10 +100,10 @@ class CrossesActions extends ActionController {
                     $config['line-color'][2],
                     (1 - $config['line-color'][3]) * 127
                 );
-                $x1    = ($width  - $avatarSize) / 2 - 1;
-                $y1    = ($height - $avatarSize) / 2 - 1;
-                $x2    = ($width  + $avatarSize) / 2;
-                $y2    = ($height + $avatarSize) / 2;
+                $x1 = ($width  - $avatarSize) / 2 - 1;
+                $y1 = ($height - $avatarSize) / 2 - 1;
+                $x2 = ($width  + $avatarSize) / 2;
+                $y2 = ($height + $avatarSize) / 2;
                 imageline($image, $x1, $y1, $x2, $y1, $color);
                 imageline($image, $x2, $y1, $x2, $y2, $color);
                 imageline($image, $x2, $y2, $x1, $y2, $color);
@@ -123,6 +127,7 @@ class CrossesActions extends ActionController {
         );
         imagedestroy($iconImage);
         // render
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time() + 7) . ' GMT');
         imagejpeg($image, null, $config['jpeg-quality']);
         $objLibImage->setImageCache(
             IMG_CACHE_PATH, $this->route, $image, 'jpg', $config['jpeg-quality']
@@ -186,10 +191,7 @@ class CrossesActions extends ActionController {
             return;
         }
         // header
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/jpeg');
+        imageHeader('jpeg');
         // ready
         $updated_at = strtotime($cross->exfee->updated_at);
         // get routex location
@@ -224,8 +226,14 @@ class CrossesActions extends ActionController {
             IMG_CACHE_PATH, $rsImageKey, $config['period'], false, 'jpg'
         );
         if ($rsImage) {
-            fpassthru($rsImage);
-            fclose($rsImage);
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $rsImage['time']) . ' GMT');
+            $imfSince = @strtotime($this->params['if_modified_since']);
+            if ($imfSince && $imfSince >= $rsImage['time']) {
+                header('HTTP/1.1 304 Not Modified');
+                return;
+            }
+            fpassthru($rsImage['resource']);
+            fclose($rsImage['resource']);
             return;
         }
         // create base image
@@ -416,6 +424,7 @@ class CrossesActions extends ActionController {
         );
         imagedestroy($shadowImage);
         // render
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time() + 7) . ' GMT');
         imagejpeg($image, null, $config['jpeg-quality']);
         $objLibImage->setImageCache(IMG_CACHE_PATH, $rsImageKey, $image, 'jpg', $config['jpeg-quality']);
         imagedestroy($image);

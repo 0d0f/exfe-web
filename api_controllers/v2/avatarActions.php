@@ -177,17 +177,20 @@ class AvatarActions extends ActionController {
             'period'         => 604800, // 60 * 60 * 24 * 7
         ];
         // header
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
+        imageHeader();
         // try cache
         $rsImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $this->route, $config['period']
         );
         if ($rsImage) {
-            fpassthru($rsImage);
-            fclose($rsImage);
+            header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $rsImage['time']) . ' GMT');
+            $imfSince = @strtotime($this->params['if_modified_since']);
+            if ($imfSince && $imfSince >= $rsImage['time']) {
+                header('HTTP/1.1 304 Not Modified');
+                return;
+            }
+            fpassthru($rsImage['resource']);
+            fclose($rsImage['resource']);
             return;
         }
         // get source image
@@ -274,6 +277,7 @@ class AvatarActions extends ActionController {
             );
         }
         // render
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', time() + 7) . ' GMT');
         imagepng($image);
         $objLibImage->setImageCache(IMG_CACHE_PATH, $this->route, $image);
         imagedestroy($image);
