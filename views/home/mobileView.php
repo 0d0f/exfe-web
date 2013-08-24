@@ -283,7 +283,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg>
       <div id="identities-overlay">
         <div id="isme" class="identity">
-          <div class="abg"><img src="" alt="" class="avatar"></div>
+          <div class="abg"><img src="" alt="" class="avatar"><div class="avatar-wrapper"></div></div>
           <div class="detial unknown">
             <i class="icon icon-dot-grey"></i>
             <span class="distance">未知方位</span>
