@@ -177,10 +177,7 @@ class AvatarActions extends ActionController {
             'period'         => 604800, // 60 * 60 * 24 * 7
         ];
         // header
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/png');
+        imageHeader();
         // try cache
         $rsImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $this->route, $config['period']

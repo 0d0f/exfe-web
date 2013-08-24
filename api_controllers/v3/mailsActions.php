@@ -28,11 +28,7 @@ class MailsActions extends ActionController {
         ];
 
         // header
-        header('Pragma: no-cache');
-        header('Cache-Control: no-cache');
-        header('Content-Transfer-Encoding: binary');
-        header('Content-type: image/jpeg');
-
+        imageHeader('jpeg');
         // try cache
         $rsImage = $objLibImage->getImageCache(
             IMG_CACHE_PATH, $this->route, $config['period'], false, 'jpg'
