@@ -100,7 +100,8 @@ class HomeActions extends ActionController {
          && !isset($_COOKIE['ipad'])
          && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
-          || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod'))) {
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod')
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'Android'))) {
             $this->displayViewByAction('mobile');
             return;
         } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')
@@ -111,8 +112,7 @@ class HomeActions extends ActionController {
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE 5.0'))) {
             $this->displayViewByNameAction('matters', 'browser_matters');
             return;
-        } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'Android')
-                || strpos($_SERVER['HTTP_USER_AGENT'], 'BlackBerry')
+        } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'BlackBerry')
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'Nokia')
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'Symbian')
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'SymbOS')
