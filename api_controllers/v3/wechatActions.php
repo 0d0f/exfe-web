@@ -19,7 +19,7 @@ class wechatActions extends ActionController {
             return;
         }
         $objMsg  = $modWechat->unpackMessage(file_get_contents('php://input'));
-        $msgType = @$objMsg->MsgType;
+        $msgType = @strtolower($objMsg->MsgType);
         $event   = @strtolower($objMsg->Event);
         // disabled wechat location events {
         if ($msgType === 'event' && $event === 'location') {
