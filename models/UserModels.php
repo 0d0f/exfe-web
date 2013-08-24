@@ -1029,10 +1029,7 @@ class UserModels extends DataModel {
         $ftSize = 128;
         // header
         if (!$asimage) {
-            header('Pragma: no-cache');
-            header('Cache-Control: no-cache');
-            header('Content-Transfer-Encoding: binary');
-            header('Content-type: image/png');
+            imageHeader();
         }
         // try cache
         $objLibImage  = new libImage;
