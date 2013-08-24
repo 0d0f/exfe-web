@@ -45,6 +45,11 @@ class ExfeeHelper extends ActionController {
     }
 
 
+    public function getRawInvitationByExfeeIdAndIdentityId($exfee_id, $identity_id) {
+        return $this->modExfee->getRawInvitationByExfeeIdAndIdentityId($exfee_id, $identity_id);
+    }
+
+
     public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false, $timezone = '') {
         return $this->modExfee->updateExfee($exfee, $by_identity_id, $user_id, $rsvp_only, $draft, $keepRsvp, $timezone);
     }
