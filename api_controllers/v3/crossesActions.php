@@ -49,7 +49,6 @@ class CrossesActions extends ActionController {
             header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $rsImage['time']) . ' GMT');
             $imfSince = @strtotime($this->params['if_modified_since']);
             if ($imfSince && $imfSince >= $rsImage['time']) {
-                error_log('xxxxx');
                 header('HTTP/1.1 304 Not Modified');
                 return;
             }
