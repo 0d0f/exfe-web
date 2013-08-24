@@ -22,7 +22,7 @@ class CrossesActions extends ActionController {
             'routex-icon-x'    => 252,
             'routex-icon-y'    => 12,
             'line-color'       => [127, 127, 127, 0.5],
-            'jpeg-quality'     => 100,
+            'jpeg-quality'     => 60,
             'period'           => 604800, // 60 * 60 * 24 * 7
         ];
         // check cross
