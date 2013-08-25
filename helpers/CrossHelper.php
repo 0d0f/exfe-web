@@ -15,11 +15,14 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null, $with_updated = false, $uid = 0)
-    {
-        $crossData=$this->getModelByName("cross");
-        $crosses=$crossData->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
-        //build and return a cross object array
+    public function getCrossesByExfeeids($exfee_id_list, $time_type = null, $time_split = null) {
+        return $this->modCross->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
+    }
+
+
+    public function getCrossesByExfeeIdList($exfee_id_list, $time_type = null, $time_split = null, $with_updated = false, $uid = 0) {
+        $crosses = $this->getCrossesByExfeeids($exfee_id_list, $time_type, $time_split);
+        // build and return a cross object array
         $exfeeData=$this->getModelByName("exfee");
         $identityData=$this->getModelByName("identity");
         $conversationData=$this->getModelByName("conversation");

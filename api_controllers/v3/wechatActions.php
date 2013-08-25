@@ -18,12 +18,19 @@ class wechatActions extends ActionController {
             }
             return;
         }
+        $objMsg  = $modWechat->unpackMessage(file_get_contents('php://input'));
+        $msgType = @strtolower($objMsg->MsgType);
+        $event   = @strtolower($objMsg->Event);
+        // disabled wechat location events {
+        if ($msgType === 'event' && $event === 'location') {
+            return;
+        }
+        // }
         $modUser     = $this->getModelByName('User');
         $modIdentity = $this->getModelByName('Identity');
         $modRoutex   = $this->getModelByName('Routex');
         $crossHelper = $this->getHelperByName('cross');
         $exfeeHelper = $this->getHelperByName('exfee');
-        $objMsg      = $modWechat->unpackMessage(file_get_contents('php://input'));
         $bot         = $modIdentity->getIdentityById(explode(',', SMITH_BOT)[0]);
         $rtnType     = 'text';
         $rtnMessage  = '';
@@ -62,9 +69,8 @@ class wechatActions extends ActionController {
         $debugUrl    = getCache($debugUrlKey) ? '&debug=true' : '';
         // }
         $pageKey     = "wechat_routex_paging_{$identity->id}";
-        switch (@$objMsg->MsgType) {
+        switch ($msgType) {
             case 'event':
-                $event = @strtolower($objMsg->Event);
                 if (in_array($event, ['subscribe', 'click', 'location'])) {
                     // check user
                     $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
@@ -112,21 +118,19 @@ class wechatActions extends ActionController {
                     case 'click':
                         switch ($objMsg->EventKey) {
                             case 'LIST_MAPS':
-                                $exfee_id_list = $exfeeHelper->getExfeeIdByUserid($user_id);
-                                $cross_list    = $crossHelper->getCrossesByExfeeIdList(
-                                    $exfee_id_list, null, null, false, $user_id
-                                );
-                                $crosses       = [];
-                                foreach ($cross_list as $i => $csItem) {
-                                    if ($csItem->attribute['state'] === 'deleted'
-                                    || ($csItem->attribute['state'] === 'draft'
-                                     && !in_array($user_id, $csItem->exfee->hosts))) {
-                                    } else {
-                                        $crosses[$csItem->id] = $csItem;
+                                // get exfee ids
+                                $exfee_ids  = $exfeeHelper->getExfeeIdByUserid($user_id);
+                                // get cross ids
+                                $rawCrosses = $crossHelper->getCrossesByExfeeids($exfee_ids);
+                                $exfee_ids  = null;
+                                $crosses    = [];
+                                foreach ($rawCrosses as $rcItem) {
+                                    if ($csItem['status'] !== 2) {
+                                        $crosses[$rcItem['id']] = $rcItem;
                                     }
-                                    unset($cross_list[$i]);
                                 }
-                                $cross_list = null;
+                                $rawCrosses = null;
+                                // get routex cross ids
                                 $maps       = [];
                                 if ($crosses) {
                                     $rawMaps = httpKit::request(
@@ -152,23 +156,29 @@ class wechatActions extends ActionController {
                                     $curItem = $pageSize * $pageNum + $pageSize;
                                     $total   = sizeof($enabled);
                                     $maps    = array_slice($enabled, $pageNum * $pageSize, $pageSize);
+                                    $enabled = null;
                                     if ($curItem >= $total) {
                                         $pageNum = -1;
                                     }
                                     setCache($pageKey, ++$pageNum, 30);
                                     // }
                                 }
+                                //
                                 if ($maps) {
                                     $rtnMessage = [];
                                     $rtnType    = 'news';
                                     foreach ($maps as $map) {
-                                        $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                            $map, $bot->id
+                                        $curExfee = $exfeeHelper->getExfeeById($crosses[$map]['exfee_id']);
+                                        if ($csItem['status'] === 0 && !in_array($user_id, $curExfee->hosts)) {
+                                            continue;
+                                        }
+                                        $invitation = $exfeeHelper->getRawInvitationByExfeeIdAndIdentityId(
+                                            $crosses[$map]['exfee_id'], $bot->id
                                         );
                                         if (!$invitation) {
                                             $exfee = new Exfee;
                                             $now   = time();
-                                            $exfee->id = $crosses[$map]->exfee->id;
+                                            $exfee->id = $crosses[$map]['exfee_id'];
                                             $exfee->invitations = [new Invitation(
                                                 0, $bot, $identity, $identity,
                                                 'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
@@ -177,15 +187,15 @@ class wechatActions extends ActionController {
                                                 $exfee, $identity->id, $user_id, false, true
                                             );
                                             if ($udeResult) {
-                                                $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                                    $map, $bot->id
+                                                $invitation = $exfeeHelper->getRawInvitationByExfeeIdAndIdentityId(
+                                                    $crosses[$map]['exfee_id'], $bot->id
                                                 );
                                             }
                                         }
                                         if ($invitation) {
                                             $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}";
                                             if ($rtnMessage) {
-                                                foreach ($crosses[$map]->exfee->invitations as $invItem) {
+                                                foreach ($curExfee ? $curExfee->invitations : [] as $invItem) {
                                                     if ($invItem->identity->connected_user_id === $user_id
                                                      || $invItem->identity->id                === $identity_id) {
                                                         $picUrl = $invItem->invited_by->avatar['320_320'];
@@ -194,8 +204,8 @@ class wechatActions extends ActionController {
                                                 }
                                             }
                                             $rtnMessage[] = [
-                                                'Title'       => $crosses[$map]->title,
-                                                'Description' => $crosses[$map]->description,
+                                                'Title'       => $crosses[$map]['title'],
+                                                'Description' => $crosses[$map]['description'],
                                                 'PicUrl'      => $picUrl,
                                                 'Url'         => $modRoutex->getUrl($map, $invitation['token'], $identity) . $debugUrl,
                                             ];
@@ -204,6 +214,7 @@ class wechatActions extends ActionController {
                                 } else {
                                     $rtnMessage = '您现在没有“活点地图”，创建一张并邀请朋友们吧。';
                                 }
+                                $maps = null;
                                 break;
                             case 'CREATE_MAP':
                                 if ($modIdentity->isLabRat($identity->id)) {
@@ -226,19 +237,17 @@ class wechatActions extends ActionController {
                         }
                         break;
                     case 'location':
-                        // @debug {
-                        // httpKit::request(
-                        //     EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
-                        //     ['coordinate' => 'earth'], [[
-                        //         't'   => time(),
-                        //         'gps' => [
-                        //             (float) $objMsg->Latitude,
-                        //             (float) $objMsg->Longitude,
-                        //             (float) $objMsg->Precision,
-                        //         ],
-                        //     ]], false, false, 3, 3, 'json'
-                        // );
-                        // }
+                        httpKit::request(
+                            EXFE_AUTH_SERVER . "/v3/routex/_inner/breadcrumbs/users/{$user_id}",
+                            ['coordinate' => 'earth'], [[
+                                't'   => time(),
+                                'gps' => [
+                                    (float) $objMsg->Latitude,
+                                    (float) $objMsg->Longitude,
+                                    (float) $objMsg->Precision,
+                                ],
+                            ]], false, false, 3, 3, 'json'
+                        );
                         break;
                     case 'unsubscribe':
                         $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
