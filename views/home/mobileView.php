@@ -299,8 +299,10 @@
         <div class="info">
           <div class="name"></div>
           <div class="update hide"><span class="time"></span>前所处方位</div>
-          <div class="dest hide">距目的地 <span class="m"></span></div>
-          <div class="dest-me hide">与您相距 <span class="m"></span></div>
+          <table border="0" cellpadding="0" cellspacing="0">
+            <tr class="dest hide"><td class="label">至目的地</td><td class="m"></td></tr>
+            <tr class="dest-me hide"><td class="label">距您的位置</td><td class="m"></td></tr>
+          </table>
         </div>
         <div class="splitline please-update hide">请对方更新方位</div>
       </div>
