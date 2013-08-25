@@ -225,8 +225,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function getRawInvitationByCrossIdAndIdentityId($cross_id, $identity_id) {
-        $exfee_id = $this->getExfeeIdByCrossId($cross_id);
+    public function getRawInvitationByExfeeIdAndIdentityId($exfee_id, $identity_id) {
         if ($exfee_id && $identity_id) {
             $rawInvitation = $this->getRow(
                 "SELECT * FROM `invitations` WHERE `exfee_id` = {$exfee_id}
@@ -247,6 +246,12 @@ class ExfeeModels extends DataModel {
             }
         }
         return null;
+    }
+
+
+    public function getRawInvitationByCrossIdAndIdentityId($cross_id, $identity_id) {
+        $exfee_id = $this->getExfeeIdByCrossId($cross_id);
+        return $this->getRawInvitationByExfeeIdAndIdentityId($exfee_id, $identity_id);
     }
 
 
