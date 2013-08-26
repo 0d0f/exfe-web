@@ -29,28 +29,34 @@ class DianpingModels extends DataModel {
 
 
     public function getSingleBusiness($business_id) {
-        $params = [
-            'business_id'     => $business_id,
-            'out_offset_type' => 1,
-            'platform'        => 2,
-            'format'          => 'json',
-        ];
-        $rawResult = $this->request(
-            'http://api.dianping.com/v1/business/get_single_business', $params
-        );
-        if ($rawResult && $rawResult['businesses']) {
-            $name     = $business['name'] . (
-                $business['branch_name'] ? "({$business['branch_name']})" : ''
+        $key   = "dianping:{$business_id}";
+        $place = getCache($key);
+        if (!$place) {
+            $params = [
+                'business_id'     => $business_id,
+                'out_offset_type' => 1,
+                'platform'        => 2,
+                'format'          => 'json',
+            ];
+            $rawResult = $this->request(
+                'http://api.dianping.com/v1/business/get_single_business', $params
             );
-            $business = $rawResult['businesses'][0];
-            $regions  = implode(' ', $business['regions']);
-            $address  = $business['city']
-                      . ($regions ? " {$regions}" : '')
-                      . " {$business['address']}";
-            return new Place(
-                0, $name, $address, $business['longitude'],
-                $business['latitude'], 'dianping', $business['business_id']
-            );
+            if ($rawResult && $rawResult['businesses']) {
+                $name     = $business['name'] . (
+                    $business['branch_name'] ? "({$business['branch_name']})" : ''
+                );
+                $business = $rawResult['businesses'][0];
+                $regions  = implode(' ', $business['regions']);
+                $address  = $business['city']
+                          . ($regions ? " {$regions}" : '')
+                          . " {$business['address']}";
+                $place = new Place(
+                    0, $name, $address, $business['longitude'],
+                    $business['latitude'], 'dianping', $business['business_id']
+                );
+                setCache($key, $place);
+                return $place;
+            }
         }
         return null;
     }
