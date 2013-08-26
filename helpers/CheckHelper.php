@@ -7,8 +7,21 @@ class CheckHelper extends ActionController {
         $identityData = $this->getModelByName('identity');
         $exfeeData    = $this->getModelByName('exfee');
         $crossData    = $this->getModelByName('cross');
-
-        $objToken     = $userData->getUserToken($token);
+        // get token from token service {
+        if (isset($_SERVER['HTTP_EXFE_AUTH_VERSION'])
+         && (int) $_SERVER['HTTP_EXFE_AUTH_VERSION'] === 1
+         && ($objToken = json_decode($_SERVER['HTTP_EXFE_AUTH_DATA'], true))) {
+            $objToken  = [
+                'key'        => $token,
+                'data'       => $rawToken,
+                'touched_at' => (int) $_SERVER['HTTP_EXFE_AUTH_TOUCHED_AT'],
+                'expire_at'  => (int) $_SERVER['HTTP_EXFE_AUTH_EXPIRES_AT'],
+            ];
+            error_log(  'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' .  json_encode($objToken)    );
+        } else {
+            $objToken  = $userData->getUserToken($token);
+        }
+        // }
         $uid          = $objToken['data']['user_id'];
 
         if (!$uid) {
