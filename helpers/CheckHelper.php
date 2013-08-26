@@ -13,7 +13,7 @@ class CheckHelper extends ActionController {
          && ($objToken = json_decode($_SERVER['HTTP_EXFE_AUTH_DATA'], true))) {
             $objToken  = [
                 'key'        => $token,
-                'data'       => $rawToken,
+                'data'       => $objToken,
                 'touched_at' => (int) $_SERVER['HTTP_EXFE_AUTH_TOUCHED_AT'],
                 'expire_at'  => (int) $_SERVER['HTTP_EXFE_AUTH_EXPIRES_AT'],
             ];
