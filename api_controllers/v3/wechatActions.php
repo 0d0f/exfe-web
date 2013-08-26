@@ -19,6 +19,19 @@ class wechatActions extends ActionController {
             return;
         }
         $objMsg  = $modWechat->unpackMessage(file_get_contents('php://input'));
+        // @debug for dianping api {
+        // $objMsg = $modWechat->unpackMessage(
+        //     '<xml><ToUserName><![CDATA[gh_8c4c8d9d14a7]]></ToUserName>
+        //     <FromUserName><![CDATA[onrOgjtQLzpRFl30OGW6LIdb_qaE]]></FromUserName>
+        //     <CreateTime>1377452795</CreateTime>
+        //     <MsgType><![CDATA[link]]></MsgType>
+        //     <Title><![CDATA[食其家(成山路店)]]></Title>
+        //     <Description><![CDATA[成山路1993号巴黎春天B1楼]]></Description>
+        //     <Url><![CDATA[http://m.api.dianping.com/weixinshop?shopid=4091053]]></Url>
+        //     <MsgId>5916114706308792537</MsgId>
+        //     </xml>'
+        // );
+        // }
         $msgType = @strtolower($objMsg->MsgType);
         $event   = @strtolower($objMsg->Event);
         // disabled wechat location events {
@@ -293,14 +306,40 @@ class wechatActions extends ActionController {
                 $modWechat->logMessage($identity->id, $strContent);
                 break;
             case 'location':
+            case 'link':
                 if (!$modIdentity->isLabRat($identity->id)) {
                     $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
                     break;
                 }
-                $rawResult = $modRoutex->createRouteX($identity, new Place(
-                    0, @$objMsg->Label, '', @$objMsg->Location_Y,
-                    @$objMsg->Location_X, 'wechat', @$objMsg->MsgId
-                ));
+                switch ($msgType) {
+                    case 'location':
+                        $place = new Place(
+                            0, @$objMsg->Label, '', @$objMsg->Location_Y,
+                            @$objMsg->Location_X, 'wechat', @$objMsg->MsgId
+                        );
+                        break;
+                    case 'link':
+                        $strReg = '/^.*dianping\.com\/.*\?shopid=(.*)$/';
+                        $place  = null;
+                        if (preg_match($strReg, ($url = @$objMsg->Url))
+                        && ($business_id = preg_replace($strReg, '$1', $url))) {
+                            $basePlace   = new Place(
+                                0, @$objMsg->Title, @$objMsg->Description, '',
+                                '', 'dianping', $business_id
+                            );
+                            $modDianping = $this->getModelByName('Dianping');
+                            $place = $modDianping->getSingleBusiness($business_id);
+                            $place = $place ?: $basePlace;
+                            // @debug { // 点评网 api 通过验证后删除！ by @leaskh
+                            $place->title       = $basePlace->title;
+                            $place->description = $basePlace->description;
+                            // }
+                        }
+                        if (!$place) {
+                            return;
+                        }
+                }
+                $rawResult = $modRoutex->createRouteX($identity, $place);
                 if ($rawResult) {
                     $cross      = $rawResult['cross'];
                     $rtnType    = 'news';
