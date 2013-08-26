@@ -17,12 +17,11 @@ class CheckHelper extends ActionController {
                 'touched_at' => (int) $_SERVER['HTTP_EXFE_AUTH_TOUCHED_AT'],
                 'expire_at'  => (int) $_SERVER['HTTP_EXFE_AUTH_EXPIRES_AT'],
             ];
-            error_log(  'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx' .  json_encode($objToken)    );
         } else {
             $objToken  = $userData->getUserToken($token);
         }
         // }
-        $uid          = $objToken['data']['user_id'];
+        $uid = $objToken['data']['user_id'];
 
         if (!$uid) {
             $invToken = $crossData->getCrossAccessToken($token);
