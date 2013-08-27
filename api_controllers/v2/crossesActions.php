@@ -28,6 +28,14 @@ class CrossesActions extends ActionController {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
+            $modRoutex = $this->getModelByName('Routex');
+            $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $result['uid']);
+            if ($rtResult !== -1) {
+                $cross->widget[] = [
+                    'type'      => 'routex',
+                    'my_status' => $rtResult,
+                ];
+            }
             touchCross($params['id'], $result['uid']);
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                 apiError(304, 'Cross Not Modified.');
