@@ -758,7 +758,7 @@ class OAuthModels extends DataModel {
             default:
                 return null;
         }
-        return 'http://open.weixin.qq.com/connect/oauth2/authorize'
+        return 'https://open.weixin.qq.com/connect/oauth2/authorize'
              . '?appid='        . WECHAT_OFFICIAL_ACCOUNT_APPID
              . '&redirect_uri=' . 'http://exfe.com/oauth/wechatcallback'
           // . '&redirect_uri=' . WECHAT_REDIRECT_URI
