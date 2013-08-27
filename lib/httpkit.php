@@ -79,7 +79,7 @@ class httpKit {
                     error_log("POST: {$argsPost}");
                 }
             }
-            $rawData     = @curl_exec($objCurl);
+            $rawData     = @trim(curl_exec($objCurl));
             $intHttpCode = @curl_getinfo($objCurl, CURLINFO_HTTP_CODE);
             curl_close($objCurl);
             $result = ['data' => $rawData, 'http_code' => $intHttpCode];
