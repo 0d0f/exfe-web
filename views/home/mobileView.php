@@ -280,7 +280,8 @@
   <script id="routex-tmpl" type="text/x-handlebars-template">
     <div id="routex">
       <div id="map"></div>
-      <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg>
+      <!--svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg-->
+      <canvas id="canvas"></canvas>
       <div id="identities-overlay">
         <div id="isme" class="identity">
           <div class="abg"><img src="" alt="" class="avatar"><div class="avatar-wrapper"></div></div>
