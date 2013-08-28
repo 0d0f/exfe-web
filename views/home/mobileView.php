@@ -313,7 +313,7 @@
           <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
         </div>
       </div>
-      <div id="shuidi-dialog" class="hide">
+      <div id="shuidi-dialog" class="dialog hide">
         <div class="main">
           <h3 class="title">在“活点地图”上绘制路径?  </h3>
           <p class="desc"><span class="name">水滴·X· </span>应用是一个群组工具，它不仅能让您在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。 </p>
@@ -331,6 +331,15 @@
               <button class="notify-ok">确定</button>
             </div>
           </div>
+        </div>
+      </div>
+      <div id="privacy-dialog" class="dialog hide">
+        <div class="main">
+          <h3>隐私至关重要</h3>
+          <p>像“活点地图”这样能获知您方位的工具，必须以最高标准尊重个人隐私。我们对此非常重视。</p>
+          <p>您刚刚拒绝开启“Threshold of the odyssey”。这张“活点地图”将不会展现您的位置，您也无法看到这张地图上其它人的位置。但这并不影响您已经授意展现自己位置的其它地图页。</p>
+          <div>要改变主意与朋友们互相看到位置和轨迹？</div>
+          <button>开启活点地图并进入</button>
         </div>
       </div>
     </div>
