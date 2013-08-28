@@ -226,10 +226,21 @@ class BusActions extends ActionController {
         $args = json_decode($args_str);
         if (!$args
          || !is_object($args)
-         || (!isset($args->cross_id) && !isset($args->exfee_id))
-         || !isset($args->cross)
-         || !isset($args->by_identity)) {
+         || (!isset($args->cross_id) && !isset($args->exfee_id))) {
             $this->jsonError(500, 'cross_error');
+            return;
+        }
+        if (isset($args->cross)) {
+            if (!isset($args->by_identity)) {
+                $this->jsonError(500, 'cross_error');
+                return;
+            }
+        } else {
+            $exfee_id = isset($args->exfee_id)
+                      ? (int) $args->exfee_id
+                      : (int) $modExfee->getExfeeIdByCrossId((int) $args->cross_id);
+            $modExfee->updateExfeeTime($exfee_id);
+            $this->jsonResponse(new stdClass);
             return;
         }
         $chkCross = $crossHelper->validateCross($args->cross);
