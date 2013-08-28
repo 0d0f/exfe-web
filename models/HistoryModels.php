@@ -1,6 +1,6 @@
 <?php
 
-class LogModels extends DataModel {
+class HistoryModels extends DataModel {
 
     public function addLog($from_obj, $from_id, $action, $to_obj, $to_id, $to_field, $change_summy, $meta = '') {
         $from_obj=dbescape($from_obj);
