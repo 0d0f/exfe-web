@@ -623,6 +623,7 @@ class CrossesActions extends ActionController {
                 unset($cross->exfee->invitations[$i]->token_used_at);
             }
             touchCross($cross_id, $result['uid']);
+            $cross->touched_at = date('Y-m-d H:i:s') . ' +0000';
             apiResponse(['cross' => $cross]);
         }
         apiError(500, 'server_error', "Can't Edit this Cross.");
