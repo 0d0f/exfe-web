@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
+
+
 class RoutexModels extends DataModel {
 
     public function createRouteX($identity, $place = null) {
@@ -64,5 +67,19 @@ class RoutexModels extends DataModel {
              . "/!{$cross_id}/routex?xcode={$token}"
              . "&via={$identity->external_username}@{$identity->provider}";
     }
+
+
+    public function getRoutexStatusBy($cross_id, $user_id) {
+        $rawResult = httpKit::request(
+            EXFE_AUTH_SERVER
+          . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}123123",
+            null, null, false, false, 3, 3, 'json', true, true
+        );
+        if ($rawResult && $rawResult['http_code'] === 200) {
+            return $rawResult['json'];
+        }
+        return -1;
+    }
+
 
 }
