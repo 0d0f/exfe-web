@@ -8,6 +8,10 @@ $jsname = preg_replace(
 
 $cssname = $frontConfigData->css->exfemobilemin;
 
+if ($_GET['debug']) {
+  echo "<script src='/static/js/debugger/0.0.1/debugger.js'></script>";
+}
+
 echo "  <script>\n";
 include 'ftconfig.php';
 echo "window._ENV_.JSFILE = '${jsname}';\n";
