@@ -17,6 +17,9 @@ echo 'window._ENV_.exfee_id = ' . $this->getVar('exfee_id') . ';' . "\n";
 echo "  </script>\n";
 echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js'></script>";
 echo "<script src='/static/js/" . $jsname . "'</script>";
+if ($_GET('debug')) {
+  echo "<script src='/static/js/debugger/0.0.1/debugger.js'></script>";
+}
 echo "\n";
 
 // Google Analytics
