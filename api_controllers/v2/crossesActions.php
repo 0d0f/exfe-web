@@ -28,6 +28,14 @@ class CrossesActions extends ActionController {
                         apiError(403, 'not_authorized', "The X you're requesting is private.");
                     }
             }
+            $modRoutex = $this->getModelByName('Routex');
+            $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $result['uid']);
+            if ($rtResult !== -1) {
+                $cross->widget[] = [
+                    'type'      => 'routex',
+                    'my_status' => $rtResult,
+                ];
+            }
             touchCross($params['id'], $result['uid']);
             if ($updated_at && $updated_at >= strtotime($cross->exfee->updated_at)) {
                 apiError(304, 'Cross Not Modified.');
@@ -102,76 +110,6 @@ class CrossesActions extends ActionController {
         $image = imagecreatefromstring(base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCB1jYAAAAAIAAc/INeUAAAAASUVORK5CYII='));
         imagepng($image);
         imagedestroy($image);
-    }
-
-
-    public function doFreeIdentities() {
-        $params      = $this->params;
-        $checkHelper = $this->getHelperByName('check');
-        $result = $checkHelper->isAPIAllow('cross', $params['token'], ['cross_id' => $params['id']]);
-        if ($result['check'] !== true) {
-            if ($result['uid'] === 0) {
-                apiError(401, 'invalid_auth', '');
-            } else {
-                apiError(403, 'not_authorized', "The X you're requesting is private.");
-            }
-        }
-        $crossHelper = $this->getHelperByName('cross');
-        $cross = $crossHelper->getCross($params['id'], true);
-        if ($cross) {
-            switch ($cross->attribute['state']) {
-                case 'deleted':
-                    apiError(403, 'not_authorized', "The X you're requesting is private.");
-                case 'draft':
-                    if (!in_array($result['uid'], $cross->exfee->hosts)) {
-                        apiError(403, 'not_authorized', "The X you're requesting is private.");
-                    }
-            }
-            if ($this->tails
-             && sizeof($this->tails) >= 2
-             && (int) $this->tails[0] > 0
-             && $this->tails[1] === 'itsme') {
-                $identity_id = (int) $this->tails[0];
-                if (in_array($identity_id, explode(',', SMITH_BOT))) {
-                    apiError(403, 'forbidden', 'Human beings are a disease, a cancer of this planet. You are a plague, and we are the cure. - Smith, The Matrix');
-                }
-                $modCross = $this->getModelByName('Cross');
-                $modExfee = $this->getModelByName('Exfee');
-                $modUser  = $this->getModelByName('User');
-                foreach ($cross->exfee->invitations as $invitation) {
-                    if ($invitation->identity->id === $identity_id
-                    // @todo check provider as wechat
-                    // && $invitation->identity->connected_user_id <= 0
-                    ) {
-                        $crossAccessToken = $modCross->generateCrossAccessToken(
-                            $cross->id, $identity_id,
-                            $modUser->getUserIdByIdentityId($identity_id)
-                        );
-                        if ($crossAccessToken) {
-                            $modExfee->usedToken($invitation->token);
-                            apiResponse(['cross_access_token' => $crossAccessToken]);
-                        }
-                        apiError(500, 'server_error');
-                    }
-                }
-                apiError(403, 'not_authorized', "The X you're requesting is private.");
-            }
-            $identities = [];
-            foreach ($cross->exfee->invitations as $invitation) {
-                if (!in_array($invitation->identity->id, explode(',', SMITH_BOT))
-                    // && $invitation->identity->
-                    // @todo check provider as wechat
-                    ) {
-                    $invitation->identity->free = $invitation->token_used_at === '0000-00-00 00:00:00';
-                    $identities[] = $invitation->identity;
-                }
-            }
-            if ($identities) {
-                apiResponse(['identities' => $identities]);
-            }
-            apiError(404, 'not_found');
-        }
-        apiError(400, 'param_error', "The X you're requesting is not found.");
     }
 
 
@@ -685,6 +623,7 @@ class CrossesActions extends ActionController {
                 unset($cross->exfee->invitations[$i]->token_used_at);
             }
             touchCross($cross_id, $result['uid']);
+            $cross->touched_at = date('Y-m-d H:i:s') . ' +0000';
             apiResponse(['cross' => $cross]);
         }
         apiError(500, 'server_error', "Can't Edit this Cross.");
