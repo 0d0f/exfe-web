@@ -8,6 +8,10 @@ $jsname = preg_replace(
 
 $cssname = $frontConfigData->css->exfemobilemin;
 
+if ($_GET['debug']) {
+  echo "<script src='/static/js/debugger/0.0.1/debugger.js'></script>";
+}
+
 echo "  <script>\n";
 include 'ftconfig.php';
 echo "window._ENV_.JSFILE = '${jsname}';\n";
@@ -18,10 +22,6 @@ echo "  </script>\n";
 echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js'></script>";
 echo "<script src='/static/js/" . $jsname . "'</script>";
 echo "\n";
-
-if ($_GET('debug')) {
-  echo "<script src='/static/js/debugger/0.0.1/debugger.js'></script>";
-}
 
 // Google Analytics
 include 'google_analytics.php';
