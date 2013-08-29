@@ -18,7 +18,7 @@ class IconsActions extends ActionController {
             'default_color' => 'blue',
             'width'         => 48,
             'height'        => 68,
-            'font'          => "{$fontDir}OpenSans-Regular.ttf",
+            'font'          => "{$fontDir}Raleway-Regular.ttf",
             'font_cjk'      => "{$fontDir}wqy-microhei.ttc",
             'font_color'    => [255, 254, 254, 1],
             'font_size'     => 26,
@@ -49,7 +49,9 @@ class IconsActions extends ActionController {
         }
         // grep inputs
         $params  = $this->params;
-        $content = @mb_substr(trim($params['content']) ?: 'P', 0, 2, 'UTF-8');
+        $content = @trim($params['content']);
+        $content = $content === '' ? 'P' : $content;
+        $content = @mb_substr($content, 0, 2, 'UTF-8');
         $font    = checkCjk($content) ? $config['font_cjk'] : $config['font'];
         $content = mb_convert_encoding($content, 'html-entities', 'utf-8');
         $color   = ($color = @strtolower(trim($params['color'])))

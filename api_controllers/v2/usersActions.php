@@ -1327,7 +1327,11 @@ class UsersActions extends ActionController {
             $siResult = $modUser->rawSignin($user_id);
             // return
             if ($siResult) { // 成功
-                apiResponse(['user_id' => $user_id, 'token' => $siResult['token']]);
+                apiResponse([
+                    'user_id' => $user_id,
+                    'token'   => $siResult['token'],
+                    'name'    => $siResult['name'],
+                ]);
             }
         }
         apiError(500, 'failed', ''); // 操作失败
