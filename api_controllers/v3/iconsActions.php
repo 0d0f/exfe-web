@@ -18,7 +18,7 @@ class IconsActions extends ActionController {
             'default_color' => 'blue',
             'width'         => 48,
             'height'        => 68,
-            'font'          => "{$fontDir}OpenSans-Regular.ttf",
+            'font'          => "{$fontDir}Raleway-Regular.ttf",
             'font_cjk'      => "{$fontDir}wqy-microhei.ttc",
             'font_color'    => [255, 254, 254, 1],
             'font_size'     => 26,
