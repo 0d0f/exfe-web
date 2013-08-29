@@ -720,6 +720,7 @@ class UserModels extends DataModel {
             if (($siResult = $this->rawSignin($user_id))) {
                 return [
                     'user_id'     => $siResult['user_id'],
+                    'name'        => $siResult['name'],
                     'token'       => $siResult['token'],
                     'identity_id' => $identity_id,
                     'action'      => $action,
