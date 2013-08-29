@@ -2,6 +2,13 @@
 
 class VoteModels extends DataModel {
 
+    public function updateExfeeTime($cross_id) {
+        $hlpExfe  = $this->getHelperByName('Exfee');
+        $exfee_id = $hlpExfe->getExfeeIdByCrossId($cross_id);
+        return $hlpExfe->updateExfeeTime($exfee_id, true);
+    }
+
+
     public function createVote($cross_id, $identity_id, $title = '', $description = '', $choice = '', $anonymous = false, $type = '') {
         $cross_id    = (int) $cross_id;
         $identity_id = (int) $identity_id;
@@ -26,6 +33,7 @@ class VoteModels extends DataModel {
                  `updated_at`  =  NOW()"
             );
             if ($isResult && ($id = (int) $isResult['insert_id'])) {
+                $this->updateExfeeTime($cross_id);
                 return $id;
             }
         }
