@@ -39,6 +39,12 @@ class RequestModels extends DataModel {
     }
 
 
+    public function updateExfeeTime($exfee_id) {
+        $hlpExfe = $this->getHelperByName('Exfee');
+        return $hlpExfe->updateExfeeTime($exfee_id, true);
+    }
+
+
     public function request($identity_id, $exfee_id, $message = '') {
         $identity_id = (int) $identity_id;
         $exfee_id    = (int) $exfee_id;
@@ -64,6 +70,7 @@ class RequestModels extends DataModel {
                  `message`      = '{$message}'"
             );
             if ($rawResult) {
+                $this->updateExfeeTime($exfee_id);
                 return $this->getRequestBy(0, $identity_id, $exfee_id);
             }
         }
@@ -126,9 +133,11 @@ class RequestModels extends DataModel {
                     `updated_at` = NOW()
              WHERE  `status`    <> {$status} AND {$sqlAppend}"
         );
-        return $rqResult
-             ? $this->getRequestBy($request_id, $identity_id, $exfee_id)
-             : false;
+        if ($rqResult) {
+            $this->updateExfeeTime($exfee_id);
+            return $this->getRequestBy($request_id, $identity_id, $exfee_id);
+        }
+        return false;
     }
 
 }
