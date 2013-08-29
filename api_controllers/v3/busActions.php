@@ -992,6 +992,7 @@ class BusActions extends ActionController {
                 'authorization' => [
                     'user_id' => $siResult['user_id'],
                     'token'   => $siResult['token'],
+                    'name'    => $siResult['name'],
                 ],
             ]);
             return;
