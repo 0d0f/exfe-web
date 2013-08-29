@@ -378,6 +378,9 @@ class PhotoxActions extends ActionController {
                   ? $modPhoto->delPhotosFromPhotoxByPhotoxIdAndPhotoIds($cross_id, $photo_id)
                   : $modPhoto->delAlbumFromPhotoxByPhotoxIdAndProviderAndExternalAlbumId($cross_id, $provider, $album_id);
         if ($result) {
+            $modExfee = $this->getModelByName('Exfee');
+            $exfee_id = $modExfee->getExfeeIdByCrossId($cross_id);
+            $modExfee->updateExfeeTime($exfee_id);
             $photox = $modPhoto->getPhotoxById($cross_id);
             touchCross($cross_id, $user_id);
             apiResponse(['photox' => $photox]);
@@ -449,6 +452,7 @@ class PhotoxActions extends ActionController {
         $response = @ $_POST['LIKE'] === 'false' ? '' : 'LIKE';
         $result   = $modPhoto->responseToPhoto($id, $identity_id, $response);
         if ($result) {
+            $modExfee->updateExfeeTime($exfee_id);
             touchCross($cross_id, $user_id);
             apiResponse(['like' => $result]);
         }

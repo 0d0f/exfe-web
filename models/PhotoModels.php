@@ -141,6 +141,13 @@ class PhotoModels extends DataModel {
     }
 
 
+    public function updateExfeeTime($cross_id) {
+        $hlpExfe  = $this->getHelperByName('Exfee');
+        $exfee_id = $hlpExfe->getExfeeIdByCrossId($cross_id);
+        return $hlpExfe->updateExfeeTime($exfee_id, true);
+    }
+
+
     public function addPhotosToCross($cross_id, $photos, $identity_id) {
         if ($cross_id && is_array($photos) && $identity_id) {
             foreach ($photos as $photo) {
@@ -191,6 +198,7 @@ class PhotoModels extends DataModel {
                     );
                 }
             }
+            $this->updateExfeeTime($cross_id);
             return true;
         }
         return false;
