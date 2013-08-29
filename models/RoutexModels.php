@@ -72,7 +72,7 @@ class RoutexModels extends DataModel {
     public function getRoutexStatusBy($cross_id, $user_id) {
         $rawResult = httpKit::request(
             EXFE_AUTH_SERVER
-          . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}123123",
+          . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}",
             null, null, false, false, 3, 3, 'json', true, true
         );
         if ($rawResult && $rawResult['http_code'] === 200) {
