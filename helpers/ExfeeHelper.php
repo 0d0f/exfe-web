@@ -54,4 +54,9 @@ class ExfeeHelper extends ActionController {
         return $this->modExfee->updateExfee($exfee, $by_identity_id, $user_id, $rsvp_only, $draft, $keepRsvp, $timezone);
     }
 
+
+    public function updateExfeeTime($exfee_id, $quick = false) {
+        return $this->modExfee->updateExfeeTime($exfee_id, $quick);
+    }
+
 }

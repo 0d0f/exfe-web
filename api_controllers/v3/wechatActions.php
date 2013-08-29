@@ -384,7 +384,7 @@ class wechatActions extends ActionController {
             httpKit::request(
                 EXFE_AUTH_SERVER
               . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross->id}",
-                null, ['save_breadcrumbs' => true, 'after_in_seconds' => 7200],
+                null, ['save_breadcrumbs' => true],
                 false, false, 3, 3, 'json'
             );
         }
