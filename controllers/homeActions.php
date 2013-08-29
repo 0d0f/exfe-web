@@ -60,6 +60,13 @@ class HomeActions extends ActionController {
                 }
                 $exfee_id = $invitation['exfee_id'];
             }
+        } else {
+            $rawId  = @$this->tails[1] ?: '';
+            $regExp = '/^!(.*)$/';
+            if (preg_match($regExp, $rawId)) {
+                $cross_id = (int) preg_replace($regExp, '$1', $rawId);
+                $exfee_id = (int) $modExfee->getExfeeIdByCrossId($cross_id);
+            }
         }
         // }
         $this->setVar('smith_id', $smith_id);
