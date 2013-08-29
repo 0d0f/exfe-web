@@ -52,6 +52,7 @@ class HomeActions extends ActionController {
         // check xcode {
         $smith_id    = 0;
         $exfee_id    = 0;
+        $title       = 'EXFE - The group utility for gathering.';
         if (isset($_GET['xcode'])) {
             $invitation = $modExfee->getRawInvitationByToken($_GET['xcode']);
             if ($invitation && $invitation['state'] !== 4) {
@@ -59,6 +60,17 @@ class HomeActions extends ActionController {
                     $smith_id = $invitation['identity_id'];
                 }
                 $exfee_id = $invitation['exfee_id'];
+                $rawCross = $modCross->getCross($invitation['cross_id']);
+                if ($rawCross && $rawCross['title']) {
+                    $title = $rawCross['title'];
+                }
+            }
+        } else {
+            $rawId  = @$this->tails[1] ?: '';
+            $regExp = '/^!(.*)$/';
+            if (preg_match($regExp, $rawId)) {
+                $cross_id = (int) preg_replace($regExp, '$1', $rawId);
+                $exfee_id = (int) $modExfee->getExfeeIdByCrossId($cross_id);
             }
         }
         // }
@@ -92,6 +104,7 @@ class HomeActions extends ActionController {
         }
         $modOauth->resetSession();
         // show page
+        $this->setVar('title',       $title);
         $this->setVar('backgrounds', $modBackground->getAllBackground());
         $this->setVar('oauth',       $oauthRst);
         $this->setVar('location',    $modMap->getCurrentLocation());
