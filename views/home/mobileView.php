@@ -337,10 +337,10 @@
         <div class="main">
           <h3>隐私至关重要</h3>
           <p class="p0">像“活点地图”这样能获知您方位的工具，必须以最高标准尊重个人隐私。我们对此非常重视。</p>
-          <p class="p1">您刚刚拒绝开启“Threshold of the odyssey”。这张“活点地图”将不会展现您的位置，您也无法看到这张地图上其它人的位置。但这并不影响您已经授意展现自己位置的其它地图页。</p>
+          <p class="p1">您刚刚拒绝开启“Threshold of the odyssey”。这张“活点地图”将不会展现您的位置，您也无法看到这张地图上其它人的位置。但这对您已开启的其它“活点地图”页面没有影响，每张地图是否展现您的位置是独立设置的。</p>
           <div class="btn">
             <div class="tip">要改变主意与朋友们互相看到位置和轨迹？</div>
-            <button id="turn-on">开启活点地图并进入</button>
+            <button id="turn-on">开启活点地图</button>
           </div>
         </div>
       </div>
