@@ -128,6 +128,7 @@ class VotesActions extends ActionController {
         )) {
             $objVote = $modVote->getVoteById($vote_id);
             if ($objVote && $objVote->status === 'deleted') {
+                $modExfee->updateExfeeTime($exfee_id);
                 apiResponse(['vote_id' => $vote_id]);
             } else {
                 apiResponse(['vote'    => $objVote]);
@@ -175,6 +176,7 @@ class VotesActions extends ActionController {
         if ($modVote->updateVote(
             $vote_id, $identity_id, null, null, null, null, 3
         )) {
+            $modExfee->updateExfeeTime($exfee_id);
             apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
         }
         apiError(400, 'error_vote');
@@ -219,6 +221,7 @@ class VotesActions extends ActionController {
         if ($modVote->updateVote(
             $vote_id, $identity_id, null, null, null, null, 4
         )) {
+            $modExfee->updateExfeeTime($exfee_id);
             apiResponse(['vote_id' => $vote_id]);
         }
         apiError(400, 'error_vote');
@@ -289,12 +292,14 @@ class VotesActions extends ActionController {
                         $option_id,        $identity_id,
                         @$objOption->data, @$objOption->title
                     )) {
+                        $modExfee->updateExfeeTime($exfee_id);
                         apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
                     }
                     apiError(400, 'error_option');
                     break;
                 case 'remove':
                     if ($modVote->removeVoteOption($option_id, $identity_id)) {
+                        $modExfee->updateExfeeTime($exfee_id);
                         apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
                     }
                     apiError(400, 'error_option');
@@ -310,6 +315,7 @@ class VotesActions extends ActionController {
                     if ($modVote->vote(
                         $option_id, $identity_id, $action, $objVote->choice === 'multiple'
                     )) {
+                        $modExfee->updateExfeeTime($exfee_id);
                         apiResponse(['vote' => $modVote->getVoteById($vote_id)]);
                     }
                     apiError(400, 'error_option');
