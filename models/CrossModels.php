@@ -467,4 +467,9 @@ class CrossModels extends DataModel {
         return false;
     }
 
+
+    public function log() {
+        $hlpHistory = $this->getHelperByName('History');
+    }
+
  }
