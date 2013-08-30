@@ -25,7 +25,7 @@ class PreferencesModels extends DataModel {
                 return [
                     'locale'   => $user['locale'],
                     'timezone' => $user['timezone'],
-                ];
+                ] + (json_decode($user['preferences'], true) ?: []);
             }
         }
         return null;
@@ -46,17 +46,37 @@ class PreferencesModels extends DataModel {
                 $sqlUsr[] = $strItem;
                 $sqlIdt[] = $strItem;
             }
+            $curPfrs = $this->getPreferencesBy($user_id) ?: [];
+            if (isset($curPfrs['locale'])) {
+                unset($curPfrs['locale']);
+            }
+            if (isset($curPfrs['timezone'])) {
+                unset($curPfrs['timezone']);
+            }
+            $prfChanged = false;
+            if (isset($preferences['routex'])) {
+                if (!isset($curPfrs['routex'])) {
+                    $curPfrs['routex'] = [];
+                }
+                if (isset($preferences['routex']['background_gps'])) {
+                    $curPfrs['routex']['background_gps'] = !!$preferences['routex']['background_gps'];
+                    $prfChanged = true;
+                }
+            }
+            if ($prfChanged) {
+                $sqlUsr[] = "`preferences` = '" . json_encode($curPfrs) . "'";
+            }
             if (($strSql = implode(', ', $sqlUsr))) {
                 $this->query("UPDATE `users` SET `updated_at` = NOW(), {$strSql} WHERE `id` = {$user_id};");
                 delCache("users:{$user_id}");
-                if (($strSql = implode(', ', $sqlIdt))) {
-                    $identity_ids = $this->hlpUser->getIdentityIdsByUserId($user_id);
-                    foreach ($identity_ids ?: [] as $id) {
-                        $this->updateIdentityPreferences($id, $strSql);
-                    }
-                }
-                return true;
             }
+            if (($strSql = implode(', ', $sqlIdt))) {
+                $identity_ids = $this->hlpUser->getIdentityIdsByUserId($user_id);
+                foreach ($identity_ids ?: [] as $id) {
+                    $this->updateIdentityPreferences($id, $strSql);
+                }
+            }
+            return true;
         }
         return false;
     }
