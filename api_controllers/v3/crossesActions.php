@@ -74,6 +74,7 @@ class CrossesActions extends ActionController {
         if ($identity) {
             $imageUrl    = $identity->avatar['320_320'];
             if (strpos($imageUrl, API_URL) !== false) {
+                $modUser     = $this->getModelByName('User');
                 $arrQuery    = explode('=', explode('&', parse_url($imageUrl, PHP_URL_QUERY))[0]);
                 $avatarImage = isset($arrQuery[1]) && $arrQuery[1]
                              ? $modUser->makeDefaultAvatar(urldecode($arrQuery[1]), true) : null;
