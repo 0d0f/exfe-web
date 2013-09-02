@@ -110,11 +110,12 @@ class QueueModels extends DataModel {
         }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
-            case 'cross/preview':
             case 'cross/invitation':
+                $dataAr = ['invitee' => $data['invitee']];
+            case 'cross/preview':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
-                $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by']];
+                $dataAr += ['cross_id' => $data['cross']->id, 'by' => $data['by']];
                 break;
             case 'cross/join':
                 $urlSrv = "/v3/notifier/{$strSrv}";
@@ -490,16 +491,16 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id, $host_only = false) {
+    public function despatchPreview($cross, $to_exfee, $by_user_id, $by_identity_id) {
         $service     = 'cross';
-        $method      = $host_only ? 'preview' : 'invitation';
+        $method      = 'preview';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $dpCross     = new stdClass;
         $dpCross->id = $cross->id;
         $dpCross->exfee = $to_exfee;
         $invitations = $this->getToInvitationsByExfee(
-            $dpCross, $by_user_id, "{$service}/{$method}", [], [], $host_only
+            $dpCross, $by_user_id, "{$service}/{$method}", [], [], true
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -509,6 +510,32 @@ class QueueModels extends DataModel {
                     ['cross' => $cross, 'by' => $objIdentity]
                 )) {
                     $result = false;
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        $service     = 'cross';
+        $method      = 'invitation';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
+        $invitations = $this->getToInvitationsByExfee(
+            $cross, $by_user_id, "{$service}/{$method}"
+        );
+        $result = true;
+        foreach ($to_exfee->invitations as $teItem) {
+            foreach ($invitations as $invI => $invItems) {
+                if ($invItems) {
+                    if ($this->pushJobToQueue($invI, $service, $method, $invItems, [
+                        'cross'   => $cross,
+                        'by'      => $objIdentity,
+                        'invitee' => $teItem->identity,
+                    ])) {
+                        $result = false;
+                    }
                 }
             }
         }
