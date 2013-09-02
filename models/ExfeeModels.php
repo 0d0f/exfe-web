@@ -582,7 +582,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false, $timezone = '') {
+    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false, $timezone = '', $asJoin = false) {
         // load helpers
         $hlpCross    = $this->getHelperByName('cross');
         $hlpIdentity = $this->getHelperByName('identity');
@@ -817,18 +817,27 @@ class ExfeeModels extends DataModel {
                     }
                 }
             }
-            if ($changed) {
-                $hlpQueue->despatchUpdate(
-                    $cross, $old_cross, $delExfee, $addExfee, $user_id ?: -$by_identity_id, $by_identity_id
-                );
-            }
-            if ($addExfee) {
-                $to_exfee = new stdClass;
-                $to_exfee->id = $cross->exfee->id;
-                $to_exfee->invitations = $addExfee;
-                $hlpQueue->despatchInvitation(
-                    $cross, $to_exfee, $user_id ?: -$by_identity_id, $by_identity_id
-                );
+            $to_exfee = new stdClass;
+            $to_exfee->id = $cross->exfee->id;
+            $to_exfee->invitations = $addExfee;
+            $user_id  = $user_id ?: -$by_identity_id;
+            if ($asJoin) {
+                if ($addExfee) {
+                    $hlpQueue->despatchJoin(
+                        $cross, $to_exfee, $user_id, $by_identity_id
+                    );
+                }
+            } else {
+                if ($changed) {
+                    $hlpQueue->despatchUpdate(
+                        $cross, $old_cross, $delExfee, $addExfee, $user_id, $by_identity_id
+                    );
+                }
+                if ($addExfee) {
+                    $hlpQueue->despatchInvitation(
+                        $cross, $to_exfee, $user_id, $by_identity_id
+                    );
+                }
             }
         }
         // }
