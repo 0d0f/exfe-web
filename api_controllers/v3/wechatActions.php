@@ -36,7 +36,7 @@ class wechatActions extends ActionController {
         $event   = @strtolower($objMsg->Event);
         // disabled wechat location events {
         if ($msgType === 'event' && $event === 'location') {
-            // return;
+            return;
         }
         // }
         $modUser     = $this->getModelByName('User');
