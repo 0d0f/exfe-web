@@ -307,7 +307,7 @@
         </div>
         <div class="splitline please-update hide">请对方更新方位</div>
       </div>
-      <div debug id="open-exfe"><div class="btn-openexfe"></div></div>
+      <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
         <div class="btn-locate">
           <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
