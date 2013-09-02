@@ -91,7 +91,7 @@ class ExfeeActions extends ActionController {
     }
 
 
-    public function doInvite() {
+    public function doJoin() {
         // get libs
         $params      = $this->params;
         $modUser     = $this->getModelByName('User');
