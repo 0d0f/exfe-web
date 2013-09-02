@@ -307,7 +307,7 @@
         </div>
         <div class="splitline please-update hide">请对方更新方位</div>
       </div>
-      <div debug id="open-exfe"><div class="btn-openexfe"></div></div>
+      <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
         <div class="btn-locate">
           <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
@@ -341,6 +341,14 @@
           <div class="btn">
             <div class="tip">要改变主意与朋友们互相看到位置和轨迹？</div>
             <button id="turn-on">开启这张活点地图</button>
+          </div>
+        </div>
+      </div>
+      <div id="wechat-guide-dialog" class="dialog hide">
+        <div class="main">
+          <div class="ibox">
+            <p>关注“活点地图”以便朋友们给您发送邀请和提醒。</p>
+            <p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right" />请从这里点按图标  “查看公众号”，然后关注。<span>受微信限制操作繁琐  非常抱歉</span></p>
           </div>
         </div>
       </div>
