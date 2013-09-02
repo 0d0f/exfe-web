@@ -198,11 +198,11 @@ class AvatarActions extends ActionController {
         $params['url'] = $_GET['url'] ? base64_url_decode($_GET['url']) : '';
         $image  = null;
         if (strpos($params['url'], API_URL) !== false) {
-            $arr_url = explode('=', $params['url']);
-            $image   = isset($arr_url[1]) && $arr_url[1]
-                     ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true) : null;
+            $arrQuery = explode('=', explode('&', parse_url($params['url'], PHP_URL_QUERY))[0]);
+            $image    = isset($arrQuery[1]) && $arrQuery[1]
+                      ? $modUser->makeDefaultAvatar(urldecode($arrQuery[1]), true) : null;
         } else {
-            $image   = httpKit::fetchImageExpress($params['url']);
+            $image    = httpKit::fetchImageExpress($params['url']);
         }
         // get fallback image
         if (!$image) {

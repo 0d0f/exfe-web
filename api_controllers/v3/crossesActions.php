@@ -74,10 +74,10 @@ class CrossesActions extends ActionController {
         if ($identity) {
             $imageUrl    = $identity->avatar['320_320'];
             if (strpos($imageUrl, API_URL) !== false) {
-                $arr_url     = explode('=', $imageUrl);
-                $avatarImage = isset($arr_url[1]) && $arr_url[1]
-                             ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true)
-                             : null;
+                $modUser     = $this->getModelByName('User');
+                $arrQuery    = explode('=', explode('&', parse_url($imageUrl, PHP_URL_QUERY))[0]);
+                $avatarImage = isset($arrQuery[1]) && $arrQuery[1]
+                             ? $modUser->makeDefaultAvatar(urldecode($arrQuery[1]), true) : null;
             } else {
                 $avatarImage = httpKit::fetchImageExpress($imageUrl);
             }
@@ -378,10 +378,9 @@ class CrossesActions extends ActionController {
             $imageUrl    = $cross->exfee->invitations[$alI]->identity->avatar['320_320'];
             $imageObject = null;
             if (strpos($imageUrl, API_URL) !== false) {
-                $arr_url     = explode('=', $imageUrl);
-                $imageObject = isset($arr_url[1]) && $arr_url[1]
-                             ? $modUser->makeDefaultAvatar(urldecode($arr_url[1]), true)
-                             : null;
+                $arrQuery    = explode('=', explode('&', parse_url($imageUrl, PHP_URL_QUERY))[0]);
+                $imageObject = isset($arrQuery[1]) && $arrQuery[1]
+                             ? $modUser->makeDefaultAvatar(urldecode($arrQuery[1]), true) : null;
             } else {
                 $imageObject = httpKit::fetchImageExpress($imageUrl);
             }

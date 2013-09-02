@@ -114,7 +114,8 @@ class HomeActions extends ActionController {
          && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod')
-          || strpos($_SERVER['HTTP_USER_AGENT'], 'Android'))) {
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'Android')
+          || strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger'))) {
             $this->displayViewByAction('mobile');
             return;
         } else if (strpos($_SERVER['HTTP_USER_AGENT'], 'MSIE')

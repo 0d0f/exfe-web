@@ -20,9 +20,9 @@ class UsersActions extends ActionController {
         if ($rawInputs) {
             if (($arrInputs = @json_decode($rawInputs, true))) {
                 foreach ($arrInputs ?: [] as $key => $value) {
-                    $arrInputs[$key] = trim($value);
                     switch ($key) {
                         case 'locale':
+                            $arrInputs[$key] = trim($value);
                             break;
                         case 'timezone':
                             $strTimezone = '';
@@ -39,6 +39,9 @@ class UsersActions extends ActionController {
                                 return;
                             }
                             $arrInputs[$key] = $strTimezone;
+                            break;
+                        case 'routex':
+                            $arrInputs[$key] = $value;
                             break;
                         default:
                             $this->jsonError(400, 'unknow_preferences', $key);

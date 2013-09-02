@@ -154,7 +154,17 @@ class ExfeeActions extends ActionController {
                 if ($invitaion->rsvp_status === 'REMOVED') {
                     $removed = true;
                 } else {
-                    apiResponse(['cross' => $hlpCross->getCross($rawInvitation['cross_id'])]);
+                    $cross = $hlpCross->getCross($rawInvitation['cross_id']);
+                    $modRoutex = $this->getModelByName('Routex');
+                    $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $user_id);
+                    if ($rtResult !== -1) {
+                        $cross->widget[] = [
+                            'type'      => 'routex',
+                            'my_status' => $rtResult,
+                        ];
+                    }
+                    touchCross($cross->id, $user_id);
+                    apiResponse(['cross' => $cross]);
                 }
             }
             if ($invitaion->identity->connected_user_id === $via_identity->connected_user_id
