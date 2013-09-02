@@ -571,7 +571,12 @@ class ExfeeModels extends DataModel {
         $hlpQueue = $this->getHelperByName('Queue');
         $cross_id = $this->getCrossIdByExfeeId($exfee_id);
         $cross    = $hlpCross->getCross($cross_id, true, true);
-        $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id ?: -$by_identity_id, $by_identity_id, $draft);
+        $user_id  = $user_id ?: -$by_identity_id;
+        if ($draft) {
+            $hlpQueue->despatchPreview($cross, $cross->exfee, $user_id, $by_identity_id);
+        } else {
+            $hlpQueue->despatchInvitation($cross, $cross->exfee, $user_id, $by_identity_id);
+        }
         // }
         // return
         return [
