@@ -31,6 +31,13 @@ class QueueHelper extends ActionController {
     }
 
 
+    public function despatchJoin($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        return $this->modQueue->despatchJoin(
+            $cross, $to_exfee, $by_user_id, $by_identity_id
+        );
+    }
+
+
     public function despatchRemind($cross, $to_exfee, $by_user_id, $by_identity_id) {
         return $this->modQueue->despatchRemind(
             $cross, $to_exfee, $by_user_id, $by_identity_id
