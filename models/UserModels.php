@@ -969,7 +969,7 @@ class UserModels extends DataModel {
     }
 
 
-    public function updateUserById($user_id, $user = array()) {
+    public function updateUserById($user_id, $user = []) {
         if (!$user_id) {
             return false;
         }
