@@ -239,7 +239,7 @@ class BusActions extends ActionController {
             $exfee_id = isset($args->exfee_id)
                       ? (int) $args->exfee_id
                       : (int) $modExfee->getExfeeIdByCrossId((int) $args->cross_id);
-            $modExfee->updateExfeeTime($exfee_id, true);
+            $modExfee->updateExfeeTime($exfee_id);
             $this->jsonResponse(new stdClass);
             return;
         }
