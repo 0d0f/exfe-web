@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge" /><![endif]-->
-  <title>EXFE - The group utility for gathering.</title>
+  <title><?php echo $this->getVar('title'); ?></title>
   <meta name="author" content="EXFE Inc.">
   <meta name="robots" content="index, follow">
   <meta name="keywords" content="EXFE, ·X·, cross, exfee, gather, Gather a ·X·, hangout, gathering, invite, RSVP">
