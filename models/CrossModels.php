@@ -377,7 +377,7 @@ class CrossModels extends DataModel {
         $hlpIdentity = $this->getHelperByName('Identity');
         $hlpTime     = $this->getHelperByName('Time');
         // init functions
-        function nextStep($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5, $created_at = 0) {
+        function nextStep2($step_id, $cross_id, $exfee_id, $identity_id, $delay = 5, $created_at = 0) {
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(
@@ -453,7 +453,7 @@ class CrossModels extends DataModel {
         if ($cross_id > 0) {
             $objCross = $hlpCross->getCross($cross_id);
             $exfee_id = $objCross->exfee->id;
-            nextStep(2, $cross_id, $exfee_id, $identity->id, 60);
+            nextStep2(2, $cross_id, $exfee_id, $identity->id, 60);
             $this->query(
                 "UPDATE `identities` SET `tutorial_x_id` = {$cross_id} WHERE `id` = {$identity->id}"
             );
