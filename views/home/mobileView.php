@@ -344,6 +344,14 @@
           </div>
         </div>
       </div>
+      <div id="wechat-guide-dialog" class="dialog hide">
+        <div class="main">
+          <div class="ibox">
+            <p>关注“活点地图”以便朋友们给您发送邀请和提醒。</p>
+            <p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right" />请从这里点按图标  “查看公众号”，然后关注。<span>受微信限制操作繁琐  非常抱歉</span></p>
+          </div>
+        </div>
+      </div>
     </div>
   </script>
 
