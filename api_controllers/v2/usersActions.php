@@ -704,6 +704,7 @@ class UsersActions extends ActionController {
             apiResponse(['authorization' => [
                 'user_id' => $stResult['user_id'],
                 'token'   => $stResult['token'],
+                'name'    => $stResult['name'],
             ]]);
         }
         apiError(401, 'invalid_token', 'Invalid Token');
@@ -731,6 +732,7 @@ class UsersActions extends ActionController {
             apiResponse(['authorization' => [
                 'user_id' => $stResult['user_id'],
                 'token'   => $stResult['token'],
+                'name'    => $stResult['name'],
             ]]);
         }
         apiError(401, 'invalid_token', 'Invalid Token');
