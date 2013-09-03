@@ -145,6 +145,12 @@ class ExfeeActions extends ActionController {
         if (!$user || !$user->identities) {
             apiError(400, 'error_user');
         }
+        // check cross
+        // @addthis session to docs! @todo @leask
+        $cross = $hlpCross->getCross($rawInvitation['cross_id']);
+        if (!$cross || $cross->attribute['state'] === 'deleted') {
+            apiError(400, 'error_cross');
+        }
         // check exfee
         $exfee = $modExfee->getExfeeById($exfee_id, true);
         $removed  = false;
@@ -154,7 +160,6 @@ class ExfeeActions extends ActionController {
                 if ($invitaion->rsvp_status === 'REMOVED') {
                     $removed = true;
                 } else {
-                    $cross = $hlpCross->getCross($rawInvitation['cross_id']);
                     $modRoutex = $this->getModelByName('Routex');
                     $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $user_id);
                     if ($rtResult !== -1) {

@@ -294,6 +294,7 @@ class wechatActions extends ActionController {
                                 );
                                 if ($result) {
                                     touchCross($current_cross_id, $user_id);
+                                    // 过期
                                     $rtnMessage = "“{$rawCross['title']}”已删除。";
                                 }
                             }
