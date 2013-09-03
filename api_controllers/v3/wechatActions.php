@@ -82,27 +82,27 @@ class wechatActions extends ActionController {
         $debugUrl    = getCache($debugUrlKey) ? '&debug=true' : '';
         // }
         $pageKey     = "wechat_routex_paging_{$identity->id}";
+        // check user
+        // @todo what about $event === unsubscribe? by @leask
+        $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
+        $user_id    = 0;
+        if (isset($user_infos['CONNECTED'])) {
+            $user_id  = $user_infos['CONNECTED'][0]['user_id'];
+        } else if (isset($user_infos['REVOKED'])) {
+            $user_id  = $user_infos['REVOKED'][0]['user_id'];
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+        } else {
+            $user_id  = $modUser->addUser();
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+            $identity = $modIdentity->getIdentityById($identity_id);
+        }
+        if (!$user_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        // case event
         switch ($msgType) {
             case 'event':
-                if (in_array($event, ['subscribe', 'click', 'location'])) {
-                    // check user
-                    $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
-                    $user_id    = 0;
-                    if (isset($user_infos['CONNECTED'])) {
-                        $user_id  = $user_infos['CONNECTED'][0]['user_id'];
-                    } else if (isset($user_infos['REVOKED'])) {
-                        $user_id  = $user_infos['REVOKED'][0]['user_id'];
-                        $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
-                    } else {
-                        $user_id  = $modUser->addUser();
-                        $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
-                        $identity = $modIdentity->getIdentityById($identity_id);
-                    }
-                    if (!$user_id) {
-                        header('HTTP/1.1 500 Internal Server Error');
-                        return;
-                    }
-                }
                 switch ($event) {
                     case 'subscribe':
                         $numIdentities = $modUser->getConnectedIdentityCount($user_id);
