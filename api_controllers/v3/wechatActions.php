@@ -287,7 +287,7 @@ class wechatActions extends ActionController {
                         case '不要了':
                         case '幹掉':
                         case '取消':
-                            $rawCross = $crossHelper->getCross($current_cross_id);
+                            $rawCross = $crossHelper->getRawCross($current_cross_id);
                             if ($rawCross) {
                                 $result = $crossHelper->deleteCrossByCrossIdAndUserId(
                                     $current_cross_id, $user_id
@@ -307,7 +307,14 @@ class wechatActions extends ActionController {
                             if ($udResult) {
                                 setCache("wechat_user_{$identity->external_id}_current_x_id", $updCross->id, 60);
                                 touchCross($updCross->id, $identity->connected_user_id);
-                                $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$updCross->title}";
+                                $msgType = 'link';
+                                $rtnMessage = [
+                                    'Title'       => $cross->title,
+                                    'Description' => '开启这张“活点地图” 能互相看到位置和轨迹。长按此消息可转发邀请更多朋友们。',
+                                    'PicUrl'      => API_URL . "/v3/crosses/{$cross->id}/wechatimage?identity_id={$identity->id}",
+                                    'Url'         => "{$rawResult['url']}{$debugUrl}",
+                                ];
+                                // $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$updCross->title}";
                             }
                     }
                 } else {
