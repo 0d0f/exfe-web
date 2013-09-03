@@ -138,7 +138,7 @@ class wechatActions extends ActionController {
                                 $exfee_ids  = null;
                                 $crosses    = [];
                                 foreach ($rawCrosses as $rcItem) {
-                                    if ($csItem['status'] !== 2) {
+                                    if ((int) $csItem['status'] !== 2) {
                                         $crosses[$rcItem['id']] = $rcItem;
                                     }
                                 }
