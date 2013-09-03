@@ -196,7 +196,7 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function getRawCross($cross_id) {
+    public function getRawCrossById($cross_id) {
         return $this->modCross->getCross($cross_id);
     }
 
@@ -208,11 +208,6 @@ class CrossHelper extends ActionController {
 
     public function deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete = true) {
         return $this->modCross->deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete);
-    }
-
-
-    public function getRawCross($crossid) {
-        return $this->modCross->getRawCross($crossid);
     }
 
 }
