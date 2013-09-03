@@ -791,7 +791,7 @@ class OAuthModels extends DataModel {
 
 
     public function refreshWechatAccessToken() {
-        //https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
+        // https://api.weixin.qq.com/sns/oauth2/refresh_token?appid=APPID&grant_type=refresh_token&refresh_token=REFRESH_TOKEN
     }
 
 

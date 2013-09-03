@@ -1019,6 +1019,18 @@ class BusActions extends ActionController {
     }
 
 
+    public function doCheckWechatFollowing() {
+        set_time_limit(5);
+        if (($external_id = @$this->params['external_id'])) {
+            $modWechat = $this->getModelByName('Wechat');
+            $identity  = $modWechat->getIdentityBy($external_id);
+            $this->jsonResponse(['following' => !!$identity]);
+            return;
+        }
+        $this->jsonError(400, 'bad_request');
+    }
+
+
     public function doSendWechatMessage() {
         $modWechat = $this->getModelByName('Wechat');
         $rawInput  = @file_get_contents('php://input');
