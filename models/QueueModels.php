@@ -108,6 +108,9 @@ class QueueModels extends DataModel {
                 $data['old_cross']->updated = (object) $data['old_cross']->updated;
             }
         }
+        if (isset($data['invitee']) && in_array($data['invitee']->id, $this->robots)) {
+            return true;
+        }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
             case 'cross/invitation':
