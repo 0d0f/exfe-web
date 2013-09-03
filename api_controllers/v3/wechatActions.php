@@ -272,6 +272,7 @@ class wechatActions extends ActionController {
             case 'text':
                 $strContent = dbescape(trim($objMsg->Content));
                 if (($current_cross_id = $modWechat->getCurrentX($identity->external_id))) {
+                    touchCross($current_cross_id, $user_id);
                     switch (strtolower($strContent)) {
                         case 'rm':
                         case 'remove':
@@ -293,28 +294,29 @@ class wechatActions extends ActionController {
                                     $current_cross_id, $user_id
                                 );
                                 if ($result) {
-                                    touchCross($current_cross_id, $user_id);
-                                    // 过期
+                                    // 分页过期
                                     $rtnMessage = "“{$rawCross['title']}”已删除。";
                                 }
                             }
                             break;
                         default:
-                            $updCross = new stdClass;
-                            $updCross->id    = $current_cross_id;
-                            $updCross->title = $strContent;
-                            $udResult = $crossHelper->editCross($updCross, $identity->id);
+                            $cross = new stdClass;
+                            $cross->id    = $current_cross_id;
+                            $cross->title = $strContent;
+                            $udResult = $crossHelper->editCross($cross, $identity->id);
                             if ($udResult) {
-                                setCache("wechat_user_{$identity->external_id}_current_x_id", $updCross->id, 60);
-                                touchCross($updCross->id, $identity->connected_user_id);
-                                $msgType = 'link';
-                                $rtnMessage = [
-                                    'Title'       => $cross->title,
-                                    'Description' => '开启这张“活点地图” 能互相看到位置和轨迹。长按此消息可转发邀请更多朋友们。',
-                                    'PicUrl'      => API_URL . "/v3/crosses/{$cross->id}/wechatimage?identity_id={$identity->id}",
-                                    'Url'         => "{$rawResult['url']}{$debugUrl}",
-                                ];
-                                // $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$updCross->title}";
+                                $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                    $cross->id, $bot->id
+                                );
+                                if ($invitation) {
+                                    $rtnType    = 'news';
+                                    $rtnMessage = [[
+                                        'Title'       => $cross->title,
+                                        'Description' => '开启这张“活点地图” 能互相看到位置和轨迹。长按此消息可转发邀请更多朋友们。',
+                                        'PicUrl'      => API_URL . "/v3/crosses/{$cross->id}/wechatimage?identity_id={$identity->id}",
+                                        'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
+                                    ]];
+                                }
                             }
                     }
                 } else {
