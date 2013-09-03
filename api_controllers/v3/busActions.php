@@ -1019,7 +1019,7 @@ class BusActions extends ActionController {
     }
 
 
-    public function doCheckFollowing() {
+    public function doCheckWechatFollowing() {
         set_time_limit(5);
         if (($external_id = @$this->params['external_id'])) {
             $modWechat = $this->getModelByName('Wechat');
