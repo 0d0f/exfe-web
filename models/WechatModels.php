@@ -91,10 +91,12 @@ class WechatModels extends DataModel {
             'gh_c2e5730627a4' => [
                 'x_title_update'        => 'cKExQY5C6M20Sk6dNzajAqDPkryvIgGz6nWpnlbQlj5JQjshzG_gQ0F18RsJeWH1',
                 'user_location_request' => '0w_9XXPiMHmqKWgrQB-zzkujNgDgG1JRGN8j132SiNEx0HcqXu8a1G_xTLwedrmW',
+                'x_join'                => '',
             ],
             'gh_8c4c8d9d14a7' => [
                 'x_title_update'        => 'cEhPMpIuw87cGZKvZpWjCru_I7LW-SerUzLHlzYyy2px1ao16opH6_Qld8H96Lec',
                 'user_location_request' => 'F2b3C5kpw2lDPyYlUAygr6X1STqdHclR9vKMhBxsEHXO7IgwJ-oI8gBUdhfutePU',
+                'x_join'                => '',
             ],
         ];
         $ids = splitIdentityId($toUserName);
