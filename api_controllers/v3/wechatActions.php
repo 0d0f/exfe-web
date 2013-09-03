@@ -288,7 +288,7 @@ class wechatActions extends ActionController {
                         case '不要了':
                         case '幹掉':
                         case '取消':
-                            $rawCross = $crossHelper->getRawCross($current_cross_id);
+                            $rawCross = $crossHelper->getRawCrossById($current_cross_id);
                             if ($rawCross) {
                                 $result = $crossHelper->deleteCrossByCrossIdAndUserId(
                                     $current_cross_id, $user_id
