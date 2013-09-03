@@ -368,7 +368,7 @@ class wechatActions extends ActionController {
             // reset pagine
             setCache($pageKey, 0, 1);
             // request x title
-            setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60);
+            setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60 * 2);
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(

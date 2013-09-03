@@ -46,7 +46,9 @@ class OAuthActions extends ActionController {
                 $urlOauth = $modOauth->googleRedirect($workflow);
                 break;
             case 'wechat':
-                $urlOauth = $modOauth->wechatRedirect($workflow);
+                $urlOauth = $modOauth->wechatRedirect(
+                    $workflow, @strtolower($_GET['base'] === 'true' ? 1 : 2)
+                );
                 // header("location: {$urlOauth}");
                 break;
             default:
