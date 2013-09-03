@@ -205,5 +205,14 @@ class CrossHelper extends ActionController {
         return $this->modCross->doTutorial($identity);
     }
 
-}
 
+    public function deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete = true) {
+        return $this->modCross->deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete);
+    }
+
+
+    public function getRawCross($crossid) {
+        return $this->modCross->getRawCross($crossid);
+    }
+
+}

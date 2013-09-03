@@ -272,14 +272,42 @@ class wechatActions extends ActionController {
             case 'text':
                 $strContent = dbescape(trim($objMsg->Content));
                 if (($current_cross_id = $modWechat->getCurrentX($identity->external_id))) {
-                    $updCross = new stdClass;
-                    $updCross->id    = $current_cross_id;
-                    $updCross->title = $strContent;
-                    $udResult = $crossHelper->editCross($updCross, $identity->id);
-                    if ($udResult) {
-                        setCache("wechat_user_{$identity->external_id}_current_x_id", $updCross->id, 60);
-                        touchCross($updCross->id, $identity->connected_user_id);
-                        $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$updCross->title}";
+                    switch (strtolower($strContent)) {
+                        case 'rm':
+                        case 'remove':
+                        case 'del':
+                        case 'delete':
+                        case 'undo':
+                        case 'un do':
+                        case '删除':
+                        case '不要了':
+                        case '干掉':
+                        case '取消':
+                        case '刪除':
+                        case '不要了':
+                        case '幹掉':
+                        case '取消':
+                            $rawCross = $crossHelper->getCross($current_cross_id);
+                            if ($rawCross) {
+                                $result = $crossHelper->deleteCrossByCrossIdAndUserId(
+                                    $current_cross_id, $user_id
+                                );
+                                if ($result) {
+                                    touchCross($current_cross_id, $user_id);
+                                    $rtnMessage = "“{$rawCross['title']}”已删除。";
+                                }
+                            }
+                            break;
+                        default:
+                            $updCross = new stdClass;
+                            $updCross->id    = $current_cross_id;
+                            $updCross->title = $strContent;
+                            $udResult = $crossHelper->editCross($updCross, $identity->id);
+                            if ($udResult) {
+                                setCache("wechat_user_{$identity->external_id}_current_x_id", $updCross->id, 60);
+                                touchCross($updCross->id, $identity->connected_user_id);
+                                $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$updCross->title}";
+                            }
                     }
                 } else {
                     switch (strtolower($strContent)) {
