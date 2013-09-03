@@ -11,12 +11,12 @@ class QueueModels extends DataModel {
 
 
     public function __construct() {
-        $this->robots = [
+        $this->robots = array_merge([
             TUTORIAL_BOT_A,
             TUTORIAL_BOT_B,
             TUTORIAL_BOT_C,
             TUTORIAL_BOT_D
-        ] + explode(',', SMITH_BOT);
+        ], explode(',', SMITH_BOT)) ;
     }
 
 
