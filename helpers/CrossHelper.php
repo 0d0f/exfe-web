@@ -196,7 +196,7 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function getRawCrossById($cross_id) {
+    public function getRawCross($cross_id) {
         return $this->modCross->getCross($cross_id);
     }
 
