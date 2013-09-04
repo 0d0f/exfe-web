@@ -789,7 +789,7 @@ class OAuthModels extends DataModel {
                 error_log("WECHAT_CALLBACK: {$data}");
             }
             curl_close($objCurl);
-            if ($data && ($data = json_decode($data, true) && isset($data['access_token'])) {
+            if ($data && ($data = json_decode($data, true)) && isset($data['access_token'])) {
                 setCache($key, $data, 60);
             } else {
                 $data = null;
