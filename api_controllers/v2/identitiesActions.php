@@ -35,7 +35,7 @@ class IdentitiesActions extends ActionController {
             apiError(500, 'update_failed');
         }
         // collecting request data
-        if (!($rawId = intval($params['id']))) {
+        if (!($rawId = intval($params['identity_id']))) {
             apiError(400, 'no_identity_id', 'identity_id must be provided');
         }
         // check identity
