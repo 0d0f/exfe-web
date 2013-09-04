@@ -44,11 +44,9 @@ class HomeActions extends ActionController {
         $modMap        = $this->getModelByName('Map');
         // check oauth session
         $oauthIfo      = $modOauth->getSession();
-        // @todo wechat debug {
-        if (@$oauthIfo['provider'] === 'wechat') {
-            error_log(json_encode($oauthIfo));
+        if (VERBOSE_LOG) {
+            error_log('OAUTH_ENV: ' . json_encode($oauthIfo));
         }
-        // }
         // check xcode {
         $smith_id    = 0;
         $exfee_id    = 0;
