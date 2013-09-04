@@ -331,7 +331,7 @@
               <button class="notify-ok">确定</button>
             </div>
           </div>
-          <div id="cleanup-cache">清空活点地图的本地缓存</div>
+          <div id="cleanup-cache">重启活点地图</div>
         </div>
       </div>
       <div id="privacy-dialog" class="dialog hide">
