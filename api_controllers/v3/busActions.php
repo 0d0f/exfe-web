@@ -53,39 +53,50 @@ class BusActions extends ActionController {
         $strReg      = '/(.*)@([^\@]*)/';
         $external_username = preg_replace($strReg, '$1', $identity_id);
         $provider          = preg_replace($strReg, '$2', $identity_id);
-        $identity_id = $modIdentity->getIdentityByProviderAndExternalUsername(
-            $provider, $external_username, true
+        $identity    = $modIdentity->getIdentityByProviderAndExternalUsername(
+            $provider, $external_username
         );
-        if (!$identity_id) {
+        if (!$identity) {
             $this->jsonError(404, 'recipient_not_found');
             return;
         }
-        $user_id     = $modUser->getUserIdByIdentityId($identity_id);
-        if (!$user_id) {
-            $this->jsonError(404, 'recipient_not_found');
-            return;
-        }
-        $objUser = $modUser->getUserById($user_id);
-        if (!$objUser || !$objUser->identities) {
-            $this->jsonError(404, 'recipient_not_found');
-            return;
-        }
-        $devices = $modDevice->getDevicesByUserid(
-            $user_id, $objUser->identities[0]
-        );
-        $recipients = [];
-        foreach (array_merge($objUser->identities, $devices) as $idItem) {
-            $recipients[] = new Recipient(
-                $idItem->id,
-                $idItem->connected_user_id,
-                $idItem->name,
-                $idItem->auth_data ?: '',
-                $modTime->getDigitalTimezoneBy($objUser->timezone),
+        $user_id     = $modUser->getUserIdByIdentityId($identity->id);
+        $recipients  = [];
+        if ($user_id) {
+            $objUser = $modUser->getUserById($user_id);
+            if (!$objUser || !$objUser->identities) {
+                $this->jsonError(404, 'recipient_not_found');
+                return;
+            }
+            $devices = $modDevice->getDevicesByUserid(
+                $user_id, $objUser->identities[0]
+            );
+            foreach (array_merge($objUser->identities, $devices) as $idItem) {
+                $recipients[] = new Recipient(
+                    $idItem->id,
+                    $idItem->connected_user_id,
+                    $idItem->name,
+                    $idItem->auth_data ?: '',
+                    $modTime->getDigitalTimezoneBy($objUser->timezone),
+                    '', // cross invitation token
+                    $objUser->locale,
+                    $idItem->provider,
+                    $idItem->external_id,
+                    $idItem->external_username
+                );
+            }
+        } else {
+             $recipients[] = new Recipient(
+                $identity->id,
+                $identity->connected_user_id,
+                $identity->name,
+                $identity->auth_data ?: '',
+                $identity->timezone,
                 '', // cross invitation token
-                $objUser->locale,
-                $idItem->provider,
-                $idItem->external_id,
-                $idItem->external_username
+                $identity->locale,
+                $identity->provider,
+                $identity->external_id,
+                $identity->external_username
             );
         }
         if (!$recipients) {
