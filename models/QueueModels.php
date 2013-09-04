@@ -387,12 +387,12 @@ class QueueModels extends DataModel {
                     $comboInv = null;
                     foreach (['iOS', 'Android', 'imessage', 'phone', 'email', 'google', 'facebook', 'twitter'] as $pvItem) {
                         foreach ($fallbacks as $item) {
-                            if ($item->provider === $pvItem) {
+                            if ($item->identity->provider === $pvItem) {
                                 if (!$comboInv) {
                                     $comboInv = $item;
                                     $comboInv->fallbacks = [];
                                 }
-                                $comboInv->fallbacks[] = "{$item->external_username}@{$item->provider}";
+                                $comboInv->fallbacks[] = "{$item->identity->external_username}@{$item->identity->provider}";
                             }
                         }
                     }
