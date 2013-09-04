@@ -305,7 +305,7 @@ class QueueModels extends DataModel {
         // match rules {
         foreach ($gotInvitation as $gI => $gItem) {
             if ($gItem->identity->connected_user_id > 0) {
-                $provider = ($gItem->identity->provider === 'iOS' || $gItem->identity->provider === 'Android')
+                $provider = in_array($gItem->identity->provider, ['iOS', 'Android'])
                           ? 'device' : $gItem->identity->provider;
                 $userPerProvider[$provider][$gItem->identity->connected_user_id] = $gI;
             }
@@ -368,6 +368,7 @@ class QueueModels extends DataModel {
                 }
                 break;
             case 'cross/join':
+                $fallbacks = [];
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -375,13 +376,32 @@ class QueueModels extends DataModel {
                         case 'phone':
                             $imsgInv = deepClone($item);
                             $imsgInv->identity->provider = 'imessage';
-                            $instant[] = $imsgInv;
+                            $fallbacks[] = $imsgInv;
                         case 'twitter':
                         case 'facebook':
                         case 'iOS':
                         case 'Android':
+                            $fallbacks[] = $item;
+                            break;
                         case 'wechat':
                             $instant[] = $item;
+                    }
+                }
+                if ($fallbacks) {
+                    $comboInv = null;
+                    foreach (['iOS', 'Android', 'imessage', 'phone', 'email', 'google', 'facebook', 'twitter'] as $pvItem) {
+                        foreach ($fallbacks as $item) {
+                            if ($item->provider === $pvItem) {
+                                if (!$comboInv) {
+                                    $comboInv = $item;
+                                    $comboInv->fallbacks = [];
+                                }
+                                $comboInv->fallbacks[] = "{$item->external_username}@{$item->provider}";
+                            }
+                        }
+                    }
+                    if ($comboInv) {
+                        $instant[] = $comboInv;
                     }
                 }
                 break;
