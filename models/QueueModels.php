@@ -384,21 +384,20 @@ class QueueModels extends DataModel {
                     }
                 }
                 if ($fallbacks) {
-                    $comboInv = null;
+                    $comboInvs = [];
                     foreach (['iOS', 'Android', 'imessage', 'phone', 'email', 'google', 'facebook', 'twitter'] as $pvItem) {
                         foreach ($fallbacks as $item) {
                             if ($item->identity->provider === $pvItem) {
-                                if (!$comboInv) {
-                                    $comboInv = $item;
-                                    $comboInv->fallbacks = [];
+                                $ciUserId = $item->identity->connected_user_id;
+                                if (!isset($comboInvs[$ciUserId])) {
+                                    $comboInvs[$ciUserId] = $item;
+                                    $comboInvs[$ciUserId]->fallbacks = [];
                                 }
-                                $comboInv->fallbacks[] = "{$item->identity->external_username}@{$item->identity->provider}";
+                                $comboInvs[$ciUserId]->fallbacks[] = "{$item->identity->external_username}@{$item->identity->provider}";
                             }
                         }
                     }
-                    if ($comboInv) {
-                        $instant[] = $comboInv;
-                    }
+                    $instant = array_merge($instant, $comboInvs);
                 }
                 break;
             case 'cross/remind':
