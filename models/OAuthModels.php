@@ -782,6 +782,9 @@ class OAuthModels extends DataModel {
         curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
         $data = curl_exec($objCurl);
+        if (VERBOSE_LOG) {
+            error_log("WECHAT_CALLBACK: {$data}");
+        }
         curl_close($objCurl);
         if ($data && ($data = (array) json_decode($data)) && isset($data['access_token'])) {
             return $data;
