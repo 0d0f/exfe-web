@@ -962,6 +962,18 @@ class UsersActions extends ActionController {
                     }
             }
         }
+
+        $modRoutex = $this->getModelByName('Routex');
+        foreach ($cross_list as $cI => $cItem) {
+            $rtResult = $modRoutex->getRoutexStatusBy($cItem->id, $uid);
+            if ($rtResult !== -1) {
+                $cross_list[$cI]->widget[] = [
+                    'type'      => 'routex',
+                    'my_status' => $rtResult,
+                ];
+            }
+        }
+
         $cross_list = array_values($cross_list);
         apiResponse(['crosses' => $cross_list]);
     }
