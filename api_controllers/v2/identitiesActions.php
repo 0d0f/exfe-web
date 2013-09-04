@@ -35,18 +35,16 @@ class IdentitiesActions extends ActionController {
             apiError(500, 'update_failed');
         }
         // collecting request data
-        if (!($rawId = $params['identity_id'])) {
+        if (!($rawId = @splitIdentityId($params['identity_id']))) {
             apiError(400, 'no_identity_id', 'identity_id must be provided');
         }
         // check identity
-        foreach ($objUser->identities as $iItem) {
-            if ($iItem->external_id === $rawId && $iItem->provider === 'wechat') {
-                $modWechat = $this->getModelByName('Wechat');
-                $identity = $modWechat->getIdentityBy($iItem->external_id);
-                apiResponse(['following' => !!$identity]);
-            }
+        if ($rawId[0] && @$rawId[1] === 'wechat') {
+            $modWechat = $this->getModelByName('Wechat');
+            $identity = $modWechat->getIdentityBy($rawId[0]);
+            apiResponse(['following' => !!$identity]);
         }
-        apiError(401, 'not_allowed', 'only your connected wechat identities can be check');
+        apiError(400, 'error_identity_id', 'error wechat identity id');
     }
 
 
