@@ -273,9 +273,9 @@ class UserModels extends DataModel {
 
 
     public function getUserIdsByIdentityIds($identity_ids, $notConnected = false) {
-        $identity_ids = implode($identity_ids, ' OR `identityid` = ');
+        $identity_ids = implode(', ', $identity_ids);
         $sql = "SELECT `userid` FROM `user_identity`
-                WHERE  `identityid` = {$identity_ids} AND (`status` = 3"
+                WHERE  `identityid` IN {$identity_ids} AND (`status` = 3"
              . ($notConnected ? ' OR `status` = 2 OR `status` = 4' : '') . ')';
         $dbResult = $this->getAll($sql);
         $user_ids = [];
