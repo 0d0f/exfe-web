@@ -375,17 +375,17 @@ class QueueModels extends DataModel {
                             $fallbacks[] = $imsgInv;
                         case 'twitter':
                         case 'facebook':
-                        case 'iOS':
-                        case 'Android':
                             $fallbacks[] = $item;
                             break;
+                        case 'iOS':
+                        case 'Android':
                         case 'wechat':
                             $instant[] = $item;
                     }
                 }
                 if ($fallbacks) {
                     $comboInvs = [];
-                    foreach (['iOS', 'Android', 'imessage', 'phone', 'email', 'google', 'facebook', 'twitter'] as $pvItem) {
+                    foreach (['imessage', 'phone', 'email', 'google', 'facebook', 'twitter'] as $pvItem) {
                         foreach ($fallbacks as $item) {
                             if ($item->identity->provider === $pvItem) {
                                 $ciUserId = $item->identity->connected_user_id;
