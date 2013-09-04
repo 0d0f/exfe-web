@@ -114,16 +114,12 @@ class QueueModels extends DataModel {
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
             case 'cross/invitation':
+            case 'cross/join':
                 $dataAr = ['invitee' => $data['invitee']];
             case 'cross/preview':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
                 $dataAr += ['cross_id' => $data['cross']->id, 'by' => $data['by']];
-                break;
-            case 'cross/join':
-                $urlSrv = "/v3/notifier/{$strSrv}";
-                $mergeK = '-';
-                $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by'], 'invitee' => $data['invitee']];
                 break;
             case 'cross/update':
                 $urlSrv = "/v3/notifier/{$strSrv}";
@@ -305,7 +301,7 @@ class QueueModels extends DataModel {
         // match rules {
         foreach ($gotInvitation as $gI => $gItem) {
             if ($gItem->identity->connected_user_id > 0) {
-                $provider = ($gItem->identity->provider === 'iOS' || $gItem->identity->provider === 'Android')
+                $provider = in_array($gItem->identity->provider, ['iOS', 'Android'])
                           ? 'device' : $gItem->identity->provider;
                 $userPerProvider[$provider][$gItem->identity->connected_user_id] = $gI;
             }
@@ -368,6 +364,7 @@ class QueueModels extends DataModel {
                 }
                 break;
             case 'cross/join':
+                $fallbacks = [];
                 foreach ($gotInvitation as $item) {
                     switch ($item->identity->provider) {
                         case 'email':
@@ -375,14 +372,32 @@ class QueueModels extends DataModel {
                         case 'phone':
                             $imsgInv = deepClone($item);
                             $imsgInv->identity->provider = 'imessage';
-                            $instant[] = $imsgInv;
+                            $fallbacks[] = $imsgInv;
                         case 'twitter':
                         case 'facebook':
+                            $fallbacks[] = $item;
+                            break;
                         case 'iOS':
                         case 'Android':
                         case 'wechat':
                             $instant[] = $item;
                     }
+                }
+                if ($fallbacks) {
+                    $comboInvs = [];
+                    foreach (['imessage', 'phone', 'email', 'google', 'facebook', 'twitter'] as $pvItem) {
+                        foreach ($fallbacks as $item) {
+                            if ($item->identity->provider === $pvItem) {
+                                $ciUserId = $item->identity->connected_user_id;
+                                if (!isset($comboInvs[$ciUserId])) {
+                                    $comboInvs[$ciUserId] = $item;
+                                    $comboInvs[$ciUserId]->fallbacks = [];
+                                }
+                                $comboInvs[$ciUserId]->fallbacks[] = "{$item->identity->external_username}@{$item->identity->provider}";
+                            }
+                        }
+                    }
+                    $instant = array_merge($instant, $comboInvs);
                 }
                 break;
             case 'cross/remind':
