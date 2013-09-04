@@ -773,24 +773,30 @@ class OAuthModels extends DataModel {
         if (!$oauthCode) {
             return null;
         }
-        $objCurl = curl_init(
-            'https://api.weixin.qq.com/sns/oauth2/access_token'
-          . '?appid='  . WECHAT_OFFICIAL_ACCOUNT_APPID
-          . '&secret=' . WECHAT_OFFICIAL_ACCOUNT_SECRET
-          . '&code='   . $oauthCode
-          . '&grant_type=authorization_code'
-        );
-        curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
-        $data = curl_exec($objCurl);
-        if (VERBOSE_LOG) {
-            error_log("WECHAT_CALLBACK: {$data}");
+        $key = "wechat_identity_oauth:{$oauthCode}";
+        $data = getCache($key);
+        if (!$data) {
+            $objCurl = curl_init(
+                'https://api.weixin.qq.com/sns/oauth2/access_token'
+              . '?appid='  . WECHAT_OFFICIAL_ACCOUNT_APPID
+              . '&secret=' . WECHAT_OFFICIAL_ACCOUNT_SECRET
+              . '&code='   . $oauthCode
+              . '&grant_type=authorization_code'
+            );
+            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+            $data = curl_exec($objCurl);
+            if (VERBOSE_LOG) {
+                error_log("WECHAT_CALLBACK: {$data}");
+            }
+            curl_close($objCurl);
+            if ($data && ($data = (array) json_decode($data)) && isset($data['access_token'])) {
+                setCache($key, $data, 60);
+            } else {
+                $data = null;
+            }
         }
-        curl_close($objCurl);
-        if ($data && ($data = (array) json_decode($data)) && isset($data['access_token'])) {
-            return $data;
-        }
-        return null;
+        return $data;
     }
 
 
