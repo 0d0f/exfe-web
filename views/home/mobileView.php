@@ -315,7 +315,7 @@
       </div>
       <div id="shuidi-dialog" class="dialog hide">
         <div class="main">
-          <h3 class="title">在“活点地图”上绘制路径?  </h3>
+          <h3 class="title">在“活点地图”上绘制路径?</h3>
           <p class="desc"><span class="name">水滴·X· </span>应用是一个群组工具，它不仅能让您在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。 </p>
           <div class="app-btn">
             <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
@@ -347,8 +347,8 @@
       <div id="wechat-guide-dialog" class="dialog hide">
         <div class="main">
           <div class="ibox">
-            <p>关注“活点地图”以便朋友们给您发送邀请和提醒。</p>
-            <p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right" />请从这里点按图标  “查看公众号”，然后关注。<span>受微信限制操作繁琐  非常抱歉</span></p>
+            <p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“查看公众号”。</p>
+            <p><span>关注服务号</span>以便正常使用，也方便您及时收到朋友们的邀请和提醒通知。</p>
           </div>
         </div>
       </div>
