@@ -35,7 +35,7 @@ class WechatModels extends DataModel {
                 $external_id = splitIdentityId($external_id)[0];
                 $rawIdentity = $this->libwechat->getUserInfo($external_id);
                 $identity    = $this->makeIdentityBy($rawIdentity);
-                setCache($key, $identity);
+                setCache($key, $identity, 60 * 60);
             }
             return $identity;
         }
