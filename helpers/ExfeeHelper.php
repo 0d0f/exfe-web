@@ -50,8 +50,8 @@ class ExfeeHelper extends ActionController {
     }
 
 
-    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false, $timezone = '') {
-        return $this->modExfee->updateExfee($exfee, $by_identity_id, $user_id, $rsvp_only, $draft, $keepRsvp, $timezone);
+    public function updateExfee($exfee, $by_identity_id, $user_id = 0, $rsvp_only = false, $draft = false, $keepRsvp = false, $timezone = '', $asJoin = false) {
+        return $this->modExfee->updateExfee($exfee, $by_identity_id, $user_id, $rsvp_only, $draft, $keepRsvp, $timezone, $asJoin);
     }
 
 

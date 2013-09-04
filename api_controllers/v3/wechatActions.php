@@ -82,27 +82,27 @@ class wechatActions extends ActionController {
         $debugUrl    = getCache($debugUrlKey) ? '&debug=true' : '';
         // }
         $pageKey     = "wechat_routex_paging_{$identity->id}";
+        // check user
+        // @todo what about $event === unsubscribe? by @leask
+        $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
+        $user_id    = 0;
+        if (isset($user_infos['CONNECTED'])) {
+            $user_id  = $user_infos['CONNECTED'][0]['user_id'];
+        } else if (isset($user_infos['REVOKED'])) {
+            $user_id  = $user_infos['REVOKED'][0]['user_id'];
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+        } else {
+            $user_id  = $modUser->addUser();
+            $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
+            $identity = $modIdentity->getIdentityById($identity_id);
+        }
+        if (!$user_id) {
+            header('HTTP/1.1 500 Internal Server Error');
+            return;
+        }
+        // case event
         switch ($msgType) {
             case 'event':
-                if (in_array($event, ['subscribe', 'click', 'location'])) {
-                    // check user
-                    $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
-                    $user_id    = 0;
-                    if (isset($user_infos['CONNECTED'])) {
-                        $user_id  = $user_infos['CONNECTED'][0]['user_id'];
-                    } else if (isset($user_infos['REVOKED'])) {
-                        $user_id  = $user_infos['REVOKED'][0]['user_id'];
-                        $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
-                    } else {
-                        $user_id  = $modUser->addUser();
-                        $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
-                        $identity = $modIdentity->getIdentityById($identity_id);
-                    }
-                    if (!$user_id) {
-                        header('HTTP/1.1 500 Internal Server Error');
-                        return;
-                    }
-                }
                 switch ($event) {
                     case 'subscribe':
                         $numIdentities = $modUser->getConnectedIdentityCount($user_id);
@@ -138,7 +138,7 @@ class wechatActions extends ActionController {
                                 $exfee_ids  = null;
                                 $crosses    = [];
                                 foreach ($rawCrosses as $rcItem) {
-                                    if ($csItem['status'] !== 2) {
+                                    if ((int) $rcItem['state'] !== 2) {
                                         $crosses[$rcItem['id']] = $rcItem;
                                     }
                                 }
@@ -272,14 +272,52 @@ class wechatActions extends ActionController {
             case 'text':
                 $strContent = dbescape(trim($objMsg->Content));
                 if (($current_cross_id = $modWechat->getCurrentX($identity->external_id))) {
-                    $updCross = new stdClass;
-                    $updCross->id    = $current_cross_id;
-                    $updCross->title = $strContent;
-                    $udResult = $crossHelper->editCross($updCross, $identity->id);
-                    if ($udResult) {
-                        setCache("wechat_user_{$identity->external_id}_current_x_id", $updCross->id, 60);
-                        touchCross($updCross->id, $identity->connected_user_id);
-                        $rtnMessage = "1分钟内回复新名字可更改这张活点地图当前的名字：{$updCross->title}";
+                    touchCross($current_cross_id, $user_id);
+                    switch (strtolower($strContent)) {
+                        case 'rm':
+                        case 'remove':
+                        case 'del':
+                        case 'delete':
+                        case 'undo':
+                        case 'un do':
+                        case '删除':
+                        case '不要了':
+                        case '干掉':
+                        case '取消':
+                        case '刪除':
+                        case '不要了':
+                        case '幹掉':
+                        case '取消':
+                            $rawCross = $crossHelper->getRawCrossById($current_cross_id);
+                            if ($rawCross) {
+                                $result = $crossHelper->deleteCrossByCrossIdAndUserId(
+                                    $current_cross_id, $user_id
+                                );
+                                if ($result) {
+                                    // 分页过期
+                                    $rtnMessage = "“{$rawCross['title']}”已删除。";
+                                }
+                            }
+                            break;
+                        default:
+                            $cross = new stdClass;
+                            $cross->id    = $current_cross_id;
+                            $cross->title = $strContent;
+                            $udResult = $crossHelper->editCross($cross, $identity->id);
+                            if ($udResult) {
+                                $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                    $cross->id, $bot->id
+                                );
+                                if ($invitation) {
+                                    $rtnType    = 'news';
+                                    $rtnMessage = [[
+                                        'Title'       => $cross->title,
+                                        'Description' => '开启这张“活点地图” 能互相看到位置和轨迹。长按此消息可转发邀请更多朋友们。',
+                                        'PicUrl'      => API_URL . "/v3/crosses/{$cross->id}/wechatimage?identity_id={$identity->id}",
+                                        'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
+                                    ]];
+                                }
+                            }
                     }
                 } else {
                     switch (strtolower($strContent)) {
@@ -368,7 +406,7 @@ class wechatActions extends ActionController {
             // reset pagine
             setCache($pageKey, 0, 1);
             // request x title
-            setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60);
+            setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60 * 2);
             httpKit::request(
                 EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
               . base64_url_encode(

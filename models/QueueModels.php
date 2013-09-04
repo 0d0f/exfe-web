@@ -11,12 +11,12 @@ class QueueModels extends DataModel {
 
 
     public function __construct() {
-        $this->robots = [
+        $this->robots = array_merge([
             TUTORIAL_BOT_A,
             TUTORIAL_BOT_B,
             TUTORIAL_BOT_C,
             TUTORIAL_BOT_D
-        ] + explode(',', SMITH_BOT);
+        ], explode(',', SMITH_BOT)) ;
     }
 
 
@@ -108,13 +108,22 @@ class QueueModels extends DataModel {
                 $data['old_cross']->updated = (object) $data['old_cross']->updated;
             }
         }
+        if (isset($data['invitee']) && in_array($data['invitee']->id, $this->robots)) {
+            return true;
+        }
         $strSrv = "{$service}/{$method}";
         switch ($strSrv) {
-            case 'cross/preview':
             case 'cross/invitation':
+                $dataAr = ['invitee' => $data['invitee']];
+            case 'cross/preview':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
-                $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by']];
+                $dataAr += ['cross_id' => $data['cross']->id, 'by' => $data['by']];
+                break;
+            case 'cross/join':
+                $urlSrv = "/v3/notifier/{$strSrv}";
+                $mergeK = '-';
+                $dataAr = ['cross_id' => $data['cross']->id, 'by' => $data['by'], 'invitee' => $data['invitee']];
                 break;
             case 'cross/update':
                 $urlSrv = "/v3/notifier/{$strSrv}";
@@ -304,6 +313,7 @@ class QueueModels extends DataModel {
         foreach ($chkUser as $cuI => $cuItem) {
             switch ($event) {
                 case 'cross/update':
+                case 'cross/join':
                     if ((isset($userPerProvider['device'][$cuI]) && isset($userPerProvider['email'][$cuI]))
                      || (isset($userPerProvider['phone'][$cuI])  && isset($userPerProvider['email'][$cuI])
                       && $gotInvitation[$userPerProvider['email'][$cuI]]->rsvp_status === 'NOTIFICATION')) {
@@ -331,7 +341,7 @@ class QueueModels extends DataModel {
                             $head10[]  = $item;
                             break;
                         case 'phone':
-                            $item->identity->provider = 'imessage|phone';
+                            $item->identity->provider = 'imessage';
                         case 'twitter':
                         case 'iOS':
                         case 'Android':
@@ -353,6 +363,24 @@ class QueueModels extends DataModel {
                         case 'facebook':
                         case 'iOS':
                         case 'Android':
+                            $instant[] = $item;
+                    }
+                }
+                break;
+            case 'cross/join':
+                foreach ($gotInvitation as $item) {
+                    switch ($item->identity->provider) {
+                        case 'email':
+                        case 'google':
+                        case 'phone':
+                            $imsgInv = deepClone($item);
+                            $imsgInv->identity->provider = 'imessage';
+                            $instant[] = $imsgInv;
+                        case 'twitter':
+                        case 'facebook':
+                        case 'iOS':
+                        case 'Android':
+                        case 'wechat':
                             $instant[] = $item;
                     }
                 }
@@ -466,16 +494,16 @@ class QueueModels extends DataModel {
     }
 
 
-    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id, $host_only = false) {
+    public function despatchPreview($cross, $to_exfee, $by_user_id, $by_identity_id) {
         $service     = 'cross';
-        $method      = $host_only ? 'preview' : 'invitation';
+        $method      = 'preview';
         $hlpIdentity = $this->getHelperByName('Identity');
         $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
         $dpCross     = new stdClass;
         $dpCross->id = $cross->id;
         $dpCross->exfee = $to_exfee;
         $invitations = $this->getToInvitationsByExfee(
-            $dpCross, $by_user_id, "{$service}/{$method}", [], [], $host_only
+            $dpCross, $by_user_id, "{$service}/{$method}", [], [], true
         );
         $result = true;
         foreach ($invitations as $invI => $invItems) {
@@ -484,6 +512,60 @@ class QueueModels extends DataModel {
                     $invI, $service, $method, $invItems,
                     ['cross' => $cross, 'by' => $objIdentity]
                 )) {
+                    $result = false;
+                }
+            }
+        }
+        return $result;
+    }
+
+
+    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        $service     = 'cross';
+        $method      = 'invitation';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
+        $invitations = $this->getToInvitationsByExfee(
+            $cross, $by_user_id, "{$service}/{$method}"
+        );
+        $result = true;
+        foreach ($to_exfee->invitations as $teItem) {
+            foreach ($invitations as $invI => $invItems) {
+                if ($invItems) {
+                    if ($this->pushJobToQueue($invI, $service, $method, $invItems, [
+                        'cross'   => $cross,
+                        'by'      => $objIdentity,
+                        'invitee' => $teItem->identity,
+                    ])) {
+                        $result = false;
+                    }
+                }
+            }
+        }
+        $this->despatchRemind($cross, $to_exfee, $by_user_id, $by_identity_id);
+        return $result;
+    }
+
+
+    public function despatchJoin($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        $service     = 'cross';
+        $method      = 'join';
+        $hlpIdentity = $this->getHelperByName('Identity');
+        $objIdentity = $hlpIdentity->getIdentityById($by_identity_id);
+        $dpCross     = new stdClass;
+        $dpCross->id = $cross->id;
+        $dpCross->exfee = $cross->exfee;
+        $invitations = $this->getToInvitationsByExfee(
+            $dpCross, $by_user_id, "{$service}/{$method}"
+        );
+        $result = true;
+        foreach ($invitations as $invI => $invItems) {
+            if ($invItems) {
+                if ($this->pushJobToQueue($invI, $service, $method, $invItems, [
+                    'cross'   => $cross,
+                    'by'      => $objIdentity,
+                    'invitee' => $to_exfee->invitations[0]->identity,
+                ])) {
                     $result = false;
                 }
             }

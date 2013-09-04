@@ -19,14 +19,26 @@ class QueueHelper extends ActionController {
     }
 
 
-    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id, $host_only = false) {
-        return $this->modQueue->despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id, $host_only);
+    public function despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        return $this->modQueue->despatchInvitation($cross, $to_exfee, $by_user_id, $by_identity_id);
+    }
+
+
+    public function despatchPreview($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        return $this->modQueue->despatchPreview($cross, $to_exfee, $by_user_id, $by_identity_id);
     }
 
 
     public function despatchUpdate($cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id) {
         return $this->modQueue->despatchUpdate(
             $cross, $old_cross, $inc_exfee, $exc_exfee, $by_user_id, $by_identity_id
+        );
+    }
+
+
+    public function despatchJoin($cross, $to_exfee, $by_user_id, $by_identity_id) {
+        return $this->modQueue->despatchJoin(
+            $cross, $to_exfee, $by_user_id, $by_identity_id
         );
     }
 

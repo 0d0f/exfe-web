@@ -109,8 +109,16 @@ class HomeActions extends ActionController {
         $this->setVar('oauth',       $oauthRst);
         $this->setVar('location',    $modMap->getCurrentLocation());
         // case USER_AGENT
-        if (!isset($_GET['ipad'])
-         && !isset($_COOKIE['ipad'])
+        $ipad = isset($_GET['ipad']) || isset($_COOKIE['ipad']);
+        if (isset($_GET['ipad'])) {
+            if ($_GET['ipad'] === 'false') {
+                setcookie('ipad', false, time() - 60 * 60 * 24);
+                $ipad = false;
+            } else {
+                setcookie('ipad', true,  time() + 60 * 60 * 24);
+            }
+        }
+        if (!$ipad
          && (strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')
           || strpos($_SERVER['HTTP_USER_AGENT'], 'iPod')
@@ -146,9 +154,6 @@ class HomeActions extends ActionController {
                 || strpos($_SERVER['HTTP_USER_AGENT'], 'Fennec')) {
             // @todo
             // return;
-        }
-        if (isset($_GET['ipad'])) {
-            setcookie('ipad', true, time() + 60 * 60 * 24);
         }
         $this->displayView();
     }
