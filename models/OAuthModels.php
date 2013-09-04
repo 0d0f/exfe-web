@@ -807,19 +807,25 @@ class OAuthModels extends DataModel {
 
     public function getWechatProfile($openid, $token) {
         if ($token) {
-            $objCurl = curl_init(
-                'https://api.weixin.qq.com/sns/userinfo'
-              . '?access_token=' . $token['access_token']
-              . '&openid='       . $openid
-            );
-            curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
-            $data = curl_exec($objCurl);
-            curl_close($objCurl);
-            if ($data && ($data = (array) json_decode($data)) && isset($data['openid'])) {
-                return $data;
+            $key = "wechat_identity_profile:{$openid}";
+            $data = getCache($key);
+            if (!$data) {
+                $objCurl = curl_init(
+                    'https://api.weixin.qq.com/sns/userinfo'
+                  . '?access_token=' . $token['access_token']
+                  . '&openid='       . $openid
+                );
+                curl_setopt($objCurl, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($objCurl, CURLOPT_CONNECTTIMEOUT, 23);
+                $data = curl_exec($objCurl);
+                curl_close($objCurl);
+                if ($data && ($data = json_decode($data, true)) && isset($data['openid'])) {
+                    setCache($key, $data, 60 * 60);
+                } else {
+                    $data = null;
+                }
             }
-            return null;
+            return $data;
         }
         return null;
     }
