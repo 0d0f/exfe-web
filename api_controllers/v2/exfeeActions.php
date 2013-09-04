@@ -223,7 +223,7 @@ class ExfeeActions extends ActionController {
             $exfee->invitations[] = $objInvitation;
         }
         $udeResult = $modExfee->updateExfee(
-            $exfee, $via_identity->id, $via_identity->connected_user_id
+            $exfee, $via_identity->id, $via_identity->connected_user_id, false, false, false, '', true
         );
         if ($udeResult && $udeResult['changed']) {
             apiResponse(['cross' => $hlpCross->getCross($rawInvitation['cross_id'])]);
