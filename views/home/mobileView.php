@@ -297,7 +297,7 @@
         <div class="splitline discover">发现更多…</div>
       </div>
       <div id="other-info" class="info-windown hide">
-        <div class="info">
+        <div class="info splitline">
           <div class="name"></div>
           <div class="update hide"><span class="time"></span>前所处方位</div>
           <table border="0" cellpadding="0" cellspacing="0">
@@ -305,7 +305,7 @@
             <tr class="dest-me hide"><td class="label">距您的位置</td><td class="m"></td></tr>
           </table>
         </div>
-        <div class="splitline please-update hide">请对方更新方位</div>
+        <div class="please-update hide">请对方更新方位</div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
