@@ -29,9 +29,15 @@ class WechatModels extends DataModel {
 
     public function getIdentityBy($external_id) {
         if ($external_id) {
-            $external_id = splitIdentityId($external_id)[0];
-            $rawIdentity = $this->libwechat->getUserInfo($external_id);
-            return $this->makeIdentityBy($rawIdentity);
+            $key = "wechat_identity:{$external_id}";
+            $identity = getCache($key);
+            if (!$identity) {
+                $external_id = splitIdentityId($external_id)[0];
+                $rawIdentity = $this->libwechat->getUserInfo($external_id);
+                $identity    = $this->makeIdentityBy($rawIdentity);
+                setCache($key, $identity);
+            }
+            return $identity;
         }
         return null;
     }
