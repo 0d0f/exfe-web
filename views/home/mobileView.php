@@ -293,11 +293,11 @@
         <div id="identities"></div>
       </div>
       <div id="my-info" class="info-windown hide">
-        <div class="show">秀这张“活点地图”</div>
+        <div class="splitline show">秀这张“活点地图”</div>
         <div class="splitline discover">发现更多…</div>
       </div>
       <div id="other-info" class="info-windown hide">
-        <div class="info splitline">
+        <div class="splitline info">
           <div class="name"></div>
           <div class="update hide"><span class="time"></span>前所处方位</div>
           <table border="0" cellpadding="0" cellspacing="0">
@@ -305,7 +305,7 @@
             <tr class="dest-me hide"><td class="label">距您的位置</td><td class="m"></td></tr>
           </table>
         </div>
-        <div class="please-update hide">请对方更新方位</div>
+        <div class="splitline please-update hide">请对方更新方位</div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
@@ -331,6 +331,7 @@
               <button class="notify-ok">确定</button>
             </div>
           </div>
+          <div id="cleanup-cache">清空活点地图的本地缓存</div>
         </div>
       </div>
       <div id="privacy-dialog" class="dialog hide">
