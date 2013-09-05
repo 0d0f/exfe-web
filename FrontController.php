@@ -145,6 +145,7 @@ class FrontController {
                 case 'toapp':
                 case 'wechat':
                     $first = 'home';
+                    array_unshift($arrPath, 'index');
             }
             $this->rockWeb($first, $arrPath);
         }
