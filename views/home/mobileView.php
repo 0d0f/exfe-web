@@ -313,7 +313,12 @@
           <div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div>
         </div>
       </div>
-      <div id="shuidi-dialog" class="dialog hide">
+    </div>
+  </script>
+
+  <!-- Wechat About -->
+  <script id="wechat-about-tmpl" type="text/x-handlebars-template">
+      <div id="shuidi-dialog" class="dialog">
         <div class="main">
           <h3 class="title">在“活点地图”上绘制路径?</h3>
           <p class="desc"><span class="name">水滴·X· </span>应用是一个群组工具，它不仅能让您在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。 </p>
@@ -353,7 +358,6 @@
           </div>
         </div>
       </div>
-    </div>
   </script>
 
   <!--/Templates }}}-->
