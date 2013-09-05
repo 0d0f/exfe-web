@@ -262,7 +262,7 @@ class wechatActions extends ActionController {
                                     'Title'       => '水滴·汇 - 活点地图',
                                     'Description' => '',
                                     'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
-                                    'Url'         => SITE_URL . '/wechatabout',
+                                    'Url'         => SITE_URL . '/wechat/aboutroutex',
                                 ], [
                                     'Title'       => '用微信账号登录 水滴·汇',
                                     'Description' => '',
