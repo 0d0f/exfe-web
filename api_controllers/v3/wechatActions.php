@@ -63,7 +63,7 @@ class wechatActions extends ActionController {
                     if ($rawIdentity && $modIdentity->updateIdentityById(
                         $identity_id, ['name' => $rawIdentity->name]
                     )) {
-                        setCache($refreshKey, 60 * 60 * 24);
+                        setCache($refreshKey, true, 60 * 60 * 24);
                     }
                 }
             } else {
