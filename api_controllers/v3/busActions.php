@@ -251,6 +251,10 @@ class BusActions extends ActionController {
                       ? (int) $args->exfee_id
                       : (int) $modExfee->getExfeeIdByCrossId((int) $args->cross_id);
             $modExfee->updateExfeeTime($exfee_id);
+            if (isset($args->cross_id)) {
+                $modRoutex = $this->getModelByName('Routex');
+                $modRoutex->delRoutexStatusCache($args->cross_id);
+            }
             $this->jsonResponse(new stdClass);
             return;
         }
