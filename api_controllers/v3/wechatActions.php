@@ -49,6 +49,7 @@ class wechatActions extends ActionController {
         $rtnMessage  = '';
         $cross       = null;
         $identity    = null;
+        // @todo profile 需要更新
         if (($external_id = @$objMsg->FromUserName && @$objMsg->ToUserName
                           ? "{$objMsg->FromUserName}@{$objMsg->ToUserName}" : '')) {
             $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
