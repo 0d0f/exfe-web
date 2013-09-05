@@ -119,7 +119,7 @@ class wechatActions extends ActionController {
                                     $rtnMessage = [[
                                         'Title'       => '欢迎使用“活点地图”',
                                         'Description' => '',
-                                        'PicUrl'      => SITE_URL . '/static/img/routex_welcome@2x.jpg',
+                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routex_welcome@2x.jpg',
                                         'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
                                     ]];
                                 }
@@ -248,6 +248,18 @@ class wechatActions extends ActionController {
                                 }
                                 break;
                             case 'MORE':
+                                $rtnType    = 'news';
+                                $rtnMessage = [[
+                                    'Title'       => '水滴·汇 - 活点地图',
+                                    'Description' => '',
+                                    'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                                    'Url'         => SITE_URL . '/wechatabout',
+                                ], [
+                                    'Title'       => '用微信账号登录 水滴·汇',
+                                    'Description' => '',
+                                    'PicUrl'      => SITE_URL . '/static/img/appicon_50@2x.jpg',
+                                    'Url'         => SITE_URL . '/toapp',
+                                ]];
                         }
                         break;
                     case 'location':
