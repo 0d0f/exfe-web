@@ -57,6 +57,15 @@ class wechatActions extends ActionController {
             );
             if ($identity) {
                 $identity_id = $identity->id;
+                $refreshKey  = "wechat_identity_refresh_{$identity_id}";
+                if (!getCache($refreshKey)) {
+                    $rawIdentity = $modWechat->getIdentityBy($external_id);
+                    if ($rawIdentity && $modIdentity->updateIdentityById(
+                        $identity_id, ['name' => $rawIdentity->name]
+                    )) {
+                        setCache($refreshKey, 60 * 60 * 24);
+                    }
+                }
             } else {
                 if (!($rawIdentity = $modWechat->getIdentityBy($external_id))) {
                     header('HTTP/1.1 500 Internal Server Error');
