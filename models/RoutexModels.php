@@ -70,16 +70,33 @@ class RoutexModels extends DataModel {
 
 
     public function getRoutexStatusBy($cross_id, $user_id) {
+        $key    = "routex_status:{$cross_id}";
+        $subKey = "user_{$user_id}";
+        $rawStatus = getCache($key);
+        if ($rawStatus) {
+            if (array_key_exists($subKey, $rawStatus)) {
+                return $rawStatus[$subKey];
+            }
+        } else {
+            $rawStatus = [];
+        }
         $rawResult = httpKit::request(
             EXFE_AUTH_SERVER
           . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross_id}",
             null, null, false, false, 3, 3, 'json', true, true
         );
+        $userStatus = -1;
         if ($rawResult && $rawResult['http_code'] === 200) {
-            return $rawResult['json'];
+            $userStatus = $rawResult['json'];
         }
-        return -1;
+        $rawStatus[$subKey] = $userStatus;
+        setCache($key, $rawStatus);
+        return $userStatus;
     }
 
+
+    public function delRoutexStatusCache($cross_id) {
+        delCache("routex_status:{$cross_id}");
+    }
 
 }
