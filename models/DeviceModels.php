@@ -140,7 +140,9 @@ class DeviceModels extends DataModel {
                     $rItem['first_connected_at'],
                     $rItem['last_connected_at'],
                     0,
-                    $rItem['unreachable']
+                    $rItem['unreachable'],
+                    $mainIdentity->locale,
+                    $mainIdentity->timezone
                 );
             }
         } else {

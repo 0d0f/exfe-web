@@ -141,6 +141,11 @@ class FrontController {
             header('location: /500');
             return;
         } else {
+            switch ($first) {
+                case 'toapp':
+                case 'wechat':
+                    $first = 'home';
+            }
             $this->rockWeb($first, $arrPath);
         }
     }
