@@ -57,6 +57,15 @@ class wechatActions extends ActionController {
             );
             if ($identity) {
                 $identity_id = $identity->id;
+                $refreshKey  = "wechat_identity_refresh_{$identity_id}";
+                if (!getCache($refreshKey)) {
+                    $rawIdentity = $modWechat->getIdentityBy($external_id);
+                    if ($rawIdentity && $modIdentity->updateIdentityById(
+                        $identity_id, ['name' => $rawIdentity->name]
+                    )) {
+                        setCache($refreshKey, true, 60 * 60 * 24);
+                    }
+                }
             } else {
                 if (!($rawIdentity = $modWechat->getIdentityBy($external_id))) {
                     header('HTTP/1.1 500 Internal Server Error');
@@ -253,12 +262,12 @@ class wechatActions extends ActionController {
                                     'Title'       => '水滴·汇 - 活点地图',
                                     'Description' => '',
                                     'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
-                                    'Url'         => SITE_URL . '/wechatabout',
+                                    'Url'         => SITE_URL . '/wechat/aboutroutex',
                                 ], [
                                     'Title'       => '用微信账号登录 水滴·汇',
                                     'Description' => '',
                                     'PicUrl'      => SITE_URL . '/static/img/appicon_50@2x.jpg',
-                                    'Url'         => SITE_URL . '/toapp',
+                                    'Url'         => SITE_URL . '/toapp?authenticate',
                                 ]];
                         }
                         break;
