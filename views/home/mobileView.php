@@ -336,7 +336,7 @@
         <div class="main">
           <div class="ibox">
             <p><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</p>
-            <p><div class="share-input"></div><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></p>
+            <p><input type="text" class="share-input" /><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></p>
           </div>
         </div>
       </div>
