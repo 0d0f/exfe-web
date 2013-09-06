@@ -564,30 +564,34 @@ class QueueModels extends DataModel {
         if ($update) {
             $newUserIds = [];
             $upData     = $data + ['invitees' => []];
-            foreach ($to_exfee as $teI => $teItem) {
+            foreach ($to_exfee->invitations as $teI => $teItem) {
                 $newUserIds[] = $teItem->identity->connected_user_id;
                 $upData['invitees'][] = $teItem->identity;
             }
             foreach ($invitations as $invI => $invItems) {
-                if ($invItems) {
-                    if (in_array($invItems->identity->connected_user_id, $newUserIds)) {
-                        $method = 'invitation';
-                        $smData = $data;
+                $newInv = [];
+                $oldInv = [];
+                foreach ($invItems ?: [] as $i => $item) {
+                    if (in_array($item->identity->connected_user_id, $newUserIds)) {
+                        $newInv[] = $item;
                     } else {
-                        $method = 'update_invitation';
-                        $smData = $upData;
+                        $oldInv[] = $item;
                     }
-                    if (!$this->pushJobToQueue($invI, $service, $method, $invItems, $smData)) {
-                        $result = false;
-                    }
+                }
+                if ($newInv
+                && !$this->pushJobToQueue($invI, $service, 'invitation', $newInv, $data)) {
+                    $result = false;
+                }
+                if ($oldInv
+                && !$this->pushJobToQueue($invI, $service, 'update_invitation', $oldInv, $upData)) {
+                    $result = false;
                 }
             }
         } else {
             foreach ($invitations as $invI => $invItems) {
-                if ($invItems) {
-                    if (!$this->pushJobToQueue($invI, $service, $method, $invItems, $data)) {
-                        $result = false;
-                    }
+                if ($invItems
+                && !$this->pushJobToQueue($invI, $service, $method, $invItems, $data)) {
+                    $result = false;
                 }
             }
         }
