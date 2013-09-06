@@ -112,6 +112,7 @@ class QueueModels extends DataModel {
             return true;
         }
         $strSrv = "{$service}/{$method}";
+        $dataAr = [];
         switch ($strSrv) {
             case 'cross/invitation':
             case 'cross/join':
