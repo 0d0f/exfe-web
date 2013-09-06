@@ -305,7 +305,7 @@
             <tr class="dest-me hide"><td class="label">距您的位置</td><td class="m"></td></tr>
           </table>
         </div>
-        <div class="splitline please-update hide">请对方更新方位</div>
+        <div class="splitline please-update hide">请对方更新方位<div class="loading"><div class="spinner"><div class="mask"><div class="maskedCircle"></div></div></div></div></div>
       </div>
       <div id="open-exfe"><div class="btn-openexfe"></div></div>
       <div id="locate" class="load">
@@ -324,11 +324,19 @@
           </div>
         </div>
       </div>
-      <div id="wechat-guide-dialog" class="dialog hide">
+      <div id="wechat-guide" class="dialog wechat-dialog hide">
         <div class="main">
           <div class="ibox">
             <p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“查看公众号”。</p>
-            <p><span>关注服务号</span>以便正常使用，也方便您及时收到朋友们的邀请和提醒通知。</p>
+            <p><span>关注</span>服务号以便正常使用，也方便您及时收到朋友们的邀请和提醒通知。</p>
+          </div>
+        </div>
+      </div>
+      <div id="wechat-share" class="dialog wechat-dialog hide">
+        <div class="main">
+          <div class="ibox">
+            <p><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</p>
+            <p><input class="share-input" type="text" placeholder="" /><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></p>
           </div>
         </div>
       </div>
@@ -340,12 +348,12 @@
       <div id="shuidi-dialog" class="dialog">
         <div class="main">
           <h3 class="title">在“活点地图”上绘制路径?</h3>
-          <p class="desc"><span class="name">水滴·X· </span>应用是一个群组工具，它不仅能让您在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。 </p>
+          <p class="desc"><span class="name">水滴·汇</span> (Shuady ·X·) 是一个群组工具，它能在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。</p>
           <div class="app-btn">
             <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
             <div class="app-info">
-              <h3 class="app-title">水滴 ·X· </h3>
-              <div class="app-keywords">汇聚・融入・乐享</div>
+              <h3 class="app-title">水滴·汇</h3>
+              <div class="app-keywords">Shuady ·X·</div>
             </div>
           </div>
           <div class="notify">
