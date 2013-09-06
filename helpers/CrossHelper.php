@@ -149,10 +149,10 @@ class CrossHelper extends ActionController {
 
         $crossData=$this->getModelByName("cross");
         if ($exfee_id>0) {
-            $cross_id=$crossData->addCross($cross,$place_id,$exfee_id,$by_identity_id);
+            $cross_id=$crossData->addCross($cross, $place_id, $exfee_id, $by_identity_id);
             $draft = isset($cross->attribute)
-                  && isset($cross->attribute->state)
-                  && $cross->attribute->state === 'draft';
+                  && ((isset($cross->attribute->state)   && $cross->attribute->state   === 'draft')
+                   || (isset($cross->attribute['state']) && $cross->attribute['state'] === 'draft'));
             $timezone = '';
             if (@$cross->time->begin_at->timezone) {
                 $timezone = $cross->time->begin_at->timezone;
