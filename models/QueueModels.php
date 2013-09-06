@@ -112,6 +112,7 @@ class QueueModels extends DataModel {
             return true;
         }
         $strSrv = "{$service}/{$method}";
+        $dataAr = [];
         switch ($strSrv) {
             case 'cross/invitation':
             case 'cross/join':
@@ -119,7 +120,7 @@ class QueueModels extends DataModel {
             case 'cross/preview':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
-                $dataAr = array_merge($dataAr, ['cross_id' => $data['cross']->id, 'by' => $data['by']]);
+                $dataAr += ['cross_id' => $data['cross']->id, 'by' => $data['by']];
                 break;
             case 'cross/update':
                 $urlSrv = "/v3/notifier/{$strSrv}";
