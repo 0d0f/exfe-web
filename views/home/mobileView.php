@@ -340,7 +340,7 @@
       <div id="shuidi-dialog" class="dialog">
         <div class="main">
           <h3 class="title">在“活点地图”上绘制路径?</h3>
-          <p class="desc"><span class="name">水滴·汇</span> (Shuady ·X·)  应是一个群组工具，它能在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。 </p>
+          <p class="desc"><span class="name">水滴·汇</span> (Shuady ·X·) 是一个群组工具，它能在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。</p>
           <div class="app-btn">
             <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
             <div class="app-info">
