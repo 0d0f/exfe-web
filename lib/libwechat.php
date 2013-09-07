@@ -73,7 +73,7 @@ class libwechat {
 
 
     public function twoStepsRequest($url, $get = [], $post = null) {
-        if (($get['access_token'] = '2' . $this->getAccessToken())) {
+        if (($get['access_token'] = $this->getAccessToken())) {
             $result = httpkit::request(
                 $url, $get, $post, false, false, 5, 3, 'json', true
             );
@@ -81,6 +81,7 @@ class libwechat {
                 switch ((int) @$result['json']['errcode']) {
                     case 0:
                         return $result['json'];
+                    case 40001:
                     case 42001:
                         if (($get['access_token'] = $this->getAccessToken(true))) {
                             $result = httpkit::request(
