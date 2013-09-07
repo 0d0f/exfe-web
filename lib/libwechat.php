@@ -72,24 +72,40 @@ class libwechat {
     }
 
 
-    public function sendTemplateMessage($toUserName, $template_id, $content) {
-        $access_token = $this->getAccessToken();
-        if ($access_token) {
+    public function twoStepsRequest($url, $get = [], $post = null) {
+        if (($get['access_token'] = '2' . $this->getAccessToken())) {
             $result = httpkit::request(
-                'https://api.weixin.qq.com/cgi-bin/message/template/send', [
-                    'access_token' => $access_token,
-                ], [
-                    'touser'      => $toUserName,
-                    'template_id' => $template_id,
-                    'data'        => $content,
-                ], false, false, 3, 3, 'json', true
+                $url, $get, $post, false, false, 5, 3, 'json', true
             );
-            return $result
-                && $result['http_code'] === 200
-                && $result['json']
-                && @ (int) $result['json']['errcode'] === 0;
+            if ($result && $result['http_code'] === 200 & $result['json']) {
+                switch ((int) @$result['json']['errcode']) {
+                    case 0:
+                        return $result['json'];
+                    case 42001:
+                        if (($get['access_token'] = $this->getAccessToken(true))) {
+                            $result = httpkit::request(
+                                $url, $get, $post, false, false, 3, 3, 'json', true
+                            );
+                            if ($result && $result['http_code'] === 200 && $result['json']
+                            && ((int) @$result['json']['errcode'] === 0)) {
+                                return $result['json'];
+                            }
+                        }
+                }
+            }
         }
         return null;
+    }
+
+
+    public function sendTemplateMessage($toUserName, $template_id, $content) {
+        return $this->twoStepsRequest(
+            'https://api.weixin.qq.com/cgi-bin/message/template/send', [], [
+                'touser'      => $toUserName,
+                'template_id' => $template_id,
+                'data'        => $content,
+            ]
+        );
     }
 
 
@@ -154,16 +170,16 @@ class libwechat {
     }
 
 
-    public function getAccessToken() {
+    public function getAccessToken($update = false) {
         $token_key    = 'wechat_access_token';
         $access_token = getCache($token_key);
-        if (!$access_token) {
+        if (!$access_token || $update) {
             $result = httpkit::request(
                 'https://api.weixin.qq.com/cgi-bin/token', [
                     'grant_type' => 'client_credential',
                     'appid'      => $this->appid,
                     'secret'     => $this->secret,
-                ], null, false, false, 3, 3, 'json', true
+                ], null, false, false, 5, 3, 'json', true
             );
             if ($result
              && $result['http_code'] === 200
@@ -179,41 +195,18 @@ class libwechat {
 
 
     public function getUserInfo($openid) {
-        $access_token = $this->getAccessToken();
-        if ($access_token) {
-            $result = httpkit::request(
-                'https://api.weixin.qq.com/cgi-bin/user/info', [
-                    'access_token' => $access_token,
-                    'openid'       => $openid,
-                ], null, false, false, 3, 3, 'json', true
-            );
-            if ($result
-             && $result['http_code'] === 200
-             && $result['json']
-             && @ (int) $result['json']['subscribe'] === 1) {
-                return $result['json'];
-            }
-        }
-        return null;
+        $result = $this->twoStepsRequest(
+            'https://api.weixin.qq.com/cgi-bin/user/info', ['openid' => $openid]
+        );
+        return $result && ((int) @$result['subscribe'] === 1) ? $result : null;
     }
 
 
     public function getMenu() {
-        $access_token = $this->getAccessToken();
-        if ($access_token) {
-            $result = httpkit::request(
-                'https://api.weixin.qq.com/cgi-bin/menu/get', [
-                    'access_token' => $access_token,
-                ], null, false, false, 3, 3, 'json', true
-            );
-            if ($result
-             && $result['http_code'] === 200
-             && $result['json']
-             && @$result['json']['menu']) {
-                return $result['json']['menu'];
-            }
-        }
-        return null;
+        $result = $this->twoStepsRequest(
+            'https://api.weixin.qq.com/cgi-bin/menu/get'
+        );
+        return $result && @$result['menu'] ? $result['menu'] : null;
     }
 
 
@@ -228,7 +221,7 @@ class libwechat {
             if ($result
              && $result['http_code'] === 200
              && $result['json']
-             && @ (int) $result['json']['errcode'] === 0) {
+             && (int) @$result['json']['errcode'] === 0) {
                 return $this->getMenu();
             }
         }
@@ -237,21 +230,9 @@ class libwechat {
 
 
     public function deleteMenu() {
-        $access_token = $this->getAccessToken();
-        if ($access_token) {
-            $result = httpkit::request(
-                'https://api.weixin.qq.com/cgi-bin/menu/delete', [
-                    'access_token' => $access_token,
-                ], null, false, false, 3, 3, 'json', true
-            );
-            if ($result
-             && $result['http_code'] === 200
-             && $result['json']
-             && @ (int) $result['json']['errcode'] === 0) {
-                return true;
-            }
-        }
-        return null;
+        return $this->twoStepsRequest(
+            'https://api.weixin.qq.com/cgi-bin/menu/delete'
+        );
     }
 
 }
