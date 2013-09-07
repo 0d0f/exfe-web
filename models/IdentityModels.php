@@ -567,6 +567,7 @@ class IdentityModels extends DataModel {
         $url    = EXFE_AUTH_SERVER . "/v3/notifier/user/{$strSrv}";
         $type   = 'once';
         $time   = time();
+        $fallbacks = [];
         switch ($identity->provider) {
             case 'email':
                 $hlpQueue->fireBus([new Recipient(
@@ -579,7 +580,10 @@ class IdentityModels extends DataModel {
                 )], $megKey, $method, $url, $type, $time, $data);
                 break;
             case 'phone':
-                $identity->provider = 'imessage|phone';
+                $fallbacks = [
+                    "{$identity->external_id}@imessage",
+                    "{$identity->external_id}@{$identity->provider}",
+                ];
         }
         return $hlpQueue->fireBus([new Recipient(
             $identity->id,
@@ -588,7 +592,8 @@ class IdentityModels extends DataModel {
             $auData, '', $token, '',
             $identity->provider,
             $identity->external_id,
-            $identity->external_username
+            $identity->external_username,
+            $fallbacks
         )], $megKey, $method, $url, $type, $time, $data);
     }
 
