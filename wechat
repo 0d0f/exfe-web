@@ -84,16 +84,18 @@ class wechatcli extends DataModel {
 
 
     public function test() {
-        // print_r($this->hlpWechat->getIdentityBy('oVgq_jt1yV6Ser5fS7_m2MCObiVg'));
+        $rawUser = $this->hlpWechat->getIdentityBy('onrOgjiSR2kTBaJISb32-z8cpbzA@gh_8c4c8d9d14a7');
+        if ($rawUser) {
+            print_r($rawUser);
+        } else {
+            echo "Failed!\r\n";
+        }
     }
 
 }
 
 $objWechatcli = new wechatcli();
 array_shift($argv);
-
-// $objWechatcli->test();
-// exit();
 
 switch (strtolower($argv[0])) {
     case 'getmenu':
@@ -108,8 +110,11 @@ switch (strtolower($argv[0])) {
     case 'deletemenu':
         $objWechatcli->deleteMenu();
         break;
+    case 'test':
+        $objWechatcli->test();
+        break;
     default:
         echo "WeChatCli: invalid option -- '{$argv[0]}'\r\n";
-        echo "try: getmenu, createmenu, updatemenu, deletemenu.\r\n";
+        echo "try: getmenu, createmenu, updatemenu, deletemenu, test.\r\n";
         exit(1);
 }
