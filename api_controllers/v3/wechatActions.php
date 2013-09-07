@@ -266,7 +266,7 @@ class wechatActions extends ActionController {
                                 ], [
                                     'Title'       => '用微信账号登录 水滴·汇',
                                     'Description' => '',
-                                    'PicUrl'      => SITE_URL . '/static/img/appicon_50@2x.jpg',
+                                    'PicUrl'      => SITE_URL . '/static/img/wechat_appicon@2x.png',
                                     'Url'         => SITE_URL . '/toapp?authenticate',
                                 ]];
                         }

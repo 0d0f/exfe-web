@@ -840,7 +840,7 @@ class ExfeeModels extends DataModel {
                 }
                 if ($addExfee) {
                     $hlpQueue->despatchInvitation(
-                        $cross, $to_exfee, $user_id, $by_identity_id
+                        $cross, $to_exfee, $user_id, $by_identity_id, true
                     );
                 }
             }
