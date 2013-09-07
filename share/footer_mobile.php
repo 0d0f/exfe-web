@@ -9,7 +9,7 @@ $jsname = preg_replace(
 $cssname = $frontConfigData->css->exfemobilemin;
 
 if ($_GET['debug']) {
-  echo "<script src='/static/js/debugger/0.0.1/debugger.js'></script>";
+  echo "<script src='/static/js/debugger/0.0.1/debugger.js?" . $frontConfigData->mobile->standalone->debugger->sha1 . "'></script>";
 }
 
 echo "  <script>\n";
@@ -19,7 +19,7 @@ echo "window._ENV_.CSSFILE = '${cssname}';\n";
 echo 'window._ENV_.smith_id = ' . $this->getVar('smith_id') . ';' . "\n";
 echo 'window._ENV_.exfee_id = ' . $this->getVar('exfee_id') . ';' . "\n";
 echo "  </script>\n";
-echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js'></script>\n";
+echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js?" . $frontConfigData->mobile->standalone->mobiledirector->sha1 . "'></script>\n";
 echo "<script src='/static/js/" . $jsname . "'></script>\n";
 
 // Google Analytics
