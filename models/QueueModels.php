@@ -40,8 +40,8 @@ class QueueModels extends DataModel {
 
 
     public function makeRecipientByInvitation($invitation) {
-        $hlpTime = $this->getHelperByName('Time');
         if (!in_array($invitation->identity->id, $this->robots)) {
+            $hlpTime = $this->getHelperByName('Time');
             $external_username = $invitation->identity->external_username;
             $provider          = $invitation->identity->provider;
             switch ($provider) {
@@ -356,6 +356,7 @@ class QueueModels extends DataModel {
                         case 'twitter':
                         case 'iOS':
                         case 'Android':
+                     // case 'wechat':
                             $instant[] = $item;
                     }
                 }
@@ -375,6 +376,7 @@ class QueueModels extends DataModel {
                         case 'facebook':
                         case 'iOS':
                         case 'Android':
+                     // case 'wechat':
                             $instant[] = $item;
                     }
                 }
@@ -429,6 +431,7 @@ class QueueModels extends DataModel {
                         case 'facebook':
                         case 'iOS':
                         case 'Android':
+                     // case 'wechat':
                             $remind[]  = $item;
                     }
                 }
@@ -446,6 +449,7 @@ class QueueModels extends DataModel {
                             $item->identity->provider = 'imessage';
                         case 'iOS':
                         case 'Android':
+                     // case 'wechat':
                             $head2[]   = $item;
                     }
                 }
