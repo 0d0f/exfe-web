@@ -216,7 +216,7 @@ class wechatActions extends ActionController {
                                             }
                                         }
                                         if ($invitation) {
-                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}";
+                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}#" . time();
                                             if ($rtnMessage) {
                                                 foreach ($curExfee ? $curExfee->invitations : [] as $invItem) {
                                                     if ($invItem->identity->connected_user_id === $user_id
@@ -266,7 +266,7 @@ class wechatActions extends ActionController {
                                 ], [
                                     'Title'       => '用微信账号登录 水滴·汇',
                                     'Description' => '',
-                                    'PicUrl'      => SITE_URL . '/static/img/wechat_appicon@2x.png',
+                                    'PicUrl'      => SITE_URL . '/static/img/wechat_appicon@2x.png?1',
                                     'Url'         => SITE_URL . '/toapp?authenticate',
                                 ]];
                         }
@@ -350,11 +350,11 @@ class wechatActions extends ActionController {
                             break;
                         case 'debug on':
                             setCache($debugUrlKey, 1);
-                            $rtnMessage = "调试模式已开启。";
+                            $rtnMessage = "调试模式已开启。 🙉🐛";
                             break;
                         case 'debug off':
                             setCache($debugUrlKey, 0);
-                            $rtnMessage = "调试模式已关闭。";
+                            $rtnMessage = "调试模式已关闭。 🙈🐛";
                             break;
                         case 'think different':
                             $rtnMessage = 'Here’s to the crazy ones. The rebels. The troublemakers. The ones who see things differently. While some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.';

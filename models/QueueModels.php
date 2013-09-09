@@ -134,7 +134,7 @@ class QueueModels extends DataModel {
             case 'cross/preview':
                 $urlSrv = "/v3/notifier/{$strSrv}";
                 $mergeK = '-';
-                $dataAr += ['cross_id' => $data['cross']->id, 'by' => $data['by']];
+                $dataAr = array_merge($dataAr, ['cross_id' => $data['cross']->id, 'by' => $data['by']]);
                 break;
             case 'cross/update':
                 $urlSrv = "/v3/notifier/{$strSrv}";
