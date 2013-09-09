@@ -218,7 +218,7 @@ class wechatActions extends ActionController {
                                             }
                                         }
                                         if ($invitation) {
-                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}#" . time();
+                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}#" . strtotime($invitation['exfee_updated_at']);
                                             if ($rtnMessage) {
                                                 foreach ($curExfee ? $curExfee->invitations : [] as $invItem) {
                                                     if ($invItem->identity->connected_user_id === $user_id
