@@ -316,7 +316,7 @@
       <div id="privacy-dialog" class="dialog hide">
         <div class="main">
           <h3>隐私至关重要</h3>
-          <p class="p0">您刚刚拒绝开启这张“活点地图”：Threshold of the odyssey。它将不会展现您的位置，您也无法用它看到别人的位置。但这不会影响您已开启的其它“活点地图”页面，每张地图中是否展现您的位置是各自独立的设置。 </p>
+          <p class="p0">您刚刚拒绝开启这张“活点地图”：Threshold of the odyssey。它将不会展现您的位置，您也无法用它看到别人的位置。但这不会影响您已开启的其它“活点地图”页面，每张地图中是否展现您的位置是各自独立的设置。</p>
           <p class="p1">像“活点地图”这样能获知您方位的工具，应以最高标准尊重个人隐私和数据安全。我们对此非常重视。</p>
           <div class="btn">
             <div class="tip">要改变主意与朋友们互相看到位置和轨迹？</div>
@@ -345,27 +345,27 @@
 
   <!-- Wechat About -->
   <script id="wechat-about-tmpl" type="text/x-handlebars-template">
-      <div id="shuidi-dialog" class="dialog">
-        <div class="main">
-          <h3 class="title">在“活点地图”上绘制路径?</h3>
-          <p class="desc"><span class="name">水滴·汇</span> (Shuady ·X·) 是一个群组工具，它能在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。</p>
-          <div class="app-btn">
-            <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
-            <div class="app-info">
-              <h3 class="app-title">水滴·汇</h3>
-              <div class="app-keywords">Shuady ·X·</div>
-            </div>
+    <div id="shuidi-dialog" class="dialog">
+      <div class="main">
+        <h3 class="title">在“活点地图”上绘制路径?</h3>
+        <p class="desc"><span class="name">水滴·汇</span> (Shuady ·X·) 是一个群组工具，它能在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。</p>
+        <div class="app-btn">
+          <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
+          <div class="app-info">
+            <h3 class="app-title">水滴·汇</h3>
+            <div class="app-keywords">Shuady ·X·</div>
           </div>
-          <div class="notify">
-            <div class="notify-title">请输入资料以便朋友们向您发送提醒：</div>
-            <div class="notify-frame">
-              <input type="text" class="email" id="notify-provider" placeholder="您的手机号或电子邮件" />
-              <button class="notify-ok">确定</button>
-            </div>
-          </div>
-          <div id="cleanup-cache">重启活点地图</div>
         </div>
+        <div class="notify">
+          <div class="notify-title">请输入资料以便朋友们向您发送提醒：</div>
+          <div class="notify-frame">
+            <input type="text" class="email" id="notify-provider" placeholder="您的手机号或电子邮件" />
+            <button class="notify-ok">确定</button>
+          </div>
+        </div>
+        <div id="cleanup-cache">重启活点地图</div>
       </div>
+    </div>
   </script>
 
   <!--/Templates }}}-->
