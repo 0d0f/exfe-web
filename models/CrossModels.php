@@ -370,10 +370,6 @@ class CrossModels extends DataModel {
 
 
     public function doTutorial($identity, $background = '') {
-        // @todo enabled this!
-
-        return false;
-
         // init libs
         require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
         // init models
