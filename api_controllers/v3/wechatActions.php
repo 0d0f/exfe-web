@@ -120,10 +120,10 @@ class wechatActions extends ActionController {
                         $numIdentities = $modUser->getConnectedIdentityCount($user_id);
                         $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
                         if ($numIdentities === 1 && !$tutorial_x_id) {
-                            $cross = $crossHelper->doTutorial($identity);
-                            if ($cross) {
+                            $ttrCross = $crossHelper->doTutorial($identity);
+                            if ($ttrCross) {
                                 $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                    $cross->id, $bot->id
+                                    $ttrCross->id, $bot->id
                                 );
                                 if ($invitation) {
                                     $rtnType    = 'news';
@@ -131,7 +131,7 @@ class wechatActions extends ActionController {
                                         'Title'       => '欢迎使用“活点地图”',
                                         'Description' => '',
                                         'PicUrl'      => SITE_URL . '/static/img/wechat_routex_welcome@2x.jpg',
-                                        'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
+                                        'Url'         => $modRoutex->getUrl($ttrCross->id, $invitation['token'], $identity) . $debugUrl,
                                     ]];
                                 }
                             }
