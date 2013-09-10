@@ -569,11 +569,11 @@ class OAuthActions extends ActionController {
             return;
         }
         if (($token = $modOauth->getWechatAccessToken($_REQUEST['code']))) {
+            $modWechat = $this->getModelByName('Wechat');
             if ((int) @$_REQUEST['state'] === 1) {
                 $rawIdentity = $modWechat->makeIdentityBy(['openid' => $token['openid']]);
                 $revoked     = true;
             } else if (($rawIdentity = $modOauth->getWechatProfile($token['openid'], $token))) {
-                $modWechat   = $this->getModelByName('Wechat');
                 $rawIdentity = $modWechat->makeIdentityBy($rawIdentity);
                 $revoked     = false;
             }
