@@ -348,7 +348,7 @@ class ExfeeModels extends DataModel {
     }
 
 
-    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id, $user_id = 0, $locale = '', $timezone = '') {
+    public function addInvitationIntoExfee($invitation, $exfee_id, $by_identity_id, $user_id = 0, $locale = '', $timezone = '', $asJoin = false) {
         // init
         $hlpIdentity = $this->getHelperByName('identity');
         // adding new identity
@@ -375,6 +375,8 @@ class ExfeeModels extends DataModel {
         $host        = intval($invitation->host);
         // get mates tinyint
         $mates       = intval($invitation->mates);
+        // get invited_by_id
+        $by_identity_id_2 = $asJoin ? $invitation->identity->id : $by_identity_id;
         // insert invitation into database
         $sql = "INSERT INTO `invitations` SET
                 `identity_id`      =  {$invitation->identity->id},
@@ -385,7 +387,7 @@ class ExfeeModels extends DataModel {
                 `exfee_updated_at` = NOW(),
                 `token`            = '{$invToken}',
                 `invited_by`       =  {$by_identity_id},
-                `by_identity_id`   =  {$by_identity_id},
+                `by_identity_id`   =  {$by_identity_id_2},
                 `host`             =  {$host},
                 `mates`            =  {$mates}" . (@$invitation->grouping ? ",
                 `grouping`         =  {$invitation->grouping}" : '');
@@ -792,7 +794,7 @@ class ExfeeModels extends DataModel {
                     $exfee->invitations[$toI]->grouping
                   = $toItem->grouping = @$toItem->grouping ?: ++$maxGrouping;
                     $newInvId[] = $this->addInvitationIntoExfee(
-                        $toItem, $exfee->id, $by_identity_id, $user_id, $locale, $timezone
+                        $toItem, $exfee->id, $by_identity_id, $user_id, $locale, $timezone, $asJoin
                     );
                     $changed = true;
                 }
