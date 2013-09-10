@@ -49,6 +49,7 @@ class wechatActions extends ActionController {
         $rtnMessage  = '';
         $cross       = null;
         $identity    = null;
+        $unsubscribe = $msgType === 'event' && $event === 'unsubscribe';
         // @todo profile 需要更新
         if (($external_id = @$objMsg->FromUserName && @$objMsg->ToUserName
                           ? "{$objMsg->FromUserName}@{$objMsg->ToUserName}" : '')) {
@@ -66,7 +67,7 @@ class wechatActions extends ActionController {
                         setCache($refreshKey, true, 60 * 60 * 24);
                     }
                 }
-            } else {
+            } else if (!$unsubscribe) {
                 if (!($rawIdentity = $modWechat->getIdentityBy($external_id))) {
                     header('HTTP/1.1 500 Internal Server Error');
                     return;
@@ -98,6 +99,7 @@ class wechatActions extends ActionController {
         $user_id    = 0;
         if (isset($user_infos['CONNECTED'])) {
             $user_id  = $user_infos['CONNECTED'][0]['user_id'];
+        } else if ($unsubscribe) {
         } else if (isset($user_infos['REVOKED'])) {
             $user_id  = $user_infos['REVOKED'][0]['user_id'];
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
@@ -216,7 +218,7 @@ class wechatActions extends ActionController {
                                             }
                                         }
                                         if ($invitation) {
-                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}#" . time();
+                                            $picUrl = API_URL . "/v3/crosses/{$map}/image?xcode={$invitation['token']}&user_id={$identity->connected_user_id}#" . strtotime($invitation['exfee_updated_at']);
                                             if ($rtnMessage) {
                                                 foreach ($curExfee ? $curExfee->invitations : [] as $invItem) {
                                                     if ($invItem->identity->connected_user_id === $user_id
@@ -285,10 +287,7 @@ class wechatActions extends ActionController {
                         );
                         break;
                     case 'unsubscribe':
-                        $user_infos = $modUser->getUserIdentityInfoByIdentityId($identity_id);
-                        if (isset($user_infos['CONNECTED'])) {
-                            $modIdentity->revokeIdentity($identity_id);
-                        }
+                        $modIdentity->revokeIdentity($identity_id);
                 }
                 break;
             case 'text':
