@@ -120,7 +120,7 @@ class wechatActions extends ActionController {
                         $numIdentities = $modUser->getConnectedIdentityCount($user_id);
                         $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
                         if ($numIdentities === 1 && !$tutorial_x_id) {
-                            $ttrCross = $crossHelper->doTutorial($identity);
+                            $ttrCross = $crossHelper->doTutorial($identity, '', '探索水滴·汇');
                             if ($ttrCross) {
                                 $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                     $ttrCross->id, $bot->id

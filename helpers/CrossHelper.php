@@ -201,8 +201,8 @@ class CrossHelper extends ActionController {
     }
 
 
-    public function doTutorial($identity) {
-        return $this->modCross->doTutorial($identity);
+    public function doTutorial($identity, $background = '', $title = '') {
+        return $this->modCross->doTutorial($identity, $background, $title);
     }
 
 

@@ -369,7 +369,7 @@ class CrossModels extends DataModel {
     }
 
 
-    public function doTutorial($identity, $background = '') {
+    public function doTutorial($identity, $background = '', $title = '') {
         // init libs
         require_once dirname(dirname(__FILE__)) . '/lib/httpkit.php';
         // init models
@@ -401,7 +401,7 @@ class CrossModels extends DataModel {
         }
         // init cross
         $objCross = new stdClass;
-        $objCross->title       = 'Explore EXFE';
+        $objCross->title       = $title ?: 'Explore EXFE';
         $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
         $objCross->by_identity = $bot233;
         $objCross->time        = $hlpTime->parseTimeString(
