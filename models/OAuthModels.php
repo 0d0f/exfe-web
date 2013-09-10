@@ -833,7 +833,7 @@ class OAuthModels extends DataModel {
     // }
 
 
-    public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null) {
+    public function handleCallback($rawIdentity, $oauthIfo, $rawOAuthToken = null, $revoked = false) {
         // get models
         $hlpUser     = $this->getHelperByName('User');
         $hlpIdentity = $this->getHelperByName('Identity');
@@ -881,12 +881,23 @@ class OAuthModels extends DataModel {
         }
         // connect user
         if ($user_id !== $objIdentity->connected_user_id || $identity_status !== 'connected') {
-            if (!$hlpUser->setUserIdentityStatus(
-                $user_id, $objIdentity->id, 3
-            )) {
-                return null;
+            if ($revoked) {
+                if ($user_id === $objIdentity->connected_user_id && $identity_status === 'revoked') {
+                    $targetStatus = 0;
+                } else {
+                    $targetStatus = 4;
+                }
+            } else {
+                $targetStatus = 3;
             }
-            $objIdentity->connected_user_id = $user_id;
+            if ($targetStatus) {
+                if (!$hlpUser->setUserIdentityStatus(
+                    $user_id, $objIdentity->id, $targetStatus
+                )) {
+                    return null;
+                }
+                $objIdentity->connected_user_id = $user_id;
+            }
         }
         // 更新 OAuth Token
         switch ($objIdentity->provider) {
