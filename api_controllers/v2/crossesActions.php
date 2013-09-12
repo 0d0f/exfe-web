@@ -35,12 +35,17 @@ class CrossesActions extends ActionController {
             $modRoutex = $this->getModelByName('Routex');
             $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $result['uid']);
             if ($rtResult !== -1) {
-                $cross->widget[] = [
+                $routex = [
                     'type'      => 'routex',
                     'my_status' => $rtResult,
                 ];
+                if ($cross->default_widget === 'routex') {
+                    $routex['default'] = true;
+                }
+                $cross->widget[] = $routex;
             }
             $cross->touched_at = date('Y-m-d H:i:s') . ' +0000';
+            unset($cross->default_widget);
             apiResponse(['cross' => $cross]);
         }
         apiError(400, 'param_error', "The X you're requesting is not found.");
