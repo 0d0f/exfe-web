@@ -44,6 +44,7 @@ class RoutexModels extends DataModel {
             $cross, $identity->id, $identity->connected_user_id
         );
         if (($cross->id = @ (int) $gtResult['cross_id'])) {
+            $crossHelper->setDefaultWidget($cross->id, 'routex');
             touchCross($cross->id, $identity->connected_user_id);
             // get invitation
             $exfeeHelper = $this->getHelperByName('Exfee');
