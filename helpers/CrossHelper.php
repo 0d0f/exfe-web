@@ -57,7 +57,9 @@ class CrossHelper extends ActionController {
 
                 $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]));
                 $conversation_count=$conversationData->getConversationCounter($cross["exfee_id"],$uid);
+                $default_widget = $cross['default_widget'];
                 $cross=new Cross($cross['id'], $cross['title'], $cross['description'], $attribute, $exfee, [$background], $begin_at, $place, $conversation_count);
+                $cross->default_widget = $default_widget;
                 $cross->by_identity=$by_identity;
                 $cross->created_at=$created_at." +0000";
                 $relative_id=0;
@@ -111,10 +113,12 @@ class CrossHelper extends ActionController {
         $exfee=$exfeeData->getExfeeById(intval($cross["exfee_id"]), $withRemoved, $withToken);
         $created_at=$cross["created_at"];
 
+        $default_widget = $cross['default_widget'];
         $cross=new Cross($cross['id'], $cross['title'], $cross['description'], $attribute, $exfee, [$background], $begin_at, $place);
         $cross->by_identity = $by_identity;
         $cross->created_at  = $created_at . ' +0000';
         $cross->updated_at  = $exfee->updated_at;
+        $cross->default_widget = $default_widget;
         $relative_id=0;
         $relation="";
 
@@ -208,6 +212,11 @@ class CrossHelper extends ActionController {
 
     public function deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete = true) {
         return $this->modCross->deleteCrossByCrossIdAndUserId($cross_id, $user_id, $delete);
+    }
+
+
+    public function setDefaultWidget($cross_id, $default_widget) {
+        return $this->modCross->setDefaultWidget($cross_id, $default_widget);
     }
 
 }
