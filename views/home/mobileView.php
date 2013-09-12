@@ -7,7 +7,6 @@
 
   include "share/header_mobile.php";
 ?>
-  <style>.hide { display: none; }</style>
 </head>
 <body>
   <!-- Container {{{-->
