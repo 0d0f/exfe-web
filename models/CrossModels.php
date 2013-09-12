@@ -191,6 +191,17 @@ class CrossModels extends DataModel {
     }
 
 
+    public function setDefaultWidget($cross_id, $default_widget) {
+        if ($cross_id && $default_widget) {
+            return $this->query(
+                "UPDATE `crosses`
+                 SET    `default_widget` = '{$default_widget}'
+                 WHERE  `id`             =  {$cross_id};"
+            );
+        }
+    }
+
+
     public function generateCrossAccessToken(
         $cross_id, $identity_id, $user_id = 0
     ) {
