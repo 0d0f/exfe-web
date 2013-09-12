@@ -967,11 +967,16 @@ class UsersActions extends ActionController {
         foreach ($cross_list as $cI => $cItem) {
             $rtResult = $modRoutex->getRoutexStatusBy($cItem->id, $uid);
             if ($rtResult !== -1) {
-                $cross_list[$cI]->widget[] = [
+                $routex = [
                     'type'      => 'routex',
                     'my_status' => $rtResult,
                 ];
+                if ($cItem->default_widget === 'routex') {
+                    $routex['default'] = true;
+                }
+                $cross_list[$cI]->widget[] = $routex;
             }
+            unset($cross_list[$cI]->default_widget);
         }
 
         $cross_list = array_values($cross_list);
