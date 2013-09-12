@@ -122,6 +122,7 @@ class wechatActions extends ActionController {
                         if ($numIdentities === 1 && !$tutorial_x_id) {
                             $ttrCross = $crossHelper->doTutorial($identity, '', '探索水滴·汇');
                             if ($ttrCross) {
+                                $crossHelper->setDefaultWidget($ttrCross->id, 'routex');
                                 $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                     $ttrCross->id, $bot->id
                                 );
@@ -362,6 +363,7 @@ class wechatActions extends ActionController {
                         case 'new tutorial x':
                             $ttrCross = $crossHelper->doTutorial($identity, '', '探索水滴·汇');
                             if ($ttrCross) {
+                                $crossHelper->setDefaultWidget($ttrCross->id, 'routex');
                                 $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                     $ttrCross->id, $bot->id
                                 );
