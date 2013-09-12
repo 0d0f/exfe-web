@@ -1,5 +1,7 @@
 <?php
 
+$file_randtime = '';
+
 $jsname = preg_replace(
     '/{{sha1}}/',
     $frontConfigData->mobile->sha1,
@@ -8,11 +10,11 @@ $jsname = preg_replace(
 
 $cssname = $frontConfigData->css->exfemobilemin;
 
-$file_randtime = '';
-
 if ($_GET['debug']) {
   $file_randtime = strtotime("now");
   echo "<script src='/static/js/debugger/0.0.1/debugger.js?" . $frontConfigData->mobile->standalone->debugger->sha1 . $file_randtime . "'></script>";
+  $cssname .= '?' . $file_randtime;
+  $jsname .= '?' . $file_randtime;
 }
 
 echo "  <script>\n";
