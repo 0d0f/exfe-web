@@ -569,11 +569,16 @@ class OAuthActions extends ActionController {
             return;
         }
         if (($token = $modOauth->getWechatAccessToken($_REQUEST['code']))) {
-            $rawIdentity = $modOauth->getWechatProfile($token['openid'], $token);
-            if ($rawIdentity) {
-                $modWechat = $this->getModelByName('Wechat');
+            $modWechat = $this->getModelByName('Wechat');
+            if ((int) @$_REQUEST['state'] === 1) {
+                $rawIdentity = $modWechat->makeIdentityBy(['openid' => $token['openid']]);
+                $revoked     = true;
+            } else if (($rawIdentity = $modOauth->getWechatProfile($token['openid'], $token))) {
                 $rawIdentity = $modWechat->makeIdentityBy($rawIdentity);
-                $result = $modOauth->handleCallback($rawIdentity, [], $token);
+                $revoked     = false;
+            }
+            if ($rawIdentity) {
+                $result = $modOauth->handleCallback($rawIdentity, [], $token, $revoked);
                 if (!$result) {
                     if ($isMobile) {
                         $modOauth->resetSession();

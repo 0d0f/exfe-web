@@ -120,7 +120,7 @@ class wechatActions extends ActionController {
                         $numIdentities = $modUser->getConnectedIdentityCount($user_id);
                         $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
                         if ($numIdentities === 1 && !$tutorial_x_id) {
-                            $ttrCross = $crossHelper->doTutorial($identity);
+                            $ttrCross = $crossHelper->doTutorial($identity, '', '探索水滴·汇');
                             if ($ttrCross) {
                                 $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
                                     $ttrCross->id, $bot->id
@@ -357,6 +357,24 @@ class wechatActions extends ActionController {
                             break;
                         case 'think different':
                             $rtnMessage = 'Here’s to the crazy ones. The rebels. The troublemakers. The ones who see things differently. While some may see them as the crazy ones, we see genius. Because the people who are crazy enough to think they can change the world, are the ones who do.';
+                            break;
+                        // @todo remove this! by @leaskh
+                        case 'new tutorial x':
+                            $ttrCross = $crossHelper->doTutorial($identity, '', '探索水滴·汇');
+                            if ($ttrCross) {
+                                $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                    $ttrCross->id, $bot->id
+                                );
+                                if ($invitation) {
+                                    $rtnType    = 'news';
+                                    $rtnMessage = [[
+                                        'Title'       => '欢迎使用“活点地图”',
+                                        'Description' => '',
+                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routex_welcome@2x.jpg',
+                                        'Url'         => $modRoutex->getUrl($ttrCross->id, $invitation['token'], $identity) . $debugUrl,
+                                    ]];
+                                }
+                            }
                     }
                     if (!$rtnMessage) {
                         $rtnMessage = "【封闭测试中敬请期待…若你有兴趣参与公开测试，请留言。】\n\n" . shell_exec('/usr/local/bin/fortune');

@@ -45,10 +45,13 @@ class WechatModels extends DataModel {
 
     public function makeIdentityBy($rawIdentity) {
         return $rawIdentity ? new Identity(
-            0, $rawIdentity['nickname'], '', '', 'wechat', 0,
+            0, @$rawIdentity['nickname'] ?: $rawIdentity['openid'],
+            '', '', 'wechat', 0,
             "{$rawIdentity['openid']}@" . WECHAT_OFFICIAL_ACCOUNT_ID,
-            "{$rawIdentity['openid']}@" . WECHAT_OFFICIAL_ACCOUNT_ID, null, '',
-            '', 0, false, strtolower($rawIdentity['language']), 'Asia/Shanghai'
+            "{$rawIdentity['openid']}@" . WECHAT_OFFICIAL_ACCOUNT_ID,
+            null, '', '', 0, false,
+            strtolower(@$rawIdentity['language'] ?: '') ?: 'zh_cn',
+            'Asia/Shanghai'
         ) : null;
     }
 
