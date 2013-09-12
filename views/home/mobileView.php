@@ -22,7 +22,7 @@
         </div>
       </div>
       <div id="app-body" class="page-body">
-        <div id="app-status" class="page">页面加载中……</div>
+        <div id="app-status" class="page">鉴权中……</div>
       </div>
       <div id="app-footer" class="page-footer hide">
         <div class="actions">
