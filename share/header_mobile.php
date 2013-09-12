@@ -15,10 +15,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <link rel="dns-prefetch" href="<?php echo IMG_URL; ?>" />
   <link rel="dns-prefetch" href="<?php echo API_URL; ?>" />
-  <link rel="dns-prefetch" href="https://ditu.google.cn" />
-  <link rel="dns-prefetch" href="http://ditu.google.cn" />
-  <link rel="dns-prefetch" href="https://maps.gstatic.com" />
-  <link rel="dns-prefetch" href="http://maps.gstatic.com" />
   <title><?php echo $this->getVar('title'); ?></title>
 <?php if (($sms_token = $this->getVar('sms_token'))) { ?>
   <meta name="sms-token" content="<?php echo htmlentities(json_encode($sms_token)); ?>">
