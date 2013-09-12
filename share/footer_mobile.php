@@ -8,8 +8,11 @@ $jsname = preg_replace(
 
 $cssname = $frontConfigData->css->exfemobilemin;
 
+$file_randtime = '';
+
 if ($_GET['debug']) {
-  echo "<script src='/static/js/debugger/0.0.1/debugger.js?" . $frontConfigData->mobile->standalone->debugger->sha1 . "'></script>";
+  $file_randtime = strtotime("now");
+  echo "<script src='/static/js/debugger/0.0.1/debugger.js?" . $frontConfigData->mobile->standalone->debugger->sha1 . $file_randtime . "'></script>";
 }
 
 echo "  <script>\n";
@@ -19,8 +22,10 @@ echo "window._ENV_.CSSFILE = '${cssname}';\n";
 echo 'window._ENV_.smith_id = ' . $this->getVar('smith_id') . ';' . "\n";
 echo 'window._ENV_.exfee_id = ' . $this->getVar('exfee_id') . ';' . "\n";
 echo "  </script>\n";
-echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js?" . $frontConfigData->mobile->standalone->mobiledirector->sha1 . "'></script>\n";
+echo "<script src='/static/js/mobiledirector/0.0.1/mobiledirector" . (JS_DEBUG ? '' : ".min") . ".js?" . $frontConfigData->mobile->standalone->mobiledirector->sha1 . $file_randtime . "'></script>\n";
 echo "<script src='/static/js/" . $jsname . "'></script>\n";
+
+unset($file_randtime);
 
 // Google Analytics
 include 'google_analytics.php';
