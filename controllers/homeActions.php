@@ -50,6 +50,7 @@ class HomeActions extends ActionController {
         // check xcode {
         $smith_id    = 0;
         $exfee_id    = 0;
+        $cross       = null;
         $title       = 'EXFE - The group utility for gathering.';
         if (isset($_GET['xcode'])) {
             $invitation = $modExfee->getRawInvitationByToken($_GET['xcode']);
@@ -58,9 +59,10 @@ class HomeActions extends ActionController {
                     $smith_id = $invitation['identity_id'];
                 }
                 $exfee_id = $invitation['exfee_id'];
-                $rawCross = $modCross->getCross($invitation['cross_id']);
-                if ($rawCross && $rawCross['title']) {
-                    $title = $rawCross['title'];
+                $hlpCross = $this->getHelperByName('Cross');
+                $cross = $hlpCross->getCross($invitation['cross_id']);
+                if ($cross && $cross->title) {
+                    $title = $cross->title;
                 }
             }
         } else {
@@ -74,6 +76,7 @@ class HomeActions extends ActionController {
         // }
         $this->setVar('smith_id', $smith_id);
         $this->setVar('exfee_id', $exfee_id);
+        $this->setVar('cross',    json_encode($cross));
         $oauthRst      = null;
         if ($oauthIfo) {
             $oauthRst  = ['authorization' => null];
