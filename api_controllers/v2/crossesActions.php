@@ -36,8 +36,9 @@ class CrossesActions extends ActionController {
             $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $result['uid']);
             if ($rtResult !== -1) {
                 $routex = [
-                    'type'      => 'routex',
-                    'my_status' => $rtResult,
+                    'type'               => 'routex',
+                    'my_status'          => $rtResult['in_window'],
+                    'current_breadcrumb' => $rtResult['current_breadcrumb'],
                 ];
                 if ($cross->default_widget === 'routex') {
                     $routex['default'] = true;
