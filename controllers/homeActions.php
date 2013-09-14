@@ -64,7 +64,7 @@ class HomeActions extends ActionController {
                 if ($cross && $cross->title) {
                     $title = $cross->title;
                     $modRoutex = $this->getModelByName('Routex');
-                    $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $result['uid']);
+                    $rtResult = $modRoutex->getRoutexStatusBy($cross->id, 0);
                     if ($rtResult !== -1) {
                         $routex = [
                             'type'               => 'routex',
