@@ -610,6 +610,8 @@ class OAuthActions extends ActionController {
                     'provider'           => $result['identity']->provider,
                     'identity_status'    => $result['identity_status'],
                 ]);
+                setcookie('user_token',     $result['oauth_signin']['token'], time() - 60 * 60 * 24 * 365);
+                setcookie('wechat_open_id', $token['openid'],                 time() - 60 * 60 * 24 * 365);
                 header('location: ' . $workflow['callback']['url']);
                 return;
             }

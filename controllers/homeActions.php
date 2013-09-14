@@ -51,6 +51,7 @@ class HomeActions extends ActionController {
         $smith_id    = 0;
         $exfee_id    = 0;
         $cross       = null;
+        $joined      = false;
         $title       = 'EXFE - The group utility for gathering.';
         if (isset($_GET['xcode'])) {
             $invitation = $modExfee->getRawInvitationByToken($_GET['xcode']);
@@ -63,6 +64,112 @@ class HomeActions extends ActionController {
                 $cross = $hlpCross->getCross($invitation['cross_id']);
                 if ($cross && $cross->title) {
                     $title = $cross->title;
+                }
+                if (strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')) {
+                    if (@$_COOKIE['user_token'] && @$_COOKIE['wechat_open_id']) {
+                        // @todo check open_id!!! by @leask
+                        $objToken = $modUser->getUserToken($_COOKIE['user_token']);
+                        if ($objToken && ($user_id = @$objToken['data']['user_id'])) {
+                            $modIdentity = $this->getModelByName('Identity');
+                            $via_identity = null;
+                            if (($via = @$_GET['via'] ?: '')) {
+                                $external_username = preg_replace('/^(.*)@[^@]*$/', '$1', $via);
+                                $provider          = preg_replace('/^.*@([^@]*)$/', '$1', $via);
+                                $via_identity      = $modIdentity->getIdentityByProviderAndExternalUsername(
+                                    $provider, $external_username
+                                );
+                            } else {
+                                $via_identity = $modIdentity->getIdentityById(explode(',', SMITH_BOT)[0]);
+                            }
+                            if ($via_identity) {
+                                $user = $modUser->getUserById($user_id);
+                                if ($user && $user->identities) {
+                                    if ($cross && $cross->attribute['state'] !== 'deleted') {
+                                        $exfee = $modExfee->getExfeeById($exfee_id, true);
+                                        $removed  = false;
+                                        $viaFound = false;
+                                        $done     = false;
+                                        foreach ($exfee->invitations as $invitaion) {
+                                            if ($invitaion->identity->connected_user_id === $user_id) {
+                                                if ($invitaion->rsvp_status === 'REMOVED') {
+                                                    $removed = true;
+                                                } else {
+                                                    $modRoutex = $this->getModelByName('Routex');
+                                                    $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $user_id);
+                                                    if ($rtResult !== -1) {
+                                                        $cross->widget[] = [
+                                                            'type'      => 'routex',
+                                                            'my_status' => $rtResult,
+                                                        ];
+                                                    }
+                                                    touchCross($cross->id, $user_id);
+                                                    $joined = true;
+                                                    $done = true;
+                                                    break;
+                                                }
+                                            }
+                                            if ($invitaion->identity->connected_user_id === $via_identity->connected_user_id
+                                             || $invitaion->identity->id                === $via_identity->id) {
+                                                $viaFound = true;
+                                            }
+                                        }
+                                        if (!$done && !$removed && $viaFound) {
+                                            $exfee     = new Exfee;
+                                            $exfee->id = $exfee_id;
+                                            $exfee->invitations = [];
+                                            $wechatIdentity = null;
+                                            $phoneIdentity  = null;
+                                            $emailIdentity  = null;
+                                            foreach ($user->identities as $identity) {
+                                                switch ($identity->provider) {
+                                                    case 'phone':
+                                                        $phoneIdentity  = $phoneIdentity  ?: $identity;
+                                                        break;
+                                                    case 'wechat':
+                                                        $wechatIdentity = $wechatIdentity ?: $identity;
+                                                        break;
+                                                    case 'email':
+                                                        $emailIdentity  = $emailIdentity  ?: $identity;
+                                                }
+                                            }
+                                            if ($wechatIdentity) {
+                                                $objInvitation = new stdClass;
+                                                $objInvitation->id = 0;
+                                                $objInvitation->identity = $wechatIdentity;
+                                                $objInvitation->response = 'NORESPONSE';
+                                                $exfee->invitations[] = $objInvitation;
+                                            }
+                                            if ($phoneIdentity) {
+                                                $objInvitation = new stdClass;
+                                                $objInvitation->id = 0;
+                                                $objInvitation->identity = $phoneIdentity;
+                                                $objInvitation->response = 'NORESPONSE';
+                                                $exfee->invitations[] = $objInvitation;
+                                            } else if ($emailIdentity) {
+                                                $objInvitation = new stdClass;
+                                                $objInvitation->id = 0;
+                                                $objInvitation->identity = $emailIdentity;
+                                                $objInvitation->response = 'NORESPONSE';
+                                                $exfee->invitations[] = $objInvitation;
+                                            }
+                                            $udeResult = $modExfee->updateExfee(
+                                                $exfee, $via_identity->id, $via_identity->connected_user_id, false, false, false, '', true
+                                            );
+                                            if ($udeResult && $udeResult['changed']) {
+                                                $cross = $hlpCross->getCross($invitation['cross_id']);
+                                                $joined = true;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $workflow = ['callback' => ['url' => SITE_URL . $_SERVER['REQUEST_URI']]];
+                        $urlOauth = $modOauth->wechatRedirect($workflow, 1);
+                        header("location: {$urlOauth}");
+                        return;
+                    }
                 }
             }
         } else {
@@ -77,6 +184,7 @@ class HomeActions extends ActionController {
         $this->setVar('smith_id', $smith_id);
         $this->setVar('exfee_id', $exfee_id);
         $this->setVar('cross',    json_encode($cross));
+        $this->setVar('joined',   $joined);
         $oauthRst      = null;
         if ($oauthIfo) {
             $oauthRst  = ['authorization' => null];
