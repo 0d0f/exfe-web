@@ -828,6 +828,15 @@ class ExfeeModels extends DataModel {
             $to_exfee->id = $cross->exfee->id;
             $to_exfee->invitations = $addExfee;
             $user_id  = $user_id ?: -$by_identity_id;
+            // {
+            foreach ($addExfee ?: [] as $newExfeeItem) {
+                httpKit::request(
+                    EXFE_AUTH_SERVER . '/v3/routex/_inner/update_exfee',
+                    ['action' => 'join', 'cross_id' => $cross->id],
+                    $newExfeeItem, false, false, 3, 3, 'json'
+                );
+            }
+            // }
             if ($asJoin) {
                 if ($addExfee) {
                     $cross = $hlpCross->getCross($cross_id, true);
@@ -840,6 +849,15 @@ class ExfeeModels extends DataModel {
                     $hlpQueue->despatchUpdate(
                         $cross, $old_cross, $delExfee, $addExfee, $user_id, $by_identity_id
                     );
+                    // {
+                    foreach ($delExfee ?: [] as $rmdExfeeItem) {
+                        httpKit::request(
+                            EXFE_AUTH_SERVER . '/v3/routex/_inner/update_exfee',
+                            ['action' => 'remove', 'cross_id' => $cross->id],
+                            $rmdExfeeItem, false, false, 3, 3, 'json'
+                        );
+                    }
+                    // }
                 }
                 if ($addExfee) {
                     $hlpQueue->despatchInvitation(
