@@ -166,7 +166,7 @@ class ExfeeActions extends ActionController {
                         $cross->widget[] = [
                             'type'      => 'routex',
                             'my_status' => $rtResult['in_window'],
-                            'objects'   => $rtResult['current_breadcrumb'],
+                            'objects'   => $rtResult['objects'],
                         ];
                     }
                     touchCross($cross->id, $user_id);

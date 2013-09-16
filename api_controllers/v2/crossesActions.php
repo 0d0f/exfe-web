@@ -38,7 +38,7 @@ class CrossesActions extends ActionController {
                 $routex = [
                     'type'      => 'routex',
                     'my_status' => $rtResult['in_window'],
-                    'objects'   => $rtResult['current_breadcrumb'],
+                    'objects'   => $rtResult['objects'],
                 ];
                 if ($cross->default_widget === 'routex') {
                     $routex['default'] = true;
