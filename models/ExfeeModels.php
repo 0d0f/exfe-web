@@ -830,6 +830,7 @@ class ExfeeModels extends DataModel {
             $user_id  = $user_id ?: -$by_identity_id;
             if ($asJoin) {
                 if ($addExfee) {
+                    $cross = $hlpCross->getCross($cross_id, true);
                     $hlpQueue->despatchJoin(
                         $cross, $to_exfee, $user_id, $by_identity_id
                     );
