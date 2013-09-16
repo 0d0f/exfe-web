@@ -968,9 +968,9 @@ class UsersActions extends ActionController {
             $rtResult = $modRoutex->getRoutexStatusBy($cItem->id, $uid);
             if ($rtResult !== -1) {
                 $routex = [
-                    'type'               => 'routex',
-                    'my_status'          => $rtResult['in_window'],
-                    'current_breadcrumb' => $rtResult['current_breadcrumb'],
+                    'type'      => 'routex',
+                    'my_status' => $rtResult['in_window'],
+                    'objects'   => $rtResult['objects'],
                 ];
                 if ($cItem->default_widget === 'routex') {
                     $routex['default'] = true;
