@@ -111,7 +111,7 @@ class wechatActions extends ActionController {
             $user_id  = $user_infos['REVOKED'][0]['user_id'];
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
         } else {
-            $user_id  = $modUser->addUser();
+            $user_id  = $modUser->addUser('', $identity->name);
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
             $identity = $modIdentity->getIdentityById($identity_id);
         }
