@@ -281,7 +281,7 @@
   <script id="routex-tmpl" type="text/x-handlebars-template">
     <div id="routex">
       <div id="map"></div>
-      <canvas id="canvas" class="hide"></canvas>
+      <canvas id="canvas"></canvas>
       <div id="static-map" class="hide"></div>
       <canvas id="static-map-canvas"></canvas>
       <!--svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg-->
