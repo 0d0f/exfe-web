@@ -67,9 +67,9 @@ class HomeActions extends ActionController {
                     $rtResult = $modRoutex->getRoutexStatusBy($cross->id, 0);
                     if ($rtResult !== -1) {
                         $routex = [
-                            'type'               => 'routex',
-                            'my_status'          => $rtResult['in_window'],
-                            'current_breadcrumb' => $rtResult['current_breadcrumb'],
+                            'type'      => 'routex',
+                            'my_status' => $rtResult['in_window'],
+                            'objects'   => $rtResult['objects'],
                         ];
                         if ($cross->default_widget === 'routex') {
                             $routex['default'] = true;
