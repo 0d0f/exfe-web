@@ -65,6 +65,13 @@ class wechatActions extends ActionController {
                         $identity_id, ['name' => $rawIdentity->name]
                     )) {
                         setCache($refreshKey, true, 60 * 60 * 24);
+                        $identity = $modIdentity->getIdentityByProviderAndExternalUsername(
+                            'wechat', $external_id
+                        );
+                        httpKit::request(
+                            EXFE_AUTH_SERVER . '/v3/routex/_inner/update_identity',
+                            null, $identity, false, false, 3, 3, 'json'
+                        );
                     }
                 }
             } else if (!$unsubscribe) {
