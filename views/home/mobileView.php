@@ -330,7 +330,7 @@
       <div id="wechat-guide" class="dialog wechat-dialog hide">
         <div class="main">
           <div class="ibox">
-            <div><h5 class="ibox-title">开启“活点地图”</h5>请关注公众号，为您开启这张“活点地图”。点右上</div><div><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right">角“···”按钮再按图标 “查看公众号”关注。</div>
+            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right">请关注公众号，为您开启这张“活点地图”。点右上角“···”按钮再按图标 “查看公众号”关注。</div>
           </div>
         </div>
       </div>
