@@ -73,7 +73,9 @@ class RoutexModels extends DataModel {
     public function getRoutexStatusBy($cross_id, $user_id) {
         $key    = "routex_status:{$cross_id}";
         $subKey = "user_{$user_id}";
-        $rawStatus = getCache($key);
+     // disable cache currently by @leaskh // @todo
+     // $rawStatus = getCache($key);
+        $rawStatus = null;
         if ($rawStatus) {
             if (array_key_exists($subKey, $rawStatus)) {
                 return $rawStatus[$subKey];
@@ -91,7 +93,8 @@ class RoutexModels extends DataModel {
             $userStatus = $rawResult['json'];
         }
         $rawStatus[$subKey] = $userStatus;
-        setCache($key, $rawStatus);
+     // disable cache currently by @leaskh // @todo
+     // setCache($key, $rawStatus);
         return $userStatus;
     }
 

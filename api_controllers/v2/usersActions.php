@@ -969,7 +969,8 @@ class UsersActions extends ActionController {
             if ($rtResult !== -1) {
                 $routex = [
                     'type'      => 'routex',
-                    'my_status' => $rtResult,
+                    'my_status' => $rtResult['in_window'],
+                    'objects'   => $rtResult['objects'],
                 ];
                 if ($cItem->default_widget === 'routex') {
                     $routex['default'] = true;

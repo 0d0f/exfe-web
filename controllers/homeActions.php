@@ -63,6 +63,19 @@ class HomeActions extends ActionController {
                 $cross = $hlpCross->getCross($invitation['cross_id']);
                 if ($cross && $cross->title) {
                     $title = $cross->title;
+                    $modRoutex = $this->getModelByName('Routex');
+                    $rtResult = $modRoutex->getRoutexStatusBy($cross->id, 0);
+                    if ($rtResult !== -1) {
+                        $routex = [
+                            'type'      => 'routex',
+                            'my_status' => $rtResult['in_window'],
+                            'objects'   => $rtResult['objects'],
+                        ];
+                        if ($cross->default_widget === 'routex') {
+                            $routex['default'] = true;
+                        }
+                        $cross->widget[] = $routex;
+                    }
                 }
             }
         } else {
