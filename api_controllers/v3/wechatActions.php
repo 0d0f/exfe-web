@@ -111,7 +111,7 @@ class wechatActions extends ActionController {
             $user_id  = $user_infos['REVOKED'][0]['user_id'];
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
         } else {
-            $user_id  = $modUser->addUser();
+            $user_id  = $modUser->addUser('', $identity->name);
             $modUser->setUserIdentityStatus($user_id, $identity_id, 3);
             $identity = $modIdentity->getIdentityById($identity_id);
         }
@@ -351,6 +351,7 @@ class wechatActions extends ActionController {
                 } else {
                     switch (strtolower($strContent)) {
                         case 'threshold of the odyssey':
+                        case '万里长征第一步':
                         case '233':
                             $modIdentity->setLabRat($identity->id);
                             $rtnMessage = "感谢您参与测试。去创建活点地图并邀请朋友们吧！\n产品仍在不断改进，欢迎您的想法反馈。您可以在此发送以“反馈：”开头的消息。";
