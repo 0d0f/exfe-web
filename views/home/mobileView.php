@@ -330,15 +330,15 @@
       <div id="wechat-guide" class="dialog wechat-dialog hide">
         <div class="main">
           <div class="ibox">
-            <p><h5 class="ibox-title">开启“活点地图”</h5>请关注公众号，为您开启这张“活点地图”。点右上</p><p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right">角“···”按钮再按图标 “查看公众号”关注。</p>
+            <div><h5 class="ibox-title">开启“活点地图”</h5>请关注公众号，为您开启这张“活点地图”。点右上</div><div><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right">角“···”按钮再按图标 “查看公众号”关注。</div>
           </div>
         </div>
       </div>
       <div id="wechat-share" class="dialog wechat-dialog hide">
         <div class="main">
           <div class="ibox">
-            <p><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</p>
-            <p><input type="text" class="share-input" /><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></p>
+            <div><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</div>
+            <div><input type="text" class="share-input" /><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></div>
           </div>
         </div>
       </div>
