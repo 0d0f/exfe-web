@@ -164,9 +164,9 @@ class ExfeeActions extends ActionController {
                     $rtResult = $modRoutex->getRoutexStatusBy($cross->id, $user_id);
                     if ($rtResult !== -1) {
                         $cross->widget[] = [
-                            'type'               => 'routex',
-                            'my_status'          => $rtResult['in_window'],
-                            'current_breadcrumb' => $rtResult['current_breadcrumb'],
+                            'type'      => 'routex',
+                            'my_status' => $rtResult['in_window'],
+                            'objects'   => $rtResult['current_breadcrumb'],
                         ];
                     }
                     touchCross($cross->id, $user_id);
