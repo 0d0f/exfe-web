@@ -424,7 +424,7 @@ class CrossModels extends DataModel {
         );
         $objCross->attribute   = new stdClass;
         $objCross->attribute->state = 'published';
-        $objCross->widget      = [new Background()];
+        $objCross->widget      = [new Background('default.jpg')];
         $objCross->type        = 'Cross';
         $objCross->exfee       = new Exfee;
         $now                   = time();
