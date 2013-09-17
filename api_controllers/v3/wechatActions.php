@@ -6,34 +6,6 @@ set_time_limit(5);
 class wechatActions extends ActionController {
 
     public function doCallback() {
-
-
-
-$modIdentity = $this->getModelByName('Identity');
-
-
-$crossHelper = $this->getHelperByName('cross');
-
-
-
-$identity = $modIdentity->getIdentityById(190);
-
-
-
-$cross = $crossHelper->doTutorial($identity);
-    $crossHelper->setDefaultWidget($cross->id, 'routex');
-echo 'ok';
-exit();
-
-
-
-
-
-
-
-
-
-
         $modWechat = $this->getModelByName('wechat');
         $params    = $this->params;
         if (@$params['echostr']) {
