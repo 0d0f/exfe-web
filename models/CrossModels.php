@@ -412,7 +412,7 @@ class CrossModels extends DataModel {
         }
         // init cross
         $objCross = new stdClass;
-        $objCross->title       = $title ?: 'Explore EXFE';
+        $objCross->title       = $title ?: '体验 水滴·汇';
         $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
         $objCross->by_identity = $bot233;
         $objCross->time        = $hlpTime->parseTimeString(
@@ -424,13 +424,7 @@ class CrossModels extends DataModel {
         );
         $objCross->attribute   = new stdClass;
         $objCross->attribute->state = 'published';
-        $objBackground         = new stdClass;
-        if (!$background) {
-            $hlpBkg = $this->getHelperByName('Background');
-            $allBgs = $hlpBkg->getAllBackground();
-            $background = $allBgs[rand(0, sizeof($allBgs) - 1)];
-        }
-        $objCross->widget      = [new Background($background)];
+        $objCross->widget      = [new Background()];
         $objCross->type        = 'Cross';
         $objCross->exfee       = new Exfee;
         $now                   = time();
