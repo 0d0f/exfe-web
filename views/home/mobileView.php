@@ -327,7 +327,7 @@
           </div>
         </div>
       </div>
-      <div id="wechat-guide" class="dialog wechat-dialog hide">
+      <div id="wechat-guide" class="dialog wechat-dialog ant hide">
         <div class="main">
           <div class="ibox">
             <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>请关注公众号，为您开启这张“活点地图”。点右上角“···”按钮再按图标 <br />“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
@@ -339,7 +339,7 @@
           <div>“活点地图”只在您打开页面时才更新位置，绝不会未经您的允许暴露位置信息。</div>
         </div>
       </div>
-      <div id="wechat-share" class="dialog wechat-dialog hide">
+      <div id="wechat-share" class="dialog wechat-dialog ant hide">
         <div class="main">
           <div class="ibox">
             <div><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</div>
