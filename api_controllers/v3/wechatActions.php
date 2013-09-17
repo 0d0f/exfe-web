@@ -296,6 +296,7 @@ class wechatActions extends ActionController {
                         break;
                     case 'unsubscribe':
                         $modIdentity->revokeIdentity($identity_id);
+                        delCache("wechat_identity:{$identity->external_id}");
                 }
                 break;
             case 'text':
