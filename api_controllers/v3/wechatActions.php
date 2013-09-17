@@ -238,7 +238,7 @@ class wechatActions extends ActionController {
                                             }
                                             $rtnMessage[] = [
                                                 'Title'       => $crosses[$map]['title'],
-                                                'Description' => $crosses[$map]['description'],
+                                                'Description' => $crosses[$map]['description'] ?: '开启这张“活点地图” 能互相看到位置和轨迹。长按此消息可转发邀请更多朋友们。',
                                                 'PicUrl'      => $picUrl,
                                                 'Url'         => $modRoutex->getUrl($map, $invitation['token'], $identity) . $debugUrl,
                                             ];
