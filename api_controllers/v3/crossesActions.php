@@ -59,7 +59,7 @@ class CrossesActions extends ActionController {
         // render background
         $background = 'default.jpg';
         foreach ($cross->widget as $widget) {
-            if ($widget->type === 'Background') {
+            if ($widget->type === 'Background' && $widget->image) {
                 $background = $widget->image;
             }
         }
