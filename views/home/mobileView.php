@@ -281,7 +281,7 @@
   <script id="routex-tmpl" type="text/x-handlebars-template">
     <div id="routex">
       <div id="map"></div>
-      <canvas id="canvas" class="hide"></canvas>
+      <canvas id="canvas"></canvas>
       <div id="static-map" class="hide"></div>
       <canvas id="static-map-canvas"></canvas>
       <!--svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg-->
@@ -330,16 +330,15 @@
       <div id="wechat-guide" class="dialog wechat-dialog hide">
         <div class="main">
           <div class="ibox">
-            <p><img src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“查看公众号”。</p>
-            <p><span>关注</span>服务号以便正常使用，也方便您及时收到朋友们的邀请和提醒通知。</p>
+            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>请关注公众号，为您开启这张“活点地图”。点右上角“···”按钮再按图标 <br />“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
           </div>
         </div>
       </div>
       <div id="wechat-share" class="dialog wechat-dialog hide">
         <div class="main">
           <div class="ibox">
-            <p><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</p>
-            <p><input type="text" class="share-input" /><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></p>
+            <div><img src="/static/img/wechatbtn_sendmsg@2x.png" alt="" width="40" height="40" align="right" />请从这里找到右侧 图标“发送给朋友”， 复制粘贴下面消息发送。</div>
+            <div><input type="text" class="share-input" /><div class="share-app">抱歉受微信限制操作繁琐  <span class="open-app">请用<span class="shuady">水滴·汇</span>应用</span></div></div>
           </div>
         </div>
       </div>
