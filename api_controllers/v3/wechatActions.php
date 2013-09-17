@@ -12,7 +12,7 @@ class wechatActions extends ActionController {
 $modIdentity = $this->getModelByName('Identity');
 
 
-
+$crossHelper = $this->getHelperByName('cross');
 
 
 
