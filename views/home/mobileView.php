@@ -283,7 +283,7 @@
       <div id="map"></div>
       <canvas id="canvas"></canvas>
       <div id="static-map" class="hide"></div>
-      <canvas id="static-map-canvas"></canvas>
+      <canvas id="static-map-canvas" class="hide"></canvas>
       <!--svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg-->
       <div id="identities-overlay">
         <div id="isme" class="identity">
@@ -334,9 +334,9 @@
           </div>
         </div>
         <div class="specification">
-          <h5>朋友方位一目了然</h5>
-          <div class="p0">您可以和朋友们用“活点地图”互相看到位置和轨迹，像哈利·波特的魔法地图一样。从此等待迟到大王们的漫长时光不再无聊。</div>
-          <div>“活点地图”只在您打开页面时才更新位置，绝不会未经您的允许暴露位置信息。</div>
+          <h5>方位距离一目了然</h5>
+          <div class="p0">您可以和朋友们用“活点地图”互相看到位置和轨迹，像哈利·波特的魔法地图一样。</div>
+          <div>“活点地图”只在您打开页面时才更新位置，绝不会未经允许暴露您的位置。</div>
         </div>
       </div>
       <div id="wechat-share" class="dialog wechat-dialog ant hide">
