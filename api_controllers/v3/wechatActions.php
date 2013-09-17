@@ -455,18 +455,20 @@ class wechatActions extends ActionController {
             // reset pagine
             setCache($pageKey, 0, 1);
             // request x title
-            setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60 * 2);
-            httpKit::request(
-                EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
-              . base64_url_encode(
-                    SITE_URL . '/v3/bus/requestxtitle/'
-                  . "?cross_id={$cross->id}"
-                  . "&cross_title=" . urlencode($cross->title)
-                  . "&external_id={$identity->external_id}"
-                ),
-                ['update' => 'once', 'ontime' => time() + 7], [],
-                false, false, 3, 3, 'txt'
-            );
+            if ($cross->title !== '体验 水滴·汇') {
+                setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60 * 2);
+                httpKit::request(
+                    EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
+                  . base64_url_encode(
+                        SITE_URL . '/v3/bus/requestxtitle/'
+                      . "?cross_id={$cross->id}"
+                      . "&cross_title=" . urlencode($cross->title)
+                      . "&external_id={$identity->external_id}"
+                    ),
+                    ['update' => 'once', 'ontime' => time() + 7], [],
+                    false, false, 3, 3, 'txt'
+                );
+            }
             // enable routex
             httpKit::request(
                 EXFE_AUTH_SERVER
