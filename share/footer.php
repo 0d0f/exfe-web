@@ -21,6 +21,4 @@ if (JS_DEBUG) {
 // Google Analytics
 include 'google_analytics.php';
 
-if (SITE_URL !== 'https://exfe.com') {
-    require 'jsdev.php';
-}
+require 'jsdev.php';

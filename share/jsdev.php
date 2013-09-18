@@ -1,4 +1,5 @@
 <?php
+if (preg_match($_SERVER['SERVER_NAME'], SITE_URL)) {
 $jsdev = <<<EOD
 <script>
   var e = document.createElement('div');
@@ -13,3 +14,4 @@ $jsdev = <<<EOD
 EOD;
 
 echo str_replace('{{JS_COLOR}}', JS_COLOR, $jsdev);
+}
