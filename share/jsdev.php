@@ -1,5 +1,5 @@
 <?php
-if (preg_match($_SERVER['SERVER_NAME'], SITE_URL)) {
+if (!preg_match('/' . $_SERVER['SERVER_NAME'] . '/', SITE_URL)) {
 $jsdev = <<<EOD
 <script>
   var e = document.createElement('div');
