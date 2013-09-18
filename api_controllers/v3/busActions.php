@@ -1235,6 +1235,7 @@ class BusActions extends ActionController {
                 break;
             case 4:
                 $result = $post($cross_id, $exfee_id, $botFrontier, $scripts[$step_id][$idxLang]);
+                $delay  = 60;
                 break;
             case 5:
                 $result = $editExfee($exfee, $cross_id, new Invitation(
@@ -1299,7 +1300,7 @@ class BusActions extends ActionController {
                 $result = $post($cross_id, $exfee_id, $bot233, str_replace('%EMAIL%', 'x@' . preg_replace('/\.(.*)/', '$1', ROOT_DOMAIN), $scripts[$step_id][$idxLang]));
                 break;
             case 19:
-                $modDevice = $this->getModelByName('Devices');
+                $modDevice = $this->getModelByName('device');
                 $result = $modDevice($objIdentity->connected_user_id)
                         ? new stdClass
                         : $post($cross_id, $exfee_id, $botFrontier, $scripts[$step_id][$idxLang]);
