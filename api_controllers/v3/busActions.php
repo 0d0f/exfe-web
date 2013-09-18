@@ -1203,53 +1203,67 @@ class BusActions extends ActionController {
             return;
         }
         // steps
+        $idxLang = $objIdentity->locale === 'zh_cn' ? 1 : 0;
+        $scripts = [
+            2  => ['%NAME%, warm welcome! Shuady ·X· is a group utility, it makes gathering with friends easier.', '欢迎%NAME%！水滴·汇是一个群组工具，用来和朋友们组织活动。'],
+            4  => ['woof woof~', '汪~ 汪~'],
+            6  => ['Can we do this later after meal?', '能等我先吃完饭嘛？'],
+            7  => ["Hey Cashbox be kind, can't you eat later?", '嘿钱柜，你能热情点等会再吃吗？'],
+            8  => ['Gathering with Shuady ·X·, without worrying contacts. Email, SMS, Facebook even iMessage (trialing)…all cool. Never force friends to download the same app, nor left someone out. Shuady connects everyone. Be “contact-agnostic”.',
+                   '用水滴·汇组织活动可以不在意朋友们的联系方式，邮件、短信、甚至iMessage（试验中）都行，还将会支持其它账号（如微信）。您不必要求每位朋友都安装相同的应用软件，不用担心丢下谁，水滴·汇能把大家联系起来。'],
+            9  => ['Your contacts and web accounts are your ‘identities’. Add them into your profile facilitates gathering, and consequently all your ·X· will be displayed collectively, get rid of switching accounts back and forth.',
+                   '每个联系方式都是一个“身份”（邮箱、手机、各种网站账号等），把自己的各种身份添加到账号中，就能把所有参加组织过的活动汇总起来，不需要来回切换账号。'],
+            10 => ['BTW, ·X· (as "cross") is a gathering, a hangout, an event or anything you want to do with friends.', '对了。·汇·的意思是相聚，像逛街、约会、出游或任何要跟朋友们一起做的事。'],
+            11 => ['As group utility, ·X· has cool features like RouteX, a route map showing everyone’s location dynamically, and more to come…', '水滴·汇 群组工具还有一些很酷的功能。像“活点地图”，能在地图上动态展示每个人的位置和轨迹。还有更多后续功能……'],
+            13 => ['My friend Dogcow is joining us to welcome %NAME%.', '我朋友“奶牛狗”也来欢迎%NAME%。'],
+            15 => ['moof~', 'moof~'],
+            16 => ['@%NAME%, why not setting a portrait in your profile, so your friends can recognize?', '@%NAME%给自己设个头像吧，方便大家认出你。'],
+            17 => ["Hey~ This message is sent directly by replying email! Don't even need to open website or app, cool!", '嘿~ 我可以直接回邮件发出这条消息，连网站和手机app都不用打开，酷！'],
+            18 => ['Actually, you can also gather a ·X· by cc %EMAIL% when you email friends.', '事实上你群发邮件给朋友们时直接抄送 %EMAIL% 就能创建新活动了。'],
+            19 => ['Don’t forget to get Shuady ·X· app for mobility, instant updates, routes and more…', '别忘了安装水滴·汇的iPhone应用，可以随时随地即刻得知活动变化、使用活点地图……'],
+            20 => ['moof!', 'moof!'],
+        ];
         switch ($step_id) {
             case 2:
+                $result = $post($cross_id, $exfee_id, $bot233, str_replace('%NAME%', $objIdentity->name, $scripts[$step_id][$idxLang]));
+                break;
+            case 3:
                 $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botFrontier, $botFrontier, $botFrontier,
                     'ACCEPTED', 'EXFE', '', $now, $now, false, 0, []
                 ), $botFrontier);
                 break;
-            case 3:
-                $result = $post($cross_id, $exfee_id, $botFrontier, 'woof woof~');
-                break;
             case 4:
+                $result = $post($cross_id, $exfee_id, $botFrontier, $scripts[$step_id][$idxLang]);
+                $delay  = 60;
+                break;
+            case 5:
                 $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botCashbox, $botCashbox, $botCashbox,
                     'DECLINED', 'EXFE', '', $now, $now, false, 0, []
                 ), $botCashbox);
                 break;
-            case 5:
-                $result = $post($cross_id, $exfee_id, $botCashbox, 'Can we do this later?');
-                break;
             case 6:
-                $result = $post($cross_id, $exfee_id, $bot233, "Hey Cashbox be kind, can't you eat later?");
+                $result = $post($cross_id, $exfee_id, $botCashbox, $scripts[$step_id][$idxLang]);
                 break;
             case 7:
-                $result = $post($cross_id, $exfee_id, $bot233, "Well {$objIdentity->name}. EXFE is designed with advanced multi-identities ability. Your contact methods and web accounts are your identities. Merging them together in one account makes gathering easier.");
+                $result = $post($cross_id, $exfee_id, $bot233, $scripts[$step_id][$idxLang]);
                 break;
             case 8:
-                $result = $post($cross_id, $exfee_id, $bot233, 'Consequently, all your ·X· are displayed in one place (your homepage), get rid of switching accounts back and forth.');
+                $result = $post($cross_id, $exfee_id, $bot233, $scripts[$step_id][$idxLang]);
                 break;
             case 9:
-                $result = $post($cross_id, $exfee_id, $botFrontier, 'BTW, ·X· is a gathering, pronounced as "cross".');
+                $result = $post($cross_id, $exfee_id, $botFrontier, $scripts[$step_id][$idxLang]);
                 break;
             case 10:
-                $result = $post($cross_id, $exfee_id, $bot233, "Thanks buddy. @{$objIdentity->name} To add identities, go to your homepage (click EXFE logo upper left), find Add Identity button in your profile box.");
+                $result = $post($cross_id, $exfee_id, $bot233, $scripts[$step_id][$idxLang]);
                 break;
             case 11:
-                $result = $post($cross_id, $exfee_id, $botFrontier, 'You can add Facebook, mobile number, commonly used emails. More websites accounts will be supported.');
-                break;
-            case 12:
-                $delay  = 233;
-                $passwd = $modUser->getUserPasswdByUserId($objIdentity->connected_user_id);
-                $needPw = $passwd && !$passwd['encrypted_password'];
-                $result = $needPw
-                        ? $post($cross_id, $exfee_id, $botFrontier, 'Oh, set up EXFE account password helps on multi-identities processes. To set a password, hover mouse on your name shown on upper right, see the button in scroll-down menu?')
-                        : new stdClass;
+                $delay  = 60 * 7;
+                $result = $post($cross_id, $exfee_id, $bot233, $scripts[$step_id][$idxLang]);
                 $created_at = $now;
                 break;
-            case 13:
+            case 12:
                 if (getCrossTouchTime($cross_id, $objIdentity->connected_user_id)
                 || ($now - $created_at >= 60 * 60 * 24)) {
                     $result = $editExfee($exfee, $cross_id, new Invitation(
@@ -1258,35 +1272,41 @@ class BusActions extends ActionController {
                     ), $botCashbox);
                 } else {
                     $result = new stdClass;
-                    $delay  = 233;
+                    $delay  = 60 * 60;
                     $step_id--;
                 }
                 break;
-            case 14:
-                $result = $post($cross_id, $exfee_id, $botCashbox, "My friend Cowdog is joining us to welcome {$objIdentity->name}.");
+            case 13:
+                $result = $post($cross_id, $exfee_id, $botCashbox, str_replace('%NAME%', $objIdentity->name, $scripts[$step_id][$idxLang]));
                 break;
-            case 15:
+            case 14:
                 $result = $editExfee($exfee, $cross_id, new Invitation(
                     0, $botClarus, $botCashbox, $botCashbox,
                     'NORESPONSE', 'EXFE', '', $now, $now, false, 0, []
                 ), $botCashbox);
                 break;
-            case 16:
-                $result = $post($cross_id, $exfee_id, $botClarus, 'moof~');
+            case 15:
+                $result = $post($cross_id, $exfee_id, $botClarus, $scripts[$step_id][$idxLang]);
                 break;
-            case 17:
+            case 16:
                 $result = $objIdentity->avatar && !preg_match('/^http(s)*:\/\/.+\/v2\/avatar\/default\?name=.*$/i', $objIdentity->avatar['80_80'])
                         ? new stdClass
-                        : $post($cross_id, $exfee_id, $botFrontier, "Hey {$objIdentity->name}, didn't you set a portrait so friends could recognize you easier? Go to homepage and click portrait in your profile box.");
+                        : $post($cross_id, $exfee_id, $botFrontier, str_replace('%NAME%', $objIdentity->name, $scripts[$step_id][$idxLang]));
+                break;
+            case 17:
+                $result = $post($cross_id, $exfee_id, $botCashbox, $scripts[$step_id][$idxLang]);
                 break;
             case 18:
-                $result = $post($cross_id, $exfee_id, $bot233, "Hey, I'm posting this conversation just by replying ·X· email. Don't even need to open web browser, cool!");
+                $result = $post($cross_id, $exfee_id, $bot233, str_replace('%EMAIL%', 'x@' . preg_replace('/\.(.*)/', '$1', ROOT_DOMAIN), $scripts[$step_id][$idxLang]));
                 break;
             case 19:
-                $result = $post($cross_id, $exfee_id, $botCashbox, "Yes, it's. Actually, you can also gather a ·X· by cc x@exfe.com when you send mails to friends.");
+                $modDevice = $this->getModelByName('device');
+                $result = $modDevice->getDevicesByUserid($objIdentity->connected_user_id)
+                        ? new stdClass
+                        : $post($cross_id, $exfee_id, $botFrontier, $scripts[$step_id][$idxLang]);
                 break;
             case 20:
-                $result = $post($cross_id, $exfee_id, $botClarus, 'moof!');
+                $result = $post($cross_id, $exfee_id, $botClarus, $scripts[$step_id][$idxLang]);
                 return;
             default:
                 $this->jsonError(500, 'unknow_step_id');
