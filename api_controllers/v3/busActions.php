@@ -1301,7 +1301,7 @@ class BusActions extends ActionController {
                 break;
             case 19:
                 $modDevice = $this->getModelByName('device');
-                $result = $modDevice($objIdentity->connected_user_id)
+                $result = $modDevice->getDevicesByUserid($objIdentity->connected_user_id)
                         ? new stdClass
                         : $post($cross_id, $exfee_id, $botFrontier, $scripts[$step_id][$idxLang]);
                 break;
