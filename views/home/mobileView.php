@@ -282,7 +282,7 @@
     <div id="routex">
       <div id="map" class="hide"></div>
       <canvas id="canvas" class="hide"></canvas>
-      <div id="static-map"></div>
+      <div id="static-map"><span class="failed hide">地图加载失败</span></div>
       <canvas id="static-map-canvas"></canvas>
       <!--svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg-->
       <div id="identities-overlay">
