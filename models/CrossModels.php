@@ -412,15 +412,19 @@ class CrossModels extends DataModel {
         }
         // init cross
         $objCross = new stdClass;
-        $objCross->title       = $title ?: '体验 水滴·汇';
-        $objCross->description = 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
+        $objCross->title       = $title ?: ($identity->locale === 'zh_cn' ? '体验 水滴·汇' : 'Explore EXFE');
+        $objCross->description = $identity->locale === 'zh_cn'
+                               ? '嘿~ 我是233，水滴的喵。我跟朋友钱柜、边际会一起向您介绍如何开始使用水滴·汇，来吧。'
+                               : 'Hey, this is 233 the EXFE cat. My friends Cashbox, Frontier and I will guide you through EXFE basics, come on.';
         $objCross->by_identity = $bot233;
         $objCross->time        = $hlpTime->parseTimeString(
             'Today',
             $hlpTime->getDigitalTimezoneBy($identity->timezone) ?: '+00:00'
         );
         $objCross->place       = new Place(
-            0, 'Online', 'exfe.com', '', '', '', '', $now, $now
+            0, $identity->locale === 'zh_cn' ? '网络' : 'Online',
+            preg_replace('/\.(.*)/', '$1', ROOT_DOMAIN), '', '', '', '',
+            $now, $now
         );
         $objCross->attribute   = new stdClass;
         $objCross->attribute->state = 'published';
