@@ -456,7 +456,7 @@ class wechatActions extends ActionController {
             // reset pagine
             setCache($pageKey, 0, 1);
             // request x title
-            if ($cross->title !== '体验 水滴·汇') {
+            if (!in_array($cross->title, ['Explore EXFE', '体验 水滴·汇'])) {
                 setCache("wechat_user_{$identity->external_id}_current_x_id", $cross->id, 60 * 2);
                 httpKit::request(
                     EXFE_GOBUS_SERVER . '/v3/queue/-/POST/'
