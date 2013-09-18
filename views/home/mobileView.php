@@ -280,10 +280,10 @@
   <!-- Route-X -->
   <script id="routex-tmpl" type="text/x-handlebars-template">
     <div id="routex">
-      <div id="map"></div>
-      <canvas id="canvas"></canvas>
-      <div id="static-map" class="hide"></div>
-      <canvas id="static-map-canvas" class="hide"></canvas>
+      <div id="map" class="hide"></div>
+      <canvas id="canvas" class="hide"></canvas>
+      <div id="static-map"><span class="failed hide">地图加载失败</span></div>
+      <canvas id="static-map-canvas"></canvas>
       <!--svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg"></svg-->
       <div id="identities-overlay">
         <div id="isme" class="identity">
