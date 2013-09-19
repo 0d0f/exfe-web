@@ -34,7 +34,8 @@ define('CLIENT_IOS_URL',             'https://itunes.apple.com/us/app/exfe/id514
 define('CLIENT_ANDROID_VERSION',     '');
 define('CLIENT_ANDROID_DESCRIPTION', '');
 define('CLIENT_ANDROID_URL',         '');
-define('APP_SCHEME',                 'exfe');
+// shuady.cn => cn, exfe.com => zz
+define('APP_SCHEME',                 'exfe://cn/');
 
 // proxy
 define('PROXY_TYPE', 'SOCKS');
