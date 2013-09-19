@@ -280,10 +280,10 @@ class CrossesActions extends ActionController {
             );
             if (!$mapImage) {
                 $mapImage = httpKit::fetchImageExpress(
-                    'https://maps.googleapis.com/maps/api/staticmap?center='
+                    'http://ditu.google.com/maps/api/staticmap?center='
                   . "{$lat},{$lng}&zoom={$zoom}"
                   . "&size={$config['map-width']}x{$config['map-height']}"
-                  . '&maptype=road&sensor=false&scale=2'
+                  . '&sensor=false&scale=2'
                 );
                 $objLibImage->setImageCache(IMG_CACHE_PATH, $mapImageKey, $mapImage);
             }
