@@ -451,11 +451,12 @@ class IdentityModels extends DataModel {
                         $avatar      = $rawIdentity->avatar;
                     }
                     break;
+                case 'wechat':
+                    $locale = 'zh_cn';
                 case 'dropbox':
                 case 'flickr':
                 case 'instagram':
                 case 'google':
-                case 'wechat':
                     // @todo by @leaskh
                     break;
                 default:
