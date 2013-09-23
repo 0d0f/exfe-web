@@ -288,7 +288,7 @@
       <div id="identities-overlay">
         <div id="isme" class="identity">
           <div class="abg"><img src="" alt="" class="avatar"><div class="avatar-wrapper"></div></div>
-          <div class="detial unknown">
+          <div class="detial unknown hide">
             <i class="icon icon-dot-grey"></i>
             <span class="distance">未知方位</span>
           </div>
