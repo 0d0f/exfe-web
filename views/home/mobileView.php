@@ -330,13 +330,13 @@
       <div id="wechat-guide" class="dialog wechat-dialog ant hide">
         <div class="main">
           <div class="ibox">
-            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>请关注公众号，为您开启这张“活点地图”。点右上角“···”按钮再按图标 <br />“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
+            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>您需要关注服务号才能开启这张地图。请点按右上角“···”按钮再按图标<br/>“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
           </div>
         </div>
         <div class="specification">
-          <h5>方位距离一目了然</h5>
-          <div class="p0">您可以和朋友们用“活点地图”互相看到位置和轨迹，像哈利·波特的魔法地图一样。</div>
-          <div>“活点地图”只在您打开页面时才更新位置，绝不会未经允许暴露您的位置。</div>
+          <h5>方位距离一图胜千言</h5>
+          <div class="p0">您可以和朋友们用“活点地图”互相看到位置和足迹，像哈利·波特的魔法地图一样。</div>
+          <div>只有您打开地图和服务号时才更新位置，不会未经允许暴露隐私。</div>
         </div>
       </div>
       <div id="wechat-share" class="dialog wechat-dialog ant hide">
