@@ -362,7 +362,7 @@
         <p class="desc">只有同一张地图中的人才能互相看到位置，只有您打开地图和服务号时才更新位置。地图之间相互独立，您不打开旧地图就不会更新。</p>
         <h4 class="sub-title">足迹一路精彩</h4>
         <p class="desc">您可以用iPhone“水滴·汇”应用记录漂亮完整的足迹。甚至标记沿途照片分享给朋友。</p>
-        <div class="app">
+        <div class="app hide">
           <div class="app-btn">
             <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
             <div class="app-info">
