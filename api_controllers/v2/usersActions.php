@@ -951,6 +951,7 @@ class UsersActions extends ActionController {
         $exfee_id_list = $exfeeHelper->getExfeeIdByUserid(intval($uid),$updated_at);
         $crossHelper = $this->getHelperByName('cross');
         $cross_list  = $crossHelper->getCrossesByExfeeIdList($exfee_id_list, null, null, !!$updated_at, $uid);
+        $cross_ids   = [];
         foreach ($cross_list as $i => $cross) {
             switch ($cross->attribute['state']) {
                 case 'deleted':
@@ -959,23 +960,36 @@ class UsersActions extends ActionController {
                 case 'draft':
                     if (!in_array($uid, $cross->exfee->hosts)) {
                         unset($cross_list[$i]);
+                        break;
                     }
             }
+            $cross_ids[] = $cross->id;
+        }
+
+        $modWidget = $this->getModelByName('Widget');
+        $rawMaps   = $modWidget->getByCrossIdsAndType($cross_ids, 'routex');
+        $enabled   = [];
+        foreach ($rawMaps as $rI => $rItem) {
+            $enabled[$rItem['cross_id']] = true;
         }
 
         $modRoutex = $this->getModelByName('Routex');
         foreach ($cross_list as $cI => $cItem) {
-            $rtResult = $modRoutex->getRoutexStatusBy($cItem->id, $uid);
-            if ($rtResult !== -1) {
-                $routex = [
-                    'type'      => 'routex',
-                    'my_status' => $rtResult['in_window'],
-                    'objects'   => $rtResult['objects'],
-                ];
-                if ($cItem->default_widget === 'routex') {
-                    $routex['default'] = true;
+            if (isset($enabled[$cItem->id])) {
+                $rtResult = $modRoutex->getRoutexStatusBy($cItem->id, $uid);
+                if ($rtResult !== -1) {
+                    $routex = [
+                        'type'      => 'routex',
+                        'my_status' => $rtResult['in_window'],
+                        'objects'   => $rtResult['objects'],
+                    ];
+                    if ($cItem->default_widget === 'routex') {
+                        $routex['default'] = true;
+                    }
+                    $cross_list[$cI]->widget[] = $routex;
                 }
-                $cross_list[$cI]->widget[] = $routex;
+            } else {
+                error_log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
             }
             unset($cross_list[$cI]->default_widget);
         }
