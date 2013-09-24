@@ -760,8 +760,8 @@ class OAuthModels extends DataModel {
         }
         return 'https://open.weixin.qq.com/connect/oauth2/authorize'
              . '?appid='        . WECHAT_OFFICIAL_ACCOUNT_APPID
-             . '&redirect_uri=' . 'http://exfe.com/oauth/wechatcallback'
-          // . '&redirect_uri=' . WECHAT_REDIRECT_URI
+          // . '&redirect_uri=' . 'http://exfe.com/oauth/wechatcallback'
+             . '&redirect_uri=' . WECHAT_REDIRECT_URI
              . '&response_type=code'
              . "&scope={$scope}"
              . "&state={$step}"
