@@ -193,6 +193,7 @@ class QueueModels extends DataModel {
                 $rmTime = $this->getRemindTimeBy($data['cross']->time);
                 $ontime = $this->getDigestTimeBy($invTimezone, $data['cross']->time);
                 // 明天发生的活动，撤回 remind 通知 {
+                error_log("REMIND TIME: {$rmTime} / DIGEST TIME: {$ontime}");
                 if ($rmTime === $ontime) {
                     $this->fireBus(
                         $tos, $mergeK, 'POST', EXFE_AUTH_SERVER . $urlSrv,
