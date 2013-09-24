@@ -365,6 +365,15 @@ class BusActions extends ActionController {
         $cross_rs  = $crossHelper->editCross($cross, $by_identity->id);
         $cross_id  = $cross_rs && $cross_rs['cross_id'] ? $cross_rs['cross_id'] : 0;
         $rawResult = true;
+        if (isset($cross->widgets) && is_array($cross->widgets)) {
+            foreach ($cross->widgets as $widget) {
+                if ($widget->type === 'routex') {
+                    $modWidget = $this->getModelByName('Widget');
+                    $modWidget->updateByCrossIdAndType($cross_id, $widget->type, $by_identity->id);
+                    break;
+                }
+            }
+        }
         if (isset($cross->exfee)) {
             $timezone  = @$cross->time->begin_at->timezone
                       ?: @$curCross->time->begin_at->timezone;
