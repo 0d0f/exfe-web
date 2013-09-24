@@ -288,7 +288,7 @@
       <div id="identities-overlay">
         <div id="isme" class="identity">
           <div class="abg"><img src="" alt="" class="avatar"><div class="avatar-wrapper"></div></div>
-          <div class="detial unknown">
+          <div class="detial unknown hide">
             <i class="icon icon-dot-grey"></i>
             <span class="distance">未知方位</span>
           </div>
@@ -330,13 +330,13 @@
       <div id="wechat-guide" class="dialog wechat-dialog ant hide">
         <div class="main">
           <div class="ibox">
-            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>请关注公众号，为您开启这张“活点地图”。点右上角“···”按钮再按图标 <br />“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
+            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>您需要关注服务号才能开启这张地图。请点按右上角“···”按钮再按图标<br/>“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
           </div>
         </div>
         <div class="specification">
-          <h5>方位距离一目了然</h5>
-          <div class="p0">您可以和朋友们用“活点地图”互相看到位置和轨迹，像哈利·波特的魔法地图一样。</div>
-          <div>“活点地图”只在您打开页面时才更新位置，绝不会未经允许暴露您的位置。</div>
+          <h5>方位距离一图胜千言</h5>
+          <div class="p0">您可以和朋友们用“活点地图”互相看到位置和足迹，像哈利·波特的魔法地图一样。</div>
+          <div>只有您打开地图和服务号时才更新位置，不会未经允许暴露隐私。</div>
         </div>
       </div>
       <div id="wechat-share" class="dialog wechat-dialog ant hide">
@@ -354,23 +354,32 @@
   <script id="wechat-about-tmpl" type="text/x-handlebars-template">
     <div id="shuidi-dialog" class="dialog">
       <div class="main">
-        <h3 class="title">在“活点地图”上绘制路径?</h3>
-        <p class="desc"><span class="name">水滴·汇</span> (Shuady ·X·) 是一个群组工具，它能在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。</p>
-        <div class="app-btn">
-          <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
-          <div class="app-info">
-            <h3 class="app-title">水滴·汇</h3>
-            <div class="app-keywords">Shuady ·X·</div>
+        <h3 class="title">“活点地图”是什么?</h3>
+        <p class="desc">您可以和朋友们用“活点地图”互相看到位置和足迹，就像哈利·波特的魔法地图一样。</p>
+        <h4 class="sub-title">一图胜千言</h4>
+        <p class="desc">说不清地方找不着北？挨个催问迟到大王们？出行路线难以分享？……这些全都过去了。</p>
+        <h4 class="sub-title">隐私至关重要</h4>
+        <p class="desc">只有同一张地图中的人才能互相看到位置，只有您打开地图和服务号时才更新位置。地图之间相互独立，您不打开旧地图就不会更新。</p>
+        <h4 class="sub-title">足迹一路精彩</h4>
+        <p class="desc">您可以用iPhone“水滴·汇”应用记录漂亮完整的足迹。甚至标记沿途照片分享给朋友。</p>
+        <div class="app hide">
+          <div class="app-btn">
+            <img class="app-icon" src="/static/img/exfe_512.png" alt="" width="60" height="60" />
+            <div class="app-info">
+              <h3 class="app-title">水滴·汇</h3>
+              <div class="app-keywords">Shuady ·X·</div>
+            </div>
+          </div>
+          <div class="desc app-desc">“活点地图”是<span>水滴·汇</span>群组工具的一个功能。水滴·汇应用不仅能让您在“活点地图”上作标记绘制路径，还有更多便捷有趣的实用功能，助您组织群组活动。体验一下吧？</div>
+          <div class="notify hide">
+            <div class="notify-title">请输入资料以便朋友们向您发送提醒：</div>
+            <div class="notify-frame">
+              <input type="text" class="email" id="notify-provider" placeholder="您的手机号或电子邮件" />
+              <button class="notify-ok">确定</button>
+            </div>
           </div>
         </div>
-        <div class="notify">
-          <div class="notify-title">请输入资料以便朋友们向您发送提醒：</div>
-          <div class="notify-frame">
-            <input type="text" class="email" id="notify-provider" placeholder="您的手机号或电子邮件" />
-            <button class="notify-ok">确定</button>
-          </div>
-        </div>
-        <div id="cleanup-cache">重启活点地图</div>
+        <div class="cleanup"><span id="cleanup-cache">重启活点地图</span></div>
       </div>
     </div>
   </script>
