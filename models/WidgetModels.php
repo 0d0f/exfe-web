@@ -73,7 +73,7 @@ class WidgetModels extends DataModel {
                  AND    `type`       = '{$type}';"
             );
         }
-        return $this->create($cross_id, $type, $created_by);
+        return $this->create($cross_id, $type, $updated_by);
     }
 
 }
