@@ -988,7 +988,6 @@ class UsersActions extends ActionController {
                     }
                     $cross_list[$cI]->widget[] = $routex;
                 }
-            } else {
                 error_log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
             }
             unset($cross_list[$cI]->default_widget);
