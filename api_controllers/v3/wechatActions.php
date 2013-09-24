@@ -166,24 +166,14 @@ class wechatActions extends ActionController {
                                 // get routex cross ids
                                 $maps       = [];
                                 if ($crosses) {
-                                    $rawMaps = httpKit::request(
-                                        EXFE_AUTH_SERVER . '/v3/routex/_inner/search/crosses',
-                                        null, array_keys($crosses),
-                                        false, false, 3, 3, 'json', true
-                                    );
-                                    $rawMaps = (
-                                        $rawMaps
-                                     && $rawMaps['http_code'] === 200
-                                     && $rawMaps['json']
-                                    ) ? $rawMaps['json'] : [];
+                                    $modWidget = $this->getModelByName('Widget');
+                                    $rawMaps   = $modWidget->getByCrossIdsAndType(array_keys($crosses), 'routex');
                                     // paging {
                                     $pageSize = 4;
                                     $pageNum  = (int) getCache($pageKey);
                                     $enabled  = [];
                                     foreach ($rawMaps as $rI => $rItem) {
-                                        if ($rItem['enable']) {
-                                            $enabled[] = $rItem['cross_id'];
-                                        }
+                                        $enabled[] = $rItem['cross_id'];
                                     }
                                     $rawMaps = null;
                                     $curItem = $pageSize * $pageNum + $pageSize;
@@ -471,12 +461,8 @@ class wechatActions extends ActionController {
                 );
             }
             // enable routex
-            httpKit::request(
-                EXFE_AUTH_SERVER
-              . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross->id}",
-                null, ['save_breadcrumbs' => true],
-                false, false, 3, 3, 'json'
-            );
+            $modWidget = $this->getModelByName('Widget');
+            $modWidget->updateByCrossIdAndType($cross->id, 'routex', $identity->id);
         }
     }
 
