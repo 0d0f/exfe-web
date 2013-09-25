@@ -353,6 +353,8 @@
   <!-- Wechat About -->
   <script id="wechat-about-tmpl" type="text/x-handlebars-template">
     <div id="shuidi-dialog" class="dialog">
+      <div class="sd-bg"></div>
+      <div class="mw">
       <div class="main">
         <h3 class="title">“活点地图”是什么?</h3>
         <p class="desc">您可以和朋友们用“活点地图”互相看到位置和足迹，就像哈利·波特的魔法地图一样。</p>
@@ -380,6 +382,7 @@
           </div>
         </div>
         <div class="cleanup"><span id="cleanup-cache">重启活点地图</span></div>
+      </div>
       </div>
     </div>
   </script>
