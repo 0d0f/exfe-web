@@ -366,6 +366,16 @@ class wechatActions extends ActionController {
                             break;
                         // @todo remove this! by @leaskh
                         case 'new tutorial x':
+                            $numIdentities = $modUser->getConnectedIdentityCount($user_id);
+                            $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
+                            $cross      = null;
+                            $rtnType    = 'news';
+                            $rtnMessage = [[
+                                'Title'       => '“活点地图”是什么？',
+                                'Description' => '',
+                                'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                                'Url'         => SITE_URL . '/wechat/aboutroutex',
+                            ]];
                             $cross = $crossHelper->doTutorial($identity);
                             if ($cross) {
                                 $crossHelper->setDefaultWidget($cross->id, 'routex');
@@ -373,13 +383,12 @@ class wechatActions extends ActionController {
                                     $cross->id, $bot->id
                                 );
                                 if ($invitation) {
-                                    $rtnType    = 'news';
-                                    $rtnMessage = [[
+                                    $rtnMessage[] = [
                                         'Title'       => '欢迎使用“活点地图”',
                                         'Description' => '',
-                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routexicon@2x.png',
                                         'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
-                                    ]];
+                                    ];
                                 }
                             }
                     }
