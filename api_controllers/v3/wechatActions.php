@@ -146,7 +146,7 @@ class wechatActions extends ActionController {
                             );
                             if ($invitation) {
                                 $rtnMessage[] = [
-                                    'Title'       => '欢迎使用“活点地图”',
+                                    'Title'       => '体验 水滴·汇 - 活点地图',
                                     'Description' => '',
                                     'PicUrl'      => SITE_URL . '/static/img/wechat_routexicon@2x.png',
                                     'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
@@ -384,7 +384,7 @@ class wechatActions extends ActionController {
                                 );
                                 if ($invitation) {
                                     $rtnMessage[] = [
-                                        'Title'       => '欢迎使用“活点地图”',
+                                        'Title'       => '体验 水滴·汇 - 活点地图',
                                         'Description' => '',
                                         'PicUrl'      => SITE_URL . '/static/img/wechat_routexicon@2x.png',
                                         'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,

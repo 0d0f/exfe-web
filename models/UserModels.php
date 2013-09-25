@@ -930,7 +930,7 @@ class UserModels extends DataModel {
         }
         if ($user_id) {
             $rawResult = $this->getRow(
-                "SELECT `tutorial_x_id` FROM `users` WHERE `id`     = "  . (int) $user_id     . ';'
+                "SELECT `tutorial_x_id` FROM `users`      WHERE `id` = " . (int) $user_id     . ';'
             );
             if ($rawResult) {
                 return (int) $rawResult['tutorial_x_id'];
