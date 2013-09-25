@@ -126,26 +126,32 @@ class wechatActions extends ActionController {
                     case 'subscribe':
                         $numIdentities = $modUser->getConnectedIdentityCount($user_id);
                         $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
+                        $cross      = null;
+                        $rtnType    = 'news';
+                        $rtnMessage = [[
+                            'Title'       => '“活点地图”是什么？',
+                            'Description' => '',
+                            'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                            'Url'         => SITE_URL . '/wechat/aboutroutex',
+                        ]];
                         if ($numIdentities === 1 && !$tutorial_x_id) {
                             $cross = $crossHelper->doTutorial($identity);
-                            if ($cross) {
-                                $crossHelper->setDefaultWidget($cross->id, 'routex');
-                                $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
-                                    $cross->id, $bot->id
-                                );
-                                if ($invitation) {
-                                    $rtnType    = 'news';
-                                    $rtnMessage = [[
-                                        'Title'       => '欢迎使用“活点地图”',
-                                        'Description' => '',
-                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routex_welcome@2x.jpg',
-                                        'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
-                                    ]];
-                                }
-                            }
+                        } else if ($tutorial_x_id) {
+                            $cross = $crossHelper->getCross($tutorial_x_id);
                         }
-                        if (!$rtnMessage) {
-                            $rtnMessage = "嗨，{$identity->name}！欢迎再次开启“活点地图”。";
+                        if ($cross) {
+                            $crossHelper->setDefaultWidget($cross->id, 'routex');
+                            $invitation = $exfeeHelper->getRawInvitationByCrossIdAndIdentityId(
+                                $cross->id, $bot->id
+                            );
+                            if ($invitation) {
+                                $rtnMessage[] = [
+                                    'Title'       => '欢迎使用“活点地图”',
+                                    'Description' => '',
+                                    'PicUrl'      => SITE_URL . '/static/img/wechat_routexicon@2x.png',
+                                    'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
+                                ];
+                            }
                         }
                         break;
                     case 'click':
@@ -166,24 +172,14 @@ class wechatActions extends ActionController {
                                 // get routex cross ids
                                 $maps       = [];
                                 if ($crosses) {
-                                    $rawMaps = httpKit::request(
-                                        EXFE_AUTH_SERVER . '/v3/routex/_inner/search/crosses',
-                                        null, array_keys($crosses),
-                                        false, false, 3, 3, 'json', true
-                                    );
-                                    $rawMaps = (
-                                        $rawMaps
-                                     && $rawMaps['http_code'] === 200
-                                     && $rawMaps['json']
-                                    ) ? $rawMaps['json'] : [];
+                                    $modWidget = $this->getModelByName('Widget');
+                                    $rawMaps   = $modWidget->getByCrossIdsAndType(array_keys($crosses), 'routex');
                                     // paging {
                                     $pageSize = 4;
                                     $pageNum  = (int) getCache($pageKey);
                                     $enabled  = [];
                                     foreach ($rawMaps as $rI => $rItem) {
-                                        if ($rItem['enable']) {
-                                            $enabled[] = $rItem['cross_id'];
-                                        }
+                                        $enabled[] = $rItem['cross_id'];
                                     }
                                     $rawMaps = null;
                                     $curItem = $pageSize * $pageNum + $pageSize;
@@ -276,7 +272,7 @@ class wechatActions extends ActionController {
                                 ], [
                                     'Title'       => '用微信账号登录 水滴·汇',
                                     'Description' => '',
-                                    'PicUrl'      => SITE_URL . '/static/img/wechat_appicon@2x.png?1',
+                                    'PicUrl'      => SITE_URL . '/static/img/wechat_appicon@2x.png',
                                     'Url'         => SITE_URL . '/toapp?authenticate',
                                 ]];
                         }
@@ -370,6 +366,16 @@ class wechatActions extends ActionController {
                             break;
                         // @todo remove this! by @leaskh
                         case 'new tutorial x':
+                            $numIdentities = $modUser->getConnectedIdentityCount($user_id);
+                            $tutorial_x_id = $modUser->getTutorialXId($user_id, $identity_id);
+                            $cross      = null;
+                            $rtnType    = 'news';
+                            $rtnMessage = [[
+                                'Title'       => '“活点地图”是什么？',
+                                'Description' => '',
+                                'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                                'Url'         => SITE_URL . '/wechat/aboutroutex',
+                            ]];
                             $cross = $crossHelper->doTutorial($identity);
                             if ($cross) {
                                 $crossHelper->setDefaultWidget($cross->id, 'routex');
@@ -377,13 +383,12 @@ class wechatActions extends ActionController {
                                     $cross->id, $bot->id
                                 );
                                 if ($invitation) {
-                                    $rtnType    = 'news';
-                                    $rtnMessage = [[
+                                    $rtnMessage[] = [
                                         'Title'       => '欢迎使用“活点地图”',
                                         'Description' => '',
-                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routex_welcome@2x.jpg',
+                                        'PicUrl'      => SITE_URL . '/static/img/wechat_routexicon@2x.png',
                                         'Url'         => $modRoutex->getUrl($cross->id, $invitation['token'], $identity) . $debugUrl,
-                                    ]];
+                                    ];
                                 }
                             }
                     }
@@ -471,12 +476,8 @@ class wechatActions extends ActionController {
                 );
             }
             // enable routex
-            httpKit::request(
-                EXFE_AUTH_SERVER
-              . "/v3/routex/_inner/users/{$user_id}/crosses/{$cross->id}",
-                null, ['save_breadcrumbs' => true],
-                false, false, 3, 3, 'json'
-            );
+            $modWidget = $this->getModelByName('Widget');
+            $modWidget->updateByCrossIdAndType($cross->id, 'routex', $identity->id);
         }
     }
 
