@@ -55,6 +55,9 @@ class CrossModels extends DataModel {
             }
         }
 
+        $hasTitle = isset($cross->title);
+        $hasDesc  = isset($cross->description);
+
         $cross_time->outputformat        = (int) $cross_time->outputformat;
         $cross->title                    = dbescape(isset($cross->title)       ? $cross->title       : '');
         $cross->description              = dbescape(isset($cross->description) ? $cross->description : '');
@@ -116,12 +119,12 @@ class CrossModels extends DataModel {
                 array_push($updatefields, "`place_id`        =  {$place_id}");
                 $cross_updated['place']       = $updated;
             }
-            if (isset($cross->title) && $cross->title && $old_cross && dbescape($old_cross->title) !== $cross->title) {
+            if ($hasTitle && $cross->title && $old_cross && dbescape($old_cross->title) !== $cross->title) {
                 array_push($updatefields, "`title`           = '{$cross->title}'");
                 $cross_updated['title']       = $updated;
             }
 
-            if (isset($cross->description) && $old_cross && dbescape($old_cross->description) !== $cross->description) {
+            if ($hasDesc && $old_cross && dbescape($old_cross->description) !== $cross->description) {
                 array_push($updatefields, "`description`     = '{$cross->description}'");
                 $cross_updated['description'] = $updated;
             }
