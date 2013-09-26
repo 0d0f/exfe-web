@@ -246,7 +246,7 @@ class wechatActions extends ActionController {
                                 $maps = null;
                                 break;
                             case 'CREATE_MAP':
-                                if ($modIdentity->isLabRat($identity->id)) {
+                                // if ($modIdentity->isLabRat($identity->id)) {
                                     $rawResult = $modRoutex->createRouteX($identity);
                                     if ($rawResult) {
                                         $cross      = $rawResult['cross'];
@@ -258,9 +258,9 @@ class wechatActions extends ActionController {
                                             'Url'         => "{$rawResult['url']}{$debugUrl}",
                                         ]];
                                     }
-                                } else {
-                                    $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
-                                }
+                                // } else {
+                                //     $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
+                                // }
                                 break;
                             case 'MORE':
                                 $rtnType    = 'news';
@@ -400,10 +400,10 @@ class wechatActions extends ActionController {
                 break;
             case 'location':
             case 'link':
-                if (!$modIdentity->isLabRat($identity->id)) {
-                    $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
-                    break;
-                }
+                // if (!$modIdentity->isLabRat($identity->id)) {
+                //     $rtnMessage = "【封闭测试中  非常抱歉】\n若您知道测试口令请回复。";
+                //     break;
+                // }
                 switch ($msgType) {
                     case 'location':
                         $place = new Place(
