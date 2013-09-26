@@ -131,7 +131,7 @@ class wechatActions extends ActionController {
                         $rtnMessage = [[
                             'Title'       => '“活点地图”是什么？',
                             'Description' => '',
-                            'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                            'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg#3',
                             'Url'         => SITE_URL . '/wechat/aboutroutex',
                         ]];
                         if ($numIdentities === 1 && !$tutorial_x_id) {
@@ -267,7 +267,7 @@ class wechatActions extends ActionController {
                                 $rtnMessage = [[
                                     'Title'       => '水滴·汇 - 活点地图',
                                     'Description' => '',
-                                    'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                                    'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg#3',
                                     'Url'         => SITE_URL . '/wechat/aboutroutex',
                                 ], [
                                     'Title'       => '用微信账号登录 水滴·汇',
@@ -373,7 +373,7 @@ class wechatActions extends ActionController {
                             $rtnMessage = [[
                                 'Title'       => '“活点地图”是什么？',
                                 'Description' => '',
-                                'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg',
+                                'PicUrl'      => SITE_URL . '/static/img/wechat_routex_about.jpg#3',
                                 'Url'         => SITE_URL . '/wechat/aboutroutex',
                             ]];
                             $cross = $crossHelper->doTutorial($identity);
