@@ -322,15 +322,17 @@
           <p class="p0">您刚刚拒绝开启这张“活点地图”：Threshold of the odyssey。它将不会展现您的位置，您也无法用它看到别人的位置。但这不会影响您已开启的其它“活点地图”页面，每张地图中是否展现您的位置是各自独立的设置。</p>
           <p class="p1">像“活点地图”这样能获知您方位的工具，应以最高标准尊重个人隐私和数据安全。我们对此非常重视。</p>
           <div class="btn">
-            <div class="tip">要改变主意与朋友们互相看到位置和轨迹？</div>
-            <button id="turn-on">开启这张活点地图</button>
+            <div class="wbtn">
+              <div class="tip">改变主意了？</div>
+              <button id="turn-on">开启这张活点地图</button>
+            </div>
           </div>
         </div>
       </div>
       <div id="wechat-guide" class="dialog wechat-dialog ant hide">
         <div class="main">
           <div class="ibox">
-            <div><h5 class="ibox-title">开启“活点地图”</h5></div><div>您需要关注服务号才能开启这张地图。请点按右上角<img class="wechatbtn-share" width="16" height="16" src="/static/img/wechatbtn_share_16@2x.png"/>按钮再按图标<br/>“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
+            <div><h5 class="ibox-title">开启“活点地图”</h5></discover><div>您需要关注服务号才能开启这张地图。请点按右上角<img class="wechatbtn-share" width="16" height="16" src="/static/img/wechatbtn_share_16@2x.png"/>按钮再按图标<br/>“查看公众号”关注。<img style="margin-top: -20px;" src="/static/img/wechatbtn_accverified@2x.png" alt="" width="40" height="40" align="right"/></div>
           </div>
         </div>
         <div class="specification">
