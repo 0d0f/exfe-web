@@ -969,7 +969,7 @@ class UsersActions extends ActionController {
         $modWidget = $this->getModelByName('Widget');
         $rawMaps   = $modWidget->getByCrossIdsAndType($cross_ids, 'routex');
         $enabled   = [];
-        foreach ($rawMaps as $rI => $rItem) {
+        foreach ($rawMaps ?: [] as $rI => $rItem) {
             $enabled[$rItem['cross_id']] = true;
         }
 
