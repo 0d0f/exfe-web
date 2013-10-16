@@ -8,11 +8,14 @@ class WechatModels extends DataModel {
     public $libwechat = null;
 
 
-    public function __construct() {
+    public function __construct(
+        $account_key = '', $account_appid = '', $account_secret = ''
+    ) {
+        $account_key    = $account_key    ?: WECHAT_OFFICIAL_ACCOUNT_KEY;
+        $account_appid  = $account_appid  ?: WECHAT_OFFICIAL_ACCOUNT_APPID;
+        $account_secret = $account_secret ?: WECHAT_OFFICIAL_ACCOUNT_SECRET;
         $this->libwechat = new libwechat(
-            WECHAT_OFFICIAL_ACCOUNT_KEY,
-            WECHAT_OFFICIAL_ACCOUNT_APPID,
-            WECHAT_OFFICIAL_ACCOUNT_SECRET
+            $account_key, $account_appid, $account_secret
         );
     }
 

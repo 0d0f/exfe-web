@@ -32,12 +32,13 @@ class wechatActions extends ActionController {
         //     </xml>'
         // );
         // }
+        // $servicesId = @"{$objMsg->ToUserName}";
         $msgType = @strtolower($objMsg->MsgType);
         $event   = @strtolower($objMsg->Event);
         // disabled wechat location events {
-        if ($msgType === 'event' && $event === 'location') {
-            return;
-        }
+        // if ($msgType === 'event' && $event === 'location') {
+        //     return;
+        // }
         // }
         $modUser     = $this->getModelByName('User');
         $modIdentity = $this->getModelByName('Identity');
